@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { addDays, parseDate } from "../src/date/civil-date.js";
 import { checkHolidaySanity } from "../src/date/holiday-sanity.js";
-import { bundledCalendar, createCalendar } from "../src/date/holiday-calendar.js";
+import {
+  bundledCalendar,
+  createCalendar,
+  holidayDiffNote,
+  holidaySourceLabel,
+  LIVE_UNAVAILABLE_PREFIX,
+  liveUnavailableNote,
+  trackCalendarYears,
+} from "../src/date/holiday-calendar.js";
 import { loadData } from "../src/data-store/load.js";
 
 const RESEARCH_2026 = [
@@ -150,5 +158,64 @@ describe("createCalendar injection", () => {
     expect(calendar.isPublicHoliday(parseDate("2030-03-04"))).toBe(true);
     expect(calendar.coverage(2030)).toBe("live");
     expect(calendar.notes).toEqual(["x"]);
+  });
+});
+
+describe("M7b calendar helpers", () => {
+  it("source label: bundled only keeps M5 wording", () => {
+    const cal = { ...bundledCalendar(), requestedYears: [2026, 2028] };
+    expect(holidaySourceLabel(cal, "2026-10-28")).toBe("번들(생성일 2026-10-28)");
+    expect(holidaySourceLabel({ ...cal, requestedYears: [] }, "2026-10-28")).toBe("번들(생성일 2026-10-28)");
+  });
+
+  it("source label: all live", () => {
+    const cal = {
+      ...createCalendar({ 2026: { source: "live", entries: [] } }),
+      requestedYears: [2026],
+      checkedAt: "2026-01-01 00:00",
+    };
+    expect(holidaySourceLabel(cal, "2026-10-28")).toBe("공공데이터 API 확인(조회 시각 2026-01-01 00:00 KST)");
+  });
+
+  it("source label: mixed lists each group", () => {
+    const cal = {
+      ...createCalendar({
+        2026: { source: "live", entries: [] },
+        2027: { source: "bundled", entries: [] },
+      }),
+      requestedYears: [2026, 2027, 2028],
+      checkedAt: "2026-01-01 00:00",
+    };
+    const label = holidaySourceLabel(cal, "2026-10-28");
+    expect(label).toContain("2026년 공공데이터 API 확인(조회 시각");
+    expect(label).toContain("2027년 번들(생성일 2026-10-28)");
+    expect(label).toContain("2028년 정보 없음");
+  });
+
+  it("live notes", () => {
+    const plain = liveUnavailableNote([2027, 2028], false);
+    expect(plain.startsWith(LIVE_UNAVAILABLE_PREFIX)).toBe(true);
+    expect(plain).toContain("2027·2028년");
+    expect(plain).not.toContain("활용신청");
+    expect(liveUnavailableNote([2027], true)).toContain("활용신청");
+
+    const diff = holidayDiffNote(
+      2026,
+      [{ date: "2026-11-10", name: "임시공휴일" }],
+      [{ date: "2026-06-03", name: "전국동시지방선거일" }],
+    );
+    expect(diff).toContain("추가 2026-11-10 임시공휴일");
+    expect(diff).toContain("삭제 2026-06-03 전국동시지방선거일");
+    expect(diff).not.toContain("\n");
+  });
+
+  it("trackCalendarYears records queried years", () => {
+    const base = bundledCalendar();
+    const t = trackCalendarYears(base);
+    expect(t.calendar.isNonWorkingDay(parseDate("2027-01-02"))).toBe(base.isNonWorkingDay(parseDate("2027-01-02")));
+    t.calendar.coverage(2029);
+    expect(t.years()).toEqual([2027, 2029]);
+    expect(t.calendar.isPublicHoliday(parseDate("2026-05-01"))).toBe(true);
+    expect(t.calendar.notes).toEqual(base.notes);
   });
 });
