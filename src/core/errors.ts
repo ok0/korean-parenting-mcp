@@ -62,8 +62,9 @@ export const KEY_GUIDE: Record<
     steps: [
       "국가법령정보 공동활용 사이트에 회원가입하고 OPEN API 사용을 신청합니다.",
       "OC 값(가입 이메일의 @ 앞부분)을 사용합니다.",
+      "OPEN API 신청에서 사용할 API 종류(법령·행정규칙·별표서식)를 체크하고 호출하는 서버의 공인 IP 또는 도메인을 등록합니다(미등록이면 '사용자 정보 검증에 실패' 응답).",
     ],
-    tools: [],
+    tools: ["get_leave_article"],
   },
 };
 

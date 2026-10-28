@@ -30,6 +30,8 @@ describe("createServer", () => {
     expect(client.getInstructions()).toContain("비공식");
     expect(client.getInstructions()).toContain("due_date");
     expect(client.getInstructions()).toContain("birth_date");
+    expect(client.getInstructions()).toContain("get_leave_article");
+    expect(client.getInstructions()).toContain("LAW_OC");
   });
 
   it("tools/list matches registry (empty in M1)", async () => {

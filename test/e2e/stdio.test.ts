@@ -38,9 +38,12 @@ describe("stdio e2e", () => {
     expect(client.getServerVersion()?.name).toBe("korean-parenting-mcp");
     expect(client.getInstructions()).toContain("비공식");
     expect(client.getInstructions()).toContain("get_timeline");
+    expect(client.getInstructions()).toContain("get_leave_article");
 
     const { tools } = await client.listTools();
-    expect(tools.map((t) => t.name)).toEqual(["get_timeline"]);
+    const names = tools.map((t) => t.name);
+    expect(names).toContain("get_timeline");
+    expect(names).toContain("get_leave_article");
 
     const unknown = await client.callTool({ name: "nope", arguments: {} });
     expect(unknown.isError).toBe(true);
@@ -66,8 +69,14 @@ describe("stdio e2e", () => {
     const bornText = (bornCall.content as { type: string; text: string }[])[0]!.text;
     expect(bornText).toContain("출생일 2026-05-28");
 
+    const leave = await client.callTool({ name: "get_leave_article", arguments: { topic: "maternity_leave" } });
+    expect(leave.isError).toBe(true);
+    expect((leave.content as { type: string; text: string }[])[0]!.text).toContain("LAW_OC");
+
     const again = await client.listTools();
-    expect(again.tools.map((t) => t.name)).toEqual(["get_timeline"]);
+    const againNames = again.tools.map((t) => t.name);
+    expect(againNames).toContain("get_timeline");
+    expect(againNames).toContain("get_leave_article");
   });
 
   it("stdout carries only JSON-RPC lines", async () => {
