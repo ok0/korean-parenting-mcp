@@ -1,4 +1,5 @@
-import type { HolidayEntry } from "../../src/date/holiday-sanity.js";
+import { loadData } from "../../src/data-store/load.js";
+import { FIXED_SOLAR_HOLIDAYS, type HolidayEntry } from "../../src/date/holiday-sanity.js";
 
 export interface KasiItem {
   locdate: string;
@@ -53,4 +54,42 @@ export function createKasiMock(byYear: Record<number, () => Response | Promise<R
     return xmlRes(kasiXml([]));
   };
   return { fetch: fakeFetch as typeof fetch, urls };
+}
+
+export function createKasiYearMock(route: (year: number, init?: RequestInit) => Response | Promise<Response>): KasiMock {
+  const urls: string[] = [];
+  const fakeFetch = async (input: string | URL | Request, init?: RequestInit): Promise<Response> => {
+    const href = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+    urls.push(href);
+    const year = Number(new URL(href).searchParams.get("solYear"));
+    return route(year, init);
+  };
+  return { fetch: fakeFetch as typeof fetch, urls };
+}
+
+export function bundledYearEntries(year: number): HolidayEntry[] {
+  return loadData("holidays").years[String(year)] ?? [];
+}
+
+export function sanityEntries(year: number): HolidayEntry[] {
+  return FIXED_SOLAR_HOLIDAYS.map((md) => ({ date: `${year}-${md}`, name: "고정 공휴일" }));
+}
+
+export function okYear(year: number): Response {
+  return xmlRes(kasiXml(entriesToItems(bundledYearEntries(year).length ? bundledYearEntries(year) : sanityEntries(year))));
+}
+
+export function hangUntilAbort(init?: RequestInit): Promise<Response> {
+  return new Promise<Response>((_, reject) => {
+    const signal = init?.signal;
+    if (!signal) {
+      setTimeout(() => reject(new DOMException("aborted", "AbortError")), 10_000);
+      return;
+    }
+    if (signal.aborted) {
+      reject(new DOMException("aborted", "AbortError"));
+      return;
+    }
+    signal.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError")), { once: true });
+  });
 }
