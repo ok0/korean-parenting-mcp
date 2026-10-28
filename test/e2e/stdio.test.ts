@@ -34,15 +34,25 @@ describe("stdio e2e", () => {
 
     expect(client.getServerVersion()?.name).toBe("korean-parenting-mcp");
     expect(client.getInstructions()).toContain("비공식");
+    expect(client.getInstructions()).toContain("get_timeline");
 
     const { tools } = await client.listTools();
-    expect(tools.map((t) => t.name)).toEqual([]);
+    expect(tools.map((t) => t.name)).toEqual(["get_timeline"]);
 
     const unknown = await client.callTool({ name: "nope", arguments: {} });
     expect(unknown.isError).toBe(true);
 
+    const tl = await client.callTool({
+      name: "get_timeline",
+      arguments: { birth_date: "2026-01-31", reference_date: "2026-02-01" },
+    });
+    expect(tl.isError).toBeFalsy();
+    const tlText = (tl.content as { type: string; text: string }[])[0]!.text;
+    expect(tlText).toContain("출생신고 기한");
+    expect(tlText).toContain("비공식");
+
     const again = await client.listTools();
-    expect(again.tools.map((t) => t.name)).toEqual([]);
+    expect(again.tools.map((t) => t.name)).toEqual(["get_timeline"]);
   });
 
   it("stdout carries only JSON-RPC lines", async () => {

@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import type { KeyName } from "../core/config.js";
 import type { ToolContext } from "../core/context.js";
+import { getTimelineTool } from "./get-timeline.js";
 export type { KeyName } from "../core/config.js";
 
 export interface ToolOutput {
@@ -23,4 +24,4 @@ export function defineTool<S extends z.ZodObject>(def: ToolDef<S>): ToolDef {
   return def as unknown as ToolDef;
 }
 
-export const allTools: readonly ToolDef[] = [];
+export const allTools: readonly ToolDef[] = [getTimelineTool];
