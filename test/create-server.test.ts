@@ -39,7 +39,9 @@ describe("createServer", () => {
     expect(client.getInstructions()).toContain("find_daycare");
     expect(client.getInstructions()).toContain("find_vaccination_clinic");
     expect(client.getInstructions()).toContain("find_checkup_clinic");
+    expect(client.getInstructions()).toContain("find_kindergarten");
     expect(client.getInstructions()).toContain("SAFETYKOREA_AUTH_KEY");
+    expect(client.getInstructions()).toContain("KINDERGARTEN_API_KEY");
   });
 
   it("tools/list matches registry (empty in M1)", async () => {

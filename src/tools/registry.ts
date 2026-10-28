@@ -6,6 +6,7 @@ import { checkRecallTool } from "./check-recall.js";
 import { findBenefitsTool } from "./find-benefits.js";
 import { findCheckupClinicTool } from "./find-checkup-clinic.js";
 import { findDaycareTool } from "./find-daycare.js";
+import { findKindergartenTool } from "./find-kindergarten.js";
 import { findNightPediatricTool } from "./find-night-pediatric.js";
 import { findVaccinationClinicTool } from "./find-vaccination-clinic.js";
 import { getLeaveArticleTool } from "./get-leave-article.js";
@@ -42,4 +43,5 @@ export const allTools: readonly ToolDef[] = [
   findDaycareTool,
   findVaccinationClinicTool,
   findCheckupClinicTool,
+  findKindergartenTool,
 ];

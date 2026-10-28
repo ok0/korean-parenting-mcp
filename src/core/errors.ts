@@ -58,7 +58,7 @@ export const KEY_GUIDE: Record<
       "인증키는 담당자 승인 후 발급되므로 승인까지 기다려야 할 수 있습니다.",
       "발급된 인증키를 KINDERGARTEN_API_KEY에 앞뒤 공백 없이 설정하고 MCP 클라이언트를 재시작합니다.",
     ],
-    tools: [],
+    tools: ["find_kindergarten"],
   },
   LAW_OC: {
     env: KEY_ENV.LAW_OC,

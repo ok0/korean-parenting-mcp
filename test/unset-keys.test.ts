@@ -7,6 +7,7 @@ import { checkRecallTool } from "../src/tools/check-recall.js";
 import { findBenefitsTool } from "../src/tools/find-benefits.js";
 import { findCheckupClinicTool } from "../src/tools/find-checkup-clinic.js";
 import { findDaycareTool } from "../src/tools/find-daycare.js";
+import { findKindergartenTool } from "../src/tools/find-kindergarten.js";
 import { findNightPediatricTool } from "../src/tools/find-night-pediatric.js";
 import { findVaccinationClinicTool } from "../src/tools/find-vaccination-clinic.js";
 import { getLeaveArticleTool } from "../src/tools/get-leave-article.js";
@@ -62,6 +63,12 @@ describe("unset keys", () => {
     expect(recallText).toContain("SAFETYKOREA_AUTH_KEY");
     expect(recallText).toContain("설정되지 않았습니다");
 
+    const kindergarten = await runTool(findKindergartenTool, { region: "성동구" }, ctx);
+    expect(kindergarten.isError).toBe(true);
+    const kindergartenText = kindergarten.content[0]!.text;
+    expect(kindergartenText).toContain("KINDERGARTEN_API_KEY");
+    expect(kindergartenText).toContain("설정되지 않았습니다");
+
     const daycare = await runTool(findDaycareTool, { region: "성동구" }, ctx);
     expect(daycare.isError).toBeFalsy();
 
@@ -85,6 +92,10 @@ describe("unset keys", () => {
 
   it("SAFETYKOREA guide lists check_recall", () => {
     expect(KEY_GUIDE.SAFETYKOREA.tools).toContain("check_recall");
+  });
+
+  it("KINDERGARTEN guide lists find_kindergarten", () => {
+    expect(KEY_GUIDE.KINDERGARTEN.tools).toEqual(["find_kindergarten"]);
   });
 
   it("no key guide lists find_daycare", () => {

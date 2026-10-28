@@ -66,6 +66,31 @@ describe("tool meta", () => {
       expect(clinic.annotations.idempotentHint).toBe(true);
       expect(clinic.requiredKeys).toBeUndefined();
     }
+    const kindergarten = allTools.find((t) => t.name === "find_kindergarten")!;
+    expect(kindergarten.annotations.openWorldHint).toBe(true);
+    expect(kindergarten.annotations.idempotentHint).toBe(true);
+    expect(kindergarten.requiredKeys).toEqual(["KINDERGARTEN"]);
+  });
+
+  it("checker rejects kindergarten portal claims", () => {
+    const claim = defineTool({
+      name: "fx_kg",
+      title: "테스트",
+      description: "유치원알리미 연동 조회",
+      schema: z.object({ q: keywordField(doc) }),
+      annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
+      handler: async () => ({ body: "" }),
+    });
+    expect(checkToolMeta(claim)).toContain("fx_kg: 공식 서비스 오해 표현");
+    const unofficial = defineTool({
+      name: "fx_kg",
+      title: "테스트",
+      description: "유치원알리미 공시 정보를 요약하는 비공식 참고 도구",
+      schema: z.object({ q: keywordField(doc) }),
+      annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
+      handler: async () => ({ body: "" }),
+    });
+    expect(checkToolMeta(unofficial).some((p) => p.includes("공식 서비스 오해 표현"))).toBe(false);
   });
 
   it("checker rejects portal-name wording", () => {
