@@ -1,0 +1,27 @@
+{
+  "_fixture_note": "SafetyKorea Open API 사용설명서 v2.1(2026-10-16) 예시 기반 값. 실호출 녹화본 아님(유효 JSON으로 정리, 일부 필드 생략). M14 실응답으로 교체",
+  "resultCode": "2000",
+  "resultMsg": "Success",
+  "resultData": [
+    {
+      "overseasUid": "10021272",
+      "publishDate": "20260519",
+      "productName": "알칼리·망간 전지(건전지)",
+      "modelName": "36개 AAA 배터리",
+      "brandName": "-",
+      "makingCntryName": "국외 > 아시아지역 > 중국",
+      "harmDscr": "기준: 카드뮴 10 mg/kg\n시험결과: 카드뮴 71 mg/kg",
+      "accidentCaseDscr": "카드뮴에 노출될 경우 신장, 호흡기계 부작용 유발 가능"
+    },
+    {
+      "overseasUid": "10021271",
+      "publishDate": "20260519",
+      "productName": "알칼리·망간 전지(건전지)",
+      "modelName": "AG7 알카라인 코인 셀",
+      "brandName": "Koonenda",
+      "makingCntryName": "국외 > 아시아지역 > 중국",
+      "harmDscr": "기준: 수은 1 mg/kg\n시험결과: 수은 1845.8 mg/kg",
+      "accidentCaseDscr": "수은에 노출될 경우 신경세포 마비 등 증상 초래 가능"
+    }
+  ]
+}

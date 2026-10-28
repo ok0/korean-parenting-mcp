@@ -1,0 +1,43 @@
+{
+  "_fixture_note": "SafetyKorea Open API 사용설명서 v2.1(2026-10-16) 예시 기반 값. 실호출 녹화본 아님(유효 JSON으로 정리, 일부 필드 생략). M14 실응답으로 교체",
+  "resultCode": "2000",
+  "resultMsg": "Success",
+  "resultData": [
+    {
+      "fRecallUid": "42",
+      "recallModelName": "Acrobats1",
+      "recallModelCnt": "1",
+      "recallProductName": "뮤직박스완구",
+      "recallBrandName": "Trousselier",
+      "makerName": "회사정보없음",
+      "makingCntryName": "국외 > 아시아지역 > 중국",
+      "recallTypeName": "자발적리콜",
+      "recallPblshCntryName": "국외 > 유럽지역 > 프랑스",
+      "recallPblshOrgnName": "유럽 집행위원회",
+      "recallMeans": "기타",
+      "violateDscr": "작은 부품이 떨어질 수 있어 유아 질식 위험",
+      "publishActionDscr": "시장에서 자발적 회수",
+      "recallUrl": null,
+      "publishDate": "20120427",
+      "signDttm": "20120611"
+    },
+    {
+      "fRecallUid": "2518",
+      "recallModelName": "Ref. 25312",
+      "recallModelCnt": "1",
+      "recallProductName": "딸랑이 박스",
+      "recallBrandName": "Lebao-Mlthogar",
+      "makerName": "회사정보없음",
+      "makingCntryName": "국외 > 아시아지역 > 중국",
+      "recallTypeName": "명령에따른리콜",
+      "recallPblshCntryName": "국외 > 유럽지역 > 스페인",
+      "recallPblshOrgnName": "유럽 집행위원회",
+      "recallMeans": "수거",
+      "violateDscr": "작은 부품이 떨어질 수 있어 유아 질식 위험",
+      "publishActionDscr": "세관에 의해 수입 거절",
+      "recallUrl": null,
+      "publishDate": "20120203",
+      "signDttm": "20121113"
+    }
+  ]
+}

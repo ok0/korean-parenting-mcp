@@ -1,0 +1,45 @@
+{
+  "_fixture_note": "SafetyKorea Open API 사용설명서 v2.1(2026-10-16) 예시 기반 값. 실호출 녹화본 아님(유효 JSON으로 정리, 일부 필드 생략). M14 실응답으로 교체",
+  "resultCode": "2000",
+  "resultMsg": "Success",
+  "resultData": [
+    {
+      "certUid": 1231231,
+      "certOrganName": "한국건설생활시험연구원(KCL)",
+      "certNum": "CB123A123-1234",
+      "certState": "적합",
+      "certDiv": "어린이제품 특별법 대상 > 안전확인 대상",
+      "certDate": "20190717",
+      "firstCertNum": "CB123A123-1234",
+      "productName": "유아용섬유제품",
+      "brandName": null,
+      "modelName": "아동배낭",
+      "categoryName": null,
+      "importDiv": "제조",
+      "makerName": "아이테스트",
+      "makerCntryName": "한국",
+      "importerName": "아이테스트",
+      "remark": null,
+      "signDate": "20190717"
+    },
+    {
+      "certUid": 1231232,
+      "certOrganName": "한국의류시험연구원(KATRI)",
+      "certNum": "CB123A123-1232",
+      "certState": "적합",
+      "certDiv": "어린이제품 특별법 대상 > 안전확인 대상",
+      "certDate": "20190717",
+      "firstCertNum": "CB123A123-1232",
+      "productName": "유아용 테스트",
+      "brandName": null,
+      "modelName": "방수테스트",
+      "categoryName": "유아용 섬유제품 > 신생아용품 > 기저귀매트",
+      "importDiv": "제조",
+      "makerName": "아이테스트",
+      "makerCntryName": "한국",
+      "importerName": "아이테스트",
+      "remark": null,
+      "signDate": "20190717"
+    }
+  ]
+}

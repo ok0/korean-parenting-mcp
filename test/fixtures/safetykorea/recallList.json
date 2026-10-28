@@ -1,0 +1,43 @@
+{
+  "_fixture_note": "SafetyKorea Open API 사용설명서 v2.1(2026-10-16) 예시 기반 값. 실호출 녹화본 아님(유효 JSON으로 정리, 일부 필드 생략). M14 실응답으로 교체",
+  "resultCode": "2000",
+  "resultMsg": "Success",
+  "resultData": [
+    {
+      "recallUid": "3802",
+      "recallProductName": "가정용섬유제품(책가방)",
+      "recallBrandName": "JJ",
+      "recallModelName": "HKAK31101S-00",
+      "recallModelCnt": 0,
+      "recallTypeName": "명령에따른리콜",
+      "categoryName": null,
+      "certNum": "공급자적합성",
+      "productItemName": null,
+      "recallCmpnyDivName": "수입",
+      "recallInqryTel": "080-023-0456",
+      "recallCmpnyName": "(주)이랜드월드패션사업부",
+      "makingCntryName": "국외 > 아시아지역 > 중국",
+      "publishDate": "20130418",
+      "publishActionDscr": "수선 및 교환, 환불(소비자 요구에 따라) / 미판매 제품 전량 수거",
+      "recallFiles": null
+    },
+    {
+      "recallUid": "3737",
+      "recallProductName": "가정용섬유제품(책가방)",
+      "recallBrandName": "우고가방",
+      "recallModelName": "T3S-T-1-503",
+      "recallModelCnt": 0,
+      "recallTypeName": "명령에따른리콜",
+      "categoryName": null,
+      "certNum": "공급자적합성",
+      "productItemName": null,
+      "recallCmpnyDivName": "수입",
+      "recallInqryTel": "02-929-5622",
+      "recallCmpnyName": "참존어패럴",
+      "makingCntryName": "국외 > 아시아지역 > 중국",
+      "publishDate": "20130418",
+      "publishActionDscr": "매장내 상품 전량 반품조치 판매된 상품 고객환불실시",
+      "recallFiles": null
+    }
+  ]
+}
