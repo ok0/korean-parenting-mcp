@@ -2,11 +2,20 @@ import { addMonthsClamp, compare, daysBetween, type CivilDate } from "../date/ci
 import { checkupRule } from "./rules/checkups.js";
 import { benefitDeadlineRule } from "./rules/benefit-deadlines.js";
 import { registrationRule } from "./rules/registration.js";
-import type { Status, TimelineInput, TimelineItem, TimelineResult, TimelineRule } from "./types.js";
+import type {
+  Status,
+  TimelineInput,
+  TimelineItem,
+  TimelineNoticeRule,
+  TimelineResult,
+  TimelineRule,
+} from "./types.js";
 
 export const IMMINENT_DAYS = 14;
 
 export const RULES: readonly TimelineRule[] = [registrationRule, benefitDeadlineRule, checkupRule];
+
+export const NOTICE_RULES: readonly TimelineNoticeRule[] = [];
 
 export function statusOf(start: CivilDate, end: CivilDate | undefined, ref: CivilDate): Status {
   const e = end ?? start;
@@ -24,7 +33,11 @@ export function compareItems(a: TimelineItem, b: TimelineItem): number {
   );
 }
 
-export function buildTimeline(input: TimelineInput, rules: readonly TimelineRule[] = RULES): TimelineResult {
+export function buildTimeline(
+  input: TimelineInput,
+  rules: readonly TimelineRule[] = RULES,
+  noticeRules: readonly TimelineNoticeRule[] = NOTICE_RULES,
+): TimelineResult {
   const all = rules
     .flatMap((r) => r(input))
     .map((it) => ({ ...it, status: statusOf(it.start, it.end, input.referenceDate) }))
@@ -44,5 +57,6 @@ export function buildTimeline(input: TimelineInput, rules: readonly TimelineRule
   }
   const basisIds = [...new Set(all.flatMap((it) => it.provenance.basis_ids))];
   const warnings = [...new Set(input.holidays.notes)];
-  return { items, hiddenPast, hiddenFuture, warnings, basisIds };
+  const notices = [...new Set(noticeRules.flatMap((r) => r(input)))];
+  return { items, hiddenPast, hiddenFuture, warnings, basisIds, notices };
 }

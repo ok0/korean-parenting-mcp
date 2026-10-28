@@ -2,11 +2,45 @@ import { describe, expect, it } from "vitest";
 import { parseDate } from "../src/date/civil-date.js";
 import { bundledCalendar, createCalendar } from "../src/date/holiday-calendar.js";
 import { buildTimeline } from "../src/timeline/engine.js";
-import { renderTimeline, type TimelineView } from "../src/timeline/render.js";
-import type { TimelineInput } from "../src/timeline/types.js";
-import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_UNOFFICIAL } from "../src/tools/shared/format.js";
+import { renderItemLine, renderTimeline, type TimelineView } from "../src/timeline/render.js";
+import type { TimelineInput, TimelineItem, TimelineResult } from "../src/timeline/types.js";
+import {
+  DISCLAIMER_MEDICAL_LEGAL,
+  ESTIMATED_NOTE,
+  NOTICE_UNOFFICIAL,
+  NOTICE_VACCINATION_SCOPE,
+} from "../src/tools/shared/format.js";
 
 const HOLIDAY_SOURCE = "번들(생성일 2026-10-28)";
+
+const vac: TimelineItem = {
+  id: "vac-x-1",
+  category: "접종",
+  title: "테스트 백신 1차 (2개월)",
+  nature: "권장",
+  start: parseDate("2026-03-31"),
+  end: parseDate("2026-04-29"),
+  status: "예정",
+  notes: [],
+  provenance: { basis_ids: ["health-checkup-standard"], as_of: "2026-10-28", verified: "partial" },
+};
+
+const view: TimelineView = {
+  birthDate: parseDate("2026-01-31"),
+  referenceDate: parseDate("2026-02-01"),
+  monthsAhead: 12,
+  includePast: false,
+  holidaySource: HOLIDAY_SOURCE,
+};
+
+const res = (items: TimelineItem[], notices: string[] = []): TimelineResult => ({
+  items,
+  hiddenPast: 0,
+  hiddenFuture: 0,
+  warnings: [],
+  basisIds: ["health-checkup-standard"],
+  notices,
+});
 
 function run(
   birth: string,
@@ -70,5 +104,27 @@ describe("timeline render", () => {
   it("warnings appear in footer", () => {
     const footer = run("2026-01-31", "2026-02-01", 156, true, createCalendar({}, ["경고X"])).footer ?? "";
     expect(footer).toContain("주의:\n- 경고X");
+  });
+
+  it("vaccination footer line appears once only when a vaccine item is shown", () => {
+    const out = renderTimeline(res([vac]), view);
+    expect((out.footer ?? "").split(NOTICE_VACCINATION_SCOPE).length - 1).toBe(1);
+    expect(out.body).not.toContain(NOTICE_VACCINATION_SCOPE);
+    expect(renderTimeline(res([{ ...vac, category: "검진" }]), view).footer).not.toContain(NOTICE_VACCINATION_SCOPE);
+    expect(renderTimeline(res([]), view).footer).not.toContain(NOTICE_VACCINATION_SCOPE);
+  });
+
+  it("notices render after summary", () => {
+    const body = renderTimeline(res([], ["안내X"]), view).body;
+    expect(body).toContain("안내: 안내X");
+    expect(body).toContain("표시할 항목이 없습니다");
+    const idx = body.indexOf("안내: 안내X");
+    expect(idx).toBeGreaterThan(body.indexOf("상태 요약:"));
+    expect(idx).toBeLessThan(body.indexOf("표시할 항목이 없습니다"));
+  });
+
+  it("estimated items carry the estimate note", () => {
+    expect(renderItemLine({ ...vac, estimated: true })).toContain(ESTIMATED_NOTE);
+    expect(renderItemLine(vac)).not.toContain(ESTIMATED_NOTE);
   });
 });

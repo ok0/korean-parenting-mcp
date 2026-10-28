@@ -4,7 +4,11 @@ export const DISCLAIMER_MEDICAL_LEGAL = "의료·법률 면책: 이 결과는 �
 
 export const NOTICE_UNOFFICIAL = "비공식 도구 고지: 이 서버는 정부·공공기관의 공식 서비스가 아닙니다. 최종 확인은 공식 기관(정부24, 복지로, 국민건강보험공단, 관할 주민센터·보건소)에서 하세요.";
 
-export const NOTICE_NO_REVISION_CHECK = "개정 여부 자동 확인은 아직 제공하지 않습니다. 아래 원문 링크에서 최신 개정 여부를 확인하세요.";
+export const NOTICE_VACCINATION_SCOPE = "예방접종 안내 범위: 최소 접종 간격·지연접종(따라잡기)·제품별 세부는 반영하지 않았습니다. 국가예방접종 지침 또는 보건소·의료기관에서 확인하세요.";
+
+export const ESTIMATED_NOTE = "추정: 출산예정일 기준으로 계산한 날짜이며 실제 출생일·진료 일정에 따라 달라집니다.";
+
+export const NOTICE_NO_REVISION_CHECK ="개정 여부 자동 확인은 아직 제공하지 않습니다. 아래 원문 링크에서 최신 개정 여부를 확인하세요.";
 
 export const VERIFIED_LABEL = { full: "검증됨", partial: "부분 검증", false: "미검증" } as const satisfies Record<"full" | "partial" | "false", string>;
 

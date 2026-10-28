@@ -23,6 +23,7 @@ export interface TimelineItem {
   end?: CivilDate;
   status?: Status;
   notes: string[];
+  estimated?: boolean;
   provenance: Provenance;
 }
 
@@ -32,6 +33,9 @@ export interface TimelineResult {
   hiddenFuture: number;
   warnings: string[];
   basisIds: string[];
+  notices: string[];
 }
 
 export type TimelineRule = (input: TimelineInput) => TimelineItem[];
+
+export type TimelineNoticeRule = (input: TimelineInput) => string[];

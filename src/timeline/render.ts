@@ -3,7 +3,9 @@ import { resolveBasis } from "../data-store/load.js";
 import type { ToolOutput } from "../tools/registry.js";
 import {
   DISCLAIMER_MEDICAL_LEGAL,
+  ESTIMATED_NOTE,
   NOTICE_UNOFFICIAL,
+  NOTICE_VACCINATION_SCOPE,
   basisFooter,
   composeFooter,
   verifiedText,
@@ -28,7 +30,8 @@ export function periodText(item: TimelineItem): string {
 
 export function renderItemLine(item: TimelineItem): string {
   const head = `- [${item.status}] ${periodText(item)} | ${item.title} | ${item.nature} | 출처 ${item.provenance.basis_ids.join(", ")} | 기준일 ${item.provenance.as_of} | ${verifiedText(item.provenance.verified)}`;
-  return [head, ...item.notes.map((note) => `\n  · ${note}`)].join("");
+  const notes = item.estimated === true ? [...item.notes, ESTIMATED_NOTE] : item.notes;
+  return [head, ...notes.map((note) => `\n  · ${note}`)].join("");
 }
 
 export function renderTimeline(result: TimelineResult, view: TimelineView): ToolOutput {
@@ -40,6 +43,7 @@ export function renderTimeline(result: TimelineResult, view: TimelineView): Tool
     `육아 타임라인 — 출생일 ${formatDate(view.birthDate)}, 기준일 ${formatDate(view.referenceDate)}`,
     `표시 범위: 시작일이 ${formatDate(horizon)} 이전인 항목(months_ahead=${view.monthsAhead}), 지난 항목 ${view.includePast ? "포함" : "제외"}`,
     summary,
+    ...result.notices.map((n) => `안내: ${n}`),
     "",
   ];
   if (result.items.length === 0) {
@@ -58,6 +62,7 @@ export function renderTimeline(result: TimelineResult, view: TimelineView): Tool
     basisFooter(resolveBasis(result.basisIds)),
     `공휴일: ${view.holidaySource}`,
     result.warnings.length > 0 ? ["주의:", ...result.warnings.map((w) => `- ${w}`)].join("\n") : undefined,
+    result.items.some((it) => it.category === "접종") ? NOTICE_VACCINATION_SCOPE : undefined,
     DISCLAIMER_MEDICAL_LEGAL,
     NOTICE_UNOFFICIAL,
   ]);

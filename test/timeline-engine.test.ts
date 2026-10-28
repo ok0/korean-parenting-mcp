@@ -97,6 +97,11 @@ describe("buildTimeline", () => {
     expect(warned.warnings).toEqual(["n1", "n2"]);
   });
 
+  it("notice rules are applied and deduped", () => {
+    expect(buildTimeline(input(), fixed([]), [() => ["n1", "n1"], () => ["n2"]]).notices).toEqual(["n1", "n2"]);
+    expect(buildTimeline(input(), fixed([]), []).notices).toEqual([]);
+  });
+
   it("default rules are deterministic", () => {
     const inp = input({
       birthDate: parseDate("2026-01-31"),
