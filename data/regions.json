@@ -1,0 +1,4535 @@
+{
+  "as_of": "2026-10-28",
+  "verified": "partial",
+  "note": "현존 시군구는 법정동 파일의 시군구 행(읍면동·리 공란)에서 생성. verified partial=법정동 파일과 유치원알리미 코드표 일치, false=코드표에 없어 대조 불가. nemc_q0/q1은 정식 명칭이며 NEMC 수용 여부는 실호출 확인 전. 5자리 코드=법정동코드 앞 5자리(정황 근거, research/region-codes.md C3). 광주광역시·전라남도는 전남광주통합특별시 별칭으로만 남김.",
+  "sources": [
+    {
+      "role": "primary",
+      "dataset": "국토교통부_전국 법정동_20260630",
+      "provider": "국토교통부",
+      "url": "https://www.data.go.kr/data/15063424/fileData.do",
+      "license": "이용허락범위 제한 없음",
+      "as_of": "2026-06-30",
+      "retrieved": "2026-10-28",
+      "sha256": "e5657d4b53a16f72e42e9c0d91e84ff2d647e70dc56b9408da6fd057d0da45c3"
+    },
+    {
+      "role": "cross-check",
+      "dataset": "유치원알리미 시도시군구코드",
+      "provider": "교육부 유치원알리미",
+      "url": "https://e-childschoolinfo.moe.go.kr/openApi/sidoSigunguCode.do",
+      "license": "공식 사이트 공개 코드표(코드 대조와 codes.kindergarten에만 사용)",
+      "as_of": "2026-10-28",
+      "retrieved": "2026-10-28",
+      "sha256": "94bb20b042c7b4bde170b8264c7116076e07dc98f8d97132841bc8f6c91e8925"
+    }
+  ],
+  "sido": [
+    {
+      "code": "11",
+      "name": "서울특별시",
+      "aliases": [
+        "서울",
+        "서울시"
+      ],
+      "nemc_q0": "서울특별시",
+      "kindergarten_code": "11"
+    },
+    {
+      "code": "12",
+      "name": "전남광주통합특별시",
+      "aliases": [
+        "전남광주",
+        "전남광주특별시",
+        "광주",
+        "광주광역시",
+        "전라남도",
+        "전남"
+      ],
+      "nemc_q0": "전남광주통합특별시",
+      "kindergarten_code": "12"
+    },
+    {
+      "code": "26",
+      "name": "부산광역시",
+      "aliases": [
+        "부산",
+        "부산시"
+      ],
+      "nemc_q0": "부산광역시",
+      "kindergarten_code": "26"
+    },
+    {
+      "code": "27",
+      "name": "대구광역시",
+      "aliases": [
+        "대구",
+        "대구시"
+      ],
+      "nemc_q0": "대구광역시",
+      "kindergarten_code": "27"
+    },
+    {
+      "code": "28",
+      "name": "인천광역시",
+      "aliases": [
+        "인천",
+        "인천시"
+      ],
+      "nemc_q0": "인천광역시",
+      "kindergarten_code": "28"
+    },
+    {
+      "code": "30",
+      "name": "대전광역시",
+      "aliases": [
+        "대전",
+        "대전시"
+      ],
+      "nemc_q0": "대전광역시",
+      "kindergarten_code": "30"
+    },
+    {
+      "code": "31",
+      "name": "울산광역시",
+      "aliases": [
+        "울산",
+        "울산시"
+      ],
+      "nemc_q0": "울산광역시",
+      "kindergarten_code": "31"
+    },
+    {
+      "code": "36",
+      "name": "세종특별자치시",
+      "aliases": [
+        "세종",
+        "세종특별시"
+      ],
+      "nemc_q0": "세종특별자치시",
+      "kindergarten_code": "36"
+    },
+    {
+      "code": "41",
+      "name": "경기도",
+      "aliases": [
+        "경기"
+      ],
+      "nemc_q0": "경기도",
+      "kindergarten_code": "41"
+    },
+    {
+      "code": "43",
+      "name": "충청북도",
+      "aliases": [
+        "충북"
+      ],
+      "nemc_q0": "충청북도",
+      "kindergarten_code": "43"
+    },
+    {
+      "code": "44",
+      "name": "충청남도",
+      "aliases": [
+        "충남"
+      ],
+      "nemc_q0": "충청남도",
+      "kindergarten_code": "44"
+    },
+    {
+      "code": "47",
+      "name": "경상북도",
+      "aliases": [
+        "경북"
+      ],
+      "nemc_q0": "경상북도",
+      "kindergarten_code": "47"
+    },
+    {
+      "code": "48",
+      "name": "경상남도",
+      "aliases": [
+        "경남"
+      ],
+      "nemc_q0": "경상남도",
+      "kindergarten_code": "48"
+    },
+    {
+      "code": "50",
+      "name": "제주특별자치도",
+      "aliases": [
+        "제주",
+        "제주도"
+      ],
+      "nemc_q0": "제주특별자치도",
+      "kindergarten_code": "50"
+    },
+    {
+      "code": "51",
+      "name": "강원특별자치도",
+      "aliases": [
+        "강원",
+        "강원도"
+      ],
+      "nemc_q0": "강원특별자치도",
+      "kindergarten_code": "51"
+    },
+    {
+      "code": "52",
+      "name": "전북특별자치도",
+      "aliases": [
+        "전북",
+        "전라북도"
+      ],
+      "nemc_q0": "전북특별자치도",
+      "kindergarten_code": "52"
+    }
+  ],
+  "sigungu": [
+    {
+      "code": "11110",
+      "sido_code": "11",
+      "name": "종로구",
+      "aliases": [],
+      "nemc_q1": "종로구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11110"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11140",
+      "sido_code": "11",
+      "name": "중구",
+      "aliases": [],
+      "nemc_q1": "중구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11140"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11170",
+      "sido_code": "11",
+      "name": "용산구",
+      "aliases": [],
+      "nemc_q1": "용산구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11170"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11200",
+      "sido_code": "11",
+      "name": "성동구",
+      "aliases": [],
+      "nemc_q1": "성동구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11200"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11215",
+      "sido_code": "11",
+      "name": "광진구",
+      "aliases": [],
+      "nemc_q1": "광진구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11215"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-03-01"
+    },
+    {
+      "code": "11230",
+      "sido_code": "11",
+      "name": "동대문구",
+      "aliases": [],
+      "nemc_q1": "동대문구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11230"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11260",
+      "sido_code": "11",
+      "name": "중랑구",
+      "aliases": [],
+      "nemc_q1": "중랑구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11260"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11290",
+      "sido_code": "11",
+      "name": "성북구",
+      "aliases": [],
+      "nemc_q1": "성북구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11290"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11305",
+      "sido_code": "11",
+      "name": "강북구",
+      "aliases": [],
+      "nemc_q1": "강북구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11305"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-03-01"
+    },
+    {
+      "code": "11320",
+      "sido_code": "11",
+      "name": "도봉구",
+      "aliases": [],
+      "nemc_q1": "도봉구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11320"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11350",
+      "sido_code": "11",
+      "name": "노원구",
+      "aliases": [],
+      "nemc_q1": "노원구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11350"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11380",
+      "sido_code": "11",
+      "name": "은평구",
+      "aliases": [],
+      "nemc_q1": "은평구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11380"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11410",
+      "sido_code": "11",
+      "name": "서대문구",
+      "aliases": [],
+      "nemc_q1": "서대문구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11410"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11440",
+      "sido_code": "11",
+      "name": "마포구",
+      "aliases": [],
+      "nemc_q1": "마포구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11440"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11470",
+      "sido_code": "11",
+      "name": "양천구",
+      "aliases": [],
+      "nemc_q1": "양천구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11470"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11500",
+      "sido_code": "11",
+      "name": "강서구",
+      "aliases": [],
+      "nemc_q1": "강서구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11500"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11530",
+      "sido_code": "11",
+      "name": "구로구",
+      "aliases": [],
+      "nemc_q1": "구로구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11530"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11545",
+      "sido_code": "11",
+      "name": "금천구",
+      "aliases": [],
+      "nemc_q1": "금천구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11545"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-03-01"
+    },
+    {
+      "code": "11560",
+      "sido_code": "11",
+      "name": "영등포구",
+      "aliases": [],
+      "nemc_q1": "영등포구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11560"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11590",
+      "sido_code": "11",
+      "name": "동작구",
+      "aliases": [],
+      "nemc_q1": "동작구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11590"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11620",
+      "sido_code": "11",
+      "name": "관악구",
+      "aliases": [],
+      "nemc_q1": "관악구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11620"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11650",
+      "sido_code": "11",
+      "name": "서초구",
+      "aliases": [],
+      "nemc_q1": "서초구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11650"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11680",
+      "sido_code": "11",
+      "name": "강남구",
+      "aliases": [],
+      "nemc_q1": "강남구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11680"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11710",
+      "sido_code": "11",
+      "name": "송파구",
+      "aliases": [],
+      "nemc_q1": "송파구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11710"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "11740",
+      "sido_code": "11",
+      "name": "강동구",
+      "aliases": [],
+      "nemc_q1": "강동구",
+      "codes": {
+        "kindergarten": {
+          "sido": "11",
+          "sgg": "11740"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "12110",
+      "sido_code": "12",
+      "name": "목포시",
+      "aliases": [
+        "목포"
+      ],
+      "nemc_q1": "목포시",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12110"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12130",
+      "sido_code": "12",
+      "name": "여수시",
+      "aliases": [
+        "여수"
+      ],
+      "nemc_q1": "여수시",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12130"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12150",
+      "sido_code": "12",
+      "name": "순천시",
+      "aliases": [
+        "순천"
+      ],
+      "nemc_q1": "순천시",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12150"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12170",
+      "sido_code": "12",
+      "name": "나주시",
+      "aliases": [
+        "나주"
+      ],
+      "nemc_q1": "나주시",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12170"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12190",
+      "sido_code": "12",
+      "name": "광양시",
+      "aliases": [
+        "광양"
+      ],
+      "nemc_q1": "광양시",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12190"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12210",
+      "sido_code": "12",
+      "name": "동구",
+      "aliases": [],
+      "nemc_q1": "동구",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12210"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12240",
+      "sido_code": "12",
+      "name": "서구",
+      "aliases": [],
+      "nemc_q1": "서구",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12240"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12270",
+      "sido_code": "12",
+      "name": "남구",
+      "aliases": [],
+      "nemc_q1": "남구",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12270"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12300",
+      "sido_code": "12",
+      "name": "북구",
+      "aliases": [],
+      "nemc_q1": "북구",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12300"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12330",
+      "sido_code": "12",
+      "name": "광산구",
+      "aliases": [],
+      "nemc_q1": "광산구",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12330"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12710",
+      "sido_code": "12",
+      "name": "담양군",
+      "aliases": [],
+      "nemc_q1": "담양군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12710"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12720",
+      "sido_code": "12",
+      "name": "곡성군",
+      "aliases": [],
+      "nemc_q1": "곡성군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12720"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12730",
+      "sido_code": "12",
+      "name": "구례군",
+      "aliases": [],
+      "nemc_q1": "구례군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12730"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12740",
+      "sido_code": "12",
+      "name": "고흥군",
+      "aliases": [],
+      "nemc_q1": "고흥군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12740"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12750",
+      "sido_code": "12",
+      "name": "보성군",
+      "aliases": [],
+      "nemc_q1": "보성군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12750"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12760",
+      "sido_code": "12",
+      "name": "화순군",
+      "aliases": [],
+      "nemc_q1": "화순군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12760"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12770",
+      "sido_code": "12",
+      "name": "장흥군",
+      "aliases": [],
+      "nemc_q1": "장흥군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12770"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12780",
+      "sido_code": "12",
+      "name": "강진군",
+      "aliases": [],
+      "nemc_q1": "강진군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12780"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12790",
+      "sido_code": "12",
+      "name": "해남군",
+      "aliases": [],
+      "nemc_q1": "해남군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12790"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12800",
+      "sido_code": "12",
+      "name": "영암군",
+      "aliases": [],
+      "nemc_q1": "영암군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12800"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12810",
+      "sido_code": "12",
+      "name": "무안군",
+      "aliases": [],
+      "nemc_q1": "무안군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12810"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12820",
+      "sido_code": "12",
+      "name": "함평군",
+      "aliases": [],
+      "nemc_q1": "함평군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12820"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12830",
+      "sido_code": "12",
+      "name": "영광군",
+      "aliases": [],
+      "nemc_q1": "영광군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12830"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12840",
+      "sido_code": "12",
+      "name": "장성군",
+      "aliases": [],
+      "nemc_q1": "장성군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12840"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12850",
+      "sido_code": "12",
+      "name": "완도군",
+      "aliases": [],
+      "nemc_q1": "완도군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12850"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12860",
+      "sido_code": "12",
+      "name": "진도군",
+      "aliases": [],
+      "nemc_q1": "진도군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12860"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "12870",
+      "sido_code": "12",
+      "name": "신안군",
+      "aliases": [],
+      "nemc_q1": "신안군",
+      "codes": {
+        "kindergarten": {
+          "sido": "12",
+          "sgg": "12870"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "26110",
+      "sido_code": "26",
+      "name": "중구",
+      "aliases": [],
+      "nemc_q1": "중구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26110"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "26140",
+      "sido_code": "26",
+      "name": "서구",
+      "aliases": [],
+      "nemc_q1": "서구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26140"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "26170",
+      "sido_code": "26",
+      "name": "동구",
+      "aliases": [],
+      "nemc_q1": "동구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26170"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "26200",
+      "sido_code": "26",
+      "name": "영도구",
+      "aliases": [],
+      "nemc_q1": "영도구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26200"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "26230",
+      "sido_code": "26",
+      "name": "부산진구",
+      "aliases": [],
+      "nemc_q1": "부산진구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26230"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "26260",
+      "sido_code": "26",
+      "name": "동래구",
+      "aliases": [],
+      "nemc_q1": "동래구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26260"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "26290",
+      "sido_code": "26",
+      "name": "남구",
+      "aliases": [],
+      "nemc_q1": "남구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26290"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "26320",
+      "sido_code": "26",
+      "name": "북구",
+      "aliases": [],
+      "nemc_q1": "북구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26320"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "26350",
+      "sido_code": "26",
+      "name": "해운대구",
+      "aliases": [],
+      "nemc_q1": "해운대구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26350"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "26380",
+      "sido_code": "26",
+      "name": "사하구",
+      "aliases": [],
+      "nemc_q1": "사하구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26380"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "26410",
+      "sido_code": "26",
+      "name": "금정구",
+      "aliases": [],
+      "nemc_q1": "금정구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26410"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "26440",
+      "sido_code": "26",
+      "name": "강서구",
+      "aliases": [],
+      "nemc_q1": "강서구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26440"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "26470",
+      "sido_code": "26",
+      "name": "연제구",
+      "aliases": [],
+      "nemc_q1": "연제구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26470"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-03-01"
+    },
+    {
+      "code": "26500",
+      "sido_code": "26",
+      "name": "수영구",
+      "aliases": [],
+      "nemc_q1": "수영구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26500"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-03-01"
+    },
+    {
+      "code": "26530",
+      "sido_code": "26",
+      "name": "사상구",
+      "aliases": [],
+      "nemc_q1": "사상구",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26530"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-03-01"
+    },
+    {
+      "code": "26710",
+      "sido_code": "26",
+      "name": "기장군",
+      "aliases": [],
+      "nemc_q1": "기장군",
+      "codes": {
+        "kindergarten": {
+          "sido": "26",
+          "sgg": "26710"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-03-01"
+    },
+    {
+      "code": "27110",
+      "sido_code": "27",
+      "name": "중구",
+      "aliases": [],
+      "nemc_q1": "중구",
+      "codes": {
+        "kindergarten": {
+          "sido": "27",
+          "sgg": "27110"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "27140",
+      "sido_code": "27",
+      "name": "동구",
+      "aliases": [],
+      "nemc_q1": "동구",
+      "codes": {
+        "kindergarten": {
+          "sido": "27",
+          "sgg": "27140"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "27170",
+      "sido_code": "27",
+      "name": "서구",
+      "aliases": [],
+      "nemc_q1": "서구",
+      "codes": {
+        "kindergarten": {
+          "sido": "27",
+          "sgg": "27170"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "27200",
+      "sido_code": "27",
+      "name": "남구",
+      "aliases": [],
+      "nemc_q1": "남구",
+      "codes": {
+        "kindergarten": {
+          "sido": "27",
+          "sgg": "27200"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "27230",
+      "sido_code": "27",
+      "name": "북구",
+      "aliases": [],
+      "nemc_q1": "북구",
+      "codes": {
+        "kindergarten": {
+          "sido": "27",
+          "sgg": "27230"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "27260",
+      "sido_code": "27",
+      "name": "수성구",
+      "aliases": [],
+      "nemc_q1": "수성구",
+      "codes": {
+        "kindergarten": {
+          "sido": "27",
+          "sgg": "27260"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "27290",
+      "sido_code": "27",
+      "name": "달서구",
+      "aliases": [],
+      "nemc_q1": "달서구",
+      "codes": {
+        "kindergarten": {
+          "sido": "27",
+          "sgg": "27290"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "27710",
+      "sido_code": "27",
+      "name": "달성군",
+      "aliases": [],
+      "nemc_q1": "달성군",
+      "codes": {
+        "kindergarten": {
+          "sido": "27",
+          "sgg": "27710"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-03-01"
+    },
+    {
+      "code": "27720",
+      "sido_code": "27",
+      "name": "군위군",
+      "aliases": [],
+      "nemc_q1": "군위군",
+      "codes": {
+        "kindergarten": {
+          "sido": "27",
+          "sgg": "27720"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-30"
+    },
+    {
+      "code": "28125",
+      "sido_code": "28",
+      "name": "제물포구",
+      "aliases": [],
+      "nemc_q1": "제물포구",
+      "codes": {
+        "kindergarten": {
+          "sido": "28",
+          "sgg": "28125"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "28155",
+      "sido_code": "28",
+      "name": "영종구",
+      "aliases": [],
+      "nemc_q1": "영종구",
+      "codes": {
+        "kindergarten": {
+          "sido": "28",
+          "sgg": "28155"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "28177",
+      "sido_code": "28",
+      "name": "미추홀구",
+      "aliases": [],
+      "nemc_q1": "미추홀구",
+      "codes": {
+        "kindergarten": {
+          "sido": "28",
+          "sgg": "28177"
+        }
+      },
+      "verified": "partial",
+      "created": "2018-07-01"
+    },
+    {
+      "code": "28185",
+      "sido_code": "28",
+      "name": "연수구",
+      "aliases": [],
+      "nemc_q1": "연수구",
+      "codes": {
+        "kindergarten": {
+          "sido": "28",
+          "sgg": "28185"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-03-01"
+    },
+    {
+      "code": "28200",
+      "sido_code": "28",
+      "name": "남동구",
+      "aliases": [],
+      "nemc_q1": "남동구",
+      "codes": {
+        "kindergarten": {
+          "sido": "28",
+          "sgg": "28200"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "28237",
+      "sido_code": "28",
+      "name": "부평구",
+      "aliases": [],
+      "nemc_q1": "부평구",
+      "codes": {
+        "kindergarten": {
+          "sido": "28",
+          "sgg": "28237"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-03-01"
+    },
+    {
+      "code": "28245",
+      "sido_code": "28",
+      "name": "계양구",
+      "aliases": [],
+      "nemc_q1": "계양구",
+      "codes": {
+        "kindergarten": {
+          "sido": "28",
+          "sgg": "28245"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-03-01"
+    },
+    {
+      "code": "28275",
+      "sido_code": "28",
+      "name": "서해구",
+      "aliases": [],
+      "nemc_q1": "서해구",
+      "codes": {
+        "kindergarten": {
+          "sido": "28",
+          "sgg": "28275"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "28290",
+      "sido_code": "28",
+      "name": "검단구",
+      "aliases": [],
+      "nemc_q1": "검단구",
+      "codes": {
+        "kindergarten": {
+          "sido": "28",
+          "sgg": "28290"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-06-30"
+    },
+    {
+      "code": "28710",
+      "sido_code": "28",
+      "name": "강화군",
+      "aliases": [],
+      "nemc_q1": "강화군",
+      "codes": {
+        "kindergarten": {
+          "sido": "28",
+          "sgg": "28710"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-03-01"
+    },
+    {
+      "code": "28720",
+      "sido_code": "28",
+      "name": "옹진군",
+      "aliases": [],
+      "nemc_q1": "옹진군",
+      "codes": {
+        "kindergarten": {
+          "sido": "28",
+          "sgg": "28720"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-03-01"
+    },
+    {
+      "code": "30110",
+      "sido_code": "30",
+      "name": "동구",
+      "aliases": [],
+      "nemc_q1": "동구",
+      "codes": {
+        "kindergarten": {
+          "sido": "30",
+          "sgg": "30110"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "30140",
+      "sido_code": "30",
+      "name": "중구",
+      "aliases": [],
+      "nemc_q1": "중구",
+      "codes": {
+        "kindergarten": {
+          "sido": "30",
+          "sgg": "30140"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "30170",
+      "sido_code": "30",
+      "name": "서구",
+      "aliases": [],
+      "nemc_q1": "서구",
+      "codes": {
+        "kindergarten": {
+          "sido": "30",
+          "sgg": "30170"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "30200",
+      "sido_code": "30",
+      "name": "유성구",
+      "aliases": [],
+      "nemc_q1": "유성구",
+      "codes": {
+        "kindergarten": {
+          "sido": "30",
+          "sgg": "30200"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "30230",
+      "sido_code": "30",
+      "name": "대덕구",
+      "aliases": [],
+      "nemc_q1": "대덕구",
+      "codes": {
+        "kindergarten": {
+          "sido": "30",
+          "sgg": "30230"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "31110",
+      "sido_code": "31",
+      "name": "중구",
+      "aliases": [],
+      "nemc_q1": "중구",
+      "codes": {
+        "kindergarten": {
+          "sido": "31",
+          "sgg": "31110"
+        }
+      },
+      "verified": "partial",
+      "created": "1997-07-15"
+    },
+    {
+      "code": "31140",
+      "sido_code": "31",
+      "name": "남구",
+      "aliases": [],
+      "nemc_q1": "남구",
+      "codes": {
+        "kindergarten": {
+          "sido": "31",
+          "sgg": "31140"
+        }
+      },
+      "verified": "partial",
+      "created": "1997-07-15"
+    },
+    {
+      "code": "31170",
+      "sido_code": "31",
+      "name": "동구",
+      "aliases": [],
+      "nemc_q1": "동구",
+      "codes": {
+        "kindergarten": {
+          "sido": "31",
+          "sgg": "31170"
+        }
+      },
+      "verified": "partial",
+      "created": "1997-07-15"
+    },
+    {
+      "code": "31200",
+      "sido_code": "31",
+      "name": "북구",
+      "aliases": [],
+      "nemc_q1": "북구",
+      "codes": {
+        "kindergarten": {
+          "sido": "31",
+          "sgg": "31200"
+        }
+      },
+      "verified": "partial",
+      "created": "1997-07-15"
+    },
+    {
+      "code": "31710",
+      "sido_code": "31",
+      "name": "울주군",
+      "aliases": [],
+      "nemc_q1": "울주군",
+      "codes": {
+        "kindergarten": {
+          "sido": "31",
+          "sgg": "31710"
+        }
+      },
+      "verified": "partial",
+      "created": "1997-07-15"
+    },
+    {
+      "code": "36110",
+      "sido_code": "36",
+      "name": "세종시",
+      "aliases": [],
+      "nemc_q1": "세종시",
+      "codes": {
+        "kindergarten": {
+          "sido": "36",
+          "sgg": "36110"
+        }
+      },
+      "verified": "partial",
+      "created": "2012-07-01"
+    },
+    {
+      "code": "41110",
+      "sido_code": "41",
+      "name": "수원시",
+      "aliases": [
+        "수원"
+      ],
+      "nemc_q1": "수원시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41110"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "41111",
+      "sido_code": "41",
+      "name": "수원시 장안구",
+      "parent_code": "41110",
+      "aliases": [
+        "수원 장안구",
+        "장안구"
+      ],
+      "nemc_q1": "수원시 장안구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41111"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-07-01"
+    },
+    {
+      "code": "41113",
+      "sido_code": "41",
+      "name": "수원시 권선구",
+      "parent_code": "41110",
+      "aliases": [
+        "수원 권선구",
+        "권선구"
+      ],
+      "nemc_q1": "수원시 권선구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41113"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-07-01"
+    },
+    {
+      "code": "41115",
+      "sido_code": "41",
+      "name": "수원시 팔달구",
+      "parent_code": "41110",
+      "aliases": [
+        "수원 팔달구",
+        "팔달구"
+      ],
+      "nemc_q1": "수원시 팔달구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41115"
+        }
+      },
+      "verified": "partial",
+      "created": "1993-01-15"
+    },
+    {
+      "code": "41117",
+      "sido_code": "41",
+      "name": "수원시 영통구",
+      "parent_code": "41110",
+      "aliases": [
+        "수원 영통구",
+        "영통구"
+      ],
+      "nemc_q1": "수원시 영통구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41117"
+        }
+      },
+      "verified": "partial",
+      "created": "2003-11-24"
+    },
+    {
+      "code": "41130",
+      "sido_code": "41",
+      "name": "성남시",
+      "aliases": [
+        "성남"
+      ],
+      "nemc_q1": "성남시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41130"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "41131",
+      "sido_code": "41",
+      "name": "성남시 수정구",
+      "parent_code": "41130",
+      "aliases": [
+        "성남 수정구",
+        "수정구"
+      ],
+      "nemc_q1": "성남시 수정구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41131"
+        }
+      },
+      "verified": "partial",
+      "created": "1989-05-01"
+    },
+    {
+      "code": "41133",
+      "sido_code": "41",
+      "name": "성남시 중원구",
+      "parent_code": "41130",
+      "aliases": [
+        "성남 중원구",
+        "중원구"
+      ],
+      "nemc_q1": "성남시 중원구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41133"
+        }
+      },
+      "verified": "partial",
+      "created": "1989-05-01"
+    },
+    {
+      "code": "41135",
+      "sido_code": "41",
+      "name": "성남시 분당구",
+      "parent_code": "41130",
+      "aliases": [
+        "성남 분당구",
+        "분당구"
+      ],
+      "nemc_q1": "성남시 분당구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41135"
+        }
+      },
+      "verified": "partial",
+      "created": "1991-09-16"
+    },
+    {
+      "code": "41150",
+      "sido_code": "41",
+      "name": "의정부시",
+      "aliases": [
+        "의정부"
+      ],
+      "nemc_q1": "의정부시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41150"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "41170",
+      "sido_code": "41",
+      "name": "안양시",
+      "aliases": [
+        "안양"
+      ],
+      "nemc_q1": "안양시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41170"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "41171",
+      "sido_code": "41",
+      "name": "안양시 만안구",
+      "parent_code": "41170",
+      "aliases": [
+        "안양 만안구",
+        "만안구"
+      ],
+      "nemc_q1": "안양시 만안구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41171"
+        }
+      },
+      "verified": "partial",
+      "created": "1992-10-01"
+    },
+    {
+      "code": "41173",
+      "sido_code": "41",
+      "name": "안양시 동안구",
+      "parent_code": "41170",
+      "aliases": [
+        "안양 동안구",
+        "동안구"
+      ],
+      "nemc_q1": "안양시 동안구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41173"
+        }
+      },
+      "verified": "partial",
+      "created": "1992-10-01"
+    },
+    {
+      "code": "41190",
+      "sido_code": "41",
+      "name": "부천시",
+      "aliases": [
+        "부천"
+      ],
+      "nemc_q1": "부천시",
+      "codes": {},
+      "verified": "false",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "41192",
+      "sido_code": "41",
+      "name": "부천시 원미구",
+      "parent_code": "41190",
+      "aliases": [
+        "부천 원미구",
+        "원미구"
+      ],
+      "nemc_q1": "부천시 원미구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41192"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-12-29"
+    },
+    {
+      "code": "41194",
+      "sido_code": "41",
+      "name": "부천시 소사구",
+      "parent_code": "41190",
+      "aliases": [
+        "부천 소사구",
+        "소사구"
+      ],
+      "nemc_q1": "부천시 소사구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41194"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-12-29"
+    },
+    {
+      "code": "41196",
+      "sido_code": "41",
+      "name": "부천시 오정구",
+      "parent_code": "41190",
+      "aliases": [
+        "부천 오정구",
+        "오정구"
+      ],
+      "nemc_q1": "부천시 오정구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41196"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-12-29"
+    },
+    {
+      "code": "41210",
+      "sido_code": "41",
+      "name": "광명시",
+      "aliases": [
+        "광명"
+      ],
+      "nemc_q1": "광명시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41210"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "41220",
+      "sido_code": "41",
+      "name": "평택시",
+      "aliases": [
+        "평택"
+      ],
+      "nemc_q1": "평택시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41220"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-05-10"
+    },
+    {
+      "code": "41250",
+      "sido_code": "41",
+      "name": "동두천시",
+      "aliases": [
+        "동두천"
+      ],
+      "nemc_q1": "동두천시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41250"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "41270",
+      "sido_code": "41",
+      "name": "안산시",
+      "aliases": [
+        "안산"
+      ],
+      "nemc_q1": "안산시",
+      "codes": {},
+      "verified": "false",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "41271",
+      "sido_code": "41",
+      "name": "안산시 상록구",
+      "parent_code": "41270",
+      "aliases": [
+        "안산 상록구",
+        "상록구"
+      ],
+      "nemc_q1": "안산시 상록구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41271"
+        }
+      },
+      "verified": "partial",
+      "created": "2002-11-01"
+    },
+    {
+      "code": "41273",
+      "sido_code": "41",
+      "name": "안산시 단원구",
+      "parent_code": "41270",
+      "aliases": [
+        "안산 단원구",
+        "단원구"
+      ],
+      "nemc_q1": "안산시 단원구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41273"
+        }
+      },
+      "verified": "partial",
+      "created": "2002-11-01"
+    },
+    {
+      "code": "41280",
+      "sido_code": "41",
+      "name": "고양시",
+      "aliases": [
+        "고양"
+      ],
+      "nemc_q1": "고양시",
+      "codes": {},
+      "verified": "false",
+      "created": "1992-05-04"
+    },
+    {
+      "code": "41281",
+      "sido_code": "41",
+      "name": "고양시 덕양구",
+      "parent_code": "41280",
+      "aliases": [
+        "고양 덕양구",
+        "덕양구"
+      ],
+      "nemc_q1": "고양시 덕양구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41281"
+        }
+      },
+      "verified": "partial",
+      "created": "1996-03-01"
+    },
+    {
+      "code": "41285",
+      "sido_code": "41",
+      "name": "고양시 일산동구",
+      "parent_code": "41280",
+      "aliases": [
+        "고양 일산동구",
+        "일산동구"
+      ],
+      "nemc_q1": "고양시 일산동구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41285"
+        }
+      },
+      "verified": "partial",
+      "created": "2005-05-16"
+    },
+    {
+      "code": "41287",
+      "sido_code": "41",
+      "name": "고양시 일산서구",
+      "parent_code": "41280",
+      "aliases": [
+        "고양 일산서구",
+        "일산서구"
+      ],
+      "nemc_q1": "고양시 일산서구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41287"
+        }
+      },
+      "verified": "partial",
+      "created": "2005-05-16"
+    },
+    {
+      "code": "41290",
+      "sido_code": "41",
+      "name": "과천시",
+      "aliases": [
+        "과천"
+      ],
+      "nemc_q1": "과천시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41290"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "41310",
+      "sido_code": "41",
+      "name": "구리시",
+      "aliases": [
+        "구리"
+      ],
+      "nemc_q1": "구리시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41310"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "41360",
+      "sido_code": "41",
+      "name": "남양주시",
+      "aliases": [
+        "남양주"
+      ],
+      "nemc_q1": "남양주시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41360"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "41370",
+      "sido_code": "41",
+      "name": "오산시",
+      "aliases": [
+        "오산"
+      ],
+      "nemc_q1": "오산시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41370"
+        }
+      },
+      "verified": "partial",
+      "created": "1989-01-01"
+    },
+    {
+      "code": "41390",
+      "sido_code": "41",
+      "name": "시흥시",
+      "aliases": [
+        "시흥"
+      ],
+      "nemc_q1": "시흥시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41390"
+        }
+      },
+      "verified": "partial",
+      "created": "1989-01-01"
+    },
+    {
+      "code": "41410",
+      "sido_code": "41",
+      "name": "군포시",
+      "aliases": [
+        "군포"
+      ],
+      "nemc_q1": "군포시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41410"
+        }
+      },
+      "verified": "partial",
+      "created": "1989-01-01"
+    },
+    {
+      "code": "41430",
+      "sido_code": "41",
+      "name": "의왕시",
+      "aliases": [
+        "의왕"
+      ],
+      "nemc_q1": "의왕시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41430"
+        }
+      },
+      "verified": "partial",
+      "created": "1989-01-01"
+    },
+    {
+      "code": "41450",
+      "sido_code": "41",
+      "name": "하남시",
+      "aliases": [
+        "하남"
+      ],
+      "nemc_q1": "하남시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41450"
+        }
+      },
+      "verified": "partial",
+      "created": "1989-01-01"
+    },
+    {
+      "code": "41460",
+      "sido_code": "41",
+      "name": "용인시",
+      "aliases": [
+        "용인"
+      ],
+      "nemc_q1": "용인시",
+      "codes": {},
+      "verified": "false",
+      "created": "1996-03-01"
+    },
+    {
+      "code": "41461",
+      "sido_code": "41",
+      "name": "용인시 처인구",
+      "parent_code": "41460",
+      "aliases": [
+        "용인 처인구",
+        "처인구"
+      ],
+      "nemc_q1": "용인시 처인구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41461"
+        }
+      },
+      "verified": "partial",
+      "created": "2005-10-31"
+    },
+    {
+      "code": "41463",
+      "sido_code": "41",
+      "name": "용인시 기흥구",
+      "parent_code": "41460",
+      "aliases": [
+        "용인 기흥구",
+        "기흥구"
+      ],
+      "nemc_q1": "용인시 기흥구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41463"
+        }
+      },
+      "verified": "partial",
+      "created": "2005-10-31"
+    },
+    {
+      "code": "41465",
+      "sido_code": "41",
+      "name": "용인시 수지구",
+      "parent_code": "41460",
+      "aliases": [
+        "용인 수지구",
+        "수지구"
+      ],
+      "nemc_q1": "용인시 수지구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41465"
+        }
+      },
+      "verified": "partial",
+      "created": "2005-10-31"
+    },
+    {
+      "code": "41480",
+      "sido_code": "41",
+      "name": "파주시",
+      "aliases": [
+        "파주"
+      ],
+      "nemc_q1": "파주시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41480"
+        }
+      },
+      "verified": "partial",
+      "created": "1996-03-01"
+    },
+    {
+      "code": "41500",
+      "sido_code": "41",
+      "name": "이천시",
+      "aliases": [
+        "이천"
+      ],
+      "nemc_q1": "이천시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41500"
+        }
+      },
+      "verified": "partial",
+      "created": "1996-03-01"
+    },
+    {
+      "code": "41550",
+      "sido_code": "41",
+      "name": "안성시",
+      "aliases": [
+        "안성"
+      ],
+      "nemc_q1": "안성시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41550"
+        }
+      },
+      "verified": "partial",
+      "created": "1998-04-01"
+    },
+    {
+      "code": "41570",
+      "sido_code": "41",
+      "name": "김포시",
+      "aliases": [
+        "김포"
+      ],
+      "nemc_q1": "김포시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41570"
+        }
+      },
+      "verified": "partial",
+      "created": "1998-04-01"
+    },
+    {
+      "code": "41590",
+      "sido_code": "41",
+      "name": "화성시",
+      "aliases": [
+        "화성"
+      ],
+      "nemc_q1": "화성시",
+      "codes": {},
+      "verified": "false",
+      "created": "2001-03-21"
+    },
+    {
+      "code": "41591",
+      "sido_code": "41",
+      "name": "화성시 만세구",
+      "parent_code": "41590",
+      "aliases": [
+        "화성 만세구",
+        "만세구"
+      ],
+      "nemc_q1": "화성시 만세구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41591"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-02-01"
+    },
+    {
+      "code": "41593",
+      "sido_code": "41",
+      "name": "화성시 효행구",
+      "parent_code": "41590",
+      "aliases": [
+        "화성 효행구",
+        "효행구"
+      ],
+      "nemc_q1": "화성시 효행구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41593"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-02-01"
+    },
+    {
+      "code": "41595",
+      "sido_code": "41",
+      "name": "화성시 병점구",
+      "parent_code": "41590",
+      "aliases": [
+        "화성 병점구",
+        "병점구"
+      ],
+      "nemc_q1": "화성시 병점구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41595"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-02-01"
+    },
+    {
+      "code": "41597",
+      "sido_code": "41",
+      "name": "화성시 동탄구",
+      "parent_code": "41590",
+      "aliases": [
+        "화성 동탄구",
+        "동탄구"
+      ],
+      "nemc_q1": "화성시 동탄구",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41597"
+        }
+      },
+      "verified": "partial",
+      "created": "2026-02-01"
+    },
+    {
+      "code": "41610",
+      "sido_code": "41",
+      "name": "광주시",
+      "aliases": [],
+      "nemc_q1": "광주시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41610"
+        }
+      },
+      "verified": "partial",
+      "created": "2001-03-21"
+    },
+    {
+      "code": "41630",
+      "sido_code": "41",
+      "name": "양주시",
+      "aliases": [
+        "양주"
+      ],
+      "nemc_q1": "양주시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41630"
+        }
+      },
+      "verified": "partial",
+      "created": "2003-10-19"
+    },
+    {
+      "code": "41650",
+      "sido_code": "41",
+      "name": "포천시",
+      "aliases": [
+        "포천"
+      ],
+      "nemc_q1": "포천시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41650"
+        }
+      },
+      "verified": "partial",
+      "created": "2003-10-19"
+    },
+    {
+      "code": "41670",
+      "sido_code": "41",
+      "name": "여주시",
+      "aliases": [
+        "여주"
+      ],
+      "nemc_q1": "여주시",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41670"
+        }
+      },
+      "verified": "partial",
+      "created": "2013-09-23"
+    },
+    {
+      "code": "41800",
+      "sido_code": "41",
+      "name": "연천군",
+      "aliases": [],
+      "nemc_q1": "연천군",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41800"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "41820",
+      "sido_code": "41",
+      "name": "가평군",
+      "aliases": [],
+      "nemc_q1": "가평군",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41820"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "41830",
+      "sido_code": "41",
+      "name": "양평군",
+      "aliases": [],
+      "nemc_q1": "양평군",
+      "codes": {
+        "kindergarten": {
+          "sido": "41",
+          "sgg": "41830"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "43110",
+      "sido_code": "43",
+      "name": "청주시",
+      "aliases": [
+        "청주"
+      ],
+      "nemc_q1": "청주시",
+      "codes": {},
+      "verified": "false",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "43111",
+      "sido_code": "43",
+      "name": "청주시 상당구",
+      "parent_code": "43110",
+      "aliases": [
+        "청주 상당구",
+        "상당구"
+      ],
+      "nemc_q1": "청주시 상당구",
+      "codes": {
+        "kindergarten": {
+          "sido": "43",
+          "sgg": "43111"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "43112",
+      "sido_code": "43",
+      "name": "청주시 서원구",
+      "parent_code": "43110",
+      "aliases": [
+        "청주 서원구",
+        "서원구"
+      ],
+      "nemc_q1": "청주시 서원구",
+      "codes": {
+        "kindergarten": {
+          "sido": "43",
+          "sgg": "43112"
+        }
+      },
+      "verified": "partial",
+      "created": "2014-07-01"
+    },
+    {
+      "code": "43113",
+      "sido_code": "43",
+      "name": "청주시 흥덕구",
+      "parent_code": "43110",
+      "aliases": [
+        "청주 흥덕구",
+        "흥덕구"
+      ],
+      "nemc_q1": "청주시 흥덕구",
+      "codes": {
+        "kindergarten": {
+          "sido": "43",
+          "sgg": "43113"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "43114",
+      "sido_code": "43",
+      "name": "청주시 청원구",
+      "parent_code": "43110",
+      "aliases": [
+        "청주 청원구",
+        "청원구"
+      ],
+      "nemc_q1": "청주시 청원구",
+      "codes": {
+        "kindergarten": {
+          "sido": "43",
+          "sgg": "43114"
+        }
+      },
+      "verified": "partial",
+      "created": "2014-07-01"
+    },
+    {
+      "code": "43130",
+      "sido_code": "43",
+      "name": "충주시",
+      "aliases": [
+        "충주"
+      ],
+      "nemc_q1": "충주시",
+      "codes": {
+        "kindergarten": {
+          "sido": "43",
+          "sgg": "43130"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "43150",
+      "sido_code": "43",
+      "name": "제천시",
+      "aliases": [
+        "제천"
+      ],
+      "nemc_q1": "제천시",
+      "codes": {
+        "kindergarten": {
+          "sido": "43",
+          "sgg": "43150"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "43720",
+      "sido_code": "43",
+      "name": "보은군",
+      "aliases": [],
+      "nemc_q1": "보은군",
+      "codes": {
+        "kindergarten": {
+          "sido": "43",
+          "sgg": "43720"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "43730",
+      "sido_code": "43",
+      "name": "옥천군",
+      "aliases": [],
+      "nemc_q1": "옥천군",
+      "codes": {
+        "kindergarten": {
+          "sido": "43",
+          "sgg": "43730"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "43740",
+      "sido_code": "43",
+      "name": "영동군",
+      "aliases": [],
+      "nemc_q1": "영동군",
+      "codes": {
+        "kindergarten": {
+          "sido": "43",
+          "sgg": "43740"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "43745",
+      "sido_code": "43",
+      "name": "증평군",
+      "aliases": [],
+      "nemc_q1": "증평군",
+      "codes": {
+        "kindergarten": {
+          "sido": "43",
+          "sgg": "43745"
+        }
+      },
+      "verified": "partial",
+      "created": "2003-08-30"
+    },
+    {
+      "code": "43750",
+      "sido_code": "43",
+      "name": "진천군",
+      "aliases": [],
+      "nemc_q1": "진천군",
+      "codes": {
+        "kindergarten": {
+          "sido": "43",
+          "sgg": "43750"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "43760",
+      "sido_code": "43",
+      "name": "괴산군",
+      "aliases": [],
+      "nemc_q1": "괴산군",
+      "codes": {
+        "kindergarten": {
+          "sido": "43",
+          "sgg": "43760"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "43770",
+      "sido_code": "43",
+      "name": "음성군",
+      "aliases": [],
+      "nemc_q1": "음성군",
+      "codes": {
+        "kindergarten": {
+          "sido": "43",
+          "sgg": "43770"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "43800",
+      "sido_code": "43",
+      "name": "단양군",
+      "aliases": [],
+      "nemc_q1": "단양군",
+      "codes": {
+        "kindergarten": {
+          "sido": "43",
+          "sgg": "43800"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "44130",
+      "sido_code": "44",
+      "name": "천안시",
+      "aliases": [
+        "천안"
+      ],
+      "nemc_q1": "천안시",
+      "codes": {},
+      "verified": "false",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "44131",
+      "sido_code": "44",
+      "name": "천안시 동남구",
+      "parent_code": "44130",
+      "aliases": [
+        "천안 동남구",
+        "동남구"
+      ],
+      "nemc_q1": "천안시 동남구",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44131"
+        }
+      },
+      "verified": "partial",
+      "created": "2008-06-23"
+    },
+    {
+      "code": "44133",
+      "sido_code": "44",
+      "name": "천안시 서북구",
+      "parent_code": "44130",
+      "aliases": [
+        "천안 서북구",
+        "서북구"
+      ],
+      "nemc_q1": "천안시 서북구",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44133"
+        }
+      },
+      "verified": "partial",
+      "created": "2008-06-23"
+    },
+    {
+      "code": "44150",
+      "sido_code": "44",
+      "name": "공주시",
+      "aliases": [
+        "공주"
+      ],
+      "nemc_q1": "공주시",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44150"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "44180",
+      "sido_code": "44",
+      "name": "보령시",
+      "aliases": [
+        "보령"
+      ],
+      "nemc_q1": "보령시",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44180"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "44200",
+      "sido_code": "44",
+      "name": "아산시",
+      "aliases": [
+        "아산"
+      ],
+      "nemc_q1": "아산시",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44200"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "44210",
+      "sido_code": "44",
+      "name": "서산시",
+      "aliases": [
+        "서산"
+      ],
+      "nemc_q1": "서산시",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44210"
+        }
+      },
+      "verified": "partial",
+      "created": "1989-01-01"
+    },
+    {
+      "code": "44230",
+      "sido_code": "44",
+      "name": "논산시",
+      "aliases": [
+        "논산"
+      ],
+      "nemc_q1": "논산시",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44230"
+        }
+      },
+      "verified": "partial",
+      "created": "1996-03-01"
+    },
+    {
+      "code": "44250",
+      "sido_code": "44",
+      "name": "계룡시",
+      "aliases": [
+        "계룡"
+      ],
+      "nemc_q1": "계룡시",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44250"
+        }
+      },
+      "verified": "partial",
+      "created": "2003-09-19"
+    },
+    {
+      "code": "44270",
+      "sido_code": "44",
+      "name": "당진시",
+      "aliases": [
+        "당진"
+      ],
+      "nemc_q1": "당진시",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44270"
+        }
+      },
+      "verified": "partial",
+      "created": "2012-01-01"
+    },
+    {
+      "code": "44710",
+      "sido_code": "44",
+      "name": "금산군",
+      "aliases": [],
+      "nemc_q1": "금산군",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44710"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "44760",
+      "sido_code": "44",
+      "name": "부여군",
+      "aliases": [],
+      "nemc_q1": "부여군",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44760"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "44770",
+      "sido_code": "44",
+      "name": "서천군",
+      "aliases": [],
+      "nemc_q1": "서천군",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44770"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "44790",
+      "sido_code": "44",
+      "name": "청양군",
+      "aliases": [],
+      "nemc_q1": "청양군",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44790"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "44800",
+      "sido_code": "44",
+      "name": "홍성군",
+      "aliases": [],
+      "nemc_q1": "홍성군",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44800"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "44810",
+      "sido_code": "44",
+      "name": "예산군",
+      "aliases": [],
+      "nemc_q1": "예산군",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44810"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "44825",
+      "sido_code": "44",
+      "name": "태안군",
+      "aliases": [],
+      "nemc_q1": "태안군",
+      "codes": {
+        "kindergarten": {
+          "sido": "44",
+          "sgg": "44825"
+        }
+      },
+      "verified": "partial",
+      "created": "1989-01-01"
+    },
+    {
+      "code": "47110",
+      "sido_code": "47",
+      "name": "포항시",
+      "aliases": [
+        "포항"
+      ],
+      "nemc_q1": "포항시",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47110"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47111",
+      "sido_code": "47",
+      "name": "포항시 남구",
+      "parent_code": "47110",
+      "aliases": [
+        "포항 남구",
+        "남구"
+      ],
+      "nemc_q1": "포항시 남구",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47111"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "47113",
+      "sido_code": "47",
+      "name": "포항시 북구",
+      "parent_code": "47110",
+      "aliases": [
+        "포항 북구",
+        "북구"
+      ],
+      "nemc_q1": "포항시 북구",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47113"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "47130",
+      "sido_code": "47",
+      "name": "경주시",
+      "aliases": [
+        "경주"
+      ],
+      "nemc_q1": "경주시",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47130"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47150",
+      "sido_code": "47",
+      "name": "김천시",
+      "aliases": [
+        "김천"
+      ],
+      "nemc_q1": "김천시",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47150"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47170",
+      "sido_code": "47",
+      "name": "안동시",
+      "aliases": [
+        "안동"
+      ],
+      "nemc_q1": "안동시",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47170"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47190",
+      "sido_code": "47",
+      "name": "구미시",
+      "aliases": [
+        "구미"
+      ],
+      "nemc_q1": "구미시",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47190"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47210",
+      "sido_code": "47",
+      "name": "영주시",
+      "aliases": [
+        "영주"
+      ],
+      "nemc_q1": "영주시",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47210"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47230",
+      "sido_code": "47",
+      "name": "영천시",
+      "aliases": [
+        "영천"
+      ],
+      "nemc_q1": "영천시",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47230"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47250",
+      "sido_code": "47",
+      "name": "상주시",
+      "aliases": [
+        "상주"
+      ],
+      "nemc_q1": "상주시",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47250"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47280",
+      "sido_code": "47",
+      "name": "문경시",
+      "aliases": [
+        "문경"
+      ],
+      "nemc_q1": "문경시",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47280"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "47290",
+      "sido_code": "47",
+      "name": "경산시",
+      "aliases": [
+        "경산"
+      ],
+      "nemc_q1": "경산시",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47290"
+        }
+      },
+      "verified": "partial",
+      "created": "1989-01-01"
+    },
+    {
+      "code": "47730",
+      "sido_code": "47",
+      "name": "의성군",
+      "aliases": [],
+      "nemc_q1": "의성군",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47730"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47750",
+      "sido_code": "47",
+      "name": "청송군",
+      "aliases": [],
+      "nemc_q1": "청송군",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47750"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47760",
+      "sido_code": "47",
+      "name": "영양군",
+      "aliases": [],
+      "nemc_q1": "영양군",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47760"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47770",
+      "sido_code": "47",
+      "name": "영덕군",
+      "aliases": [],
+      "nemc_q1": "영덕군",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47770"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47820",
+      "sido_code": "47",
+      "name": "청도군",
+      "aliases": [],
+      "nemc_q1": "청도군",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47820"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47830",
+      "sido_code": "47",
+      "name": "고령군",
+      "aliases": [],
+      "nemc_q1": "고령군",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47830"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47840",
+      "sido_code": "47",
+      "name": "성주군",
+      "aliases": [],
+      "nemc_q1": "성주군",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47840"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47850",
+      "sido_code": "47",
+      "name": "칠곡군",
+      "aliases": [],
+      "nemc_q1": "칠곡군",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47850"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47900",
+      "sido_code": "47",
+      "name": "예천군",
+      "aliases": [],
+      "nemc_q1": "예천군",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47900"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47920",
+      "sido_code": "47",
+      "name": "봉화군",
+      "aliases": [],
+      "nemc_q1": "봉화군",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47920"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47930",
+      "sido_code": "47",
+      "name": "울진군",
+      "aliases": [],
+      "nemc_q1": "울진군",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47930"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "47940",
+      "sido_code": "47",
+      "name": "울릉군",
+      "aliases": [],
+      "nemc_q1": "울릉군",
+      "codes": {
+        "kindergarten": {
+          "sido": "47",
+          "sgg": "47940"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "48120",
+      "sido_code": "48",
+      "name": "창원시",
+      "aliases": [
+        "창원"
+      ],
+      "nemc_q1": "창원시",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48120"
+        }
+      },
+      "verified": "partial",
+      "created": "2010-07-01"
+    },
+    {
+      "code": "48121",
+      "sido_code": "48",
+      "name": "창원시 의창구",
+      "parent_code": "48120",
+      "aliases": [
+        "창원 의창구",
+        "의창구"
+      ],
+      "nemc_q1": "창원시 의창구",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48121"
+        }
+      },
+      "verified": "partial",
+      "created": "2010-07-01"
+    },
+    {
+      "code": "48123",
+      "sido_code": "48",
+      "name": "창원시 성산구",
+      "parent_code": "48120",
+      "aliases": [
+        "창원 성산구",
+        "성산구"
+      ],
+      "nemc_q1": "창원시 성산구",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48123"
+        }
+      },
+      "verified": "partial",
+      "created": "2010-07-01"
+    },
+    {
+      "code": "48125",
+      "sido_code": "48",
+      "name": "창원시 마산합포구",
+      "parent_code": "48120",
+      "aliases": [
+        "창원 마산합포구",
+        "마산합포구"
+      ],
+      "nemc_q1": "창원시 마산합포구",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48125"
+        }
+      },
+      "verified": "partial",
+      "created": "2010-07-01"
+    },
+    {
+      "code": "48127",
+      "sido_code": "48",
+      "name": "창원시 마산회원구",
+      "parent_code": "48120",
+      "aliases": [
+        "창원 마산회원구",
+        "마산회원구"
+      ],
+      "nemc_q1": "창원시 마산회원구",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48127"
+        }
+      },
+      "verified": "partial",
+      "created": "2010-07-01"
+    },
+    {
+      "code": "48129",
+      "sido_code": "48",
+      "name": "창원시 진해구",
+      "parent_code": "48120",
+      "aliases": [
+        "창원 진해구",
+        "진해구"
+      ],
+      "nemc_q1": "창원시 진해구",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48129"
+        }
+      },
+      "verified": "partial",
+      "created": "2010-07-01"
+    },
+    {
+      "code": "48170",
+      "sido_code": "48",
+      "name": "진주시",
+      "aliases": [
+        "진주"
+      ],
+      "nemc_q1": "진주시",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48170"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "48220",
+      "sido_code": "48",
+      "name": "통영시",
+      "aliases": [
+        "통영"
+      ],
+      "nemc_q1": "통영시",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48220"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "48240",
+      "sido_code": "48",
+      "name": "사천시",
+      "aliases": [
+        "사천"
+      ],
+      "nemc_q1": "사천시",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48240"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-05-10"
+    },
+    {
+      "code": "48250",
+      "sido_code": "48",
+      "name": "김해시",
+      "aliases": [
+        "김해"
+      ],
+      "nemc_q1": "김해시",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48250"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "48270",
+      "sido_code": "48",
+      "name": "밀양시",
+      "aliases": [
+        "밀양"
+      ],
+      "nemc_q1": "밀양시",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48270"
+        }
+      },
+      "verified": "partial",
+      "created": "1989-01-01"
+    },
+    {
+      "code": "48310",
+      "sido_code": "48",
+      "name": "거제시",
+      "aliases": [
+        "거제"
+      ],
+      "nemc_q1": "거제시",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48310"
+        }
+      },
+      "verified": "partial",
+      "created": "1995-01-01"
+    },
+    {
+      "code": "48330",
+      "sido_code": "48",
+      "name": "양산시",
+      "aliases": [
+        "양산"
+      ],
+      "nemc_q1": "양산시",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48330"
+        }
+      },
+      "verified": "partial",
+      "created": "1996-03-01"
+    },
+    {
+      "code": "48720",
+      "sido_code": "48",
+      "name": "의령군",
+      "aliases": [],
+      "nemc_q1": "의령군",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48720"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "48730",
+      "sido_code": "48",
+      "name": "함안군",
+      "aliases": [],
+      "nemc_q1": "함안군",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48730"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "48740",
+      "sido_code": "48",
+      "name": "창녕군",
+      "aliases": [],
+      "nemc_q1": "창녕군",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48740"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "48820",
+      "sido_code": "48",
+      "name": "고성군",
+      "aliases": [],
+      "nemc_q1": "고성군",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48820"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "48840",
+      "sido_code": "48",
+      "name": "남해군",
+      "aliases": [],
+      "nemc_q1": "남해군",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48840"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "48850",
+      "sido_code": "48",
+      "name": "하동군",
+      "aliases": [],
+      "nemc_q1": "하동군",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48850"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "48860",
+      "sido_code": "48",
+      "name": "산청군",
+      "aliases": [],
+      "nemc_q1": "산청군",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48860"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "48870",
+      "sido_code": "48",
+      "name": "함양군",
+      "aliases": [],
+      "nemc_q1": "함양군",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48870"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "48880",
+      "sido_code": "48",
+      "name": "거창군",
+      "aliases": [],
+      "nemc_q1": "거창군",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48880"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "48890",
+      "sido_code": "48",
+      "name": "합천군",
+      "aliases": [],
+      "nemc_q1": "합천군",
+      "codes": {
+        "kindergarten": {
+          "sido": "48",
+          "sgg": "48890"
+        }
+      },
+      "verified": "partial",
+      "created": "1988-04-23"
+    },
+    {
+      "code": "50110",
+      "sido_code": "50",
+      "name": "제주시",
+      "aliases": [],
+      "nemc_q1": "제주시",
+      "codes": {
+        "kindergarten": {
+          "sido": "50",
+          "sgg": "50110"
+        }
+      },
+      "verified": "partial",
+      "created": "2006-07-01"
+    },
+    {
+      "code": "50130",
+      "sido_code": "50",
+      "name": "서귀포시",
+      "aliases": [
+        "서귀포"
+      ],
+      "nemc_q1": "서귀포시",
+      "codes": {
+        "kindergarten": {
+          "sido": "50",
+          "sgg": "50130"
+        }
+      },
+      "verified": "partial",
+      "created": "2006-07-01"
+    },
+    {
+      "code": "51110",
+      "sido_code": "51",
+      "name": "춘천시",
+      "aliases": [
+        "춘천"
+      ],
+      "nemc_q1": "춘천시",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51110"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51130",
+      "sido_code": "51",
+      "name": "원주시",
+      "aliases": [
+        "원주"
+      ],
+      "nemc_q1": "원주시",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51130"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51150",
+      "sido_code": "51",
+      "name": "강릉시",
+      "aliases": [
+        "강릉"
+      ],
+      "nemc_q1": "강릉시",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51150"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51170",
+      "sido_code": "51",
+      "name": "동해시",
+      "aliases": [
+        "동해"
+      ],
+      "nemc_q1": "동해시",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51170"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51190",
+      "sido_code": "51",
+      "name": "태백시",
+      "aliases": [
+        "태백"
+      ],
+      "nemc_q1": "태백시",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51190"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51210",
+      "sido_code": "51",
+      "name": "속초시",
+      "aliases": [
+        "속초"
+      ],
+      "nemc_q1": "속초시",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51210"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51230",
+      "sido_code": "51",
+      "name": "삼척시",
+      "aliases": [
+        "삼척"
+      ],
+      "nemc_q1": "삼척시",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51230"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51720",
+      "sido_code": "51",
+      "name": "홍천군",
+      "aliases": [],
+      "nemc_q1": "홍천군",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51720"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51730",
+      "sido_code": "51",
+      "name": "횡성군",
+      "aliases": [],
+      "nemc_q1": "횡성군",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51730"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51750",
+      "sido_code": "51",
+      "name": "영월군",
+      "aliases": [],
+      "nemc_q1": "영월군",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51750"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51760",
+      "sido_code": "51",
+      "name": "평창군",
+      "aliases": [],
+      "nemc_q1": "평창군",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51760"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51770",
+      "sido_code": "51",
+      "name": "정선군",
+      "aliases": [],
+      "nemc_q1": "정선군",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51770"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51780",
+      "sido_code": "51",
+      "name": "철원군",
+      "aliases": [],
+      "nemc_q1": "철원군",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51780"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51790",
+      "sido_code": "51",
+      "name": "화천군",
+      "aliases": [],
+      "nemc_q1": "화천군",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51790"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51800",
+      "sido_code": "51",
+      "name": "양구군",
+      "aliases": [],
+      "nemc_q1": "양구군",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51800"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51810",
+      "sido_code": "51",
+      "name": "인제군",
+      "aliases": [],
+      "nemc_q1": "인제군",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51810"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51820",
+      "sido_code": "51",
+      "name": "고성군",
+      "aliases": [],
+      "nemc_q1": "고성군",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51820"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "51830",
+      "sido_code": "51",
+      "name": "양양군",
+      "aliases": [],
+      "nemc_q1": "양양군",
+      "codes": {
+        "kindergarten": {
+          "sido": "51",
+          "sgg": "51830"
+        }
+      },
+      "verified": "partial",
+      "created": "2023-06-09"
+    },
+    {
+      "code": "52110",
+      "sido_code": "52",
+      "name": "전주시",
+      "aliases": [
+        "전주"
+      ],
+      "nemc_q1": "전주시",
+      "codes": {},
+      "verified": "false",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52111",
+      "sido_code": "52",
+      "name": "전주시 완산구",
+      "parent_code": "52110",
+      "aliases": [
+        "전주 완산구",
+        "완산구"
+      ],
+      "nemc_q1": "전주시 완산구",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52111"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52113",
+      "sido_code": "52",
+      "name": "전주시 덕진구",
+      "parent_code": "52110",
+      "aliases": [
+        "전주 덕진구",
+        "덕진구"
+      ],
+      "nemc_q1": "전주시 덕진구",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52113"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52130",
+      "sido_code": "52",
+      "name": "군산시",
+      "aliases": [
+        "군산"
+      ],
+      "nemc_q1": "군산시",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52130"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52140",
+      "sido_code": "52",
+      "name": "익산시",
+      "aliases": [
+        "익산"
+      ],
+      "nemc_q1": "익산시",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52140"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52180",
+      "sido_code": "52",
+      "name": "정읍시",
+      "aliases": [
+        "정읍"
+      ],
+      "nemc_q1": "정읍시",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52180"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52190",
+      "sido_code": "52",
+      "name": "남원시",
+      "aliases": [
+        "남원"
+      ],
+      "nemc_q1": "남원시",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52190"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52210",
+      "sido_code": "52",
+      "name": "김제시",
+      "aliases": [
+        "김제"
+      ],
+      "nemc_q1": "김제시",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52210"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52710",
+      "sido_code": "52",
+      "name": "완주군",
+      "aliases": [],
+      "nemc_q1": "완주군",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52710"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52720",
+      "sido_code": "52",
+      "name": "진안군",
+      "aliases": [],
+      "nemc_q1": "진안군",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52720"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52730",
+      "sido_code": "52",
+      "name": "무주군",
+      "aliases": [],
+      "nemc_q1": "무주군",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52730"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52740",
+      "sido_code": "52",
+      "name": "장수군",
+      "aliases": [],
+      "nemc_q1": "장수군",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52740"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52750",
+      "sido_code": "52",
+      "name": "임실군",
+      "aliases": [],
+      "nemc_q1": "임실군",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52750"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52770",
+      "sido_code": "52",
+      "name": "순창군",
+      "aliases": [],
+      "nemc_q1": "순창군",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52770"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52790",
+      "sido_code": "52",
+      "name": "고창군",
+      "aliases": [],
+      "nemc_q1": "고창군",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52790"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    },
+    {
+      "code": "52800",
+      "sido_code": "52",
+      "name": "부안군",
+      "aliases": [],
+      "nemc_q1": "부안군",
+      "codes": {
+        "kindergarten": {
+          "sido": "52",
+          "sgg": "52800"
+        }
+      },
+      "verified": "partial",
+      "created": "2024-01-18"
+    }
+  ],
+  "abolished": [
+    {
+      "sido_code": "28",
+      "name": "서구",
+      "abolished_on": "2026-07-01",
+      "successor_codes": [
+        "28275",
+        "28290"
+      ],
+      "verified": "partial",
+      "note": "서해구·검단구로 분리(research/region-codes.md C7)"
+    },
+    {
+      "sido_code": "28",
+      "name": "중구",
+      "abolished_on": "2026-07-01",
+      "successor_codes": [
+        "28125",
+        "28155"
+      ],
+      "verified": "false",
+      "note": "제물포구·영종구로 개편. 후속 관계는 법정동 파일의 동 소속으로 추정, 공식 대조 전"
+    },
+    {
+      "sido_code": "28",
+      "name": "동구",
+      "abolished_on": "2026-07-01",
+      "successor_codes": [
+        "28125"
+      ],
+      "verified": "false",
+      "note": "제물포구로 개편. 법정동 파일의 동 소속으로 추정, 공식 대조 전"
+    },
+    {
+      "sido_code": "47",
+      "name": "군위군",
+      "abolished_on": "2023-07-01",
+      "successor_codes": [
+        "27720"
+      ],
+      "verified": "partial",
+      "note": "대구광역시 편입(research/region-codes.md C4)"
+    }
+  ]
+}

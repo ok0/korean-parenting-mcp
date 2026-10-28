@@ -33,6 +33,10 @@ describe("real data", () => {
     expect(() => loadData("checkups")).not.toThrow();
   });
 
+  it("loads regions", () => {
+    expect(() => loadData("regions")).not.toThrow();
+  });
+
   it("resolves every basis id used by deadlines and checkups", () => {
     expect(() => resolveBasis(collectBasisIds(loadData("deadlines")))).not.toThrow();
     expect(() => resolveBasis(collectBasisIds(loadData("checkups")))).not.toThrow();

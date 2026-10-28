@@ -11,6 +11,7 @@ import {
   LeaveSchema,
   LocalGuidanceSchema,
   PrenatalSchema,
+  RegionsSchema,
   VaccinationsSchema,
   type BasisDoc,
   type BasisDocuments,
@@ -21,6 +22,7 @@ import {
   type LeaveFile,
   type LocalGuidanceFile,
   type PrenatalFile,
+  type RegionsFile,
   type VaccinationsFile,
 } from "./schema.js";
 
@@ -33,7 +35,8 @@ export type DatasetName =
   | "prenatal"
   | "benefits"
   | "leave"
-  | "local-guidance";
+  | "local-guidance"
+  | "regions";
 
 export interface DatasetMap {
   "basis-documents": BasisDocuments;
@@ -45,6 +48,7 @@ export interface DatasetMap {
   benefits: BenefitsFile;
   leave: LeaveFile;
   "local-guidance": LocalGuidanceFile;
+  regions: RegionsFile;
 }
 
 const SCHEMAS = {
@@ -57,6 +61,7 @@ const SCHEMAS = {
   benefits: BenefitsSchema,
   leave: LeaveSchema,
   "local-guidance": LocalGuidanceSchema,
+  regions: RegionsSchema,
 } as const;
 
 export class DataValidationError extends Error {

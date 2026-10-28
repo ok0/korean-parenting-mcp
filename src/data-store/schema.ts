@@ -695,3 +695,134 @@ export const LocalGuidanceSchema = z
 
 export type LocalGuidanceFile = z.output<typeof LocalGuidanceSchema>;
 export type LocalGuidanceEntry = z.output<typeof LocalGuidanceEntrySchema>;
+
+const SidoCode = z.string().regex(/^\d{2}$/);
+const SggCode = z.string().regex(/^\d{5}$/);
+
+export const RegionVerifiedSchema = z.enum(["partial", "false"]);
+
+export const RegionSourceSchema = z.strictObject({
+  role: z.enum(["primary", "cross-check"]),
+  dataset: z.string().min(1),
+  provider: z.string().min(1),
+  url: z.url(),
+  license: z.string().min(1),
+  as_of: IsoDate,
+  retrieved: IsoDate,
+  sha256: z.string().regex(/^[0-9a-f]{64}$/),
+});
+
+export const SidoEntrySchema = z.strictObject({
+  code: SidoCode,
+  name: z.string().min(1),
+  aliases: z.array(z.string().min(1)),
+  nemc_q0: z.string().min(1),
+  kindergarten_code: SidoCode.optional(),
+});
+
+export const SigunguEntrySchema = z.strictObject({
+  code: SggCode,
+  sido_code: SidoCode,
+  name: z.string().min(1),
+  parent_code: SggCode.optional(),
+  aliases: z.array(z.string().min(1)),
+  nemc_q1: z.string().min(1),
+  codes: z.strictObject({ kindergarten: z.strictObject({ sido: SidoCode, sgg: SggCode }).optional() }),
+  verified: RegionVerifiedSchema,
+  created: IsoDate,
+});
+
+export const AbolishedRegionSchema = z.strictObject({
+  sido_code: SidoCode,
+  name: z.string().min(1),
+  abolished_on: IsoDate,
+  successor_codes: z.array(SggCode).min(1),
+  verified: RegionVerifiedSchema,
+  note: z.string().min(1),
+});
+
+export const RegionsSchema = z
+  .strictObject({
+    as_of: IsoDate,
+    verified: VerifiedSchema,
+    note: z.string().optional(),
+    sources: z.array(RegionSourceSchema).min(1),
+    sido: z.array(SidoEntrySchema).min(1),
+    sigungu: z.array(SigunguEntrySchema).min(1),
+    abolished: z.array(AbolishedRegionSchema),
+  })
+  .superRefine((f, ctx) => {
+    if (f.verified === "full") {
+      ctx.addIssue({
+        code: "custom",
+        path: ["verified"],
+        message: "지역 데이터는 full일 수 없습니다(검증자 정보 없음)",
+      });
+    }
+    const sidoCodes = new Set<string>();
+    f.sido.forEach((s, i) => {
+      if (sidoCodes.has(s.code)) {
+        ctx.addIssue({ code: "custom", path: ["sido", i, "code"], message: `중복 시도 코드: ${s.code}` });
+      }
+      sidoCodes.add(s.code);
+    });
+    const sggByCode = new Map<string, z.output<typeof SigunguEntrySchema>>();
+    f.sigungu.forEach((g, i) => {
+      if (sggByCode.has(g.code)) {
+        ctx.addIssue({ code: "custom", path: ["sigungu", i, "code"], message: `중복 시군구 코드: ${g.code}` });
+      } else {
+        sggByCode.set(g.code, g);
+      }
+    });
+    f.sigungu.forEach((g, i) => {
+      if (!sidoCodes.has(g.sido_code) || g.code.slice(0, 2) !== g.sido_code) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["sigungu", i, "sido_code"],
+          message: "시군구 코드 앞 2자리가 sido_code와 같고 sido_code가 시도 목록에 있어야 합니다",
+        });
+      }
+      if (g.parent_code !== undefined) {
+        const parent = sggByCode.get(g.parent_code);
+        if (!parent || parent.sido_code !== g.sido_code) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["sigungu", i, "parent_code"],
+            message: "parent_code는 같은 시도의 존재하는 시군구여야 합니다",
+          });
+        }
+      }
+      const kg = g.codes.kindergarten;
+      if (kg) {
+        if (kg.sgg !== g.code || kg.sido !== g.sido_code) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["sigungu", i, "codes", "kindergarten"],
+            message: "codes.kindergarten의 sgg·sido는 시군구 코드·sido_code와 같아야 합니다",
+          });
+        }
+      } else if (g.verified !== "false") {
+        ctx.addIssue({
+          code: "custom",
+          path: ["sigungu", i, "verified"],
+          message: "코드표 대응이 없으면 verified는 false여야 합니다",
+        });
+      }
+    });
+    f.abolished.forEach((a, i) => {
+      a.successor_codes.forEach((c, j) => {
+        if (!sggByCode.has(c)) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["abolished", i, "successor_codes", j],
+            message: `후속 코드가 현존 시군구에 없습니다: ${c}`,
+          });
+        }
+      });
+    });
+  });
+
+export type RegionsFile = z.output<typeof RegionsSchema>;
+export type SidoEntry = z.output<typeof SidoEntrySchema>;
+export type SigunguEntry = z.output<typeof SigunguEntrySchema>;
+export type AbolishedRegion = z.output<typeof AbolishedRegionSchema>;
