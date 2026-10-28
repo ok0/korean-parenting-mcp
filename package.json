@@ -7,9 +7,21 @@
   "bin": {
     "korean-parenting-mcp": "build/index.js"
   },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "korea",
+    "parenting",
+    "pregnancy",
+    "childcare"
+  ],
+  "author": "ok0",
   "files": [
     "build",
-    "data"
+    "data",
+    "README.md",
+    "LICENSE"
   ],
   "engines": {
     "node": ">=20.19"
@@ -21,6 +33,7 @@
     "build:scripts": "node -e \"require('node:fs').rmSync('build-scripts',{recursive:true,force:true})\" && tsc -p tsconfig.scripts.json",
     "test": "vitest run",
     "verify": "npm run typecheck && npm run build && npm run build:scripts && npm run test",
+    "prepublishOnly": "npm run verify",
     "start": "node build/index.js"
   },
   "dependencies": {

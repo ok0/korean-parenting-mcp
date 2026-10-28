@@ -33,9 +33,16 @@ describe("npm package contents", () => {
         }
         expect(p, p).not.toContain("fixtures");
         expect(p, p).not.toMatch(/pdfjs|annex|baseline/);
+        expect(/^(build|data)\//.test(p) || ["README.md", "LICENSE", "package.json"].includes(p), p).toBe(
+          true,
+        );
+        expect(p.endsWith(".map"), p).toBe(false);
       }
       expect(paths).toContain("build/index.js");
       expect(paths).toContain("data/holidays.json");
+      expect(paths).toContain("README.md");
+      expect(paths).toContain("LICENSE");
+      expect(paths).toContain("package.json");
 
       const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as {
         dependencies?: Record<string, string>;

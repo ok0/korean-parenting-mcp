@@ -12,6 +12,11 @@ interface PackageJson {
   files?: string[];
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
+  scripts?: Record<string, string>;
+  license?: string;
+  engines?: Record<string, string>;
+  keywords?: string[];
+  description?: string;
 }
 
 function listTs(dir: string): string[] {
@@ -77,8 +82,7 @@ describe("project structure", () => {
   });
 
   it("data ships with package", () => {
-    expect(pkg.files).toContain("build");
-    expect(pkg.files).toContain("data");
+    expect([...(pkg.files ?? [])].sort()).toEqual(["LICENSE", "README.md", "build", "data"]);
     expect(existsSync(join(root, "data/basis-documents.json"))).toBe(true);
     expect(existsSync(join(root, "data/holidays.json"))).toBe(true);
   });
@@ -96,10 +100,29 @@ describe("project structure", () => {
   });
 
   it("root documents limited", () => {
-    const docs = readdirSync(root).filter((n) => /\.(md|markdown|txt|rst)$/i.test(n));
-    for (const name of docs) {
-      expect(["README.md"]).toContain(name);
-    }
+    const docs = readdirSync(root).filter(
+      (n) =>
+        /\.(md|markdown|txt|rst)$/i.test(n) ||
+        /^(LICEN[CS]E|COPYING|NOTICE|CHANGELOG|AUTHORS|CONTRIBUTING)(\.|$)/i.test(n),
+    );
+    expect(docs.sort()).toEqual(["LICENSE", "README.md"]);
     expect(existsSync(join(root, "docs"))).toBe(false);
+  });
+
+  it("package metadata for publishing", () => {
+    expect(pkg.scripts?.prepublishOnly).toBe("npm run verify");
+    expect(pkg.license).toBe("MIT");
+    expect(pkg.engines?.node).toMatch(/^>=\d+/);
+    expect(pkg.keywords?.length ?? 0).toBeGreaterThan(0);
+    expect(pkg.description ?? "").toContain("비공식");
+  });
+
+  it("child_process only in setup", () => {
+    const files = srcFiles
+      .filter((f) => readFileSync(f, "utf8").includes("node:child_process"))
+      .map(rel);
+    for (const f of files) {
+      expect(f.startsWith("src/setup/"), f).toBe(true);
+    }
   });
 });
