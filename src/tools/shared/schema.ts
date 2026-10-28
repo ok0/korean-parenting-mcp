@@ -71,3 +71,13 @@ export function keywordField(doc: FieldDoc, len?: { min?: number; max?: number }
 export function enumField<const T extends readonly [string, ...string[]]>(values: T, doc: FieldDoc) {
   return z.enum(values).describe(describeField(doc));
 }
+
+export const REGION_FIELD_DOC: FieldDoc = {
+  purpose: "조회할 지역(시군구 단위, 동 단위 불가).",
+  format: "시도·시군구 이름 1~40자, 시도 생략 가능",
+  example: "성동구, 수원시 영통구",
+};
+
+export function regionField(doc: FieldDoc = REGION_FIELD_DOC) {
+  return keywordField(doc, { max: 40 });
+}
