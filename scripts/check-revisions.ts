@@ -8,6 +8,8 @@ import {
   type RevisionStatus,
   type UnavailableReason,
 } from "../src/provenance/revision-check.js";
+import { ANNEX_LIMITS, type AnnexLimits } from "./lib/annex-fetch.js";
+import { assembleIssueBody, collectAnnexes, writeBaselines } from "./lib/annex-report.js";
 import { createScriptContext, EXIT, isMainModule, parseFlags, processIO, type ScriptIO } from "./lib/script-io.js";
 
 export const REASON_LABEL = {
@@ -89,10 +91,14 @@ export async function runCheckRevisions(
   return out;
 }
 
-export async function main(argv: readonly string[], io: ScriptIO, deps?: { docs?: readonly BasisDoc[] }): Promise<number> {
+export async function main(
+  argv: readonly string[],
+  io: ScriptIO,
+  deps?: { docs?: readonly BasisDoc[]; annexLimits?: Partial<AnnexLimits> },
+): Promise<number> {
   const sc = createScriptContext(io);
-  const usage = "사용법: node build-scripts/scripts/check-revisions.js [--out <path>] [--deadline-ms <n>]";
-  const parsed = parseFlags(argv, ["--out", "--deadline-ms"]);
+  const usage = "사용법: node build-scripts/scripts/check-revisions.js [--out <path>] [--deadline-ms <n>] [--baseline-dir <dir>]";
+  const parsed = parseFlags(argv, ["--out", "--deadline-ms", "--baseline-dir"]);
   if ("error" in parsed) {
     sc.err(`${usage}\n${parsed.error}\n`);
     return EXIT.USAGE;
@@ -108,7 +114,29 @@ export async function main(argv: readonly string[], io: ScriptIO, deps?: { docs?
     const result = await runCheckRevisions(sc.ctx, docs, { deadlineMs, now: io.now() });
     sc.err(result.summary);
     if (result.exitCode === EXIT.CHANGED && result.issueBody !== undefined) {
-      const body = sc.mask(result.issueBody);
+      let body = result.issueBody;
+      const baselineDir = parsed.flags["--baseline-dir"];
+      try {
+        const annex = await collectAnnexes(result.statuses, docs, {
+          fetch: io.fetch,
+          baselineDir,
+          limits: { ...ANNEX_LIMITS, ...deps?.annexLimits },
+          mask: sc.mask,
+          log: (l) => sc.err(`${l}\n`),
+        });
+        body = assembleIssueBody(body, annex);
+        if (baselineDir !== undefined) {
+          try {
+            sc.err(`첨부 기준 텍스트 저장: ${writeBaselines(baselineDir, annex, sc.mask)}건\n`);
+          } catch {
+            sc.err("첨부 기준 텍스트 저장 실패(다음 실행은 비교 기준 없음으로 동작)\n");
+          }
+        }
+      } catch {
+        body += "\n## 첨부 텍스트 비교\n- 첨부 처리 중 내부 오류로 생략했습니다. 원문 링크에서 확인하세요.\n";
+        sc.err("첨부 처리 내부 오류(종료 코드 영향 없음)\n");
+      }
+      body = sc.mask(body);
       const outPath = parsed.flags["--out"];
       if (outPath !== undefined) writeFileSync(outPath, body, "utf8");
       else sc.out(body);
