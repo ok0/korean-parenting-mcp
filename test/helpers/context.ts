@@ -1,3 +1,4 @@
+import { TtlCache } from "../../src/core/cache.js";
 import { loadConfig, secretsOf } from "../../src/core/config.js";
 import type { ToolContext } from "../../src/core/context.js";
 import { createLogger } from "../../src/core/logger.js";
@@ -15,6 +16,7 @@ export function createTestContext(opts?: {
     fetch: async () => {
       throw new Error("network disabled in tests");
     },
+    cache: new TtlCache(),
     log: createLogger(secrets, "debug", opts?.sink),
   };
 }

@@ -1,3 +1,4 @@
+import { TtlCache } from "./cache.js";
 import { secretsOf, type Config } from "./config.js";
 import { createLogger, type Logger } from "./logger.js";
 
@@ -9,6 +10,7 @@ export interface ToolContext {
   config: Config;
   clock: Clock;
   fetch: typeof fetch;
+  cache: TtlCache;
   log: Logger;
   secrets: string[];
 }
@@ -19,6 +21,7 @@ export function createDefaultContext(config: Config, overrides: Partial<ToolCont
     config,
     clock: { now: () => new Date() },
     fetch: globalThis.fetch.bind(globalThis),
+    cache: new TtlCache(),
     secrets,
     log: createLogger(secrets, config.logLevel),
     ...overrides,
