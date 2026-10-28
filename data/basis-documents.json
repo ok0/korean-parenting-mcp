@@ -59,6 +59,96 @@
       "as_of": "2026-10-28",
       "verified": "partial",
       "note": "우주항공청 월력요항 원문 미접근, 언론 경유"
+    },
+    {
+      "id": "family-registration-act",
+      "title": "가족관계의 등록 등에 관한 법률",
+      "doc_no": "법률 제21857호",
+      "kind": "law",
+      "promulgated": "2026-08-04",
+      "effective": "2026-10-02",
+      "url": "https://www.law.go.kr/법령/가족관계의등록등에관한법률",
+      "law_api": {
+        "kind": "law",
+        "law_name": "가족관계의 등록 등에 관한 법률",
+        "mst": "290741",
+        "effective": "2026-10-02"
+      },
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "제44조 제1항(출생 후 1개월 이내 신고), 제37조 제1항(신고사건 발생일부터 기산), 제122조(5만원 이하 과태료) 본문 확인. 법률 번호는 조문 메타 기준, law_id는 M11에서 확정"
+    },
+    {
+      "id": "civil-act",
+      "title": "민법",
+      "doc_no": "MST 284415",
+      "kind": "law",
+      "effective": "2026-03-17",
+      "url": "https://www.law.go.kr/법령/민법",
+      "law_api": {
+        "kind": "law",
+        "law_name": "민법",
+        "mst": "284415",
+        "effective": "2026-03-17"
+      },
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "제157조·제160조·제161조(말일이 토요일·공휴일이면 익일 만료) 확인. 법률 번호 미확인으로 doc_no에 MST 기재"
+    },
+    {
+      "id": "health-checkup-standard",
+      "title": "건강검진 실시기준",
+      "doc_no": "보건복지부고시 제2026-6호",
+      "kind": "admrul",
+      "promulgated": "2026-01-07",
+      "effective": "2026-01-07",
+      "url": "https://www.nhis.or.kr/lm/lmxsrv/law/lawFullContent.do?SEQ=80",
+      "law_api": {
+        "kind": "admrul",
+        "rule_id": null,
+        "name": "건강검진 실시기준",
+        "number": "제2026-6호",
+        "issued": "2026-01-07"
+      },
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "고시 번호·발령일은 NHIS 본문 부칙으로 확인. 제8조 제2항 회차 표는 이미지라 미판독, 생활법령(2026-09-15)으로 교차 확인. 행정규칙ID는 M11에서 확정"
+    },
+    {
+      "id": "easylaw-infant-checkup",
+      "title": "찾기쉬운 생활법령정보: 6세 미만 영유아 건강검진",
+      "doc_no": "csmSeq=1138",
+      "kind": "web",
+      "amended": "2026-09-15",
+      "url": "https://easylaw.go.kr/CSP/CnpClsMain.laf?popMenu=ov&csmSeq=1138&ccfNo=1&cciNo=2&cnpClsNo=2",
+      "law_api": null,
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "생활법령 기준일을 amended에 기록. 영유아검진 8회·구강검진 4회 시기 표를 텍스트로 제공"
+    },
+    {
+      "id": "parent-allowance-2026",
+      "title": "2026년 부모급여 안내(정책브리핑)",
+      "doc_no": "newsId=148957936",
+      "kind": "web",
+      "effective": "2026-01-01",
+      "url": "https://www.korea.kr/multi/visualNewsView.do?newsId=148957936",
+      "law_api": null,
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "게시일 미확인, 2026년 기준 적용 시작일을 effective로 기록. 출생일 포함 60일 이내 신청 시 출생월부터 소급, 60일째가 휴일이면 다음 날까지. 근거 법령 조문 미대조"
+    },
+    {
+      "id": "child-allowance-gov24",
+      "title": "정부24 아동수당 서비스 안내",
+      "doc_no": "serviceInfo/135200000120",
+      "kind": "web",
+      "amended": "2026-02-20",
+      "url": "https://www.gov.kr/portal/service/serviceInfo/135200000120",
+      "law_api": null,
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "60일 소급 규칙 출처. 페이지의 지급 연령(만 8세 미만)은 구버전이며 이 항목에서 쓰지 않음. 근거 아동수당법 제4조 제1항 원문 미확인"
     }
   ]
 }

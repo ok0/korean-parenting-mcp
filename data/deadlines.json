@@ -1,0 +1,58 @@
+{
+  "deadlines": [
+    {
+      "id": "birth-registration",
+      "title": "출생신고 기한",
+      "rule": {
+        "unit": "month",
+        "amount": 1,
+        "countFirstDay": true,
+        "extendIfNonWorking": true
+      },
+      "notes": [
+        "가족관계등록법 제44조 제1항(출생 후 1개월 이내)과 제37조 제1항(신고사건 발생일부터 기산)을 조합한 참고용 계산입니다. 관할 시·구·읍·면에 확인하세요.",
+        "기간 안에 신고하지 않으면 5만원 이하의 과태료 대상입니다(제122조)."
+      ],
+      "basis_ids": ["family-registration-act", "civil-act"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "초일 산입은 제37조 특별규정 해석(조문 조합 추론). 말일 연장은 민법 제161조. 가족관계등록예규·판례 미확인"
+    },
+    {
+      "id": "parent-allowance",
+      "title": "부모급여 신청 기한(출생월 소급 기준)",
+      "rule": {
+        "unit": "day",
+        "amount": 60,
+        "countFirstDay": true,
+        "extendIfNonWorking": true
+      },
+      "notes": [
+        "출생일 포함 60일 이내에 신청하면 출생월부터 소급 지급되고, 이후에는 신청한 달부터 지급됩니다.",
+        "신청: 주민센터(출생신고와 함께), 복지로, 정부24."
+      ],
+      "basis_ids": ["parent-allowance-2026"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "정부 정책브리핑으로 60일·휴일 익일 규칙 확인, 법령 원문 미대조"
+    },
+    {
+      "id": "child-allowance",
+      "title": "아동수당 신청 기한(출생월 소급 기준)",
+      "rule": {
+        "unit": "day",
+        "amount": 60,
+        "countFirstDay": true,
+        "extendIfNonWorking": true
+      },
+      "notes": [
+        "출생일 포함 60일 이내에 신청하면 출생월부터 소급 지급되고, 이후에는 신청한 달부터 지급됩니다.",
+        "신청: 주민센터, 복지로, 정부24. 60일째가 휴일일 때의 연장은 부모급여 기준을 준용한 계산입니다."
+      ],
+      "basis_ids": ["child-allowance-gov24"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "정부24 안내 기준. 아동수당법 원문·휴일 연장 규정 미확인"
+    }
+  ]
+}

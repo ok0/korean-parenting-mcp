@@ -4,22 +4,30 @@ import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import {
   BasisDocumentsSchema,
+  CheckupsSchema,
+  DeadlinesSchema,
   HolidaysSchema,
   type BasisDoc,
   type BasisDocuments,
+  type CheckupsFile,
+  type DeadlinesFile,
   type HolidaysFile,
 } from "./schema.js";
 
-export type DatasetName = "basis-documents" | "holidays";
+export type DatasetName = "basis-documents" | "holidays" | "deadlines" | "checkups";
 
 export interface DatasetMap {
   "basis-documents": BasisDocuments;
   holidays: HolidaysFile;
+  deadlines: DeadlinesFile;
+  checkups: CheckupsFile;
 }
 
 const SCHEMAS = {
   "basis-documents": BasisDocumentsSchema,
   holidays: HolidaysSchema,
+  deadlines: DeadlinesSchema,
+  checkups: CheckupsSchema,
 } as const;
 
 export class DataValidationError extends Error {

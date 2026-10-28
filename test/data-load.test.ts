@@ -39,8 +39,8 @@ describe("data loading", () => {
 
     expect(realpathSync(pkgDir)).toBe(realpathSync(join(tmp, "pkg/data")));
     expect(realpathSync(bundleDir)).toBe(realpathSync(join(tmp, "bundle/data")));
-    expect(readDataset(pkgDir, "basis-documents").documents.length).toBe(4);
-    expect(readDataset(bundleDir, "basis-documents").documents.length).toBe(4);
+    expect(readDataset(pkgDir, "basis-documents")).toEqual(readDataset(repoData, "basis-documents"));
+    expect(readDataset(bundleDir, "basis-documents")).toEqual(readDataset(repoData, "basis-documents"));
   });
 
   it("throws when no data directory is found within the search depth", () => {

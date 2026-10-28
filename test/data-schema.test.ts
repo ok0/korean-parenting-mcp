@@ -24,6 +24,121 @@ describe("real data", () => {
   it("resolves every basis id used by holidays", () => {
     expect(() => resolveBasis(collectBasisIds(loadData("holidays")))).not.toThrow();
   });
+
+  it("loads deadlines", () => {
+    expect(() => loadData("deadlines")).not.toThrow();
+  });
+
+  it("loads checkups", () => {
+    expect(() => loadData("checkups")).not.toThrow();
+  });
+
+  it("resolves every basis id used by deadlines and checkups", () => {
+    expect(() => resolveBasis(collectBasisIds(loadData("deadlines")))).not.toThrow();
+    expect(() => resolveBasis(collectBasisIds(loadData("checkups")))).not.toThrow();
+  });
+});
+
+describe("checkup ranges match the published schedule", () => {
+  it("maps every checkup to its published offsets", () => {
+    const rows = loadData("checkups")
+      .checkups.map((c) => {
+        const from = "days" in c.from ? c.from.days : c.from.months;
+        const to = "days" in c.to ? c.to.days : c.to.months;
+        return [c.program, c.round, from, to];
+      })
+      .sort((a, b) => {
+        const pa = String(a[0]);
+        const pb = String(b[0]);
+        if (pa !== pb) return pa < pb ? -1 : 1;
+        return (a[1] as number) - (b[1] as number);
+      });
+    expect(rows).toEqual([
+      ["infant", 1, 14, 35],
+      ["infant", 2, 4, 6],
+      ["infant", 3, 9, 12],
+      ["infant", 4, 18, 24],
+      ["infant", 5, 30, 36],
+      ["infant", 6, 42, 48],
+      ["infant", 7, 54, 60],
+      ["infant", 8, 66, 71],
+      ["oral", 1, 18, 29],
+      ["oral", 2, 30, 41],
+      ["oral", 3, 42, 53],
+      ["oral", 4, 54, 65],
+    ]);
+  });
+
+  it("uses days for infant round 1 and months for the rest", () => {
+    const checkups = loadData("checkups").checkups;
+    const first = checkups.find((c) => c.id === "infant-checkup-1");
+    expect(first?.from).toEqual({ days: 14 });
+    expect(first?.to).toEqual({ days: 35 });
+  });
+});
+
+describe("deadlines rules", () => {
+  it("birth registration is one month counted from the first day with extension", () => {
+    const entry = loadData("deadlines").deadlines.find((d) => d.id === "birth-registration");
+    expect(entry?.rule).toEqual({ unit: "month", amount: 1, countFirstDay: true, extendIfNonWorking: true });
+  });
+
+  it("parent and child allowance are 60-day items with extension", () => {
+    const deadlines = loadData("deadlines").deadlines;
+    for (const id of ["parent-allowance", "child-allowance"]) {
+      const entry = deadlines.find((d) => d.id === id);
+      expect(entry?.rule).toEqual({ unit: "day", amount: 60, countFirstDay: true, extendIfNonWorking: true });
+    }
+  });
+
+  it("no deadline is marked fully verified", () => {
+    for (const d of loadData("deadlines").deadlines) {
+      expect(d.verified).not.toBe("full");
+    }
+  });
+});
+
+describe("deadlines/checkups validation failures", () => {
+  const basis = loadData("basis-documents");
+
+  it("rejects a deadline with an unknown basis id", () => {
+    const x = structuredClone(loadData("deadlines")) as unknown as { deadlines: Record<string, unknown>[] };
+    if (x.deadlines[0]) x.deadlines[0].basis_ids = ["no-such-doc"];
+    expect(() => validateDataset("deadlines", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("deadlines", x, basis)).toThrow("no-such-doc");
+  });
+
+  it("rejects a deadline with a malformed as_of", () => {
+    const x = structuredClone(loadData("deadlines")) as unknown as { deadlines: Record<string, unknown>[] };
+    if (x.deadlines[0]) x.deadlines[0].as_of = "2026/10/28";
+    expect(() => validateDataset("deadlines", x, basis)).toThrow(DataValidationError);
+  });
+
+  it("rejects checkups missing infant round 8", () => {
+    const x = structuredClone(loadData("checkups")) as unknown as { checkups: { id: string }[] };
+    x.checkups = x.checkups.filter((c) => c.id !== "infant-checkup-8");
+    expect(() => validateDataset("checkups", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("checkups", x, basis)).toThrow("infant 회차");
+  });
+
+  it("rejects checkups missing oral round 4", () => {
+    const x = structuredClone(loadData("checkups")) as unknown as { checkups: { id: string }[] };
+    x.checkups = x.checkups.filter((c) => c.id !== "oral-checkup-4");
+    expect(() => validateDataset("checkups", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("checkups", x, basis)).toThrow("oral 회차");
+  });
+
+  it("rejects a checkup whose to is before from", () => {
+    const x = structuredClone(loadData("checkups")) as unknown as { checkups: Record<string, unknown>[] };
+    if (x.checkups[0]) x.checkups[0].to = { days: 10 };
+    expect(() => validateDataset("checkups", x, basis)).toThrow(DataValidationError);
+  });
+
+  it("rejects a checkup whose from and to units differ", () => {
+    const x = structuredClone(loadData("checkups")) as unknown as { checkups: Record<string, unknown>[] };
+    if (x.checkups[0]) x.checkups[0].to = { months: 1 };
+    expect(() => validateDataset("checkups", x, basis)).toThrow(DataValidationError);
+  });
 });
 
 describe("ProvenanceSchema", () => {

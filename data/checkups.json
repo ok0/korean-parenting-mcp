@@ -1,0 +1,150 @@
+{
+  "checkups": [
+    {
+      "id": "infant-checkup-1",
+      "program": "infant",
+      "round": 1,
+      "from": { "days": 14 },
+      "to": { "days": 35 },
+      "notes": [
+        "생후 14일째의 기산(출생일 포함 여부)에 따라 시작·끝이 하루 다를 수 있습니다. 검진기관에 확인하세요."
+      ],
+      "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+    },
+    {
+      "id": "infant-checkup-2",
+      "program": "infant",
+      "round": 2,
+      "from": { "months": 4 },
+      "to": { "months": 6 },
+      "notes": [],
+      "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+    },
+    {
+      "id": "infant-checkup-3",
+      "program": "infant",
+      "round": 3,
+      "from": { "months": 9 },
+      "to": { "months": 12 },
+      "notes": [],
+      "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+    },
+    {
+      "id": "infant-checkup-4",
+      "program": "infant",
+      "round": 4,
+      "from": { "months": 18 },
+      "to": { "months": 24 },
+      "notes": [],
+      "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+    },
+    {
+      "id": "infant-checkup-5",
+      "program": "infant",
+      "round": 5,
+      "from": { "months": 30 },
+      "to": { "months": 36 },
+      "notes": [],
+      "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+    },
+    {
+      "id": "infant-checkup-6",
+      "program": "infant",
+      "round": 6,
+      "from": { "months": 42 },
+      "to": { "months": 48 },
+      "notes": [],
+      "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+    },
+    {
+      "id": "infant-checkup-7",
+      "program": "infant",
+      "round": 7,
+      "from": { "months": 54 },
+      "to": { "months": 60 },
+      "notes": [],
+      "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+    },
+    {
+      "id": "infant-checkup-8",
+      "program": "infant",
+      "round": 8,
+      "from": { "months": 66 },
+      "to": { "months": 71 },
+      "notes": [],
+      "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+    },
+    {
+      "id": "oral-checkup-1",
+      "program": "oral",
+      "round": 1,
+      "from": { "months": 18 },
+      "to": { "months": 29 },
+      "notes": [],
+      "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+    },
+    {
+      "id": "oral-checkup-2",
+      "program": "oral",
+      "round": 2,
+      "from": { "months": 30 },
+      "to": { "months": 41 },
+      "notes": [],
+      "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+    },
+    {
+      "id": "oral-checkup-3",
+      "program": "oral",
+      "round": 3,
+      "from": { "months": 42 },
+      "to": { "months": 53 },
+      "notes": [],
+      "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+    },
+    {
+      "id": "oral-checkup-4",
+      "program": "oral",
+      "round": 4,
+      "from": { "months": 54 },
+      "to": { "months": 65 },
+      "notes": [],
+      "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+    }
+  ]
+}
