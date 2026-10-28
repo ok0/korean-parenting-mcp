@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+<header>
+<resultCode>00</resultCode>
+<resultMsg>NORMAL SERVICE.</resultMsg>
+</header>
+<body>
+<numOfRows>10</numOfRows>
+<pageNo>1</pageNo>
+<totalCount>31</totalCount>
+<items>
+<item>
+<TYPE_NAME>임부금기</TYPE_NAME>
+<MIX_TYPE>복합</MIX_TYPE>
+<INGR_CODE>D000363</INGR_CODE>
+<INGR_ENG_NAME>Ibuprofen</INGR_ENG_NAME>
+<INGR_NAME>이부프로펜</INGR_NAME>
+<MIX_INGR>[D000177]Codeine(코데인)</MIX_INGR>
+<FORM_NAME>경질캡슐제, 산제</FORM_NAME>
+<ITEM_SEQ>200210719</ITEM_SEQ>
+<ITEM_NAME>마이폴캡슐(코데인,이부프로펜,아세트아미노펜)</ITEM_NAME>
+<ITEM_PERMIT_DATE>20021112</ITEM_PERMIT_DATE>
+<ENTP_NAME>성원애드콕제약(주)</ENTP_NAME>
+<CHART>흰색 가루가 든 상부녹색, 하부적색의 경질캡슐</CHART>
+<CLASS_CODE>08110</CLASS_CODE>
+<CLASS_NAME>아편알카로이드계 제제</CLASS_NAME>
+<ETC_OTC_NAME>전문의약품</ETC_OTC_NAME>
+<MAIN_INGR>[M040353]아세트아미노펜/[M051259]이부프로펜/[M223188]코데인인산염수화물</MAIN_INGR>
+<NOTIFICATION_DATE>20081211</NOTIFICATION_DATE>
+<PROHBT_CONTENT>(경구, 주사)- 임부에 대한 안전성 미확립.- 임신 말기에 투여시 태아의 동맥관조기폐쇄 가능성.- 임신 약 20주 이후 비스테로이드성 소염제의 사용은 태아의 신기능 이상을 일으켜 양수 과소증 유발 가능 및 경우에 따라 신생아 신장애 발생 가능(외용)- 임신 후반기 투여 시 출산 지연,  출산 시 실혈, 신생아 출혈, 태아의 심폐독성(동맥관 조기폐쇄를 수반하는 폐고혈압), 신기능 저하로 양수과소증을 수반하는 신부전 발생 가능</PROHBT_CONTENT>
+<REMARK>겔제, 첩부제 포함</REMARK>
+<INGR_ENG_NAME_FULL>Ibuprofen(이부프로펜)</INGR_ENG_NAME_FULL>
+<CHANGE_DATE/>
+</item>
+<item>
+<TYPE_NAME>임부금기</TYPE_NAME>
+<MIX_TYPE>복합</MIX_TYPE>
+<INGR_CODE>D000773</INGR_CODE>
+<INGR_ENG_NAME>Tramadol</INGR_ENG_NAME>
+<INGR_NAME>트라마돌</INGR_NAME>
+<MIX_INGR>[D000147]Acetaminophen(아세트아미노펜)</MIX_INGR>
+<FORM_NAME>필름코팅정</FORM_NAME>
+<ITEM_SEQ>200705591</ITEM_SEQ>
+<ITEM_NAME>울트라메트세미정(트라마돌염산염, 아세트아미노펜)</ITEM_NAME>
+<ITEM_PERMIT_DATE>20070516</ITEM_PERMIT_DATE>
+<ENTP_NAME>고려제약(주)</ENTP_NAME>
+<CHART>연한 황색의 장방형 필름코팅 정제</CHART>
+<CLASS_CODE>01140</CLASS_CODE>
+<CLASS_NAME>해열.진통.소염제</CLASS_NAME>
+<ETC_OTC_NAME>전문의약품</ETC_OTC_NAME>
+<MAIN_INGR>[M222893]트라마돌염산염/[M040353]아세트아미노펜</MAIN_INGR>
+<NOTIFICATION_DATE>20121121</NOTIFICATION_DATE>
+<PROHBT_CONTENT>임부에 대한 안전성 미확립.동물 실험에서 돌연변이성, 발암성, 생식독성 보고.임신 말기 고용량 단기 투여시 신생아의 호흡억제 가능성.임신중 장기 투여시 신생아에게 금단증상 야기 가능성.(트라마돌에 의함)</PROHBT_CONTENT>
+<REMARK/>
+<INGR_ENG_NAME_FULL>Tramadol(트라마돌)</INGR_ENG_NAME_FULL>
+<CHANGE_DATE>20260219</CHANGE_DATE>
+</item>
+<item>
+<TYPE_NAME>임부금기</TYPE_NAME>
+<MIX_TYPE>복합</MIX_TYPE>
+<INGR_CODE>D000773</INGR_CODE>
+<INGR_ENG_NAME>Tramadol</INGR_ENG_NAME>
+<INGR_NAME>트라마돌</INGR_NAME>
+<MIX_INGR>[D000147]Acetaminophen(아세트아미노펜)</MIX_INGR>
+<FORM_NAME>필름코팅정</FORM_NAME>
+<ITEM_SEQ>200705592</ITEM_SEQ>
+<ITEM_NAME>울트라메트정(트라마돌염산염, 아세트아미노펜)</ITEM_NAME>
+<ITEM_PERMIT_DATE>20070516</ITEM_PERMIT_DATE>
+<ENTP_NAME>고려제약(주)</ENTP_NAME>
+<CHART>연한 황색의 장방형 필름코팅정제</CHART>
+<CLASS_CODE>01140</CLASS_CODE>
+<CLASS_NAME>해열.진통.소염제</CLASS_NAME>
+<ETC_OTC_NAME>전문의약품</ETC_OTC_NAME>
+<MAIN_INGR>[M222893]트라마돌염산염/[M040353]아세트아미노펜</MAIN_INGR>
+<NOTIFICATION_DATE>20121121</NOTIFICATION_DATE>
+<PROHBT_CONTENT>임부에 대한 안전성 미확립.동물 실험에서 돌연변이성, 발암성, 생식독성 보고.임신 말기 고용량 단기 투여시 신생아의 호흡억제 가능성.임신중 장기 투여시 신생아에게 금단증상 야기 가능성.(트라마돌에 의함)</PROHBT_CONTENT>
+<REMARK/>
+<INGR_ENG_NAME_FULL>Tramadol(트라마돌)</INGR_ENG_NAME_FULL>
+<CHANGE_DATE>20260219</CHANGE_DATE>
+</item>
+</items>
+</body>
+</response>
