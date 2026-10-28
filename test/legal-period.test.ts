@@ -87,19 +87,19 @@ describe("computeDeadline — 비근무일 연장 (민법 제161조)", () => {
 
 describe("computeDeadline — 데이터 누락 플래그", () => {
   it("데이터가 없는 연도는 holidayDataMissing true", () => {
-    const sat = run("2028-01-01", rule("day", 1, true, true));
-    expect(formatDate(sat.end)).toBe("2028-01-03");
-    expect(formatDate(sat.extendedFrom as CivilDate)).toBe("2028-01-01");
+    const sat = run("2029-01-06", rule("day", 1, true, true));
+    expect(formatDate(sat.end)).toBe("2029-01-08");
+    expect(formatDate(sat.extendedFrom as CivilDate)).toBe("2029-01-06");
     expect(sat.holidayDataMissing).toBe(true);
 
-    const march = run("2028-03-01", rule("day", 1, true, true));
-    expect(formatDate(march.end)).toBe("2028-03-01");
+    const march = run("2029-03-01", rule("day", 1, true, true));
+    expect(formatDate(march.end)).toBe("2029-03-01");
     expect(Object.hasOwn(march, "extendedFrom")).toBe(false);
     expect(march.holidayDataMissing).toBe(true);
   });
 
   it("연장 옵션이 꺼져 있으면 데이터 누락 플래그는 false", () => {
-    expect(run("2028-01-01", rule("day", 1, true, false)).holidayDataMissing).toBe(false);
+    expect(run("2029-01-06", rule("day", 1, true, false)).holidayDataMissing).toBe(false);
   });
 });
 

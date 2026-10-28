@@ -106,8 +106,8 @@ describe("bundled holiday baseline", () => {
     expect(passing).toEqual([...data.covers_years].sort());
   });
 
-  it("is a manual-research dataset", () => {
-    expect(loadData("holidays").source).toBe("manual-research");
+  it("has a known source", () => {
+    expect(["manual-research", "kasi-api"]).toContain(loadData("holidays").source);
   });
 });
 
@@ -131,16 +131,16 @@ describe("stale bundle note", () => {
 
 describe("uncovered year handling", () => {
   it("adds one note per uncovered year, deduplicated", () => {
-    const calendar = bundledCalendar({ years: [2028, 2026, 2028] });
+    const calendar = bundledCalendar({ years: [2029, 2026, 2029] });
     expect(calendar.notes).toHaveLength(1);
-    expect(calendar.notes[0]).toContain("2028년 공휴일 정보 없음");
+    expect(calendar.notes[0]).toContain("2029년 공휴일 정보 없음");
   });
 
   it("reports coverage per year and treats uncovered dates as non-holidays", () => {
-    const calendar = bundledCalendar({ years: [2028, 2026, 2028] });
-    expect(calendar.coverage(2028)).toBe("none");
+    const calendar = bundledCalendar({ years: [2029, 2026, 2029] });
+    expect(calendar.coverage(2029)).toBe("none");
     expect(calendar.coverage(2026)).toBe("bundled");
-    expect(calendar.isPublicHoliday(parseDate("2028-01-01"))).toBe(false);
+    expect(calendar.isPublicHoliday(parseDate("2029-01-01"))).toBe(false);
   });
 
   it("produces identical notes for identical options", () => {

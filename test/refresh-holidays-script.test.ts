@@ -151,14 +151,14 @@ describe("refresh-holidays script", () => {
     expect(r2.code).toBe(2);
     expect(readFileSync(file).equals(before)).toBe(true);
 
-    const r3 = await run(["--years", "2028"], { 2028: () => emptyRes() });
+    const r3 = await run(["--years", "2029"], { 2029: () => emptyRes() });
     expect(r3.code).toBe(2);
-    expect(readHolidays().years["2028"]).toBeUndefined();
+    expect(readHolidays().years["2029"]).toBeUndefined();
     expect(readFileSync(file).equals(before)).toBe(true);
 
-    const r4 = await run(["--years", "2028"], { 2028: () => xmlRes(kasiXml([], { resultCode: "22" })) });
+    const r4 = await run(["--years", "2029"], { 2029: () => xmlRes(kasiXml([], { resultCode: "22" })) });
     expect(r4.code).toBe(2);
-    expect(readHolidays().years["2028"]).toBeUndefined();
+    expect(readHolidays().years["2029"]).toBeUndefined();
     expect(readFileSync(file).equals(before)).toBe(true);
   });
 

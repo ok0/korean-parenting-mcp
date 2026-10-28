@@ -211,7 +211,7 @@ describe("get_timeline runtime holidays", () => {
     for (const count of countByYear(flaky.urls).values()) expect(count).toBe(2);
   });
 
-  it("AC6 mixed sources and out-of-bundle year", async () => {
+  it("AC6 mixed sources (live, bundled, beyond-bundle when uncovered)", async () => {
     const X = { reference_date: "2026-11-25", birth_date: "2026-11-20", include_past: true };
     const route: Route = (y) => {
       if (y === 2026) return okYear(y);
@@ -222,11 +222,17 @@ describe("get_timeline runtime holidays", () => {
     const t = text(await runTool(getTimelineTool, X, ctxWith(mock.fetch)));
     const years = kasiYears(mock.urls);
     expect(years, "fixture precondition: 2026·2027·2028 requested").toEqual(expect.arrayContaining([2026, 2027, 2028]));
+    const covered = loadData("holidays").covers_years;
+    const bundled = [2027, 2028].filter((y) => covered.includes(y));
     const footer = footerOf(t);
     expect(footer).toContain("2026년 공공데이터 API 확인");
-    expect(footer).toContain("2027년 번들(생성일");
-    expect(footer).toContain("2028년 정보 없음");
-    expect(body(t)).toContain("2028년 공휴일 정보 없음");
+    expect(footer).toContain(`${bundled.join("·")}년 번들(생성일`);
+    if (covered.includes(2028)) {
+      expect(body(t)).not.toContain("공휴일 정보 없음");
+    } else {
+      expect(footer).toContain("2028년 정보 없음");
+      expect(body(t)).toContain("2028년 공휴일 정보 없음");
+    }
     expect(body(t)).toBe(body(await keyless(X)));
   });
 

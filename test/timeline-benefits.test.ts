@@ -129,7 +129,7 @@ describe("benefit amount periods", () => {
 
     const notes = none!.notes.join("\n");
     expect(notes).toContain("사용기한: 확인 필요");
-    expect(notes).toContain("2028년 공휴일 정보 없음");
+    expect(notes.includes("2028년 공휴일 정보 없음")).toBe(!loadData("holidays").covers_years.includes(2028));
 
     const [outside] = firstMeetingItems(inp("2023-12-31"));
     expect(outside).toBeDefined();

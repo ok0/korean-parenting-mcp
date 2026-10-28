@@ -38,15 +38,15 @@ describe("resolveHolidayCalendar", () => {
     const spy = vi.fn(() => {
       throw new Error("x");
     });
-    const cal = await resolveHolidayCalendar([2026, 2028], ctxWith(spy as unknown as typeof fetch, {}), {
+    const cal = await resolveHolidayCalendar([2026, 2029], ctxWith(spy as unknown as typeof fetch, {}), {
       referenceDate: REF,
     });
     expect(spy).not.toHaveBeenCalled();
     expect(cal.coverage(2026)).toBe("bundled");
-    expect(cal.coverage(2028)).toBe("none");
+    expect(cal.coverage(2029)).toBe("none");
     expect(cal.notes).toEqual(bundledCalendar({ referenceDate: REF }).notes);
     expect(cal.checkedAt).toBeUndefined();
-    expect(cal.requestedYears).toEqual([2026, 2028]);
+    expect(cal.requestedYears).toEqual([2026, 2029]);
   });
 
   it("key: sane response becomes live", async () => {
@@ -139,16 +139,16 @@ describe("resolveHolidayCalendar", () => {
       if (year === 2027) return code30();
       return xmlRes(kasiXml([]));
     });
-    const cal = await resolveHolidayCalendar([2026, 2027, 2028], ctxWith(mock.fetch));
+    const cal = await resolveHolidayCalendar([2026, 2027, 2029], ctxWith(mock.fetch));
     expect(cal.coverage(2026)).toBe("live");
     expect(cal.coverage(2027)).toBe("bundled");
-    expect(cal.coverage(2028)).toBe("none");
+    expect(cal.coverage(2029)).toBe("none");
     const prefixNote = cal.notes.find((n) => n.startsWith(LIVE_UNAVAILABLE_PREFIX)) ?? "";
-    expect(prefixNote.includes("2027·2028년")).toBe(true);
+    expect(prefixNote.includes("2027·2029년")).toBe(true);
     const label = holidaySourceLabel(cal, loadData("holidays").generated_at);
     expect(label).toContain("2026년 공공데이터 API 확인(조회 시각");
-    expect(label).toContain("2027년 번들(생성일 2026-10-28)");
-    expect(label).toContain("2028년 정보 없음");
+    expect(label).toContain(`2027년 번들(생성일 ${loadData("holidays").generated_at})`);
+    expect(label).toContain("2029년 정보 없음");
   });
 
   it("cache: one call per year, failures retried", async () => {
