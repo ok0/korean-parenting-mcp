@@ -60,11 +60,14 @@ export function boolField(doc: FieldDoc) {
 }
 
 export function keywordField(doc: FieldDoc, len?: { min?: number; max?: number }) {
+  const min = len?.min ?? 1;
+  const max = len?.max ?? 50;
+  const msg = `${min}~${max}자여야 합니다(예: ${doc.example})`;
   return z
-    .string()
+    .string({ error: `${min}~${max}자 문자열이 필요합니다(예: ${doc.example})` })
     .trim()
-    .min(len?.min ?? 1, { message: `${len?.min ?? 1}~${len?.max ?? 50}자여야 합니다(예: ${doc.example})` })
-    .max(len?.max ?? 50, { message: `${len?.min ?? 1}~${len?.max ?? 50}자여야 합니다(예: ${doc.example})` })
+    .min(min, { message: msg })
+    .max(max, { message: msg })
     .describe(describeField(doc));
 }
 
