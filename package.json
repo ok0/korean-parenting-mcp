@@ -1,0 +1,33 @@
+{
+  "name": "korean-parenting-mcp",
+  "version": "0.1.0",
+  "description": "한국 임신·출산·육아 일정과 공공 정보를 안내하는 비공식 MCP 서버",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "korean-parenting-mcp": "build/index.js"
+  },
+  "files": [
+    "build"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('build',{recursive:true,force:true})\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "npm run clean && tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "verify": "npm run typecheck && npm run build && npm run test",
+    "start": "node build/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.12"
+  }
+}
