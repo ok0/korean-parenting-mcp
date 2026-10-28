@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { normalizeRegion } from "../src/region/normalize.js";
+import { normalizeRegion, nemcQuery } from "../src/region/normalize.js";
+import { loadData } from "../src/data-store/load.js";
 import { regionField, REGION_FIELD_DOC } from "../src/tools/shared/schema.js";
 
 describe("normalizeRegion 성공", () => {
@@ -146,5 +147,29 @@ describe("regionField 스키마 헬퍼", () => {
 
   it("exposes the default field doc", () => {
     expect(REGION_FIELD_DOC.example).toBe("성동구, 수원시 영통구");
+  });
+});
+
+describe("nemcQuery", () => {
+  it("uses nemc_q0/nemc_q1 from regions.json", () => {
+    const r = normalizeRegion("성동구");
+    expect(r.ok && nemcQuery(r.region)).toEqual({ Q0: "서울특별시", Q1: "성동구" });
+  });
+
+  it("follows data for 일반구", () => {
+    const r = normalizeRegion("수원시 영통구");
+    const g = loadData("regions").sigungu.find((x) => x.code === "41117")!;
+    expect(r.ok && nemcQuery(r.region)?.Q1).toBe(g.nemc_q1);
+  });
+
+  it("returns only Q0 for sido-only input", () => {
+    const r = normalizeRegion("서울");
+    const q = r.ok ? nemcQuery(r.region) : undefined;
+    expect(q).toEqual({ Q0: "서울특별시" });
+    expect(q?.Q1).toBeUndefined();
+  });
+
+  it("returns undefined for unknown sido", () => {
+    expect(nemcQuery({ sido: "없는도" })).toBeUndefined();
   });
 });

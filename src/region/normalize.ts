@@ -168,3 +168,13 @@ export function normalizeRegion(input: string): RegionResult {
   if (/(동|읍|면|리|가|로|길|번지)$|\d/.test(s)) return unknownResult(MSG_SUBGU);
   return unknownResult(MSG_UNKNOWN);
 }
+
+export function nemcQuery(region: Region): { Q0: string; Q1?: string } | undefined {
+  const idx = index();
+  const sido = idx.sidoByAlias.get(compact(region.sido));
+  if (!sido) return undefined;
+  if (region.code === undefined) return { Q0: sido.nemc_q0 };
+  const g = idx.sggByCode.get(region.code);
+  if (!g || g.sido_code !== sido.code) return undefined;
+  return { Q0: sido.nemc_q0, Q1: g.nemc_q1 };
+}
