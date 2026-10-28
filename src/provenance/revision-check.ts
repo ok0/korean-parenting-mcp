@@ -13,6 +13,7 @@ export interface RevisionStatus {
   message: string;
   reason?: UnavailableReason;
   link?: string;
+  attachment?: { pdfLink?: string; fileLink?: string };
   stored?: Record<string, string>;
   current?: Record<string, string>;
 }
@@ -162,6 +163,13 @@ async function checkOne(doc: BasisDoc, ctx: ToolContext, client: LawClient | und
       current,
     };
     if (found.row.link !== undefined) status.link = found.row.link;
+    if (key.kind === "licbyl") {
+      const r = found.row as LicbylRow;
+      const attachment: { pdfLink?: string; fileLink?: string } = {};
+      if (r.pdfLink !== undefined) attachment.pdfLink = r.pdfLink;
+      if (r.fileLink !== undefined) attachment.fileLink = r.fileLink;
+      if (Object.keys(attachment).length > 0) status.attachment = attachment;
+    }
     return status;
   } catch (err) {
     const kind = err instanceof ToolError ? err.kind : "INTERNAL";

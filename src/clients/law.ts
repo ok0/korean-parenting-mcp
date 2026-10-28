@@ -23,6 +23,8 @@ export interface LicbylRow {
   promulgated?: string;
   promulgationNo?: string;
   link?: string;
+  pdfLink?: string;
+  fileLink?: string;
 }
 
 export interface LawRow {
@@ -243,6 +245,8 @@ export function createLawClient(ctx: ToolContext, opts?: { timeoutMs?: number })
             promulgated: str(r["공포일자"]),
             promulgationNo: str(r["공포번호"]),
             link: lawLink(str(r["별표법령상세링크"]) ?? str(r["별표서식PDF파일링크"])),
+            pdfLink: lawLink(str(r["별표서식PDF파일링크"])),
+            fileLink: lawLink(str(r["별표서식파일링크"])),
           })),
       );
     },
