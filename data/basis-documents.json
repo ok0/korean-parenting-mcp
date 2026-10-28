@@ -198,6 +198,117 @@
       "as_of": "2026-10-28",
       "verified": "partial",
       "note": "값은 보건복지부 보도자료(2023-07-27)의 별표 1 직접 인용으로 확인. 법제처 별표 원문(개정 2015.7.29. 표기)은 미판독이며 이후 개정 여부 미확인. law_api 식별자는 M6에서 확정"
+    },
+    {
+      "id": "equal-employment-act",
+      "title": "남녀고용평등과 일·가정 양립 지원에 관한 법률",
+      "doc_no": "법률 제21476호 (MST 284457)",
+      "kind": "law",
+      "promulgated": "2026-03-17",
+      "effective": "2026-09-18",
+      "url": "https://www.law.go.kr/법령/남녀고용평등과일ㆍ가정양립지원에관한법률",
+      "law_api": {
+        "kind": "law",
+        "law_name": "남녀고용평등과 일ㆍ가정 양립 지원에 관한 법률",
+        "mst": "284457",
+        "effective": "2026-09-18"
+      },
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "법제처 DRF 본문으로 제18조의2(유급 20일, 3회 분할, 출산예정일 50일 전~출산일부터 120일)와 제19조 확인. 부칙 경과조치 없음. 시행령(MST 288719)·시행규칙(MST 288939) 신청 절차 조문 미판독. 개정 전 조문은 확인하지 않음"
+    },
+    {
+      "id": "labor-standards-act",
+      "title": "근로기준법",
+      "doc_no": "MST 285279",
+      "kind": "law",
+      "promulgated": "2026-04-07",
+      "effective": "2026-10-08",
+      "url": "https://www.law.go.kr/법령/근로기준법",
+      "law_api": {
+        "kind": "law",
+        "law_name": "근로기준법",
+        "mst": "285279",
+        "effective": "2026-10-08"
+      },
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "제74조 조문시행일 2026-10-08. DRF 응답 일부가 요약본이라 문구 재확인 필요. 법률 번호 미확인"
+    },
+    {
+      "id": "child-allowance-act",
+      "title": "아동수당법",
+      "doc_no": "아동수당법 개정(공포 2026-03-20, 법률 번호 미확인)",
+      "kind": "law",
+      "promulgated": "2026-03-20",
+      "url": "https://www.law.go.kr/법령/아동수당법",
+      "law_api": {
+        "kind": "law",
+        "law_name": "아동수당법"
+      },
+      "as_of": "2026-10-28",
+      "verified": "false",
+      "note": "공포일은 복지부 보도자료 기재값. 조문·시행일·소급 규정 원문 미대조"
+    },
+    {
+      "id": "child-allowance-mohw-2026-04",
+      "title": "보건복지부 보도자료: 아동수당 지급 대상·금액 확대",
+      "doc_no": "보도자료 list_no=1490257",
+      "kind": "web",
+      "effective": "2026-04-24",
+      "url": "https://www.mohw.go.kr/board.es?mid=a10503010100&bid=0027&act=view&list_no=1490257&tag=&nPage=1",
+      "law_api": null,
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "2026-04 게시(게시일 미확인), 확대 지급일 2026-04-24를 effective로 기록. 2026 만 9세 미만~2030 만 13세 미만 일정, 월 10만원, 지역 가산(비수도권 10.5만, 인구감소지역 11만·12만, 지역사랑상품권 +1만)"
+    },
+    {
+      "id": "first-meeting-gov24",
+      "title": "정부24 첫만남이용권 지원",
+      "doc_no": "serviceInfo/135200005015",
+      "kind": "web",
+      "amended": "2025-11-28",
+      "url": "https://www.gov.kr/portal/service/serviceInfo/135200005015",
+      "law_api": null,
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "2024-01-01 이후 출생 첫째 200만원·둘째 이상 300만원, 신청 2년 이내. 사용기한은 본문에 없음(복지부 원문 미확인). 근거 저출산·고령사회기본법 제10조 제3항 원문 미대조"
+    },
+    {
+      "id": "mohw-pregnancy-medical-cost",
+      "title": "보건복지부 임신·출산 진료비 지원사업",
+      "doc_no": "보건복지부 메뉴 mid=a10705020100",
+      "kind": "web",
+      "amended": "2026-03-31",
+      "url": "https://www.mohw.go.kr/menu.es?mid=a10705020100",
+      "law_api": null,
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "단태아 100만원, 다태아 태아당 100만원(2025-01-01 이후 신청). 일부 자료의 다태아 140만원 표기와 상이. 모자보건법 2027-01-01 개정 시행으로 변경 가능"
+    },
+    {
+      "id": "easylaw-parental-leave-pay",
+      "title": "생활법령정보 육아휴직 급여",
+      "doc_no": "생활법령 csmSeq=1380 ccfNo=2 cciNo=1 cnpClsNo=2",
+      "kind": "web",
+      "amended": "2026-09-15",
+      "url": "https://easylaw.go.kr/CSP/CnpClsMain.laf?popMenu=ov&csmSeq=1380&ccfNo=2&cciNo=1&cnpClsNo=2",
+      "law_api": null,
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "정부 해설로 법적 효력 없음. 2026-09-18 개정 미반영 가능, 고용보험법 제70조 원문 미확인"
+    },
+    {
+      "id": "childcare-waitlist-portal",
+      "title": "아이사랑 등록대기 신청(어린이집 입소대기)",
+      "doc_no": "아이사랑 menuno=176",
+      "kind": "web",
+      "effective": "2026-10-28",
+      "url": "https://www.childcare.go.kr/?menuno=176",
+      "law_api": null,
+      "as_of": "2026-10-28",
+      "verified": "false",
+      "note": "게시·수정일 미확인으로 조회일(2026-10-28)을 날짜 칸에 기록. 로그인 필요 가능, 유보통합포털 이관 시 주소 변경 가능. 임신 중 신청 가능 여부 미확인"
     }
   ]
 }

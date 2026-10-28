@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { tryParseDate } from "../date/civil-date.js";
+import { addDays, formatDate, parseDate, tryParseDate } from "../date/civil-date.js";
 import { checkHolidaySanity } from "../date/holiday-sanity.js";
 
 export const IsoDate = z
@@ -470,3 +470,216 @@ export const PrenatalSchema = ProvenanceFields.extend({
   }
 });
 export type PrenatalFile = z.output<typeof PrenatalSchema>;
+
+const Won = z.number().int().min(1).max(100_000_000);
+const Day = z.number().int().min(1).max(365);
+
+export function checkVersionTable(
+  versions: readonly { effective_from: string; effective_to?: string }[],
+  ctx: z.RefinementCtx,
+  path: (string | number)[],
+): void {
+  versions.forEach((cur, i) => {
+    if (cur.effective_to !== undefined && cur.effective_to < cur.effective_from) {
+      ctx.addIssue({
+        code: "custom",
+        path: [...path, i, "effective_to"],
+        message: "버전 구간 시작이 끝보다 늦습니다",
+      });
+    }
+    if (cur.effective_to === undefined && i < versions.length - 1) {
+      ctx.addIssue({
+        code: "custom",
+        path: [...path, i, "effective_to"],
+        message: "마지막 버전만 effective_to를 생략할 수 있습니다",
+      });
+    }
+    if (i > 0) {
+      const prev = versions[i - 1];
+      if (prev) {
+        if (cur.effective_from <= prev.effective_from) {
+          ctx.addIssue({
+            code: "custom",
+            path: [...path, i, "effective_from"],
+            message: "버전은 effective_from 오름차순이어야 합니다",
+          });
+        } else if (prev.effective_to !== undefined && prev.effective_to >= cur.effective_from) {
+          ctx.addIssue({
+            code: "custom",
+            path: [...path, i, "effective_from"],
+            message: "버전 구간이 겹칩니다",
+          });
+        }
+      }
+    }
+  });
+}
+
+const BenefitVersionBase = ProvenanceFields.extend({
+  effective_from: IsoDate,
+  effective_to: IsoDate.optional(),
+  notes: z.array(z.string().min(1)),
+});
+
+const ParentAllowanceVersionSchema = BenefitVersionBase.extend({
+  monthly_won: z.strictObject({ age0: Won, age1: Won }),
+}).superRefine(requireVerifier);
+
+const ChildAllowanceVersionSchema = BenefitVersionBase.extend({
+  monthly_won: Won,
+  age_under_years: z.number().int().min(1).max(18),
+  regional_rates: z.array(z.strictObject({ label: z.string().min(1), monthly_won: Won })).min(1),
+  voucher_bonus_won: Won,
+}).superRefine(requireVerifier);
+
+const FirstMeetingVersionSchema = BenefitVersionBase.extend({
+  amount_won: z.strictObject({ first: Won, second_plus: Won }),
+  application_period: PeriodRuleSchema,
+  usage_period_note: z.string().min(1),
+}).superRefine(requireVerifier);
+
+const MedicalCostVersionSchema = BenefitVersionBase.extend({
+  per_fetus_won: Won,
+  usage_period_note: z.string().min(1),
+  conflict_note: z.string().min(1),
+}).superRefine(requireVerifier);
+
+const versionTable = <T extends z.ZodType>(v: T) =>
+  z.object({
+    select_by: z.enum(["reference_date", "birth_date"]),
+    versions: z.array(v).min(1),
+  });
+
+export const BenefitsSchema = z
+  .object({
+    parent_allowance: versionTable(ParentAllowanceVersionSchema),
+    child_allowance: versionTable(ChildAllowanceVersionSchema),
+    first_meeting: versionTable(FirstMeetingVersionSchema),
+    pregnancy_medical: versionTable(MedicalCostVersionSchema),
+  })
+  .superRefine((v, ctx) => {
+    for (const k of ["parent_allowance", "child_allowance", "first_meeting", "pregnancy_medical"] as const) {
+      checkVersionTable(v[k].versions, ctx, [k, "versions"]);
+    }
+  });
+
+export type BenefitsFile = z.output<typeof BenefitsSchema>;
+export type ParentAllowanceVersion = z.output<typeof ParentAllowanceVersionSchema>;
+export type ChildAllowanceVersion = z.output<typeof ChildAllowanceVersionSchema>;
+export type FirstMeetingVersion = z.output<typeof FirstMeetingVersionSchema>;
+export type MedicalCostVersion = z.output<typeof MedicalCostVersionSchema>;
+export type BenefitTable<T> = { select_by: "reference_date" | "birth_date"; versions: T[] };
+
+const SpouseLeaveVersionSchema = ProvenanceFields.extend({
+  label: z.string().min(1),
+  effective_from: IsoDate.nullable(),
+  effective_to: IsoDate.nullable(),
+  paid_days: z.number().int().min(1).max(60).nullable(),
+  split_max: z.number().int().min(1).max(10).nullable(),
+  before_due_days: z.number().int().min(1).max(120).nullable(),
+  after_birth_days: z.number().int().min(1).max(365),
+  notes: z.array(z.string().min(1)),
+}).superRefine(requireVerifier);
+
+const MaternityLeaveSchema = ProvenanceFields.extend({
+  article_label: z.string().min(1),
+  article_effective: IsoDate,
+  single: z.strictObject({ total_days: Day, premature_days: Day, after_birth_min_days: Day, paid_days: Day }),
+  multiple: z.strictObject({ total_days: Day, after_birth_min_days: Day, paid_days: Day }),
+  notes: z.array(z.string().min(1)),
+}).superRefine(requireVerifier);
+
+const ParentalLeaveSchema = ProvenanceFields.extend({
+  article_label: z.string().min(1),
+  article_effective: IsoDate,
+  age_under_years: z.number().int().min(1).max(18),
+  age_label: z.string().min(1),
+  notes: z.array(z.string().min(1)).min(1),
+}).superRefine(requireVerifier);
+
+export const LeaveSchema = z
+  .object({
+    spouse_leave: z.object({
+      versions: z.array(SpouseLeaveVersionSchema),
+      transition_note: z.string().min(1),
+      born_mode_note: z.string().min(1),
+    }),
+    maternity_leave: MaternityLeaveSchema,
+    parental_leave: ParentalLeaveSchema,
+  })
+  .superRefine((v, ctx) => {
+    const versions = v.spouse_leave.versions;
+    const path = ["spouse_leave", "versions"];
+    if (versions.length !== 2) {
+      ctx.addIssue({ code: "custom", path, message: "배우자 출산휴가 버전은 2개(개정 전/후)여야 합니다" });
+      return;
+    }
+    const old = versions[0];
+    const neu = versions[1];
+    if (!old || !neu) return;
+    if (old.effective_to === null || neu.effective_from === null) {
+      ctx.addIssue({
+        code: "custom",
+        path,
+        message: "개정 전 버전에는 effective_to, 개정 후 버전에는 effective_from이 필요합니다",
+      });
+      return;
+    }
+    if (neu.effective_to !== null) {
+      ctx.addIssue({ code: "custom", path: [...path, 1, "effective_to"], message: "개정 후 버전은 effective_to가 null이어야 합니다" });
+    }
+    if (old.effective_from !== null && old.effective_from > old.effective_to) {
+      ctx.addIssue({ code: "custom", path: [...path, 0, "effective_to"], message: "버전 구간 시작이 끝보다 늦습니다" });
+    }
+    if (formatDate(addDays(parseDate(old.effective_to), 1)) !== neu.effective_from) {
+      ctx.addIssue({ code: "custom", path: [...path, 1, "effective_from"], message: "두 버전이 맞닿아야 합니다(공백·중첩 불가)" });
+    }
+    if (neu.paid_days === null || neu.split_max === null || neu.before_due_days === null) {
+      ctx.addIssue({
+        code: "custom",
+        path: [...path, 1],
+        message: "신법 버전에는 paid_days·split_max·before_due_days가 필요합니다",
+      });
+    }
+  });
+
+export type LeaveFile = z.output<typeof LeaveSchema>;
+export type SpouseLeaveVersion = z.output<typeof SpouseLeaveVersionSchema>;
+export type MaternityLeave = z.output<typeof MaternityLeaveSchema>;
+export type ParentalLeave = z.output<typeof ParentalLeaveSchema>;
+
+export const LOCAL_GUIDANCE_IDS = ["health-center-prenatal", "daycare-waitlist", "local-extra-support"] as const;
+
+const LocalGuidanceEntrySchema = ProvenanceFields.extend({
+  id: z.enum(LOCAL_GUIDANCE_IDS),
+  title: z.string().min(1),
+  modes: z.array(z.enum(["pregnant", "born"])).min(1),
+  guidance: z.array(z.string().min(1)).min(1),
+  contact_template: z.string().includes("{region}", { message: "contact_template에 {region} 자리표시자가 필요합니다" }),
+  contact_default: z.string().min(1),
+  url: z.url().optional(),
+}).superRefine(requireVerifier);
+
+export const LocalGuidanceSchema = z
+  .object({
+    section_title: z.string().min(1),
+    region_missing_note: z.string().min(1),
+    entries: z.array(LocalGuidanceEntrySchema),
+  })
+  .superRefine((v, ctx) => {
+    const seen = new Set<string>();
+    v.entries.forEach((e) => {
+      if (seen.has(e.id)) {
+        ctx.addIssue({ code: "custom", path: ["entries"], message: `중복 지역 안내 id: ${e.id}` });
+      }
+      seen.add(e.id);
+    });
+    for (const id of LOCAL_GUIDANCE_IDS) {
+      if (!seen.has(id)) {
+        ctx.addIssue({ code: "custom", path: ["entries"], message: `지역 안내 항목 누락: ${id}` });
+      }
+    }
+  });
+
+export type LocalGuidanceFile = z.output<typeof LocalGuidanceSchema>;
+export type LocalGuidanceEntry = z.output<typeof LocalGuidanceEntrySchema>;

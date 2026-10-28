@@ -4,21 +4,36 @@ import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import {
   BasisDocumentsSchema,
+  BenefitsSchema,
   CheckupsSchema,
   DeadlinesSchema,
   HolidaysSchema,
+  LeaveSchema,
+  LocalGuidanceSchema,
   PrenatalSchema,
   VaccinationsSchema,
   type BasisDoc,
   type BasisDocuments,
+  type BenefitsFile,
   type CheckupsFile,
   type DeadlinesFile,
   type HolidaysFile,
+  type LeaveFile,
+  type LocalGuidanceFile,
   type PrenatalFile,
   type VaccinationsFile,
 } from "./schema.js";
 
-export type DatasetName = "basis-documents" | "holidays" | "deadlines" | "checkups" | "vaccinations" | "prenatal";
+export type DatasetName =
+  | "basis-documents"
+  | "holidays"
+  | "deadlines"
+  | "checkups"
+  | "vaccinations"
+  | "prenatal"
+  | "benefits"
+  | "leave"
+  | "local-guidance";
 
 export interface DatasetMap {
   "basis-documents": BasisDocuments;
@@ -27,6 +42,9 @@ export interface DatasetMap {
   checkups: CheckupsFile;
   vaccinations: VaccinationsFile;
   prenatal: PrenatalFile;
+  benefits: BenefitsFile;
+  leave: LeaveFile;
+  "local-guidance": LocalGuidanceFile;
 }
 
 const SCHEMAS = {
@@ -36,6 +54,9 @@ const SCHEMAS = {
   checkups: CheckupsSchema,
   vaccinations: VaccinationsSchema,
   prenatal: PrenatalSchema,
+  benefits: BenefitsSchema,
+  leave: LeaveSchema,
+  "local-guidance": LocalGuidanceSchema,
 } as const;
 
 export class DataValidationError extends Error {

@@ -1,0 +1,45 @@
+{
+  "section_title": "지역·기관별 확인 사항",
+  "region_missing_note": "지역을 입력하면 확인처가 구체화됩니다(예: region: \"성동구\").",
+  "entries": [
+    {
+      "id": "health-center-prenatal",
+      "title": "보건소 산전검사",
+      "modes": ["pregnant"],
+      "guidance": ["보건소마다 임신부 산전검사 항목과 비용 지원이 다릅니다. 이 도구는 지역별 사업 내용을 조회하지 않습니다."],
+      "contact_template": "{region} 보건소에 확인",
+      "contact_default": "관할 보건소에 확인",
+      "basis_ids": ["mch-act-rule-annex1"],
+      "as_of": "2026-10-28",
+      "verified": "false",
+      "note": "임산부 정기 건강진단 근거만 연결. 지역별 산전검사 사업은 미조사"
+    },
+    {
+      "id": "daycare-waitlist",
+      "title": "어린이집 입소대기 신청 시기",
+      "modes": ["pregnant", "born"],
+      "guidance": [
+        "아이사랑 포털 '등록대기 신청' 메뉴에서 신청합니다.",
+        "임신 중 신청 가능 여부: 확인되지 않음, 확인처에 문의하세요."
+      ],
+      "contact_template": "{region} 시·군·구청(보육 담당) 또는 아이사랑 포털에 확인",
+      "contact_default": "관할 시·군·구청(보육 담당) 또는 아이사랑 포털에 확인",
+      "url": "https://www.childcare.go.kr/?menuno=176",
+      "basis_ids": ["childcare-waitlist-portal"],
+      "as_of": "2026-10-28",
+      "verified": "false"
+    },
+    {
+      "id": "local-extra-support",
+      "title": "지자체 추가 지원(출산·양육)",
+      "modes": ["pregnant", "born"],
+      "guidance": ["시·군·구마다 출산·양육 추가 지원(지원금, 아동수당 지역 가산 등)이 다릅니다. 이 도구는 지역별 금액을 계산하지 않습니다."],
+      "contact_template": "{region} 시·군·구청·주민센터에 확인",
+      "contact_default": "관할 시·군·구청·주민센터에 확인",
+      "basis_ids": ["child-allowance-mohw-2026-04"],
+      "as_of": "2026-10-28",
+      "verified": "false",
+      "note": "아동수당 지역 가산 근거만 연결. 지자체별 사업은 미조사"
+    }
+  ]
+}

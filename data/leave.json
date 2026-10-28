@@ -1,0 +1,70 @@
+{
+  "spouse_leave": {
+    "versions": [
+      {
+        "label": "개정 전 규정",
+        "effective_from": null,
+        "effective_to": "2026-09-17",
+        "paid_days": null,
+        "split_max": null,
+        "before_due_days": null,
+        "after_birth_days": 120,
+        "notes": [
+          "사용기간: 출산한 날부터 120일 이내.",
+          "휴가 일수·나누어 쓰는 횟수: 확인 필요(개정 전 조문 원문 미확인)."
+        ],
+        "basis_ids": ["equal-employment-act"],
+        "as_of": "2026-10-28",
+        "verified": "false",
+        "note": "개정 전 일수·분할 값은 일차 출처 미확인"
+      },
+      {
+        "label": "2026-09-18 시행",
+        "effective_from": "2026-09-18",
+        "effective_to": null,
+        "paid_days": 20,
+        "split_max": 3,
+        "before_due_days": 50,
+        "after_birth_days": 120,
+        "notes": [
+          "사용기간: 출산예정일 50일 전부터 출산한 날부터 120일까지(남녀고용평등법 제18조의2).",
+          "신청 절차(시행령·시행규칙): 확인 필요."
+        ],
+        "basis_ids": ["equal-employment-act"],
+        "as_of": "2026-10-28",
+        "verified": "partial"
+      }
+    ],
+    "transition_note": "개정법 부칙에 경과조치 없음: 시행일(2026-09-18) 이후 사용분부터 신법 적용으로 보는 해석입니다. 사업장·고용센터에 확인하세요.",
+    "born_mode_note": "출산 전 사용은 출산예정일 50일 전부터 가능합니다(출산 후 호출이라 출생일부터 표시)."
+  },
+  "maternity_leave": {
+    "article_label": "근로기준법 제74조",
+    "article_effective": "2026-10-08",
+    "single": { "total_days": 90, "premature_days": 100, "after_birth_min_days": 45, "paid_days": 60 },
+    "multiple": { "total_days": 120, "after_birth_min_days": 60, "paid_days": 75 },
+    "notes": [
+      "휴가 시작일은 근로자가 정하므로 출산(예정)일에 개요만 표시합니다.",
+      "유산·사산 휴가, 나누어 쓰는 요건 등 세부는 사업장·고용센터에 확인하세요."
+    ],
+    "basis_ids": ["labor-standards-act"],
+    "as_of": "2026-10-28",
+    "verified": "partial"
+  },
+  "parental_leave": {
+    "article_label": "남녀고용평등법 제19조",
+    "article_effective": "2026-09-18",
+    "age_under_years": 9,
+    "age_label": "자녀 만 8세 이하",
+    "notes": [
+      "대상: 만 8세 이하 또는 초등학교 2학년 이하 자녀(초등학교 2학년 기준 날짜는 계산하지 않음).",
+      "기간: 1년 이내. 부모가 각각 3개월 이상 사용하면 한쪽은 6개월 추가.",
+      "2026-09-18 시행: 임신 중 배우자 돌봄 육아휴직, 1년 1회 1~2주 단기 육아휴직(일부 자료의 8.20 표기는 시행령 신청 절차 일부 조문의 시행일).",
+      "분할 사용 횟수: 확인 필요.",
+      "급여 상한: 확인 필요(고용보험법 원문 미확인). 참고값(생활법령정보 기준, 법적 효력 없음, 확인 필요): 1~3개월 월 상한 250만원, 4~6개월 200만원, 7개월부터 160만원, 하한 70만원."
+    ],
+    "basis_ids": ["equal-employment-act", "easylaw-parental-leave-pay"],
+    "as_of": "2026-10-28",
+    "verified": "partial"
+  }
+}

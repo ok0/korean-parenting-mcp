@@ -526,3 +526,178 @@ describe("prenatal validation failures", () => {
     expect(() => validateDataset("prenatal", x, basis)).toThrow(DataValidationError);
   });
 });
+
+describe("M5 real data", () => {
+  it("loads benefits, leave and local guidance", () => {
+    expect(() => loadData("benefits")).not.toThrow();
+    expect(() => loadData("leave")).not.toThrow();
+    expect(() => loadData("local-guidance")).not.toThrow();
+  });
+
+  it("lists child allowance versions by year with age limits", () => {
+    const rows = loadData("benefits").child_allowance.versions.map((v) => [
+      v.effective_from.slice(0, 4),
+      v.age_under_years,
+    ]);
+    expect(rows).toEqual([
+      ["2026", 9],
+      ["2027", 10],
+      ["2028", 11],
+      ["2029", 12],
+      ["2030", 13],
+    ]);
+  });
+
+  it("sets the first meeting application period", () => {
+    expect(loadData("benefits").first_meeting.versions[0]?.application_period).toEqual({
+      unit: "month",
+      amount: 24,
+      countFirstDay: true,
+      extendIfNonWorking: true,
+    });
+  });
+
+  it("keeps the spouse leave versions adjacent with the new-law values", () => {
+    const [oldV, neu] = loadData("leave").spouse_leave.versions;
+    expect(oldV).toMatchObject({ effective_to: "2026-09-17" });
+    expect(neu).toMatchObject({
+      effective_from: "2026-09-18",
+      paid_days: 20,
+      split_max: 3,
+      before_due_days: 50,
+      after_birth_days: 120,
+    });
+  });
+
+  it("does not mark maternity or parental leave as fully verified", () => {
+    const leave = loadData("leave");
+    expect(leave.maternity_leave.verified).not.toBe("full");
+    expect(leave.parental_leave.verified).not.toBe("full");
+  });
+
+  it("gives each new basis document a number and a date", () => {
+    const newIds = [
+      "equal-employment-act",
+      "labor-standards-act",
+      "child-allowance-act",
+      "child-allowance-mohw-2026-04",
+      "first-meeting-gov24",
+      "mohw-pregnancy-medical-cost",
+      "easylaw-parental-leave-pay",
+      "childcare-waitlist-portal",
+    ];
+    const docs = loadData("basis-documents").documents;
+    for (const id of newIds) {
+      const d = docs.find((x) => x.id === id);
+      expect(d?.doc_no).toBeTruthy();
+      expect(d?.promulgated ?? d?.amended ?? d?.effective).toBeTruthy();
+    }
+  });
+
+  it("records the official law API keys and verification states", () => {
+    const docs = loadData("basis-documents").documents;
+    expect(docs.find((x) => x.id === "equal-employment-act")).toMatchObject({ law_api: { mst: "284457" } });
+    expect(docs.find((x) => x.id === "labor-standards-act")).toMatchObject({ law_api: { mst: "285279" } });
+    expect(docs.find((x) => x.id === "childcare-waitlist-portal")?.verified).toBe("false");
+    expect(docs.find((x) => x.id === "easylaw-parental-leave-pay")?.note).toContain("법적 효력 없음");
+  });
+});
+
+describe("benefits validation failures", () => {
+  const basis = loadData("basis-documents");
+  const fixture = () => structuredClone(loadData("benefits"));
+  const expectFail = (x: unknown, message: string) => {
+    expect(() => validateDataset("benefits", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("benefits", x, basis)).toThrow(message);
+  };
+
+  it("rejects overlapping child allowance versions", () => {
+    const x = fixture();
+    const v0 = x.child_allowance.versions[0];
+    if (v0) v0.effective_to = "2027-01-01";
+    expectFail(x, "겹칩니다");
+  });
+
+  it("rejects a parent allowance version that ends before it starts", () => {
+    const x = fixture();
+    const v0 = x.parent_allowance.versions[0];
+    if (v0) v0.effective_to = "2025-12-31";
+    expectFail(x, "시작이 끝보다");
+  });
+
+  it("rejects a missing effective_to on a non-last version", () => {
+    const x = fixture();
+    const v0 = x.child_allowance.versions[0];
+    if (v0) delete v0.effective_to;
+    expectFail(x, "마지막 버전만");
+  });
+
+  it("rejects child allowance versions out of order", () => {
+    const x = fixture();
+    x.child_allowance.versions.reverse();
+    expectFail(x, "오름차순");
+  });
+
+  it("rejects an unknown basis id in first meeting", () => {
+    const x = fixture();
+    const v0 = x.first_meeting.versions[0];
+    if (v0) v0.basis_ids = ["no-such-doc"];
+    expectFail(x, "no-such-doc");
+  });
+
+  it("rejects a malformed as_of in pregnancy medical cost", () => {
+    const x = fixture();
+    const v0 = x.pregnancy_medical.versions[0];
+    if (v0) v0.as_of = "2026-1-1";
+    expect(() => validateDataset("benefits", x, basis)).toThrow(DataValidationError);
+  });
+});
+
+describe("leave / local guidance validation failures", () => {
+  const basis = loadData("basis-documents");
+  const leaveFixture = () => structuredClone(loadData("leave"));
+  const localFixture = () => structuredClone(loadData("local-guidance"));
+
+  it("rejects spouse leave versions that do not touch", () => {
+    const x = leaveFixture();
+    const neu = x.spouse_leave.versions[1];
+    if (neu) neu.effective_from = "2026-09-19";
+    expect(() => validateDataset("leave", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("leave", x, basis)).toThrow("맞닿아야");
+  });
+
+  it("rejects a spouse leave list without two versions", () => {
+    const x = leaveFixture();
+    x.spouse_leave.versions.pop();
+    expect(() => validateDataset("leave", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("leave", x, basis)).toThrow("2개");
+  });
+
+  it("rejects an unknown basis id in parental leave", () => {
+    const x = leaveFixture();
+    x.parental_leave.basis_ids = ["no-such-doc"];
+    expect(() => validateDataset("leave", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("leave", x, basis)).toThrow("no-such-doc");
+  });
+
+  it("rejects a malformed as_of in maternity leave", () => {
+    const x = leaveFixture();
+    x.maternity_leave.as_of = "2026-1-1";
+    expect(() => validateDataset("leave", x, basis)).toThrow(DataValidationError);
+  });
+
+  it("rejects local guidance without the daycare waitlist entry", () => {
+    const x = localFixture();
+    x.entries = x.entries.filter((e) => e.id !== "daycare-waitlist");
+    expect(() => validateDataset("local-guidance", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("local-guidance", x, basis)).toThrow("누락: daycare-waitlist");
+  });
+
+  it("rejects a local contact template without the region placeholder", () => {
+    const x = localFixture();
+    const first = x.entries[0];
+    if (first) first.contact_template = "보건소에 확인";
+    expect(() => validateDataset("local-guidance", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("local-guidance", x, basis)).toThrow("{region}");
+  });
+});
