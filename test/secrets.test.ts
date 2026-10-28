@@ -38,6 +38,12 @@ describe("maskKey", () => {
   it("returns *** for keys shorter than 4 characters", () => {
     expect(maskKey("ab")).toBe("***");
   });
+
+  it("maskKey hides short keys entirely", () => {
+    expect(maskKey("abcd")).toBe("***");
+    expect(maskKey("abcdefg")).toBe("***");
+    expect(maskKey("abcdefghij")).toBe("abcd…(10자)");
+  });
 });
 
 describe("createLogger", () => {

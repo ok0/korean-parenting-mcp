@@ -13,6 +13,6 @@ export function maskSecrets(text: string, secrets: readonly string[]): string {
 }
 
 export function maskKey(key: string): string {
-  if (key.length < 4) return "***";
+  if (key.length < 8) return "***";
   return `${key.slice(0, 4)}…(${key.length}자)`;
 }
