@@ -1,5 +1,7 @@
 import type { ToolContext } from "../core/context.js";
 import { ToolError, missingKeyError } from "../core/errors.js";
+import { cached } from "../core/cache.js";
+import { CACHE_TTL_MS } from "../core/cache-ttl.js";
 import { httpGet } from "../core/http.js";
 
 export const LAW_BASE = "https://www.law.go.kr/DRF/";
@@ -196,66 +198,75 @@ export function createLawClient(ctx: ToolContext, opts?: { timeoutMs?: number })
     return parseLawBody(res.text, res.contentType);
   }
 
+  function cacheKey(op: string, params: Record<string, string>): string {
+    const sorted = Object.entries(params).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+    return `law:${op}?${new URLSearchParams(sorted).toString()}`;
+  }
+
+  async function memo<T>(
+    op: "lawSearch.do" | "lawService.do",
+    params: Record<string, string>,
+    extract: (json: unknown) => T,
+  ): Promise<T> {
+    if (!ctx.config.keys.LAW_OC) throw missingKeyError(["LAW_OC"]);
+    const ttl = op === "lawService.do" ? CACHE_TTL_MS.lawArticle : CACHE_TTL_MS.lawRevision;
+    const { value } = await cached(ctx, cacheKey(op, params), ttl, async () => extract(await call(op, params)));
+    return value;
+  }
+
   return {
-    async searchAdmrul(name) {
-      const json = await call("lawSearch.do", {
-        target: "admrul",
-        query: name,
-        knd: "3",
-        display: "100",
-        type: "JSON",
-      });
-      return extractRows(json, "admrul").map((r) => ({
-        serial: str(r["행정규칙일련번호"]),
-        ruleId: str(r["행정규칙ID"]),
-        name: str(r["행정규칙명"]),
-        issued: str(r["발령일자"]),
-        number: str(r["발령번호"]),
-        effective: str(r["시행일자"]),
-        link: lawLink(str(r["상세링크"])),
-      }));
+    searchAdmrul(name) {
+      return memo(
+        "lawSearch.do",
+        { target: "admrul", query: name, knd: "3", display: "100", type: "JSON" },
+        (json) =>
+          extractRows(json, "admrul").map((r) => ({
+            serial: str(r["행정규칙일련번호"]),
+            ruleId: str(r["행정규칙ID"]),
+            name: str(r["행정규칙명"]),
+            issued: str(r["발령일자"]),
+            number: str(r["발령번호"]),
+            effective: str(r["시행일자"]),
+            link: lawLink(str(r["상세링크"])),
+          })),
+      );
     },
-    async searchLicbyl(lawName) {
-      const json = await call("lawSearch.do", {
-        target: "licbyl",
-        search: "2",
-        query: lawName,
-        display: "100",
-        type: "JSON",
-      });
-      return extractRows(json, "licbyl").map((r) => ({
-        annexNo: str(r["별표번호"]),
-        name: str(r["별표명"]),
-        lawName: str(r["관련법령명"]),
-        promulgated: str(r["공포일자"]),
-        promulgationNo: str(r["공포번호"]),
-        link: lawLink(str(r["별표법령상세링크"]) ?? str(r["별표서식PDF파일링크"])),
-      }));
+    searchLicbyl(lawName) {
+      return memo(
+        "lawSearch.do",
+        { target: "licbyl", search: "2", query: lawName, display: "100", type: "JSON" },
+        (json) =>
+          extractRows(json, "licbyl").map((r) => ({
+            annexNo: str(r["별표번호"]),
+            name: str(r["별표명"]),
+            lawName: str(r["관련법령명"]),
+            promulgated: str(r["공포일자"]),
+            promulgationNo: str(r["공포번호"]),
+            link: lawLink(str(r["별표법령상세링크"]) ?? str(r["별표서식PDF파일링크"])),
+          })),
+      );
     },
-    async searchLaw(name) {
-      const json = await call("lawSearch.do", {
-        target: "law",
-        query: name,
-        display: "100",
-        type: "JSON",
-      });
-      return extractRows(json, "law").map((r) => ({
-        lawId: str(r["법령ID"]),
-        mst: str(r["법령일련번호"]),
-        name: str(r["법령명한글"]),
-        promulgated: str(r["공포일자"]),
-        effective: str(r["시행일자"]),
-        link: lawLink(str(r["법령상세링크"])),
-      }));
+    searchLaw(name) {
+      return memo(
+        "lawSearch.do",
+        { target: "law", query: name, display: "100", type: "JSON" },
+        (json) =>
+          extractRows(json, "law").map((r) => ({
+            lawId: str(r["법령ID"]),
+            mst: str(r["법령일련번호"]),
+            name: str(r["법령명한글"]),
+            promulgated: str(r["공포일자"]),
+            effective: str(r["시행일자"]),
+            link: lawLink(str(r["법령상세링크"])),
+          })),
+      );
     },
-    async getArticle(lawId, jo) {
-      const json = await call("lawService.do", {
-        target: "lawjosub",
-        ID: lawId,
-        JO: jo,
-        type: "JSON",
-      });
-      return parseArticle(json);
+    getArticle(lawId, jo) {
+      return memo(
+        "lawService.do",
+        { target: "lawjosub", ID: lawId, JO: jo, type: "JSON" },
+        (json) => parseArticle(json),
+      );
     },
   };
 }

@@ -115,11 +115,11 @@ describe("law client", () => {
     const mock = mockFetch(() => jsonRes(bodies[current] ?? "{}"));
     const ctx = { ...createTestContext({ env: { LAW_OC: FAKE } }), fetch: mock.fetch };
     const client = createLawClient(ctx);
-    expect(await client.searchLaw("x")).toHaveLength(1);
+    expect(await client.searchLaw("x-one")).toHaveLength(1);
     current = "zero";
-    expect(await client.searchLaw("x")).toEqual([]);
+    expect(await client.searchLaw("x-zero")).toEqual([]);
     current = "bad";
-    const err = await catchTool(client.searchLaw("x"));
+    const err = await catchTool(client.searchLaw("x-bad"));
     expect(err.kind).toBe("UPSTREAM");
     expect(err.detail?.reason).toBe("format");
   });
