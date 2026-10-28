@@ -110,6 +110,31 @@ describe("fetchKasiHolidays", () => {
     }
   });
 
+  it("live y2026: 22 holidays sorted", async () => {
+    const mock = createKasiMock({ 2026: () => xmlRes(fx("kasiHoliday/y2026.xml")) });
+    const out = await fetchKasiHolidays(2026, ctxWith(mock.fetch));
+    expect(out).toHaveLength(22);
+    expect(out[0]).toEqual({ date: "2026-01-01", name: "1월1일" });
+    expect(out).toContainEqual({ date: "2026-06-03", name: "전국동시지방선거" });
+    expect(out).toContainEqual({ date: "2026-10-05", name: "대체공휴일(개천절)" });
+    for (let i = 1; i < out.length; i++) expect(out[i]!.date > out[i - 1]!.date).toBe(true);
+  });
+
+  it("live y2028: duplicate date keeps first name", async () => {
+    const mock = createKasiMock({ 2028: () => xmlRes(fx("kasiHoliday/y2028.xml")) });
+    const out = await fetchKasiHolidays(2028, ctxWith(mock.fetch));
+    expect(out).toHaveLength(18);
+    const dup = out.filter((h) => h.date === "2028-10-03");
+    expect(dup).toHaveLength(1);
+    expect(dup[0]?.name).toBe("개천절");
+  });
+
+  it("live y2029: empty year", async () => {
+    const mock = createKasiMock({ 2029: () => xmlRes(fx("kasiHoliday/y2029.xml")) });
+    const out = await fetchKasiHolidays(2029, ctxWith(mock.fetch));
+    expect(out).toEqual([]);
+  });
+
   it("spec is live-confirmed and module writes no files", () => {
     expect(SPECS.kasiHoliday.confirmed).toBe(true);
     const src = readFileSync(new URL("../src/clients/kasi-holidays.ts", import.meta.url), "utf8");

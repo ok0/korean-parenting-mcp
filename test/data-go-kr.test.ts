@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { z } from "zod";
 import { describe, expect, it } from "vitest";
 import { callDataGoKr, type ApiSpec } from "../src/clients/data-go-kr.js";
+import { SPECS } from "../src/clients/data-go-kr-specs.js";
 import { ToolError } from "../src/core/errors.js";
 import { runTool } from "../src/core/pipeline.js";
 import { defineTool } from "../src/tools/registry.js";
@@ -334,5 +335,60 @@ describe("data.go.kr parameter handling", () => {
     const e = await errOf(callDataGoKr({ ...TEST_SPEC, baseUrl: "" }, { Q0: "a" }, ctx));
     expect(e.kind).toBe("INTERNAL");
     expect(m.urls.length).toBe(0);
+  });
+});
+
+describe("live fixtures (M11)", () => {
+  it("nemcList seongdong.xml keeps strings and totalCount", async () => {
+    const { ctx } = makeCtx(mockFetch(() => xml(fx("nemcList/seongdong.xml"))).fetch);
+    const r = await callDataGoKr(SPECS.nemcList, { Q0: "서울특별시", Q1: "성동구" }, ctx);
+    expect(r.items).toHaveLength(3);
+    expect(r.totalCount).toBe(493);
+    for (const item of r.items) expect(typeof item.hpid).toBe("string");
+  });
+
+  it("nemcMoonlight json single object item becomes one item", async () => {
+    const { ctx } = makeCtx(mockFetch(() => json(fx("nemcMoonlight/json.json"))).fetch);
+    const r = await callDataGoKr(SPECS.nemcMoonlight, { Q0: "서울특별시", Q1: "성동구" }, ctx);
+    expect(r.items).toHaveLength(1);
+    expect(r.items[0]?.dutyName).toBe("365다움의원");
+    expect(r.totalCount).toBe(1);
+  });
+
+  it("DUR XML body under JSON content-type parses as XML", async () => {
+    const { ctx } = makeCtx(mockFetch(() => json(fx("durPregnancy/single.xml"))).fetch);
+    const r = await callDataGoKr(SPECS.durPregnancy, { itemName: "이부프로펜" }, ctx);
+    expect(r.items).toHaveLength(3);
+    expect(r.totalCount).toBe(31);
+    expect(r.items[0]?.INGR_NAME).toBe("이부프로펜");
+  });
+
+  it("DUR empty result is an empty list", async () => {
+    const { ctx } = makeCtx(mockFetch(() => xml(fx("durPregnancy/empty.xml"))).fetch);
+    const r = await callDataGoKr(SPECS.durPregnancy, { itemName: "없는성분" }, ctx);
+    expect(r.items).toEqual([]);
+    expect(r.totalCount).toBe(0);
+  });
+
+  it("gateway bad key (HTTP 403 XML, code 30) is KEY_INVALID", async () => {
+    const { ctx } = makeCtx(mockFetch(() => xml(fx("nemcList/error-bad-key.xml"), 403)).fetch);
+    const e = await errOf(callDataGoKr(SPECS.nemcList, { Q0: "서울특별시", Q1: "성동구" }, ctx));
+    expect(e.kind).toBe("KEY_INVALID");
+    expect(e.detail?.code).toBe("30");
+  });
+
+  it("odcloud list parses data array and totalCount", async () => {
+    const { ctx } = makeCtx(mockFetch(() => json(fx("benefitsList/list.json"))).fetch);
+    const r = await callDataGoKr(SPECS.benefitsList, { page: 1, perPage: 5 }, ctx);
+    expect(r.items).toHaveLength(3);
+    expect(r.totalCount).toBe(10946);
+    expect(r.items[0]?.["서비스ID"]).toBe("105100000001");
+  });
+
+  it("odcloud bad key (HTTP 401, code -4) is KEY_INVALID", async () => {
+    const { ctx } = makeCtx(mockFetch(() => json(fx("benefitsList/error-bad-key.json"), 401)).fetch);
+    const e = await errOf(callDataGoKr(SPECS.benefitsList, { page: 1, perPage: 5 }, ctx));
+    expect(e.kind).toBe("KEY_INVALID");
+    expect(e.detail?.code).toBe("-4");
   });
 });

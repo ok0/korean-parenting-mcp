@@ -118,6 +118,7 @@ const DATA_GO_KR_CODES: Record<string, { kind: ErrorKind; summary: string }> = {
   "23": { kind: "RATE_LIMIT", summary: "초당 호출 한도 초과" },
   "30": { kind: "KEY_INVALID", summary: "등록되지 않은 서비스키" },
   "31": { kind: "KEY_EXPIRED", summary: "활용기간이 만료된 서비스키" },
+  "-4": { kind: "KEY_INVALID", summary: "등록되지 않은 인증키(odcloud)" },
 };
 
 export function dataGoKrError(code: string): ToolError {

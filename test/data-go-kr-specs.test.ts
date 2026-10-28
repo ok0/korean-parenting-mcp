@@ -11,7 +11,7 @@ describe("data.go.kr dataset specs", () => {
     const confirmed = Object.values(SPECS)
       .filter((s) => s.confirmed)
       .map((s) => s.id);
-    expect(confirmed).toEqual(["nemcList", "nemcMoonlight", "durPregnancy", "kasiHoliday"]);
+    expect(confirmed).toEqual(["nemcList", "nemcMoonlight", "benefitsList", "durPregnancy", "kasiHoliday"]);
   });
 
   it("pins nemcList endpoint and known params", () => {
@@ -63,7 +63,7 @@ describe("data.go.kr dataset specs", () => {
         return new Response("", { status: 200 });
       },
     };
-    await expect(callDataGoKr(SPECS.benefitsList, {}, ctx)).rejects.toMatchObject({ kind: "INTERNAL" });
+    await expect(callDataGoKr(SPECS.vaccClinic, {}, ctx)).rejects.toMatchObject({ kind: "INTERNAL" });
     expect(calls).toHaveLength(0);
   });
 });
