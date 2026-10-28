@@ -149,6 +149,9 @@ describe("law client", () => {
     expect(link).not.toContain("OC");
     expect(link).toContain("ID=1");
     expect(lawLink("https://evil.example/x")).toBeUndefined();
+    expect(lawLink("https://xlaw.go.kr/x")).toBeUndefined();
+    expect(lawLink("https://evil-law.go.kr/x")).toBeUndefined();
+    expect(lawLink("https://www.law.go.kr/DRF/x.do?ID=1")?.startsWith("https://www.law.go.kr/")).toBe(true);
   });
 
   it("missing OC throws MISSING_KEY", async () => {

@@ -132,7 +132,7 @@ export function lawLink(raw: string | undefined): string | undefined {
   } catch {
     return undefined;
   }
-  if (!u.hostname.endsWith("law.go.kr")) return undefined;
+  if (!(u.hostname === "law.go.kr" || u.hostname.endsWith(".law.go.kr"))) return undefined;
   for (const key of [...u.searchParams.keys()]) {
     if (key.toLowerCase() === "oc") u.searchParams.delete(key);
   }
