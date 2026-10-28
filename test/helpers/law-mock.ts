@@ -36,7 +36,7 @@ export function sameAsStored(oc?: string): LawRoute {
       const key = doc.law_api;
       const row: Record<string, string> = {
         법령명한글: key.law_name,
-        법령ID: `TEST-${key.mst ?? "NONE"}`,
+        법령ID: key.law_id ?? `TEST-${key.mst ?? "NONE"}`,
         법령상세링크: `/DRF/lawService.do?OC=${encodeURIComponent(oc ?? "test")}&target=law&MST=${key.mst ?? ""}&type=HTML`,
       };
       if (key.mst !== undefined) row.법령일련번호 = key.mst;
@@ -50,9 +50,10 @@ export function sameAsStored(oc?: string): LawRoute {
       const key = doc.law_api;
       const row: Record<string, string> = {
         행정규칙명: key.name,
-        행정규칙ID: "TEST-ADM-1",
+        행정규칙ID: key.rule_id ?? "TEST-ADM-1",
         상세링크: `/DRF/lawService.do?OC=${encodeURIComponent(oc ?? "test")}&target=admrul&ID=1`,
       };
+      if (key.serial !== undefined) row.행정규칙일련번호 = key.serial;
       if (key.number !== undefined) row.발령번호 = key.number;
       const issued = digits(key.issued);
       if (issued !== undefined) row.발령일자 = issued;

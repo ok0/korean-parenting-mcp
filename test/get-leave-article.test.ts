@@ -127,15 +127,16 @@ describe("get_leave_article", () => {
     expect(t).toContain(basisUrlOf("maternity_leave"));
   });
 
-  it("law not found / article missing are guidance, not errors", async () => {
+  it("stored law_id skips search; missing article is guidance, not error", async () => {
     const notFound = createLawMock((url) =>
       url.searchParams.get("target") === "law" ? jsonRes({ LawSearch: { totalCnt: "0" } }) : undefined,
     );
     const r1 = await call("maternity_leave", ctxOf(notFound.fetch));
     expect(r1.isError).toBeFalsy();
-    expect(text(r1)).toContain("법령 ID");
+    expect(text(r1)).toContain("찾지 못했습니다");
     expect(text(r1)).toContain("법령명");
     expect(text(r1)).toContain("https://www.law.go.kr");
+    expect(notFound.urls.some((u) => new URL(u).searchParams.get("target") === "law")).toBe(false);
 
     const missing = createLawMock(...standardRoutes(lawNameOf("maternity_leave"), { 법령: { 기본정보: {} } }));
     const r2 = await call("maternity_leave", ctxOf(missing.fetch));

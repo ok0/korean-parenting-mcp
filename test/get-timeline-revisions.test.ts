@@ -82,7 +82,7 @@ function changedLaw(doc: BasisDoc): LawRoute {
         law: [
           {
             법령명한글: name,
-            법령ID: "TEST-LAW-CHANGED",
+            법령ID: key.law_id ?? "TEST-LAW-CHANGED",
             법령일련번호: mst,
             시행일자: "20260101",
             법령상세링크: `/DRF/lawService.do?OC=${ENC}&target=law&MST=${mst}&type=HTML`,
@@ -105,7 +105,7 @@ function changedAdmrul(doc: BasisDoc): LawRoute {
         admrul: [
           {
             행정규칙명: name,
-            행정규칙ID: "TEST-ADM-CHANGED",
+            행정규칙ID: key.rule_id ?? "TEST-ADM-CHANGED",
             발령번호: "제2026-7호",
             상세링크: `/DRF/lawService.do?OC=${ENC}&target=admrul&ID=1`,
           },
