@@ -10,8 +10,8 @@ import { createLawMock, htmlRes, jsonRes, sameAsStored, type LawMock } from "./h
 
 const FAKE = "ab+c/d=e1";
 const ENC = encodeURIComponent(FAKE);
-const LAW_SEARCH = JSON.parse(readFileSync(new URL("./fixtures/law/law-search.json", import.meta.url), "utf8")) as unknown;
-const LAWJOSUB_074 = JSON.parse(readFileSync(new URL("./fixtures/law/lawjosub-074.json", import.meta.url), "utf8")) as unknown;
+const LAW_SEARCH = JSON.parse(readFileSync(new URL("./fixtures/law/law/labor-standards-act.json", import.meta.url), "utf8")) as unknown;
+const LAWJOSUB_074 = JSON.parse(readFileSync(new URL("./fixtures/law/lawjosub/labor-074.json", import.meta.url), "utf8")) as unknown;
 const DAY_MS = 24 * 3600 * 1000;
 const B = { reference_date: "2026-10-28", birth_date: "2026-05-28" };
 

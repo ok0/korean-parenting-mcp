@@ -14,18 +14,22 @@ const FAKE = "ab+c/d=e1";
 const ENCODED_FAKE = encodeURIComponent(FAKE);
 
 type Topic = "spouse_leave" | "maternity_leave" | "parental_leave";
-const TOPICS: { topic: Topic; label: string; jo: string }[] = [
-  { topic: "spouse_leave", label: "제18조의2", jo: "001802" },
-  { topic: "maternity_leave", label: "제74조", jo: "007400" },
-  { topic: "parental_leave", label: "제19조", jo: "001900" },
+const TOPICS: { topic: Topic; label: string; jo: string; title: string; promulgated: string; articleEffective: string }[] = [
+  { topic: "spouse_leave", label: "제18조의2", jo: "001802", title: "배우자 출산전후휴가", promulgated: "2026-03-17", articleEffective: "2026-09-18" },
+  { topic: "maternity_leave", label: "제74조", jo: "007400", title: "임산부의 보호", promulgated: "2026-04-07", articleEffective: "2026-10-08" },
+  { topic: "parental_leave", label: "제19조", jo: "001900", title: "육아휴직", promulgated: "2026-03-17", articleEffective: "2026-09-18" },
 ];
 
 function readJson(relative: string): Record<string, unknown> {
   return JSON.parse(readFileSync(fileURLToPath(new URL(relative, import.meta.url)), "utf8")) as Record<string, unknown>;
 }
 
-const LAW_SEARCH = readJson("./fixtures/law/law-search.json") as { LawSearch: { law: Record<string, string>[] } };
-const LAWJOSUB_074 = readJson("./fixtures/law/lawjosub-074.json");
+const LAW_SEARCH = readJson("./fixtures/law/law/labor-standards-act.json") as { LawSearch: { law: Record<string, string>[] } };
+const ARTICLE: Record<Topic, Record<string, unknown>> = {
+  spouse_leave: readJson("./fixtures/law/lawjosub/equal-1802.json"),
+  maternity_leave: readJson("./fixtures/law/lawjosub/labor-074.json"),
+  parental_leave: readJson("./fixtures/law/lawjosub/equal-1900.json"),
+};
 
 function lawNameOf(topic: Topic): string {
   const a = loadData("leave").articles[topic];
@@ -39,7 +43,7 @@ function basisUrlOf(topic: Topic): string {
   return resolveBasis(a.basis_ids)[0]!.url;
 }
 
-function standardRoutes(name: string, article: unknown = LAWJOSUB_074): LawRoute[] {
+function standardRoutes(name: string, article: unknown): LawRoute[] {
   const row = { ...LAW_SEARCH.LawSearch.law[0]!, 법령명한글: name };
   return [
     (url) => (url.searchParams.get("target") === "law" ? jsonRes({ LawSearch: { totalCnt: "1", law: [row] } }) : undefined),
@@ -76,20 +80,19 @@ describe("get_leave_article", () => {
   });
 
   it("each topic prints article", async () => {
-    for (const { topic, label, jo } of TOPICS) {
+    for (const { topic, label, jo, title, promulgated, articleEffective } of TOPICS) {
       const name = lawNameOf(topic);
-      const mock = createLawMock(...standardRoutes(name));
+      const mock = createLawMock(...standardRoutes(name, ARTICLE[topic]));
       const r = await call(topic, ctxOf(mock.fetch));
       expect(r.isError, topic).toBeFalsy();
       const t = text(r);
       for (const s of [
         name,
         label,
-        "(테스트) 조문 제목",
-        "① 테스트 fixture 항 1",
-        "1. 테스트 fixture 호 1",
-        "공포일자 2026-04-07",
-        "조문시행일자 2026-10-08",
+        `(${title})`,
+        "①",
+        `공포일자 ${promulgated}`,
+        `조문시행일자 ${articleEffective}`,
         "법제처 국가법령정보센터",
         "조회 시각 2026-01-01 00:00",
         "법적 효력이 없고",
@@ -173,7 +176,7 @@ describe("get_leave_article", () => {
   it("OC never appears in output, errors or logs", async () => {
     const logs: string[] = [];
     const sink = (line: string) => logs.push(line);
-    const ok = createLawMock(...standardRoutes(lawNameOf("maternity_leave")));
+    const ok = createLawMock(...standardRoutes(lawNameOf("maternity_leave"), ARTICLE.maternity_leave));
     const html = createLawMock(() => htmlRes());
     const denied = createLawMock(
       () => new Response("사용자 정보 검증에 실패했습니다", { status: 200, headers: { "content-type": "text/plain; charset=utf-8" } }),
