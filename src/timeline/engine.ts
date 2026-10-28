@@ -3,6 +3,7 @@ import { checkupRule } from "./rules/checkups.js";
 import { benefitDeadlineRule } from "./rules/benefit-deadlines.js";
 import { benefitAmountRule } from "./rules/benefits.js";
 import { registrationRule } from "./rules/registration.js";
+import { leaveRule } from "./rules/leave.js";
 import { influenzaNotices, vaccinationRule } from "./rules/vaccination.js";
 import { pregnancyRule } from "./rules/pregnancy.js";
 import { inputNotices } from "./rules/input-notices.js";
@@ -23,6 +24,7 @@ export const RULES: readonly TimelineRule[] = [
   benefitAmountRule,
   checkupRule,
   vaccinationRule,
+  leaveRule,
   pregnancyRule,
 ];
 
