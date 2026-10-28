@@ -85,7 +85,9 @@ describe("get_timeline", () => {
     expect(t).toContain("지원 신청");
 
     const chuseok = text(await call({ birth_date: "2026-07-29", reference_date: "2026-07-29" }));
-    const lines = body(chuseok).split("\n").filter((l) => l.startsWith("- [") && l.includes("신청 기한"));
+    const lines = body(chuseok)
+      .split("\n")
+      .filter((l) => l.startsWith("- [") && (l.includes("| 부모급여 신청 기한") || l.includes("| 아동수당 신청 기한")));
     expect(lines).toHaveLength(2);
     for (const l of lines) expect(l).toContain("~ 2026-09-28");
     expect(chuseok).toContain("원래 말일 2026-09-26");

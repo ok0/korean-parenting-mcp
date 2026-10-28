@@ -1,6 +1,7 @@
 import { addMonthsClamp, compare, daysBetween, type CivilDate } from "../date/civil-date.js";
 import { checkupRule } from "./rules/checkups.js";
 import { benefitDeadlineRule } from "./rules/benefit-deadlines.js";
+import { benefitAmountRule } from "./rules/benefits.js";
 import { registrationRule } from "./rules/registration.js";
 import { influenzaNotices, vaccinationRule } from "./rules/vaccination.js";
 import { pregnancyRule } from "./rules/pregnancy.js";
@@ -19,6 +20,7 @@ export const IMMINENT_DAYS = 14;
 export const RULES: readonly TimelineRule[] = [
   registrationRule,
   benefitDeadlineRule,
+  benefitAmountRule,
   checkupRule,
   vaccinationRule,
   pregnancyRule,
