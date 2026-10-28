@@ -423,3 +423,50 @@ export const VaccinationsSchema = z
     }
   });
 export type VaccinationsFile = z.output<typeof VaccinationsSchema>;
+
+export const PrenatalIntervalSchema = z.strictObject({
+  from_week: z.number().int().min(0).max(42),
+  to_week: z.number().int().min(0).max(42).nullable(),
+  every_weeks: z.number().int().min(1).max(4),
+});
+export type PrenatalInterval = z.output<typeof PrenatalIntervalSchema>;
+
+export const PRENATAL_INTERVAL_COUNT = 3;
+
+export const PrenatalSchema = ProvenanceFields.extend({
+  intervals: z.array(PrenatalIntervalSchema),
+  high_risk_note: z.string().min(1),
+  notes: z.array(z.string().min(1)),
+}).superRefine((v, ctx) => {
+  requireVerifier(v, ctx);
+  const iv = v.intervals;
+  const fail = (message: string): void => {
+    ctx.addIssue({ code: "custom", path: ["intervals"], message });
+  };
+  if (iv.length !== PRENATAL_INTERVAL_COUNT) {
+    fail(`산전 구간은 ${PRENATAL_INTERVAL_COUNT}개여야 합니다`);
+    return;
+  }
+  if (iv[0]?.from_week !== 0) {
+    fail("첫 구간은 0주에서 시작해야 합니다");
+  }
+  for (let i = 0; i < PRENATAL_INTERVAL_COUNT - 1; i++) {
+    const cur = iv[i];
+    const next = iv[i + 1];
+    if (!cur || !next) continue;
+    if (cur.to_week === null) {
+      fail("마지막 구간만 to_week가 null일 수 있습니다");
+      continue;
+    }
+    if (cur.to_week < cur.from_week) {
+      fail("구간 시작이 끝보다 늦습니다");
+    }
+    if (next.from_week !== cur.to_week + 1) {
+      fail("산전 구간이 연속이 아닙니다");
+    }
+  }
+  if (iv[PRENATAL_INTERVAL_COUNT - 1]?.to_week !== null) {
+    fail("마지막 구간은 출산예정일까지(to_week: null)여야 합니다");
+  }
+});
+export type PrenatalFile = z.output<typeof PrenatalSchema>;

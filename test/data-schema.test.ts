@@ -453,3 +453,76 @@ describe("vaccinations validation failures", () => {
     expect(() => validateDataset("vaccinations", x, basis)).toThrow(DataValidationError);
   });
 });
+
+describe("prenatal real data", () => {
+  it("loads prenatal and resolves its basis ids", () => {
+    expect(() => loadData("prenatal")).not.toThrow();
+    expect(() => resolveBasis(collectBasisIds(loadData("prenatal")))).not.toThrow();
+  });
+});
+
+describe("prenatal schedule", () => {
+  it("prenatal intervals match annex 1", () => {
+    const data = loadData("prenatal");
+    expect(data.intervals).toEqual([
+      { from_week: 0, to_week: 28, every_weeks: 4 },
+      { from_week: 29, to_week: 36, every_weeks: 2 },
+      { from_week: 37, to_week: null, every_weeks: 1 },
+    ]);
+    expect(data.high_risk_note).toContain("만 35세 이상");
+    expect(data.high_risk_note).toContain("다태아");
+    expect(data.verified).toBe("partial");
+  });
+
+  it("annex 1 basis records the press-release citation", () => {
+    const doc = loadData("basis-documents").documents.find((d) => d.id === "mch-act-rule-annex1");
+    expect(doc?.doc_no).toBeTruthy();
+    expect(doc?.amended).toBe("2015-07-29");
+    expect(doc?.note).toContain("2023-07-27");
+  });
+});
+
+describe("prenatal validation failures", () => {
+  type PrenatalFixture = {
+    intervals: { from_week: number; to_week: number | null; every_weeks: number }[];
+    basis_ids: string[];
+    as_of: string;
+  };
+  const basis = loadData("basis-documents");
+  const fixture = () => structuredClone(loadData("prenatal")) as unknown as PrenatalFixture;
+
+  it("rejects two intervals instead of three", () => {
+    const x = fixture();
+    x.intervals.pop();
+    expect(() => validateDataset("prenatal", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("prenatal", x, basis)).toThrow("3개");
+  });
+
+  it("rejects a gap between intervals", () => {
+    const x = fixture();
+    const second = x.intervals[1];
+    if (second) second.from_week = 30;
+    expect(() => validateDataset("prenatal", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("prenatal", x, basis)).toThrow("연속");
+  });
+
+  it("rejects a last interval that ends before the due date", () => {
+    const x = fixture();
+    const last = x.intervals[2];
+    if (last) last.to_week = 40;
+    expect(() => validateDataset("prenatal", x, basis)).toThrow(DataValidationError);
+  });
+
+  it("rejects an unknown basis id", () => {
+    const x = fixture();
+    x.basis_ids = ["no-such-doc"];
+    expect(() => validateDataset("prenatal", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("prenatal", x, basis)).toThrow("no-such-doc");
+  });
+
+  it("rejects a malformed as_of", () => {
+    const x = fixture();
+    x.as_of = "2026-1-1";
+    expect(() => validateDataset("prenatal", x, basis)).toThrow(DataValidationError);
+  });
+});

@@ -7,16 +7,18 @@ import {
   CheckupsSchema,
   DeadlinesSchema,
   HolidaysSchema,
+  PrenatalSchema,
   VaccinationsSchema,
   type BasisDoc,
   type BasisDocuments,
   type CheckupsFile,
   type DeadlinesFile,
   type HolidaysFile,
+  type PrenatalFile,
   type VaccinationsFile,
 } from "./schema.js";
 
-export type DatasetName = "basis-documents" | "holidays" | "deadlines" | "checkups" | "vaccinations";
+export type DatasetName = "basis-documents" | "holidays" | "deadlines" | "checkups" | "vaccinations" | "prenatal";
 
 export interface DatasetMap {
   "basis-documents": BasisDocuments;
@@ -24,6 +26,7 @@ export interface DatasetMap {
   deadlines: DeadlinesFile;
   checkups: CheckupsFile;
   vaccinations: VaccinationsFile;
+  prenatal: PrenatalFile;
 }
 
 const SCHEMAS = {
@@ -32,6 +35,7 @@ const SCHEMAS = {
   deadlines: DeadlinesSchema,
   checkups: CheckupsSchema,
   vaccinations: VaccinationsSchema,
+  prenatal: PrenatalSchema,
 } as const;
 
 export class DataValidationError extends Error {
