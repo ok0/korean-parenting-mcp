@@ -18,11 +18,12 @@ export function offsetRange(
   to: RangeOffset,
 ): { start: CivilDate; end: CivilDate } {
   const start = applyOffset(base, from);
+  // 세 범위(예: 4~6세)는 상한 나이 생일 전날까지(2026 국가예방접종 지침 p.110 예시). 단일 세 값은 그 나이 1년.
   const end =
     "days" in to
       ? addDays(base, to.days)
       : "months" in to
         ? addDays(addMonthsClamp(base, to.months + 1), -1)
-        : addDays(addMonthsClamp(base, (to.years + 1) * 12), -1);
+        : addDays(addMonthsClamp(base, ("years" in from && from.years < to.years ? to.years : to.years + 1) * 12), -1);
   return { start, end };
 }

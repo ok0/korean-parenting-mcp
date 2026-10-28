@@ -25,7 +25,7 @@ describe("applyOffset", () => {
       return [formatDate(x.start), formatDate(x.end)];
     };
     expect(r({ months: 15 }, { months: 18 })).toEqual(["2027-04-30", "2027-08-30"]);
-    expect(r({ years: 4 }, { years: 6 })).toEqual(["2030-01-31", "2033-01-30"]);
+    expect(r({ years: 4 }, { years: 6 })).toEqual(["2030-01-31", "2032-01-30"]);
     expect(r({ days: 0 }, { days: 28 })).toEqual(["2026-01-31", "2026-02-28"]);
     expect(r({ days: 0 }, { days: 0 })).toEqual(["2026-01-31", "2026-01-31"]);
     expect(r({ years: 12 }, { years: 12 })).toEqual(["2038-01-31", "2039-01-30"]);
@@ -37,6 +37,15 @@ describe("applyOffset", () => {
       return [formatDate(x.start), formatDate(x.end)];
     };
     expect(r({ months: 12 }, { months: 15 })).toEqual(["2029-02-28", "2029-06-28"]);
-    expect(r({ years: 4 }, { years: 6 })).toEqual(["2032-02-29", "2035-02-27"]);
+    expect(r({ years: 4 }, { years: 6 })).toEqual(["2032-02-29", "2034-02-27"]);
+  });
+
+  it("offsetRange matches guideline p.110 examples", () => {
+    const b = parseDate("2026-04-25");
+    expect(formatDate(offsetRange(b, { days: 0 }, { days: 27 }).end)).toBe("2026-05-22");
+    const m = offsetRange(b, { months: 6 }, { months: 6 });
+    expect([formatDate(m.start), formatDate(m.end)]).toEqual(["2026-10-25", "2026-11-24"]);
+    const y = offsetRange(b, { years: 4 }, { years: 6 });
+    expect([formatDate(y.start), formatDate(y.end)]).toEqual(["2030-04-25", "2032-04-24"]);
   });
 });

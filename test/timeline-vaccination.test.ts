@@ -83,7 +83,7 @@ function expected(birth: CivilDate, unit: "d" | "m" | "y", from: number, to: num
   }
   return {
     start: addMonthsClamp(birth, from * 12),
-    end: addDays(addMonthsClamp(birth, (to + 1) * 12), -1),
+    end: addDays(addMonthsClamp(birth, (from < to ? to : to + 1) * 12), -1),
   };
 }
 
@@ -115,10 +115,14 @@ describe("vaccination rules", () => {
       ["vac-dtap-3", "2026-07-31~2026-08-30"],
       ["vac-dtap-4", "2027-04-30~2027-08-30"],
       ["vac-mmr-1", "2027-01-31~2027-05-30"],
-      ["vac-mmr-2", "2030-01-31~2033-01-30"],
-      ["vac-hpv-1", "2037-01-31~2039-01-30"],
-      ["vac-hpv-2", "2037-01-31~2039-01-30"],
+      ["vac-mmr-2", "2030-01-31~2032-01-30"],
+      ["vac-hpv-1", "2037-01-31~2038-01-30"],
+      ["vac-hpv-2", "2037-01-31~2038-01-30"],
       ["vac-je-inactivated-5", "2038-01-31~2039-01-30"],
+      ["vac-dtap-5", "2030-01-31~2032-01-30"],
+      ["vac-dtap-6", "2037-01-31~2038-01-30"],
+      ["vac-ipv-4", "2030-01-31~2032-01-30"],
+      ["vac-je-inactivated-4", "2032-01-31~2033-01-30"],
     ];
     for (const [id, range] of cases) {
       expect(rng(one(items, id))).toBe(range);
@@ -128,7 +132,7 @@ describe("vaccination rules", () => {
   it("leap day and month-end clamping", () => {
     const leap = doseItems(parseDate("2028-02-29"));
     expect(rng(one(leap, "vac-mmr-1"))).toBe("2029-02-28~2029-06-28");
-    expect(rng(one(leap, "vac-mmr-2"))).toBe("2032-02-29~2035-02-27");
+    expect(rng(one(leap, "vac-mmr-2"))).toBe("2032-02-29~2034-02-27");
 
     const aug = doseItems(parseDate("2025-08-31"));
     expect(rng(one(aug, "vac-hepb-2"))).toBe("2025-09-30~2025-10-30");
