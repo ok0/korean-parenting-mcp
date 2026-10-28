@@ -36,8 +36,8 @@ export const SPECS: Readonly<Record<SpecId, ApiSpec>> = {
     resultCodePath: STD_CODE,
     cacheTtlMs: CACHE_TTL_MS.nightClinic,
     confirmed: true,
-    knownParams: ["Q0", "Q1", "QD", "QN", "numOfRows"],
-    note: "실응답(2026-10-28)으로 확인. 소아청소년과 코드(QD) 미확인, QT·pageNo·QZ·ORD 미시험, XML 사용(_type=json은 시간 필드 숫자·문자열 혼재, ADR-15)(.docs/api-notes/nemc.md 참조)",
+    knownParams: ["Q0", "Q1", "QD", "QN", "QT", "numOfRows"],
+    note: "실응답(2026-10-28)으로 확인. 소아청소년과 코드(QD) 미확인, QT 효과 확인(M12: QT=8 시 항목 축소), pageNo·QZ·ORD 미시험, XML 사용(_type=json은 시간 필드 숫자·문자열 혼재, ADR-15)(.docs/api-notes/nemc.md 참조)",
   },
   nemcMoonlight: {
     id: "nemcMoonlight",

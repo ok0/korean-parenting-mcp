@@ -99,6 +99,13 @@ describe("regions invariants", () => {
     expect(R.sigungu.length).toBeGreaterThanOrEqual(250);
   });
 
+  it("nemc_q1 has no spaces (NEMC accepts compact 일반구 names)", () => {
+    for (const s of R.sigungu) {
+      expect(s.nemc_q1).not.toMatch(/\s/);
+    }
+    expect(R.sigungu.find((s) => s.code === "41117")?.nemc_q1).toBe("수원시영통구");
+  });
+
   it("marks some entries unverified, and those have no kindergarten code", () => {
     const unverified = R.sigungu.filter((s) => s.verified === "false");
     expect(unverified.length).toBeGreaterThanOrEqual(1);

@@ -17,7 +17,7 @@ describe("data.go.kr dataset specs", () => {
   it("pins nemcList endpoint and known params", () => {
     expect(SPECS.nemcList.baseUrl).toBe("https://apis.data.go.kr/B552657/HsptlAsembySearchService");
     expect(SPECS.nemcList.operation).toBe("getHsptlMdcncListInfoInqire");
-    expect(SPECS.nemcList.knownParams).toEqual(expect.arrayContaining(["Q0", "Q1", "QD", "QN"]));
+    expect(SPECS.nemcList.knownParams).toEqual(expect.arrayContaining(["Q0", "Q1", "QD", "QN", "QT"]));
   });
 
   it("standard specs use the XML path (no formatParams)", () => {

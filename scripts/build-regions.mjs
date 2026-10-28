@@ -59,7 +59,7 @@ const ABOLISHED = [
   },
 ];
 const NOTE =
-  "현존 시군구는 법정동 파일의 시군구 행(읍면동·리 공란)에서 생성. verified partial=법정동 파일과 유치원알리미 코드표 일치, false=코드표에 없어 대조 불가. nemc_q0/q1은 정식 명칭이며 NEMC 수용 여부는 실호출 확인 전. 5자리 코드=법정동코드 앞 5자리(정황 근거, research/region-codes.md C3). 광주광역시·전라남도는 전남광주통합특별시 별칭으로만 남김.";
+  "현존 시군구는 법정동 파일의 시군구 행(읍면동·리 공란)에서 생성. verified partial=법정동 파일과 유치원알리미 코드표 일치, false=코드표에 없어 대조 불가. nemc_q0은 정식 명칭, nemc_q1은 정식 명칭에서 공백을 뺀 값(일반구는 NEMC가 공백 없는 표기만 받음, M12 확인). 5자리 코드=법정동코드 앞 5자리(정황 근거, research/region-codes.md C3). 광주광역시·전라남도는 전남광주통합특별시 별칭으로만 남김.";
 const BJD_DATASET = "국토교통부_전국 법정동_20260630";
 const BJD_URL = "https://www.data.go.kr/data/15063424/fileData.do";
 const BJD_LICENSE = "이용허락범위 제한 없음";
@@ -277,7 +277,7 @@ const sigungu = linked
       name: s.name,
       ...(s.parent ? { parent_code: s.parent.code5 } : {}),
       aliases: sigunguAliases(s, sidoCompacts),
-      nemc_q1: s.name,
+      nemc_q1: s.name.replace(/\s+/g, ""),
       codes: kg ? { kindergarten: { sido: kg.sido, sgg: kg.sgg } } : {},
       verified: kg ? "partial" : "false",
       created: s.created,
