@@ -85,6 +85,9 @@ describe("workflows", () => {
     expect(text).toMatch(/^\s+pull_request:/m);
     expect(text).toContain("npm ci");
     expect(text).toContain("npm run verify");
+    expect(text).toContain("npm run smoke:pack");
+    expect(text).toMatch(/node:\s*\[\s*"20",\s*"22"\s*\]/);
+    expect(text).toContain("${{ matrix.node }}");
     expect(text).toContain("rhysd/actionlint");
     expect(secretNames(text)).toEqual([]);
     expect(topPermissions(text)).toEqual({ contents: "read" });

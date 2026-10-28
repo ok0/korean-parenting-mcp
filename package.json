@@ -33,6 +33,7 @@
     "build:scripts": "node -e \"require('node:fs').rmSync('build-scripts',{recursive:true,force:true})\" && tsc -p tsconfig.scripts.json",
     "test": "vitest run",
     "verify": "npm run typecheck && npm run build && npm run build:scripts && npm run test",
+    "smoke:pack": "npm run build && npm run build:scripts && node build-scripts/scripts/pack-smoke.js",
     "prepublishOnly": "npm run verify",
     "start": "node build/index.js"
   },
