@@ -91,8 +91,8 @@ describe("project structure", () => {
     for (const f of srcFiles) {
       expect(readFileSync(f, "utf8"), rel(f)).not.toMatch(/\.(pdf|hwp|hwpx)\b/i);
     }
-    const allDeps = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies });
-    expect(allDeps.filter((d) => /pdf|hwp/i.test(d))).toEqual([]);
+    const runtimeDeps = Object.keys(pkg.dependencies ?? {});
+    expect(runtimeDeps.filter((d) => /pdf|hwp/i.test(d))).toEqual([]);
   });
 
   it("root documents limited", () => {

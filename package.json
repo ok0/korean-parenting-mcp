@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.19.43",
+    "pdfjs-dist": "^4.10.38",
     "typescript": "^5.9.3",
     "vitest": "^4.1.12"
   }
