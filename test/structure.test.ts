@@ -9,6 +9,7 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 interface PackageJson {
   version: string;
   bin: Record<string, string>;
+  files?: string[];
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
 }
@@ -73,5 +74,32 @@ describe("project structure", () => {
 
   it("version matches package.json", () => {
     expect(VERSION).toBe(pkg.version);
+  });
+
+  it("data ships with package", () => {
+    expect(pkg.files).toContain("build");
+    expect(pkg.files).toContain("data");
+    expect(existsSync(join(root, "data/basis-documents.json"))).toBe(true);
+    expect(existsSync(join(root, "data/holidays.json"))).toBe(true);
+  });
+
+  it("no runtime annex parsing", () => {
+    const readers = srcFiles
+      .filter((f) => readFileSync(f, "utf8").includes("readFileSync"))
+      .map(rel);
+    expect(readers).toEqual(["src/data-store/load.ts"]);
+    for (const f of srcFiles) {
+      expect(readFileSync(f, "utf8"), rel(f)).not.toMatch(/\.(pdf|hwp|hwpx)\b/i);
+    }
+    const allDeps = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies });
+    expect(allDeps.filter((d) => /pdf|hwp/i.test(d))).toEqual([]);
+  });
+
+  it("root documents limited", () => {
+    const docs = readdirSync(root).filter((n) => /\.(md|markdown|txt|rst)$/i.test(n));
+    for (const name of docs) {
+      expect(["README.md"]).toContain(name);
+    }
+    expect(existsSync(join(root, "docs"))).toBe(false);
   });
 });
