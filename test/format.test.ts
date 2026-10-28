@@ -1,13 +1,18 @@
 import { describe, expect, it } from "vitest";
 import type { BasisDoc } from "../src/data-store/schema.js";
+import { SPECS } from "../src/clients/data-go-kr-specs.js";
 import {
   DISCLAIMER_MEDICAL_LEGAL,
   NOTICE_UNOFFICIAL,
   basisFooter,
   basisLine,
   composeFooter,
+  partialNotice,
   revisionSummary,
+  sourceFooter,
+  summarizeList,
   verifiedText,
+  zeroResultHint,
 } from "../src/tools/shared/format.js";
 
 const doc = {
@@ -86,5 +91,40 @@ describe("format", () => {
         { basisId: "d", state: "skipped", message: "법제처 OC 미설정: 개정 여부 확인 생략" },
       ]),
     ).toBe("개정 확인 요약: 원문 확인 1 / 개정됨 1 / 확인 불가 1 / 생략 1");
+  });
+});
+
+describe("format list helpers", () => {
+  it("sourceFooter lists attribution, titles, url and KST time", () => {
+    const footer = sourceFooter([SPECS.nemcMoonlight, SPECS.nemcList], "2026-10-28 21:30");
+    expect(footer).toContain(SPECS.nemcList.title);
+    expect(footer).toContain(SPECS.nemcMoonlight.title);
+    expect(footer).toContain("국립중앙의료원(공공데이터포털)");
+    expect(footer).toContain("https://www.data.go.kr/data/15000736/openapi.do");
+    expect(footer).toContain("조회 시각 2026-10-28 21:30 KST");
+  });
+
+  it("summarizeList shows top N and omitted count", () => {
+    const rows = [1, 2, 3, 4, 5, 6, 7];
+    const out = summarizeList(rows, { limit: 5, unit: "곳", line: (r) => `row ${r}` });
+    expect(out.split("\n\n").slice(0, 5)).toHaveLength(5);
+    expect(out).toContain("전체 후보 7곳 중 상위 5곳 표시(나머지 2곳 생략)");
+    expect(summarizeList([1, 2], { limit: 5, unit: "곳", line: (r) => `row ${r}` })).toContain("전체 후보 2곳 모두 표시");
+    expect(summarizeList([1, 2, 3], { limit: 5, total: 10, unit: "곳", line: (r) => `row ${r}` })).toContain("전체 후보 10곳 중 상위 3곳");
+  });
+
+  it("zeroResultHint is not an error and lists suggestions", () => {
+    const hint = zeroResultHint("야간 진료", ["시간을 바꿔 보세요", "지역을 넓혀 보세요"]);
+    expect(hint).toContain("오류 아님");
+    expect(hint).toContain("- 시간을 바꿔 보세요");
+    expect(hint).toContain("- 지역을 넓혀 보세요");
+  });
+
+  it("partialNotice names failed sections", () => {
+    expect(partialNotice([])).toBe("");
+    const notice = partialNotice([{ label: "달빛어린이병원", reason: "시간 초과", action: "잠시 후 다시 시도" }]);
+    expect(notice).toContain("달빛어린이병원");
+    expect(notice).toContain("시간 초과");
+    expect(notice).toContain("조치:");
   });
 });

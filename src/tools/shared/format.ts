@@ -51,3 +51,50 @@ export function basisFooter(docs: readonly BasisDoc[], revisions?: readonly Revi
 export function composeFooter(sections: readonly (string | undefined)[]): string {
   return "---\n" + sections.filter((s): s is string => s !== undefined && s.trim() !== "").join("\n");
 }
+
+export interface SourceRef { title: string; attribution: string; datasetUrl: string }
+
+export function sourceFooter(specs: readonly SourceRef[], checkedAtKst: string): string {
+  const groups = new Map<string, { attribution: string; datasetUrl: string; titles: string[] }>();
+  for (const s of specs) {
+    const key = `${s.attribution}\u0000${s.datasetUrl}`;
+    const g = groups.get(key);
+    if (g === undefined) groups.set(key, { attribution: s.attribution, datasetUrl: s.datasetUrl, titles: [s.title] });
+    else g.titles.push(s.title);
+  }
+  const parts = [...groups.values()].map((g) => {
+    if (g.titles.length === 1) return `${g.attribution} — ${g.titles[0]} (${g.datasetUrl})`;
+    return `${g.attribution} — ${g.titles.join("; ")} (${g.datasetUrl})`;
+  });
+  return "출처: " + parts.join("; ") + ` · 조회 시각 ${checkedAtKst} KST`;
+}
+
+export function summarizeList<T>(
+  rows: readonly T[],
+  opts: { limit: number; line: (row: T, index: number) => string; total?: number; unit?: string },
+): string {
+  const shown = rows.slice(0, opts.limit);
+  const total = opts.total ?? rows.length;
+  const unit = opts.unit ?? "건";
+  const tail =
+    total > shown.length
+      ? `전체 후보 ${total}${unit} 중 상위 ${shown.length}${unit} 표시(나머지 ${total - shown.length}${unit} 생략)`
+      : `전체 후보 ${total}${unit} 모두 표시`;
+  if (shown.length === 0) return tail;
+  const lines = shown.map((r, i) => opts.line(r, i)).join("\n\n");
+  return lines + "\n\n" + tail;
+}
+
+export function zeroResultHint(what: string, suggestions: readonly string[]): string {
+  return `${what} 조회 결과가 없습니다(오류 아님). 다음을 시도해 보세요:\n` + suggestions.map((s) => `- ${s}`).join("\n");
+}
+
+export function partialNotice(failed: readonly { label: string; reason: string; action?: string }[]): string {
+  if (failed.length === 0) return "";
+  return (
+    "일부 결과만 표시합니다:\n" +
+    failed
+      .map((f) => `- ${f.label} 조회 실패: ${f.reason}` + (f.action ? ` 조치: ${f.action}` : ""))
+      .join("\n")
+  );
+}
