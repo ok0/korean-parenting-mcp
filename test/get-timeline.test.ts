@@ -145,6 +145,7 @@ describe("get_timeline", () => {
     const empty = await call({ birth_date: "2005-01-01", reference_date: "2026-01-01" });
     expect(empty.isError).toBeFalsy();
     expect(text(empty)).toContain("표시할 항목이 없습니다");
+    expect(text(empty)).toContain("지역·기관별 확인 사항");
     expect(text(empty)).not.toContain(NOTICE_VACCINATION_SCOPE);
   });
 
@@ -177,6 +178,12 @@ describe("get_timeline", () => {
     expect(t).toContain("개정 여부 자동 확인은 아직 제공하지 않");
     expect(t).toContain("근거 문서:");
     expect(t).toContain(NOTICE_VACCINATION_SCOPE);
+    const iCut = t.indexOf("자 생략");
+    const iLocal = t.indexOf("지역·기관별 확인 사항");
+    const iSep = t.indexOf("\n---\n");
+    expect(iCut).toBeGreaterThan(-1);
+    expect(iLocal).toBeGreaterThan(iCut);
+    expect(iSep).toBeGreaterThan(iLocal);
   });
 
   it("offline, keyless, no birth date in logs", async () => {

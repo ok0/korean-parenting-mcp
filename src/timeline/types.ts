@@ -45,3 +45,20 @@ export interface TimelineResult {
 export type TimelineRule = (input: TimelineInput) => TimelineItem[];
 
 export type TimelineNoticeRule = (input: TimelineInput) => string[];
+
+export interface LocalGuidanceLine {
+  id: string;
+  title: string;
+  text: string;
+  contact: string;
+  url?: string;
+  provenance: Provenance;
+}
+
+export interface LocalGuidanceSection {
+  title: string;
+  region?: string;
+  missingNote?: string;
+  lines: LocalGuidanceLine[];
+  basisIds: string[];
+}

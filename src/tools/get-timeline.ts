@@ -5,6 +5,7 @@ import { loadData } from "../data-store/load.js";
 import { compare, daysBetween, parseDate, todayKst, type CivilDate } from "../date/civil-date.js";
 import { bundledCalendar } from "../date/holiday-calendar.js";
 import { buildTimeline } from "../timeline/engine.js";
+import { localGuidance } from "../timeline/rules/local.js";
 import { renderTimeline } from "../timeline/render.js";
 import type { TimelineMode } from "../timeline/types.js";
 import type { ToolDef, ToolOutput } from "./registry.js";
@@ -81,6 +82,7 @@ function buildOutput(
   const monthsAhead = args.months_ahead ?? 12;
   const includePast = args.include_past ?? false;
   const holidays = bundledCalendar({ referenceDate });
+  const local = localGuidance({ mode, region: args.region });
   const result = buildTimeline({
     mode,
     birthDate,
@@ -100,7 +102,7 @@ function buildOutput(
     monthsAhead,
     includePast,
     holidaySource: `번들(생성일 ${loadData("holidays").generated_at})`,
-  });
+  }, local);
 }
 
 async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise<ToolOutput> {
@@ -158,9 +160,9 @@ async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise
 
 const def: ToolDef<typeof schema> = {
   name: "get_timeline",
-  title: "육아 타임라인(임신 중·출산 후 기한·검진·예방접종 일정)",
+  title: "육아 타임라인(임신 중·출산 후 기한·검진·예방접종·지원금·휴가 일정)",
   description:
-    "아기 생년월일로 출생신고 기한, 부모급여·아동수당 신청 기한(60일 소급 기준), 영유아 건강검진 8회와 구강검진 4회 기간, 국가예방접종 13종의 차수별 권장 시기와 인플루엔자 절기 접종 기간을 날짜순으로 계산합니다. 각 항목에 기간, 성격(법정 의무/권장/지원 신청), 진행 상태, 출처와 검증 상태를 표시합니다. 최소 접종 간격·지연접종은 반영하지 않습니다. API 키와 네트워크 없이 동작하며 결과는 참고용입니다. 임신 중이면 birth_date 대신 출산예정일(due_date)로 산전검진 구간·임신부 인플루엔자와 출생 후 일정(예정일 기준)을 계산합니다.",
+    "임신 중이면 출산예정일(due_date), 출산 후면 아기 생년월일(birth_date) 중 하나로 일정을 날짜순으로 계산합니다. 출생신고 기한, 부모급여·아동수당 신청 기한과 지급 구간, 첫만남이용권 신청 기한, 배우자 출산휴가·출산전후휴가·육아휴직 개요, 영유아 건강검진 8회와 구강검진 4회, 국가예방접종 13종과 인플루엔자 절기 접종을 포함하고, 임신 중에는 산전검진 구간·임신부 인플루엔자·임신·출산 진료비를 더합니다. 금액·연령은 연도별 표 기준이며 임신 중 출생 후 항목은 예정일 기준입니다. 지역·기관별 확인 사항(보건소·입소대기·지자체 지원)을 함께 안내합니다. 각 항목에 기간, 성격(법정 의무/권장/지원 신청/안내), 진행 상태, 출처와 검증 상태를 표시합니다. 최소 접종 간격·지연접종은 반영하지 않습니다. API 키와 네트워크 없이 동작하며 결과는 참고용입니다.",
   schema,
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   maxChars: 20000,

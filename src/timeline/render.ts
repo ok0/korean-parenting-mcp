@@ -10,7 +10,7 @@ import {
   composeFooter,
   verifiedText,
 } from "../tools/shared/format.js";
-import type { TimelineItem, TimelineMode, TimelineResult } from "./types.js";
+import type { LocalGuidanceSection, TimelineItem, TimelineMode, TimelineResult } from "./types.js";
 
 export interface TimelineView {
   birthDate: CivilDate;
@@ -35,7 +35,22 @@ export function renderItemLine(item: TimelineItem): string {
   return [head, ...notes.map((note) => `\n  · ${note}`)].join("");
 }
 
-export function renderTimeline(result: TimelineResult, view: TimelineView): ToolOutput {
+export function renderLocalSection(s: LocalGuidanceSection): string {
+  const head =
+    s.region !== undefined
+      ? `${s.title} (입력 지역: ${s.region}, 지역명은 확인하지 않은 입력 문구 그대로):`
+      : `${s.title}:`;
+  const out: string[] = [head];
+  if (s.missingNote !== undefined) out.push(s.missingNote);
+  for (const l of s.lines) {
+    out.push(
+      `- ${l.title}: ${l.text} 확인처: ${l.contact}${l.url !== undefined ? ` (${l.url})` : ""} | 출처 ${l.provenance.basis_ids.join(", ")} | 기준일 ${l.provenance.as_of} | ${verifiedText(l.provenance.verified)}`,
+    );
+  }
+  return out.join("\n");
+}
+
+export function renderTimeline(result: TimelineResult, view: TimelineView, local?: LocalGuidanceSection): ToolOutput {
   const horizon = addMonthsClamp(view.referenceDate, view.monthsAhead);
   const count = (status: string): number => result.items.filter((it) => it.status === status).length;
   const summary = `상태 요약: 진행 중 ${count("진행 중")} · 임박 ${count("임박")} · 예정 ${count("예정")}${view.includePast ? ` · 지난 ${count("지난")}` : ""}`;
@@ -61,14 +76,15 @@ export function renderTimeline(result: TimelineResult, view: TimelineView): Tool
     lines.push(`먼 미래 항목 ${result.hiddenFuture}개 숨김(months_ahead를 늘리면 표시, 최대 156)`);
   }
 
-  const footer = composeFooter([
-    basisFooter(resolveBasis(result.basisIds)),
+  const footerCore = composeFooter([
+    basisFooter(resolveBasis([...new Set([...result.basisIds, ...(local?.basisIds ?? [])])])),
     `공휴일: ${view.holidaySource}`,
     result.warnings.length > 0 ? ["주의:", ...result.warnings.map((w) => `- ${w}`)].join("\n") : undefined,
     result.items.some((it) => it.category === "접종") ? NOTICE_VACCINATION_SCOPE : undefined,
     DISCLAIMER_MEDICAL_LEGAL,
     NOTICE_UNOFFICIAL,
   ]);
+  const footer = local ? `${renderLocalSection(local)}\n\n${footerCore}` : footerCore;
 
   return { body: lines.join("\n"), footer };
 }
