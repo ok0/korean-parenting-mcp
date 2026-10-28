@@ -131,6 +131,29 @@ export function dataGoKrError(code: string): ToolError {
   });
 }
 
+export const SAFETYKOREA_KEY_ACTIONS: string[] = [
+  "SAFETYKOREA_AUTH_KEY에 SafetyKorea가 이메일로 발급한 서비스 ID를 앞뒤 공백 없이 그대로 설정했는지 확인하세요(서버가 HTTP 헤더 AuthKey로 전송합니다).",
+  "서비스 ID가 승인·발급된 상태인지 확인하고, 문제가 계속되면 SafetyKorea(safetykorea@korea.kr)에 문의하세요.",
+];
+const SAFETYKOREA_ACCESS_ACTIONS: string[] = [
+  "SafetyKorea(safetykorea@korea.kr)에 서비스 ID의 승인 상태와 발급 시 등록된 접속 정보(IP 등)를 확인해 달라고 요청하세요.",
+  "결과코드 4001의 정확한 조건은 공개 문서에 설명되어 있지 않습니다.",
+];
+const SAFETYKOREA_CODES: Record<string, { kind: ErrorKind; summary: string; actions: string[] }> = {
+  "4000": { kind: "KEY_INVALID", summary: "서비스 ID(인증키)가 유효하지 않음(Invalid Auth Key)", actions: SAFETYKOREA_KEY_ACTIONS },
+  "4001": { kind: "NOT_APPROVED", summary: "접속 정보가 승인되지 않음(Invalid IP)", actions: SAFETYKOREA_ACCESS_ACTIONS },
+  "4005": { kind: "UPSTREAM", summary: "요청 파라미터 오류(Invalid Parameter)", actions: ["검색어를 바꿔 다시 시도하세요. 계속되면 저장소 이슈로 알려주세요."] },
+  "5000": { kind: "UPSTREAM", summary: "SafetyKorea 서버 내부 오류(Internal Server Error)", actions: ["SafetyKorea 서버 문제입니다. 잠시 후 다시 시도하세요."] },
+};
+export function safetyKoreaError(code: string): ToolError {
+  const hit = Object.prototype.hasOwnProperty.call(SAFETYKOREA_CODES, code) ? SAFETYKOREA_CODES[code] : undefined;
+  if (hit) return new ToolError(hit.kind, `SafetyKorea 오류(코드 ${code}): ${hit.summary}`, { actions: hit.actions, detail: { code } });
+  return new ToolError("UPSTREAM", `SafetyKorea 오류(코드 ${code})`, {
+    detail: { code },
+    actions: [`응답 코드 ${code}: 잠시 후 다시 시도하고, 계속되면 저장소 이슈로 알려주세요.`],
+  });
+}
+
 export function formatToolError(err: unknown, tool: string, ctx: Pick<ToolContext, "secrets" | "log">): ToolResult {
   const te =
     err instanceof ToolError
