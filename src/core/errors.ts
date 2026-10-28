@@ -53,7 +53,11 @@ export const KEY_GUIDE: Record<
     env: KEY_ENV.KINDERGARTEN,
     title: "유치원알리미 OpenAPI 인증키",
     url: "https://e-childschoolinfo.moe.go.kr",
-    steps: ["유치원알리미 사이트의 OpenAPI 메뉴에서 인증키를 신청합니다.", "발급된 인증키를 복사합니다."],
+    steps: [
+      "유치원알리미 사이트(https://e-childschoolinfo.moe.go.kr)에 SNS 계정으로 로그인한 뒤 OpenAPI 메뉴에서 개발자 인증키를 신청합니다.",
+      "인증키는 담당자 승인 후 발급되므로 승인까지 기다려야 할 수 있습니다.",
+      "발급된 인증키를 KINDERGARTEN_API_KEY에 앞뒤 공백 없이 설정하고 MCP 클라이언트를 재시작합니다.",
+    ],
     tools: [],
   },
   LAW_OC: {
@@ -135,6 +139,10 @@ export function dataGoKrError(code: string): ToolError {
 export const SAFETYKOREA_KEY_ACTIONS: string[] = [
   "SAFETYKOREA_AUTH_KEY에 SafetyKorea가 이메일로 발급한 서비스 ID를 앞뒤 공백 없이 그대로 설정했는지 확인하세요(서버가 HTTP 헤더 AuthKey로 전송합니다).",
   "서비스 ID가 승인·발급된 상태인지 확인하고, 문제가 계속되면 SafetyKorea(safetykorea@korea.kr)에 문의하세요.",
+];
+export const KINDERGARTEN_KEY_ACTIONS: string[] = [
+  "KINDERGARTEN_API_KEY에 유치원알리미에서 발급받은 인증키를 앞뒤 공백 없이 그대로 설정했는지 확인하세요.",
+  "인증키가 담당자 승인을 거쳐 발급된 상태인지 유치원알리미 사이트(https://e-childschoolinfo.moe.go.kr)에서 확인하고, 승인 대기 중이면 승인 후 다시 시도하세요.",
 ];
 const SAFETYKOREA_ACCESS_ACTIONS: string[] = [
   "SafetyKorea(safetykorea@korea.kr)에 서비스 ID의 승인 상태와 발급 시 등록된 접속 정보(IP 등)를 확인해 달라고 요청하세요.",
