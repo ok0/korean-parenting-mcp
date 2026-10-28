@@ -1,5 +1,5 @@
-import { addDays, addMonthsClamp, type CivilDate } from "../../date/civil-date.js";
-import { applyOffset } from "../../date/offsets.js";
+import type { CivilDate } from "../../date/civil-date.js";
+import { offsetRange } from "../../date/offsets.js";
 import { loadData } from "../../data-store/load.js";
 import type { CheckupOffset, CheckupProgram } from "../../data-store/schema.js";
 import { pickProvenance } from "./common.js";
@@ -15,12 +15,7 @@ export function checkupRange(
   from: CheckupOffset,
   to: CheckupOffset,
 ): { start: CivilDate; end: CivilDate } {
-  const start = applyOffset(birth, from);
-  const end =
-    "days" in to
-      ? addDays(birth, to.days)
-      : addDays(addMonthsClamp(birth, to.months + 1), -1);
-  return { start, end };
+  return offsetRange(birth, from, to);
 }
 
 export function rangeLabel(from: CheckupOffset, to: CheckupOffset): string {
