@@ -6,6 +6,7 @@ import {
   BasisDocumentsSchema,
   BenefitsSchema,
   CheckupsSchema,
+  DaycareGuideSchema,
   DeadlinesSchema,
   HolidaysSchema,
   LeaveSchema,
@@ -17,6 +18,7 @@ import {
   type BasisDocuments,
   type BenefitsFile,
   type CheckupsFile,
+  type DaycareGuideFile,
   type DeadlinesFile,
   type HolidaysFile,
   type LeaveFile,
@@ -36,7 +38,8 @@ export type DatasetName =
   | "benefits"
   | "leave"
   | "local-guidance"
-  | "regions";
+  | "regions"
+  | "daycare-guide";
 
 export interface DatasetMap {
   "basis-documents": BasisDocuments;
@@ -49,6 +52,7 @@ export interface DatasetMap {
   leave: LeaveFile;
   "local-guidance": LocalGuidanceFile;
   regions: RegionsFile;
+  "daycare-guide": DaycareGuideFile;
 }
 
 const SCHEMAS = {
@@ -62,6 +66,7 @@ const SCHEMAS = {
   leave: LeaveSchema,
   "local-guidance": LocalGuidanceSchema,
   regions: RegionsSchema,
+  "daycare-guide": DaycareGuideSchema,
 } as const;
 
 export class DataValidationError extends Error {

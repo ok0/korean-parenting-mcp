@@ -826,3 +826,95 @@ export type RegionsFile = z.output<typeof RegionsSchema>;
 export type SidoEntry = z.output<typeof SidoEntrySchema>;
 export type SigunguEntry = z.output<typeof SigunguEntrySchema>;
 export type AbolishedRegion = z.output<typeof AbolishedRegionSchema>;
+
+export const DAYCARE_STAGES = ["pregnancy", "m0_11", "m12_23", "m24_35", "age3plus", "general"] as const;
+export const DAYCARE_LINK_IDS = ["info-search", "childcare-search", "childcare-waitlist", "childcare-root", "kindergarten-root"] as const;
+export const DAYCARE_TYPE_IDS = ["public", "social-welfare", "corporate", "private", "home", "workplace", "cooperative"] as const;
+
+const GuideSource = z.object({
+  source: z.string().min(1),
+  as_of: IsoDate,
+  verified: z.enum(["partial", "false"]),
+  note: z.string().min(1).optional(),
+});
+const GuideLines = z.array(z.string().min(1)).min(1);
+const DaycareLinkSchema = GuideSource.extend({
+  id: z.enum(DAYCARE_LINK_IDS),
+  label: z.string().min(1),
+  url: z.url(),
+  purpose: z.string().min(1),
+  region_param: z.literal("unverified"),
+  stages: z.array(z.enum(DAYCARE_STAGES)).min(1).optional(),
+});
+const StageGuide = z.object({ label: z.string().min(1), lines: GuideLines });
+
+export const DaycareGuideSchema = z
+  .object({
+    as_of: IsoDate,
+    links: z.array(DaycareLinkSchema),
+    region_steps: GuideSource.extend({
+      general: GuideLines,
+      with_region: z.string(),
+      with_sido: z.string(),
+      local_contact: z.string(),
+      local_contact_default: z.string().min(1),
+    }),
+    comparison: GuideSource.extend({
+      common: GuideLines,
+      types: z.array(z.object({ id: z.enum(DAYCARE_TYPE_IDS), name: z.string().min(1), focus: GuideLines })),
+    }),
+    waitlist: GuideSource.extend({
+      common: GuideLines,
+      stages: z.object({
+        pregnancy: StageGuide,
+        m0_11: StageGuide,
+        m12_23: StageGuide,
+        m24_35: StageGuide,
+        age3plus: StageGuide,
+        general: StageGuide,
+      }),
+    }),
+  })
+  .superRefine((f, ctx) => {
+    const linkIds = new Set<string>();
+    f.links.forEach((l, i) => {
+      if (linkIds.has(l.id)) {
+        ctx.addIssue({ code: "custom", path: ["links", i, "id"], message: `중복 링크 id: ${l.id}` });
+      }
+      linkIds.add(l.id);
+    });
+    for (const id of DAYCARE_LINK_IDS) {
+      if (!linkIds.has(id)) {
+        ctx.addIssue({ code: "custom", path: ["links"], message: `링크 누락: ${id}` });
+      }
+    }
+    f.links.forEach((l) => {
+      if ([...new URL(l.url).searchParams.keys()].some((k) => k !== "menuno")) {
+        ctx.addIssue({ code: "custom", path: ["links"], message: `지역 파라미터 등 미확인 쿼리 금지: ${l.id}` });
+      }
+    });
+    if (!f.region_steps.with_region.includes("{sido}") || !f.region_steps.with_region.includes("{sigungu}")) {
+      ctx.addIssue({ code: "custom", path: ["region_steps", "with_region"], message: "{sido}와 {sigungu} 자리표시자가 필요합니다" });
+    }
+    if (!f.region_steps.local_contact.includes("{sido}") || !f.region_steps.local_contact.includes("{sigungu}")) {
+      ctx.addIssue({ code: "custom", path: ["region_steps", "local_contact"], message: "{sido}와 {sigungu} 자리표시자가 필요합니다" });
+    }
+    if (!f.region_steps.with_sido.includes("{sido}")) {
+      ctx.addIssue({ code: "custom", path: ["region_steps", "with_sido"], message: "{sido} 자리표시자가 필요합니다" });
+    }
+    const typeIds = new Set<string>();
+    f.comparison.types.forEach((t, i) => {
+      if (typeIds.has(t.id)) {
+        ctx.addIssue({ code: "custom", path: ["comparison", "types", i, "id"], message: `중복 유형 id: ${t.id}` });
+      }
+      typeIds.add(t.id);
+    });
+    for (const id of DAYCARE_TYPE_IDS) {
+      if (!typeIds.has(id)) {
+        ctx.addIssue({ code: "custom", path: ["comparison", "types"], message: `유형 누락: ${id}` });
+      }
+    }
+  });
+
+export type DaycareGuideFile = z.output<typeof DaycareGuideSchema>;
+export type DaycareLinkEntry = z.output<typeof DaycareLinkSchema>;
