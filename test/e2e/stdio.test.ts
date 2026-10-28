@@ -5,6 +5,7 @@ import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport, getDefaultEnvironment } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { LATEST_PROTOCOL_VERSION } from "@modelcontextprotocol/sdk/types.js";
+import { KEY_ENV } from "../../src/core/config.js";
 
 const entry = fileURLToPath(new URL("../../build/index.js", import.meta.url));
 
@@ -165,5 +166,29 @@ describe("stdio e2e", () => {
     for (const secret of ["2027-02-10", "2026-05-28", "성동구"]) {
       expect(stderr).not.toContain(secret);
     }
+  });
+
+  it.each(["unset", "empty", "placeholder"] as const)("blank key env (%s): starts, timeline ok, key tool reports missing key", async (mode) => {
+    const names = Object.values(KEY_ENV);
+    const keyEnv: Record<string, string> =
+      mode === "unset"
+        ? {}
+        : Object.fromEntries(names.map((n) => [n, mode === "empty" ? "" : `${"$"}{user_config.${n}}`]));
+
+    const transport = new StdioClientTransport({
+      command: process.execPath,
+      args: [entry],
+      env: { ...getDefaultEnvironment(), KPM_LOG_LEVEL: "warn", ...keyEnv },
+      stderr: "pipe",
+    });
+    client = new Client({ name: "e2e", version: "0" });
+    await client.connect(transport);
+
+    const tl = await client.callTool({ name: "get_timeline", arguments: SCENARIO_B });
+    expect(tl.isError).toBeFalsy();
+
+    const leave = await client.callTool({ name: "get_leave_article", arguments: { topic: "maternity_leave" } });
+    expect(leave.isError).toBe(true);
+    expect((leave.content as { type: string; text: string }[])[0]!.text).toContain("LAW_OC");
   });
 });

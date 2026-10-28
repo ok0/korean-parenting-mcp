@@ -1,6 +1,7 @@
 export type KeyName = "DATA_GO_KR" | "KINDERGARTEN" | "LAW_OC" | "SAFETYKOREA";
 export type KeyEnvName = "DATA_GO_KR_SERVICE_KEY" | "KINDERGARTEN_API_KEY" | "LAW_OC" | "SAFETYKOREA_AUTH_KEY";
 export const KEY_ENV: Record<KeyName, KeyEnvName> = { DATA_GO_KR: "DATA_GO_KR_SERVICE_KEY", KINDERGARTEN: "KINDERGARTEN_API_KEY", LAW_OC: "LAW_OC", SAFETYKOREA: "SAFETYKOREA_AUTH_KEY" };
+const UNSUBSTITUTED_PLACEHOLDER = /^\$\{user_config\.[^}]*\}$/;
 export type LogLevel = "debug" | "info" | "warn" | "error";
 export interface Config {
   keys: Partial<Record<KeyName, string>>;
@@ -24,7 +25,7 @@ export function loadConfig(env: Record<string, string | undefined>): Config {
   const keys: Partial<Record<KeyName, string>> = {};
   for (const name of Object.keys(KEY_ENV) as KeyName[]) {
     const value = env[KEY_ENV[name]]?.trim();
-    if (value) keys[name] = value;
+    if (value && !UNSUBSTITUTED_PLACEHOLDER.test(value)) keys[name] = value;
   }
   const rawLevel = env.KPM_LOG_LEVEL?.trim().toLowerCase();
   const logLevel = LOG_LEVELS.find((l) => l === rawLevel) ?? "warn";

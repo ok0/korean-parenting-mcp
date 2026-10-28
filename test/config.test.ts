@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { loadConfig, secretsOf } from "../src/core/config.js";
+import { KEY_ENV, loadConfig, secretsOf } from "../src/core/config.js";
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -55,6 +55,33 @@ describe("loadConfig", () => {
   it("reads only the given env object", () => {
     vi.stubEnv("DATA_GO_KR_SERVICE_KEY", "fromprocessenv");
     expect(loadConfig({}).keys).toEqual({});
+  });
+
+  it("unsubstituted user_config placeholders are unset", () => {
+    for (const env of Object.values(KEY_ENV)) {
+      for (const value of [`${"$"}{user_config.${env}}`, ` ${"$"}{user_config.${env}} `]) {
+        const config = loadConfig({ [env]: value });
+        expect(Object.keys(config.keys)).toEqual([]);
+        expect(secretsOf(config)).toEqual([]);
+      }
+    }
+  });
+
+  it("all four keys blank or placeholder start empty", () => {
+    const blank = Object.fromEntries(Object.values(KEY_ENV).map((env) => [env, ""]));
+    expect(loadConfig(blank).keys).toEqual({});
+    const placeholder = Object.fromEntries(Object.values(KEY_ENV).map((env) => [env, `${"$"}{user_config.${env}}`]));
+    expect(loadConfig(placeholder).keys).toEqual({});
+  });
+
+  it("values merely containing a placeholder stay set", () => {
+    expect(loadConfig({ LAW_OC: "abc${user_config.x}" }).keys.LAW_OC).toBe("abc${user_config.x}");
+  });
+
+  it("fake keys remain set (regression)", () => {
+    const fake = Object.fromEntries(Object.values(KEY_ENV).map((env) => [env, "fake-key-123"]));
+    const config = loadConfig(fake);
+    expect(Object.keys(config.keys).sort()).toEqual(Object.keys(KEY_ENV).sort());
   });
 });
 
