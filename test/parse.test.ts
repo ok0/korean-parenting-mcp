@@ -39,6 +39,18 @@ describe("parseBody", () => {
     expectUpstream(() => parseBody("<div>x</div>", "text/html; charset=utf-8"), "html");
   });
 
+  it("parses JSON served as text/html only when the client opts in", () => {
+    expect(parseBody("{\"status\":\"SUCCESS\"}", "text/html;charset=UTF-8", { jsonDespiteHtmlType: true })).toEqual({ status: "SUCCESS" });
+    expectUpstream(() => parseBody("{\"status\":\"SUCCESS\"}", "text/html;charset=UTF-8"), "html");
+    expect(parseBody("[1]", "text/html", { jsonDespiteHtmlType: true })).toEqual([1]);
+  });
+
+  it("opt-in still rejects HTML bodies and broken JSON", () => {
+    expectUpstream(() => parseBody("<!DOCTYPE html><html></html>", "text/html", { jsonDespiteHtmlType: true }), "html");
+    expectUpstream(() => parseBody("<div>x</div>", "text/html", { jsonDespiteHtmlType: true }), "html");
+    expectUpstream(() => parseBody("{bad", "text/html", { jsonDespiteHtmlType: true }), "format");
+  });
+
   it("rejects malformed JSON, malformed XML, and unknown formats", () => {
     expectUpstream(() => parseBody("{", "application/json"), "format");
     expectUpstream(() => parseBody("<a><b></a>", "application/xml"), "format");

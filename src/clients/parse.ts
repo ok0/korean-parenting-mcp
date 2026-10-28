@@ -30,14 +30,20 @@ export function asArray(x: unknown): unknown[] {
   return [x];
 }
 
-export function parseBody(text: string, contentType: string): unknown {
+export interface ParseOptions {
+  jsonDespiteHtmlType?: boolean;
+}
+
+export function parseBody(text: string, contentType: string, opts?: ParseOptions): unknown {
   const t = text.replace(/^﻿/, "").trim();
 
   if (t === "") {
     throw new ToolError("UPSTREAM", "외부 서버가 빈 응답을 보냈습니다", { detail: { reason: "empty" } });
   }
 
-  if (/^<(!doctype\s+html|html[\s>])/i.test(t) || (contentType.toLowerCase().includes("text/html") && !t.startsWith("<?xml"))) {
+  const looksJson = t[0] === "{" || t[0] === "[";
+
+  if (/^<(!doctype\s+html|html[\s>])/i.test(t) || (contentType.toLowerCase().includes("text/html") && !t.startsWith("<?xml") && !(opts?.jsonDespiteHtmlType === true && looksJson))) {
     throw new ToolError("UPSTREAM", "외부 서버가 데이터 대신 웹 페이지(HTML)를 보냈습니다", { detail: { reason: "html" } });
   }
 
