@@ -43,8 +43,9 @@ export const KEY_GUIDE: Record<
     url: "https://www.data.go.kr",
     steps: [
       "공공데이터포털에 회원가입 후 로그인합니다.",
-      "필요한 API의 '활용신청'을 하고 승인을 기다립니다.",
-      "마이페이지 > 개발계정에서 일반 인증키(Decoding)를 복사합니다.",
+      "필요한 API마다 '활용신청'을 하고 승인을 기다립니다(승인 전 호출은 오류 코드 20).",
+      "마이페이지 > 개발계정에서 일반 인증키(Decoding)를 복사해 그대로 설정합니다(Encoding 키를 넣으면 이중 인코딩으로 키 오류가 납니다).",
+      "개발계정은 API별 일일 호출 한도(약 1,000~10,000회)가 있습니다. 부족하면 마이페이지에서 운영계정을 신청합니다.",
     ],
     tools: [],
   },
@@ -94,6 +95,27 @@ export function missingKeyError(keys: KeyName[]): ToolError {
   return new ToolError("MISSING_KEY", `필요한 API 키가 설정되지 않았습니다: ${envs.join(", ")}`, {
     actions,
     detail: { keys: envs.join(",") },
+  });
+}
+
+export const DATA_GO_KR_OK_CODES: ReadonlySet<string> = new Set(["00", "0", "INFO-000"]);
+
+const DATA_GO_KR_CODES: Record<string, { kind: ErrorKind; summary: string }> = {
+  "20": { kind: "NOT_APPROVED", summary: "서비스 접근 거부(활용신청 미승인 또는 미신청)" },
+  "22": { kind: "DAILY_LIMIT", summary: "일일 호출 한도 초과" },
+  "23": { kind: "RATE_LIMIT", summary: "초당 호출 한도 초과" },
+  "30": { kind: "KEY_INVALID", summary: "등록되지 않은 서비스키" },
+  "31": { kind: "KEY_EXPIRED", summary: "활용기간이 만료된 서비스키" },
+};
+
+export function dataGoKrError(code: string): ToolError {
+  const hit = Object.prototype.hasOwnProperty.call(DATA_GO_KR_CODES, code) ? DATA_GO_KR_CODES[code] : undefined;
+  if (hit) {
+    return new ToolError(hit.kind, `공공데이터포털 오류(코드 ${code}): ${hit.summary}`, { detail: { code } });
+  }
+  return new ToolError("UPSTREAM", `공공데이터포털 오류(코드 ${code})`, {
+    detail: { code },
+    actions: [`응답 코드 ${code}: 잠시 후 다시 시도하고, 계속되면 해당 API 안내 페이지의 오류 코드 표를 확인하세요.`],
   });
 }
 

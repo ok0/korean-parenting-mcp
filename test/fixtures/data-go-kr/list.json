@@ -1,0 +1,1 @@
+{"response":{"header":{"resultCode":"00","resultMsg":"NORMAL SERVICE."},"body":{"items":{"item":[{"id":"A1","zip":"0123","name":"테스트의원"},{"id":"A2","zip":"04700","name":"테스트병원"}]},"numOfRows":10,"pageNo":1,"totalCount":2}}}
