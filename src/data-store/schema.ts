@@ -918,3 +918,67 @@ export const DaycareGuideSchema = z
 
 export type DaycareGuideFile = z.output<typeof DaycareGuideSchema>;
 export type DaycareLinkEntry = z.output<typeof DaycareLinkSchema>;
+
+export const CLINIC_TOOLS = ["vaccination", "checkup"] as const;
+const CLINIC_QUERY_KEYS = ["menuCd", "menuLv"];
+
+const ClinicLinkSchema = GuideSource.extend({
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  label: z.string().min(1),
+  url: z.url().optional(),
+  menu_path: z.string().min(1).optional(),
+  purpose: z.string().min(1),
+  region_param: z.literal("unverified"),
+});
+
+const ClinicToolGuideSchema = z.object({
+  links: z.array(ClinicLinkSchema).min(1),
+  call_first: GuideSource.extend({ lines: GuideLines }),
+  region_steps: GuideSource.extend({ general: GuideLines, with_region: z.string(), with_sido: z.string() }),
+  contacts: GuideSource.extend({ lines: GuideLines, local_contact: z.string(), local_contact_default: z.string().min(1) }),
+  prepare: GuideSource.extend({ lines: GuideLines }),
+  stage_text: GuideSource.extend({ birth_notes: GuideLines, due_lines: GuideLines, none_lines: GuideLines }),
+});
+
+export const ClinicGuideSchema = z
+  .object({ as_of: IsoDate, vaccination: ClinicToolGuideSchema, checkup: ClinicToolGuideSchema })
+  .superRefine((f, ctx) => {
+    for (const tool of CLINIC_TOOLS) {
+      const g = f[tool];
+      const linkIds = new Set<string>();
+      g.links.forEach((l, i) => {
+        if (linkIds.has(l.id)) {
+          ctx.addIssue({ code: "custom", path: [tool, "links", i, "id"], message: `중복 링크 id: ${tool}.${l.id}` });
+        }
+        linkIds.add(l.id);
+        if ((l.url === undefined) === (l.menu_path === undefined)) {
+          ctx.addIssue({ code: "custom", path: [tool, "links", i], message: `url과 menu_path 중 하나만 필요합니다: ${l.id}` });
+        }
+        if (l.url !== undefined) {
+          const u = new URL(l.url);
+          if (u.protocol !== "https:") {
+            ctx.addIssue({ code: "custom", path: [tool, "links", i, "url"], message: `https 주소만 허용: ${l.id}` });
+          }
+          if ([...u.searchParams.keys()].some((k) => !CLINIC_QUERY_KEYS.includes(k))) {
+            ctx.addIssue({ code: "custom", path: [tool, "links", i, "url"], message: `지역 파라미터 등 미확인 쿼리 금지: ${l.id}` });
+          }
+        }
+      });
+      if (!g.region_steps.with_region.includes("{sido}") || !g.region_steps.with_region.includes("{sigungu}")) {
+        ctx.addIssue({ code: "custom", path: [tool, "region_steps", "with_region"], message: "{sido}와 {sigungu} 자리표시자가 필요합니다" });
+      }
+      if (!g.contacts.local_contact.includes("{sido}") || !g.contacts.local_contact.includes("{sigungu}")) {
+        ctx.addIssue({ code: "custom", path: [tool, "contacts", "local_contact"], message: "{sido}와 {sigungu} 자리표시자가 필요합니다" });
+      }
+      if (!g.region_steps.with_sido.includes("{sido}")) {
+        ctx.addIssue({ code: "custom", path: [tool, "region_steps", "with_sido"], message: "{sido} 자리표시자가 필요합니다" });
+      }
+      if (!g.stage_text.due_lines.some((line) => line.includes("{birth_items}"))) {
+        ctx.addIssue({ code: "custom", path: [tool, "stage_text", "due_lines"], message: "{birth_items} 자리표시자가 필요합니다" });
+      }
+    }
+  });
+
+export type ClinicGuideFile = z.output<typeof ClinicGuideSchema>;
+export type ClinicToolGuide = z.output<typeof ClinicToolGuideSchema>;
+export type ClinicLinkEntry = z.output<typeof ClinicLinkSchema>;

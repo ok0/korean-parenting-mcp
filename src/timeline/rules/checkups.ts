@@ -3,7 +3,7 @@ import { offsetRange } from "../../date/offsets.js";
 import { loadData } from "../../data-store/load.js";
 import type { CheckupOffset, CheckupProgram } from "../../data-store/schema.js";
 import { pickProvenance } from "./common.js";
-import type { TimelineRule } from "../types.js";
+import type { TimelineItem, TimelineRule } from "../types.js";
 
 export const PROGRAM_LABEL: Record<CheckupProgram, string> = {
   infant: "영유아 건강검진",
@@ -31,9 +31,9 @@ export function rangeLabel(from: CheckupOffset, to: CheckupOffset): string {
   return `${from.months}~${to.months}개월`;
 }
 
-export const checkupRule: TimelineRule = (input) =>
-  loadData("checkups").checkups.map((e) => {
-    const r = checkupRange(input.birthDate, e.from, e.to);
+export function checkupItems(birth: CivilDate): TimelineItem[] {
+  return loadData("checkups").checkups.map((e): TimelineItem => {
+    const r = checkupRange(birth, e.from, e.to);
     return {
       id: e.id,
       category: "검진",
@@ -45,3 +45,6 @@ export const checkupRule: TimelineRule = (input) =>
       provenance: pickProvenance(e),
     };
   });
+}
+
+export const checkupRule: TimelineRule = (input) => checkupItems(input.birthDate);
