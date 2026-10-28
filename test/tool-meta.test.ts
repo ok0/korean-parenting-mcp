@@ -45,10 +45,36 @@ describe("tool meta", () => {
     expect(problems.some((p) => p.includes("설명에 다른 도구 지시"))).toBe(true);
   });
 
-  it("dateField validates YYYY-MM-DD", () => {
+  it("dateField accepts three formats and rejects invalid dates", () => {
     const s = dateField(doc);
-    expect(s.safeParse("2026-03-01").success).toBe(true);
-    expect(s.safeParse("2026/03/01").success).toBe(false);
+    for (const ok of ["2026-03-01", "2026.03.01", "20260301", " 2026-03-01 "]) {
+      expect(s.safeParse(ok).success).toBe(true);
+    }
+    for (const bad of ["2026/03/01", "2026-02-30", "20260230", "2026-3-1"]) {
+      expect(s.safeParse(bad).success).toBe(false);
+    }
+    const invalid = s.safeParse("2026-02-30");
+    expect(invalid.success).toBe(false);
+    if (!invalid.success) {
+      const msg = invalid.error.issues[0]!.message;
+      expect(msg).toContain("존재하지 않는 날짜");
+      expect(msg).toContain("예: 예시값");
+    }
+    const missing = s.safeParse(undefined);
+    expect(missing.success).toBe(false);
+    if (!missing.success) {
+      expect(missing.error.issues[0]!.message).toContain("예: 예시값");
+    }
+  });
+
+  it("intField range error includes example", () => {
+    const r = intField(doc, { min: 1, max: 3 }).safeParse(4);
+    expect(r.success).toBe(false);
+    if (!r.success) {
+      const msg = r.error.issues[0]!.message;
+      expect(msg).toContain("1~3");
+      expect(msg).toContain("예: 예시값");
+    }
   });
 
   it("intField accepts ints and numeric strings within range", () => {

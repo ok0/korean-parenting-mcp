@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { tryParseDate } from "../../date/civil-date.js";
+
+const DATE_SHAPE = /^\s*(?:\d{4}-\d{2}-\d{2}|\d{4}\.\d{2}\.\d{2}|\d{8})\s*$/;
 
 export interface FieldDoc {
   purpose: string;
@@ -21,25 +24,37 @@ export function describeField(doc: FieldDoc): string {
 
 export function dateField(doc: FieldDoc): z.ZodString {
   return z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "YYYY-MM-DD 형식이어야 합니다")
+    .string({ error: `날짜 문자열이 필요합니다(예: ${doc.example})` })
+    .superRefine((s, ctx) => {
+      if (!DATE_SHAPE.test(s)) {
+        ctx.addIssue({ code: "custom", message: `YYYY-MM-DD, YYYY.MM.DD, YYYYMMDD 중 하나의 형식이어야 합니다(예: ${doc.example})` });
+      } else if (tryParseDate(s) === undefined) {
+        ctx.addIssue({ code: "custom", message: `존재하지 않는 날짜입니다(예: ${doc.example})` });
+      }
+    })
     .describe(describeField(doc));
 }
 
 export function intField(doc: FieldDoc, range: { min: number; max: number }) {
+  const msg = `${range.min}~${range.max} 사이 정수여야 합니다(예: ${doc.example})`;
   return z
-    .union([
-      z.number().int(),
-      z.string().regex(/^\s*-?\d+\s*$/, "정수(숫자 또는 숫자 문자열)여야 합니다"),
-    ])
+    .union(
+      [
+        z.number().int(),
+        z.string().regex(/^\s*-?\d+\s*$/),
+      ],
+      { error: `정수(숫자 또는 숫자 문자열)여야 합니다(예: ${doc.example})` },
+    )
     .transform((v) => Number(v))
-    .pipe(z.number().int().min(range.min).max(range.max))
+    .pipe(z.number().int().min(range.min, msg).max(range.max, msg))
     .describe(describeField(doc));
 }
 
 export function boolField(doc: FieldDoc) {
   return z
-    .union([z.boolean(), z.enum(["true", "false"])])
+    .union([z.boolean(), z.enum(["true", "false"])], {
+      error: `true 또는 false여야 합니다(예: ${doc.example})`,
+    })
     .transform((v) => v === true || v === "true")
     .describe(describeField(doc));
 }
