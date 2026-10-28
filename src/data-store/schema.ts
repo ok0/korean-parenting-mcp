@@ -597,6 +597,12 @@ const ParentalLeaveSchema = ProvenanceFields.extend({
   notes: z.array(z.string().min(1)).min(1),
 }).superRefine(requireVerifier);
 
+const LeaveArticleSchema = ProvenanceFields.extend({
+  article: z.number().int().min(1).max(9999),
+  branch: z.number().int().min(0).max(99),
+  note: z.string().min(1),
+}).superRefine(requireVerifier);
+
 export const LeaveSchema = z
   .object({
     spouse_leave: z.object({
@@ -606,6 +612,11 @@ export const LeaveSchema = z
     }),
     maternity_leave: MaternityLeaveSchema,
     parental_leave: ParentalLeaveSchema,
+    articles: z.strictObject({
+      spouse_leave: LeaveArticleSchema,
+      maternity_leave: LeaveArticleSchema,
+      parental_leave: LeaveArticleSchema,
+    }),
   })
   .superRefine((v, ctx) => {
     const versions = v.spouse_leave.versions;
@@ -647,6 +658,7 @@ export type LeaveFile = z.output<typeof LeaveSchema>;
 export type SpouseLeaveVersion = z.output<typeof SpouseLeaveVersionSchema>;
 export type MaternityLeave = z.output<typeof MaternityLeaveSchema>;
 export type ParentalLeave = z.output<typeof ParentalLeaveSchema>;
+export type LeaveArticle = z.output<typeof LeaveArticleSchema>;
 
 export const LOCAL_GUIDANCE_IDS = ["health-center-prenatal", "daycare-waitlist", "local-extra-support"] as const;
 

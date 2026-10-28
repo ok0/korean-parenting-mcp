@@ -701,3 +701,49 @@ describe("leave / local guidance validation failures", () => {
     expect(() => validateDataset("local-guidance", x, basis)).toThrow("{region}");
   });
 });
+
+describe("leave articles", () => {
+  const basis = loadData("basis-documents");
+  const topics = ["spouse_leave", "maternity_leave", "parental_leave"] as const;
+
+  it("each article resolves to a law basis document", () => {
+    const articles = loadData("leave").articles;
+    for (const topic of topics) {
+      const a = articles[topic];
+      const api = resolveBasis(a.basis_ids)[0]?.law_api;
+      expect(api?.kind).toBe("law");
+      expect(api?.kind === "law" ? api.law_name : "").not.toBe("");
+      expect(a.verified).not.toBe("full");
+    }
+  });
+
+  it("article numbers agree with leave labels", () => {
+    const leave = loadData("leave");
+    const articles = leave.articles;
+    expect(leave.maternity_leave.article_label).toContain(`제${articles.maternity_leave.article}조`);
+    expect(leave.parental_leave.article_label).toContain(`제${articles.parental_leave.article}조`);
+    expect(articles.spouse_leave.article === 18 && articles.spouse_leave.branch === 2).toBe(true);
+  });
+
+  it("rejects branch out of range", () => {
+    const x = structuredClone(loadData("leave"));
+    x.articles.spouse_leave.branch = 100;
+    expect(() => validateDataset("leave", x, basis)).toThrow(DataValidationError);
+  });
+
+  it("law_api without comparison values is marked unconfirmed", () => {
+    const docs = loadData("basis-documents").documents;
+    const hasComparison = (api: NonNullable<(typeof docs)[number]["law_api"]>): boolean =>
+      api.kind === "admrul"
+        ? Boolean(api.serial || api.number)
+        : api.kind === "licbyl"
+          ? Boolean(api.promulgated || api.promulgation_no)
+          : Boolean(api.mst || api.effective);
+    const unconfirmed = docs.filter((d) => d.law_api !== null && !hasComparison(d.law_api));
+    expect(unconfirmed.map((d) => d.id)).toContain("mch-act-rule-annex1");
+    for (const d of unconfirmed) {
+      expect(d.verified).not.toBe("full");
+      expect(d.note).toMatch(/M11|미확인|미대조/);
+    }
+  });
+});

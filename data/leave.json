@@ -66,5 +66,10 @@
     "basis_ids": ["equal-employment-act", "easylaw-parental-leave-pay"],
     "as_of": "2026-10-28",
     "verified": "partial"
+  },
+  "articles": {
+    "spouse_leave":   { "basis_ids": ["equal-employment-act"], "article": 18, "branch": 2, "as_of": "2026-10-28", "verified": "partial", "note": "조 번호는 근거 문서 메모(법제처 본문 확인) 기준. 조문 단위 조회(JO)는 M11 실호출 전 미확인" },
+    "maternity_leave": { "basis_ids": ["labor-standards-act"], "article": 74, "branch": 0, "as_of": "2026-10-28", "verified": "partial", "note": "조 번호는 근거 문서 메모 기준. 조문 단위 조회(JO)는 M11 실호출 전 미확인" },
+    "parental_leave":  { "basis_ids": ["equal-employment-act"], "article": 19, "branch": 0, "as_of": "2026-10-28", "verified": "partial", "note": "조 번호는 근거 문서 메모(법제처 본문 확인) 기준. 조문 단위 조회(JO)는 M11 실호출 전 미확인" }
   }
 }
