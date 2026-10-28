@@ -3,12 +3,13 @@ import type { ToolContext } from "../core/context.js";
 import { ToolError } from "../core/errors.js";
 import { loadData } from "../data-store/load.js";
 import { compare, daysBetween, parseDate, todayKst, type CivilDate } from "../date/civil-date.js";
-import { bundledCalendar } from "../date/holiday-calendar.js";
+import { bundledCalendar, holidaySourceLabel, trackCalendarYears } from "../date/holiday-calendar.js";
+import { resolveHolidayCalendar } from "../clients/holiday-resolve.js";
 import { buildTimeline } from "../timeline/engine.js";
 import { localGuidance } from "../timeline/rules/local.js";
 import { checkRevisions } from "../provenance/revision-check.js";
 import { footerBasisIds, renderTimeline } from "../timeline/render.js";
-import type { TimelineMode } from "../timeline/types.js";
+import type { TimelineInput, TimelineMode } from "../timeline/types.js";
 import type { ToolDef, ToolOutput } from "./registry.js";
 import { boolField, dateField, intField, keywordField } from "./shared/schema.js";
 
@@ -73,6 +74,12 @@ const schema = z.object({
   ).optional(),
 });
 
+function sameMembers(a: readonly string[], b: readonly string[]): boolean {
+  const setA = new Set(a);
+  const setB = new Set(b);
+  return setA.size === setB.size && [...setA].every((id) => setB.has(id));
+}
+
 async function buildOutput(
   args: z.output<typeof schema>,
   referenceDate: CivilDate,
@@ -83,9 +90,8 @@ async function buildOutput(
 ): Promise<ToolOutput> {
   const monthsAhead = args.months_ahead ?? 12;
   const includePast = args.include_past ?? false;
-  const holidays = bundledCalendar({ referenceDate });
   const local = localGuidance({ mode, region: args.region });
-  const result = buildTimeline({
+  const base: Omit<TimelineInput, "holidays"> = {
     mode,
     birthDate,
     dueDate,
@@ -95,16 +101,23 @@ async function buildOutput(
     referenceDate,
     monthsAhead,
     includePast,
-    holidays,
-  });
-  const revisions = await checkRevisions(footerBasisIds(result, local), ctx);
+  };
+  const probe = trackCalendarYears(bundledCalendar({ referenceDate }));
+  const probeIds = footerBasisIds(buildTimeline({ ...base, holidays: probe.calendar }), local);
+  const [holidays, probeRevisions] = await Promise.all([
+    resolveHolidayCalendar(probe.years(), ctx, { referenceDate }),
+    checkRevisions(probeIds, ctx),
+  ]);
+  const result = buildTimeline({ ...base, holidays });
+  const ids = footerBasisIds(result, local);
+  const revisions = sameMembers(ids, probeIds) ? probeRevisions : await checkRevisions(ids, ctx);
   return renderTimeline(result, {
     mode,
     birthDate,
     referenceDate,
     monthsAhead,
     includePast,
-    holidaySource: `번들(생성일 ${loadData("holidays").generated_at})`,
+    holidaySource: holidaySourceLabel(holidays, loadData("holidays").generated_at),
   }, local, revisions);
 }
 
