@@ -18,6 +18,18 @@ describe("loadConfig", () => {
     expect(secretsOf(config)).toEqual([]);
   });
 
+  it("reads SAFETYKOREA_AUTH_KEY trimmed", () => {
+    expect(loadConfig({ SAFETYKOREA_AUTH_KEY: " fake " }).keys.SAFETYKOREA).toBe("fake");
+  });
+
+  it("treats empty SAFETYKOREA_AUTH_KEY as unset", () => {
+    for (const value of ["", "   "]) {
+      const config = loadConfig({ SAFETYKOREA_AUTH_KEY: value });
+      expect("SAFETYKOREA" in config.keys).toBe(false);
+      expect(secretsOf(config)).toEqual([]);
+    }
+  });
+
   it("defaults", () => {
     const config = loadConfig({});
     expect(config.maxResponseChars).toBe(8000);
@@ -52,7 +64,8 @@ describe("secretsOf", () => {
       DATA_GO_KR_SERVICE_KEY: "key-one-1",
       KINDERGARTEN_API_KEY: "key-two-2",
       LAW_OC: "key_three",
+      SAFETYKOREA_AUTH_KEY: "key-four-4",
     });
-    expect(secretsOf(config)).toHaveLength(3);
+    expect([...secretsOf(config)].sort()).toEqual(["key-four-4", "key-one-1", "key-two-2", "key_three"].sort());
   });
 });

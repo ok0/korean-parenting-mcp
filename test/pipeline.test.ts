@@ -164,6 +164,7 @@ describe("runTool key masking", () => {
       DATA_GO_KR_SERVICE_KEY: K,
       KINDERGARTEN_API_KEY: "Kg+/=kinder1",
       LAW_OC: "law_oc_val",
+      SAFETYKOREA_AUTH_KEY: "sk+/=safety1",
     };
     const stderrWrites: string[] = [];
     vi.spyOn(process.stderr, "write").mockImplementation((chunk: string | Uint8Array) => {

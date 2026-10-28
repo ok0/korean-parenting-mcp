@@ -1,6 +1,6 @@
-export type KeyName = "DATA_GO_KR" | "KINDERGARTEN" | "LAW_OC";
-export type KeyEnvName = "DATA_GO_KR_SERVICE_KEY" | "KINDERGARTEN_API_KEY" | "LAW_OC";
-export const KEY_ENV: Record<KeyName, KeyEnvName> = { DATA_GO_KR: "DATA_GO_KR_SERVICE_KEY", KINDERGARTEN: "KINDERGARTEN_API_KEY", LAW_OC: "LAW_OC" };
+export type KeyName = "DATA_GO_KR" | "KINDERGARTEN" | "LAW_OC" | "SAFETYKOREA";
+export type KeyEnvName = "DATA_GO_KR_SERVICE_KEY" | "KINDERGARTEN_API_KEY" | "LAW_OC" | "SAFETYKOREA_AUTH_KEY";
+export const KEY_ENV: Record<KeyName, KeyEnvName> = { DATA_GO_KR: "DATA_GO_KR_SERVICE_KEY", KINDERGARTEN: "KINDERGARTEN_API_KEY", LAW_OC: "LAW_OC", SAFETYKOREA: "SAFETYKOREA_AUTH_KEY" };
 export type LogLevel = "debug" | "info" | "warn" | "error";
 export interface Config {
   keys: Partial<Record<KeyName, string>>;
