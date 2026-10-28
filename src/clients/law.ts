@@ -141,7 +141,7 @@ export function lawLink(raw: string | undefined): string | undefined {
 }
 
 export function normName(s: string): string {
-  return s.replace(/\s/g, "").replace(/[·・ㅣ]/g, "ㅣ");
+  return s.replace(/\s/g, "").replace(/[·ㆍ・]/g, "ㆍ");
 }
 
 const SCALAR_FIELDS: Record<

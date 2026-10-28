@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { createLawClient, lawLink, toJo } from "../src/clients/law.js";
+import { createLawClient, lawLink, normName, toJo } from "../src/clients/law.js";
 import { ToolError, formatToolError } from "../src/core/errors.js";
 import { createTestContext } from "./helpers/context.js";
 
@@ -53,6 +53,14 @@ describe("law client", () => {
     expect(() => toJo(10000)).toThrow();
     expect(() => toJo(1.5)).toThrow();
     expect(() => toJo(3, 100)).toThrow();
+  });
+
+  it("normName unifies middle-dot variants", () => {
+    const a = normName("일·가정");
+    const b = normName("일ㆍ가정");
+    const c = normName("일・가정");
+    expect(a).toBe(b);
+    expect(b).toBe(c);
   });
 
   it("OC is encoded exactly once and type=JSON", async () => {
