@@ -36,6 +36,16 @@ npx -y korean-parenting-mcp setup
   - Linux 경로는 미검증입니다.
 - 설정 마법사는 네트워크 호출을 하지 않습니다.
 
+## Claude Desktop 확장(.mcpb)
+
+Claude Desktop에서는 `.mcpb` 확장 파일로도 설치할 수 있습니다.
+
+1. 저장소를 내려받아 `npm ci` 후 `npm run pack:mcpb`를 실행하면 `build-mcpb/korean-parenting-mcp.mcpb`가 만들어집니다.
+2. Claude Desktop에서 이 파일을 열어 설치합니다.
+3. 설치 화면의 API 키 입력 칸 4개는 모두 선택 사항입니다. 비워 둬도 `get_timeline`처럼 키 없이 동작하는 기능을 쓸 수 있고, 입력한 키는 민감 정보로 저장됩니다.
+
+Claude Desktop 설치 확인은 아직 수동 점검 단계입니다.
+
 ## API 키 (모두 선택)
 
 | 환경 변수 | 발급처 |

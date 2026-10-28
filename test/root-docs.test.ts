@@ -33,6 +33,12 @@ describe("root documents", () => {
     }
   });
 
+  it("README describes mcpb install", () => {
+    for (const phrase of ["npm run pack:mcpb", ".mcpb", "선택 사항", "민감 정보"]) {
+      expect(readme, phrase).toContain(phrase);
+    }
+  });
+
   it("README is self-contained and not official-sounding", () => {
     expect(readme).not.toContain(".docs");
     expect(readme).not.toMatch(/(?<!비)공식\s*(서비스|앱|도구|서버|MCP)/);
