@@ -26,7 +26,7 @@ describe("npm package contents", () => {
         encoding: "utf8",
       });
       const paths = (JSON.parse(out) as PackEntry[])[0]?.files.map((f) => f.path) ?? [];
-      const forbidden = ["scripts/", ".github/", "test/", "build-scripts/", ".docs/", ".ensemble/"];
+      const forbidden = ["scripts/", ".github/", "test/", "build-scripts/", "build-mcpb/", ".docs/", ".ensemble/"];
       for (const p of paths) {
         for (const prefix of forbidden) {
           expect(p.startsWith(prefix), p).toBe(false);
@@ -37,6 +37,8 @@ describe("npm package contents", () => {
           true,
         );
         expect(p.endsWith(".map"), p).toBe(false);
+        expect(p.endsWith(".mcpb"), p).toBe(false);
+        expect(["manifest.json", ".mcpbignore"].includes(p), p).toBe(false);
       }
       expect(paths).toContain("build/index.js");
       expect(paths).toContain("build/setup/setup.js");

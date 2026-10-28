@@ -1,11 +1,12 @@
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { KEY_ENV, type KeyName } from "../src/core/config.js";
 import { KEY_GUIDE } from "../src/core/errors.js";
 import { VERSION } from "../src/version.js";
 import { allTools } from "../src/tools/registry.js";
+import { DEFAULT_OUT_DIR, ENTRY_REL, resolveMcpbPaths, withoutKeyEnv } from "../scripts/lib/mcpb.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const read = (rel: string): string => readFileSync(join(root, rel), "utf8");
@@ -162,5 +163,29 @@ describe("mcpb manifest", () => {
     expect("name" in brokenFixture).toBe(false);
     expect("server" in brokenFixture).toBe(false);
     expect(brokenFixture.manifest_version).toBe("0.3");
+  });
+
+  it("bundle entry matches build script", () => {
+    expect(manifest.server.entry_point).toBe(ENTRY_REL);
+    expect(gitignoreLines.has(`${DEFAULT_OUT_DIR}/`)).toBe(true);
+  });
+
+  it("pack:mcpb script exists", () => {
+    expect(pkg.scripts?.["pack:mcpb"]).toContain("build-mcpb.js");
+  });
+
+  it("resolveMcpbPaths defaults and overrides", () => {
+    const defaults = resolveMcpbPaths("/r", {});
+    expect(defaults.manifest).toBe(resolve("/r", "manifest.json"));
+    expect(defaults.output).toBe(resolve("/r", "build-mcpb", "korean-parenting-mcp.mcpb"));
+    const overridden = resolveMcpbPaths("/r", { KPM_MCPB_OUT_DIR: "/tmp/x" });
+    expect(overridden.output).toBe(join("/tmp/x", "korean-parenting-mcp.mcpb"));
+    expect(overridden.stage).toBe(join("/tmp/x", "stage"));
+  });
+
+  it("withoutKeyEnv strips key variables", () => {
+    const env: Record<string, string> = { PATH: "p" };
+    for (const name of Object.values(KEY_ENV)) env[name] = "fake";
+    expect(Object.keys(withoutKeyEnv(env))).toEqual(["PATH"]);
   });
 });

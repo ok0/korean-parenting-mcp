@@ -125,4 +125,18 @@ describe("project structure", () => {
       expect(f.startsWith("src/setup/"), f).toBe(true);
     }
   });
+
+  it("packaging tools are dev-only", () => {
+    const tools = ["esbuild", "@anthropic-ai/mcpb"];
+    for (const t of tools) {
+      expect(pkg.devDependencies?.[t], t).toBeDefined();
+      expect(Object.keys(pkg.dependencies ?? {}), t).not.toContain(t);
+    }
+    for (const f of srcFiles) {
+      const text = readFileSync(f, "utf8");
+      for (const t of tools) {
+        expect(text.includes(t), `${rel(f)} ${t}`).toBe(false);
+      }
+    }
+  });
 });

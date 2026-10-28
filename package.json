@@ -34,6 +34,7 @@
     "test": "vitest run",
     "verify": "npm run typecheck && npm run build && npm run build:scripts && npm run test",
     "smoke:pack": "npm run build && npm run build:scripts && node build-scripts/scripts/pack-smoke.js",
+    "pack:mcpb": "npm run build && npm run build:scripts && node build-scripts/scripts/build-mcpb.js",
     "prepublishOnly": "npm run verify",
     "start": "node build/index.js"
   },
@@ -43,7 +44,9 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@anthropic-ai/mcpb": "^2.1.2",
     "@types/node": "^20.19.43",
+    "esbuild": "^0.28.2",
     "pdfjs-dist": "^4.10.38",
     "typescript": "^5.9.3",
     "vitest": "^4.1.12"
