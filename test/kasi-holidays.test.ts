@@ -110,8 +110,8 @@ describe("fetchKasiHolidays", () => {
     }
   });
 
-  it("spec stays provisional and module writes no files", () => {
-    expect(SPECS.kasiHoliday.confirmed).toBe(false);
+  it("spec is live-confirmed and module writes no files", () => {
+    expect(SPECS.kasiHoliday.confirmed).toBe(true);
     const src = readFileSync(new URL("../src/clients/kasi-holidays.ts", import.meta.url), "utf8");
     expect(src.includes("node:fs")).toBe(false);
     expect(src.includes("writeFile")).toBe(false);

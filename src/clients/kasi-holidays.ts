@@ -1,4 +1,4 @@
-// SPECS.kasiHoliday는 confirmed:false 잠정값(M11 확정)
+// SPECS.kasiHoliday는 M11 실응답(2026-10-28)으로 확인. XML 경로 유지(R17)
 import { callDataGoKr } from "./data-go-kr.js";
 import { SPECS } from "./data-go-kr-specs.js";
 import type { ToolContext } from "../core/context.js";
