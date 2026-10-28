@@ -178,3 +178,41 @@ export function nemcQuery(region: Region): { Q0: string; Q1?: string } | undefin
   if (!g || g.sido_code !== sido.code) return undefined;
   return { Q0: sido.nemc_q0, Q1: g.nemc_q1 };
 }
+
+export type KindergartenQuery =
+  | { ok: true; sidoCode: string; sggCode: string; label: string }
+  | { ok: false; reason: "sido-only" | "no-code"; label: string; candidates: Region[] };
+
+export function kindergartenQuery(region: Region): KindergartenQuery {
+  const idx = index();
+  const sido = idx.sidoByAlias.get(compact(region.sido));
+  if (!sido) return { ok: false, reason: "no-code", label: region.sido, candidates: [] };
+
+  if (region.code === undefined) {
+    const inSido = [...idx.sggByCode.values()].filter((g) => g.sido_code === sido.code);
+    const only = inSido[0];
+    if (inSido.length === 1 && only && only.codes.kindergarten !== undefined) {
+      const kg = only.codes.kindergarten;
+      return { ok: true, sidoCode: kg.sido, sggCode: kg.sgg, label: `${sido.name} ${only.name}` };
+    }
+    return { ok: false, reason: "sido-only", label: sido.name, candidates: [] };
+  }
+
+  const g = idx.sggByCode.get(region.code);
+  if (!g || g.sido_code !== sido.code) {
+    return { ok: false, reason: "no-code", label: `${sido.name} ${region.sigungu ?? ""}`.trim(), candidates: [] };
+  }
+  const kg = g.codes.kindergarten;
+  if (kg !== undefined) {
+    return { ok: true, sidoCode: kg.sido, sggCode: kg.sgg, label: `${sido.name} ${g.name}` };
+  }
+  const children = [...idx.sggByCode.values()]
+    .filter((c) => c.parent_code === g.code && c.codes.kindergarten !== undefined)
+    .sort((a, b) => (a.code < b.code ? -1 : a.code > b.code ? 1 : 0));
+  return {
+    ok: false,
+    reason: "no-code",
+    label: `${sido.name} ${g.name}`,
+    candidates: children.map((c) => toRegion(idx, c)),
+  };
+}
