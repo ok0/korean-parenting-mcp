@@ -10,7 +10,7 @@ import {
   composeFooter,
   verifiedText,
 } from "../tools/shared/format.js";
-import type { TimelineItem, TimelineResult } from "./types.js";
+import type { TimelineItem, TimelineMode, TimelineResult } from "./types.js";
 
 export interface TimelineView {
   birthDate: CivilDate;
@@ -18,6 +18,7 @@ export interface TimelineView {
   monthsAhead: number;
   includePast: boolean;
   holidaySource: string;
+  mode?: TimelineMode;
 }
 
 export function periodText(item: TimelineItem): string {
@@ -40,7 +41,9 @@ export function renderTimeline(result: TimelineResult, view: TimelineView): Tool
   const summary = `상태 요약: 진행 중 ${count("진행 중")} · 임박 ${count("임박")} · 예정 ${count("예정")}${view.includePast ? ` · 지난 ${count("지난")}` : ""}`;
 
   const lines: string[] = [
-    `육아 타임라인 — 출생일 ${formatDate(view.birthDate)}, 기준일 ${formatDate(view.referenceDate)}`,
+    view.mode === "pregnant"
+      ? `육아 타임라인(임신 중) — 출산예정일 ${formatDate(view.birthDate)}, 기준일 ${formatDate(view.referenceDate)}`
+      : `육아 타임라인 — 출생일 ${formatDate(view.birthDate)}, 기준일 ${formatDate(view.referenceDate)}`,
     `표시 범위: 시작일이 ${formatDate(horizon)} 이전인 항목(months_ahead=${view.monthsAhead}), 지난 항목 ${view.includePast ? "포함" : "제외"}`,
     summary,
     ...result.notices.map((n) => `안내: ${n}`),

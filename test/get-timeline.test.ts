@@ -50,7 +50,7 @@ describe("get_timeline", () => {
     const early = await call({ birth_date: "2026-01-31", reference_date: "2026-01-30" });
     expect(early.isError).toBe(true);
     expect(text(early)).toContain("임신 중");
-    expect(text(early)).toContain("추후");
+    expect(text(early)).toContain("due_date");
     expect(text(early)).toContain("예:");
   });
 

@@ -28,6 +28,8 @@ describe("createServer", () => {
   it("instructions include unofficial notice", async () => {
     const { client } = await connect();
     expect(client.getInstructions()).toContain("비공식");
+    expect(client.getInstructions()).toContain("due_date");
+    expect(client.getInstructions()).toContain("birth_date");
   });
 
   it("tools/list matches registry (empty in M1)", async () => {

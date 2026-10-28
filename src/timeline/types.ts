@@ -5,6 +5,7 @@ import type { Provenance } from "../data-store/schema.js";
 export type Category = "신고" | "신청" | "접종" | "검진" | "휴가" | "시설" | "지원";
 export type Nature = "법정 의무" | "권장" | "지원 신청" | "안내";
 export type Status = "지난" | "진행 중" | "임박" | "예정";
+export type TimelineMode = "pregnant" | "born";
 
 export interface TimelineInput {
   birthDate: CivilDate;
@@ -12,6 +13,11 @@ export interface TimelineInput {
   monthsAhead: number;
   includePast: boolean;
   holidays: HolidayCalendar;
+  mode?: TimelineMode;
+  dueDate?: CivilDate;
+  region?: string;
+  birthOrder?: number;
+  fetusCount?: number;
 }
 
 export interface TimelineItem {

@@ -63,8 +63,8 @@ export function keywordField(doc: FieldDoc, len?: { min?: number; max?: number }
   return z
     .string()
     .trim()
-    .min(len?.min ?? 1)
-    .max(len?.max ?? 50)
+    .min(len?.min ?? 1, { message: `${len?.min ?? 1}~${len?.max ?? 50}자여야 합니다(예: ${doc.example})` })
+    .max(len?.max ?? 50, { message: `${len?.min ?? 1}~${len?.max ?? 50}자여야 합니다(예: ${doc.example})` })
     .describe(describeField(doc));
 }
 

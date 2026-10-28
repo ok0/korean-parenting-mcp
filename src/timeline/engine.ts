@@ -3,6 +3,8 @@ import { checkupRule } from "./rules/checkups.js";
 import { benefitDeadlineRule } from "./rules/benefit-deadlines.js";
 import { registrationRule } from "./rules/registration.js";
 import { influenzaNotices, vaccinationRule } from "./rules/vaccination.js";
+import { pregnancyRule } from "./rules/pregnancy.js";
+import { inputNotices } from "./rules/input-notices.js";
 import type {
   Status,
   TimelineInput,
@@ -14,9 +16,15 @@ import type {
 
 export const IMMINENT_DAYS = 14;
 
-export const RULES: readonly TimelineRule[] = [registrationRule, benefitDeadlineRule, checkupRule, vaccinationRule];
+export const RULES: readonly TimelineRule[] = [
+  registrationRule,
+  benefitDeadlineRule,
+  checkupRule,
+  vaccinationRule,
+  pregnancyRule,
+];
 
-export const NOTICE_RULES: readonly TimelineNoticeRule[] = [influenzaNotices];
+export const NOTICE_RULES: readonly TimelineNoticeRule[] = [influenzaNotices, inputNotices];
 
 export function statusOf(start: CivilDate, end: CivilDate | undefined, ref: CivilDate): Status {
   const e = end ?? start;
@@ -41,7 +49,11 @@ export function buildTimeline(
 ): TimelineResult {
   const all = rules
     .flatMap((r) => r(input))
-    .map((it) => ({ ...it, status: statusOf(it.start, it.end, input.referenceDate) }))
+    .map((it) => ({
+      ...it,
+      ...(input.mode === "pregnant" ? { estimated: true } : {}),
+      status: statusOf(it.start, it.end, input.referenceDate),
+    }))
     .sort(compareItems);
   const horizon = addMonthsClamp(input.referenceDate, input.monthsAhead);
   const items: TimelineItem[] = [];
