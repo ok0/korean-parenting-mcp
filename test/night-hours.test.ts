@@ -107,7 +107,27 @@ describe("night-hours", () => {
     expect(merged).toHaveLength(2);
     expect(merged[0]?.kind).toBe("달빛어린이병원");
     expect(merged[0]?.item["dutyTime3s"]).toBe("1800");
-    expect(merged[1]?.kind).toBe("소아청소년과");
+    expect(merged[1]?.kind).toBe("진료과목에 소아청소년과 포함");
+  });
+
+  it("mergeClinics classifies pediatric names", () => {
+    const merged = mergeClinics(
+      [],
+      [
+        { hpid: "P1", dutyName: "강소아청소년과의원" },
+        { hpid: "P2", dutyName: "박소아과의원" },
+        { hpid: "P3", dutyName: "키즈오케이의원" },
+        { hpid: "P4", dutyName: "강내과의원" },
+        { hpid: "P5" },
+      ],
+    );
+    expect(merged.map((c) => c.kind)).toEqual([
+      "소아청소년과",
+      "소아청소년과",
+      "소아청소년과",
+      "진료과목에 소아청소년과 포함",
+      "진료과목에 소아청소년과 포함",
+    ]);
   });
 
   it("mergeClinics falls back to name+address", () => {
@@ -137,6 +157,27 @@ describe("night-hours", () => {
       "소아진료중",
       "소아확인불가",
       "소아진료시간아님",
+    ]);
+  });
+
+  it("sortJudged ranks pediatric-named before other departments", () => {
+    const mk = (name: string, kind: Clinic["kind"], order: number, status: Judgement["status"]) => ({
+      clinic: { key: name, name, kind, item: {}, order } as Clinic,
+      judgement: { status } as Judgement,
+    });
+    const rows = [
+      mk("기타진료중", "진료과목에 소아청소년과 포함", 0, "진료 중"),
+      mk("소아진료중", "소아청소년과", 1, "진료 중"),
+      mk("달빛진료중", "달빛어린이병원", 2, "진료 중"),
+      mk("기타확인불가", "진료과목에 소아청소년과 포함", 3, "확인 불가"),
+      mk("소아확인불가", "소아청소년과", 4, "확인 불가"),
+    ];
+    expect(sortJudged(rows).map((r) => r.clinic.name)).toEqual([
+      "달빛진료중",
+      "소아진료중",
+      "기타진료중",
+      "소아확인불가",
+      "기타확인불가",
     ]);
   });
 });

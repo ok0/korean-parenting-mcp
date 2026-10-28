@@ -75,7 +75,8 @@ describe("find_night_pediatric summary", () => {
     expect(text.split("365다움의원").length - 1).toBe(1);
     expect(statusLine(text, "365다움의원")).toContain("[달빛어린이병원]");
     expect(statusLine(text, "365다움의원")).toContain("진료 중");
-    expect(statusLine(text, "365연세의원")).toContain("[소아청소년과]");
+    expect(statusLine(text, "365연세의원")).toContain("[진료과목에 소아청소년과 포함]");
+    expect(text).toContain("구분: [진료과목에 소아청소년과 포함]은");
     expect(text).toContain("02-2297-1755");
     expect(text).toContain("운영시간(수요일): 18:00~24:00");
     expect(text).toContain("국립중앙의료원(공공데이터포털)");
@@ -94,6 +95,29 @@ describe("find_night_pediatric summary", () => {
     const pedsUrl = mock.last("peds")!;
     expect(new Set(pedsUrl.searchParams.keys())).toEqual(new Set([...expectedQtKeys(), "QD"]));
     expect(pedsUrl.searchParams.get("QD")).toBe(NEMC_DEPT_PEDIATRICS);
+  });
+
+  it("ranks pediatric-named clinics before other departments", async () => {
+    const mock = createNemcMock({
+      peds: () =>
+        xmlRes(
+          nemcXml([
+            { hpid: "N1", dutyName: "강내과의원", dutyAddr: "서울특별시 성동구 가로 1", dutyTime3s: "1800", dutyTime3c: "2300" },
+            { hpid: "N2", dutyName: "박소아과의원", dutyAddr: "서울특별시 성동구 가로 2", dutyTime3s: "1800", dutyTime3c: "2300" },
+          ]),
+        ),
+    });
+    const res = await run({ region: "성동구", now: "2026-10-28T21:30", limit: 10 }, nemcCtx(mock));
+    const text = textOf(res);
+    expect(res.isError).toBeFalsy();
+    const pos = (name: string) => text.indexOf(name);
+    expect(pos("365다움의원")).toBeGreaterThanOrEqual(0);
+    expect(pos("365다움의원")).toBeLessThan(pos("박소아과의원"));
+    expect(pos("박소아과의원")).toBeLessThan(pos("강내과의원"));
+    expect(statusLine(text, "박소아과의원")).toContain("[소아청소년과]");
+    expect(statusLine(text, "박소아과의원")).toContain("진료 중");
+    expect(statusLine(text, "강내과의원")).toContain("[진료과목에 소아청소년과 포함]");
+    expect(statusLine(text, "강내과의원")).toContain("진료 중");
   });
 });
 
