@@ -22,6 +22,14 @@ const NEMC_BASE_URL = "https://apis.data.go.kr/B552657/HsptlAsembySearchService"
 export const NEMC_DEPT_PEDIATRICS = "D002";
 /** 병·의원 목록(nemcList)에만 QT 전송(M12: QT=8에서 110→13곳, 공휴일 시간 유효 기관은 모두 유지). 달빛 목록에는 보내지 않는다(효과 미측정). 판정은 항상 클라이언트. */
 export const NEMC_SEND_QT: boolean = true;
+/** 보조금24 목록 페이지 크기(M11: perPage=1000에서 1000건 반환). */
+export const BENEFITS_PER_PAGE = 1000;
+/** 보조금24 동시 페이지 요청 수(초당 한도 보호). */
+export const BENEFITS_CONCURRENCY = 3;
+/** 보조금24 최대 페이지 수(약 10,946건 → 11페이지; 상한을 넘는 부분은 "일부만 조회"로 알린다). */
+export const BENEFITS_MAX_PAGES = 20;
+/** DUR 임부금기 numOfRows 전송값. undefined면 보내지 않는다(기본 10건). M13 실호출로 효과 확인 후 결정. */
+export const DUR_NUM_OF_ROWS: number | undefined = undefined;
 
 export const SPECS: Readonly<Record<SpecId, ApiSpec>> = {
   nemcList: {
