@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import type { BasisDoc } from "../src/data-store/schema.js";
 import {
   DISCLAIMER_MEDICAL_LEGAL,
-  NOTICE_NO_REVISION_CHECK,
   NOTICE_UNOFFICIAL,
   basisFooter,
   basisLine,
@@ -29,7 +28,6 @@ describe("format", () => {
     expect(DISCLAIMER_MEDICAL_LEGAL).toContain("면책");
     expect(NOTICE_UNOFFICIAL).toContain("비공식");
     expect(NOTICE_UNOFFICIAL).toContain("공식 기관");
-    expect(NOTICE_NO_REVISION_CHECK).toContain("개정 여부 자동 확인은 아직 제공하지 않");
   });
 
   it("basisLine renders id, title, doc_no, dates, as_of and verification", () => {
@@ -53,7 +51,7 @@ describe("format", () => {
   it("basisFooter handles empty list", () => {
     const footer = basisFooter([]);
     expect(footer).toContain("근거 문서: 없음");
-    expect(footer).toContain(NOTICE_NO_REVISION_CHECK);
+    expect(footer).not.toContain("자동 확인은 아직 제공하지 않");
   });
 
   it("composeFooter drops undefined and blank sections", () => {
@@ -76,7 +74,7 @@ describe("format", () => {
     const next = lines[idx + 1] ?? "";
     expect(next.startsWith("  · 개정 확인: 근거가 개정되었습니다")).toBe(true);
     expect(next.endsWith(" 원문: https://www.law.go.kr/x")).toBe(true);
-    expect(footer).not.toContain(NOTICE_NO_REVISION_CHECK);
+    expect(footer).not.toContain("자동 확인은 아직 제공하지 않");
   });
 
   it("revisionSummary counts each state", () => {

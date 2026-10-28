@@ -73,7 +73,8 @@ describe("fixed timeline scenarios", () => {
       expect(footer).toContain(DISCLAIMER_MEDICAL_LEGAL);
       expect(footer).toContain(NOTICE_UNOFFICIAL);
       expect(footer).toContain("근거 문서:");
-      expect(footer).toContain("개정 여부 자동 확인은 아직 제공하지 않");
+      expect(footer).not.toContain("자동 확인은 아직 제공하지 않");
+      expect(footer).toContain("개정 확인 요약:");
       expect(footer).toContain("공휴일: 번들(생성일");
       expect(countOf(t, NOTICE_VACCINATION_SCOPE)).toBe(1);
 

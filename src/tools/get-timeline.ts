@@ -6,7 +6,8 @@ import { compare, daysBetween, parseDate, todayKst, type CivilDate } from "../da
 import { bundledCalendar } from "../date/holiday-calendar.js";
 import { buildTimeline } from "../timeline/engine.js";
 import { localGuidance } from "../timeline/rules/local.js";
-import { renderTimeline } from "../timeline/render.js";
+import { checkRevisions } from "../provenance/revision-check.js";
+import { footerBasisIds, renderTimeline } from "../timeline/render.js";
 import type { TimelineMode } from "../timeline/types.js";
 import type { ToolDef, ToolOutput } from "./registry.js";
 import { boolField, dateField, intField, keywordField } from "./shared/schema.js";
@@ -72,13 +73,14 @@ const schema = z.object({
   ).optional(),
 });
 
-function buildOutput(
+async function buildOutput(
   args: z.output<typeof schema>,
   referenceDate: CivilDate,
   mode: TimelineMode,
   birthDate: CivilDate,
   dueDate: CivilDate | undefined,
-): ToolOutput {
+  ctx: ToolContext,
+): Promise<ToolOutput> {
   const monthsAhead = args.months_ahead ?? 12;
   const includePast = args.include_past ?? false;
   const holidays = bundledCalendar({ referenceDate });
@@ -95,6 +97,7 @@ function buildOutput(
     includePast,
     holidays,
   });
+  const revisions = await checkRevisions(footerBasisIds(result, local), ctx);
   return renderTimeline(result, {
     mode,
     birthDate,
@@ -102,7 +105,7 @@ function buildOutput(
     monthsAhead,
     includePast,
     holidaySource: `번들(생성일 ${loadData("holidays").generated_at})`,
-  }, local);
+  }, local, revisions);
 }
 
 async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise<ToolOutput> {
@@ -139,7 +142,7 @@ async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise
         },
       );
     }
-    return buildOutput(args, referenceDate, "pregnant", dueDate, dueDate);
+    return buildOutput(args, referenceDate, "pregnant", dueDate, dueDate, ctx);
   }
 
   const birthDate = parseDate(args.birth_date as string);
@@ -155,16 +158,16 @@ async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise
       },
     );
   }
-  return buildOutput(args, referenceDate, "born", birthDate, undefined);
+  return buildOutput(args, referenceDate, "born", birthDate, undefined, ctx);
 }
 
 const def: ToolDef<typeof schema> = {
   name: "get_timeline",
   title: "육아 타임라인(임신 중·출산 후 기한·검진·예방접종·지원금·휴가 일정)",
   description:
-    "임신 중이면 출산예정일(due_date), 출산 후면 아기 생년월일(birth_date) 중 하나로 일정을 날짜순으로 계산합니다. 출생신고 기한, 부모급여·아동수당 신청 기한과 지급 구간, 첫만남이용권 신청 기한, 배우자 출산휴가·출산전후휴가·육아휴직 개요, 영유아 건강검진 8회와 구강검진 4회, 국가예방접종 13종과 인플루엔자 절기 접종을 포함하고, 임신 중에는 산전검진 구간·임신부 인플루엔자·임신·출산 진료비를 더합니다. 금액·연령은 연도별 표 기준이며 임신 중 출생 후 항목은 예정일 기준입니다. 지역·기관별 확인 사항(보건소·입소대기·지자체 지원)을 함께 안내합니다. 각 항목에 기간, 성격(법정 의무/권장/지원 신청/안내), 진행 상태, 출처와 검증 상태를 표시합니다. 최소 접종 간격·지연접종은 반영하지 않습니다. API 키와 네트워크 없이 동작하며 결과는 참고용입니다.",
+    "임신 중이면 출산예정일(due_date), 출산 후면 아기 생년월일(birth_date) 중 하나로 일정을 날짜순으로 계산합니다. 출생신고 기한, 부모급여·아동수당 신청 기한과 지급 구간, 첫만남이용권 신청 기한, 배우자 출산휴가·출산전후휴가·육아휴직 개요, 영유아 건강검진 8회와 구강검진 4회, 국가예방접종 13종과 인플루엔자 절기 접종을 포함하고, 임신 중에는 산전검진 구간·임신부 인플루엔자·임신·출산 진료비를 더합니다. 금액·연령은 연도별 표 기준이며 임신 중 출생 후 항목은 예정일 기준입니다. 지역·기관별 확인 사항(보건소·입소대기·지자체 지원)을 함께 안내합니다. 각 항목에 기간, 성격(법정 의무/권장/지원 신청/안내), 진행 상태, 출처와 검증 상태를 표시합니다. 최소 접종 간격·지연접종은 반영하지 않습니다. API 키 없이 동작하며, LAW_OC가 설정되어 있으면 근거 문서의 개정 여부를 법제처에서 확인해 함께 표시합니다. 결과는 참고용입니다.",
   schema,
-  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
   maxChars: 20000,
   handler,
 };

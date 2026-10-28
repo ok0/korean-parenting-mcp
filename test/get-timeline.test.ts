@@ -175,7 +175,9 @@ describe("get_timeline", () => {
     expect(t).toContain("자 생략");
     expect(t).toContain(DISCLAIMER_MEDICAL_LEGAL);
     expect(t).toContain(NOTICE_UNOFFICIAL);
-    expect(t).toContain("개정 여부 자동 확인은 아직 제공하지 않");
+    expect(t).not.toContain("자동 확인은 아직 제공하지 않");
+    expect(t).toContain("개정 확인 요약:");
+    expect(t).toContain("법제처 OC 미설정: 개정 여부 확인 생략");
     expect(t).toContain("근거 문서:");
     expect(t).toContain(NOTICE_VACCINATION_SCOPE);
     const iCut = t.indexOf("자 생략");

@@ -100,7 +100,7 @@ describe("timeline render", () => {
     expect(footer).toContain("가족관계의 등록 등에 관한 법률");
     expect(footer).toContain("법률 제21857호");
     expect(footer).toContain("보건복지부고시 제2026-6호");
-    expect(footer).toContain("개정 여부 자동 확인은 아직 제공하지 않");
+    expect(footer).not.toContain("자동 확인은 아직 제공하지 않");
     expect(footer).toContain("공휴일: 번들(생성일 2026-10-28)");
     expect(footer).toContain(DISCLAIMER_MEDICAL_LEGAL);
     expect(footer).toContain(NOTICE_UNOFFICIAL);

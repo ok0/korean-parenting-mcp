@@ -9,8 +9,6 @@ export const NOTICE_VACCINATION_SCOPE = "예방접종 안내 범위: 최소 접�
 
 export const ESTIMATED_NOTE = "추정: 출산예정일 기준으로 계산한 날짜이며 실제 출생일·진료 일정에 따라 달라집니다.";
 
-export const NOTICE_NO_REVISION_CHECK ="개정 여부 자동 확인은 아직 제공하지 않습니다. 아래 원문 링크에서 최신 개정 여부를 확인하세요.";
-
 export const VERIFIED_LABEL = { full: "검증됨", partial: "부분 검증", false: "미검증" } as const satisfies Record<"full" | "partial" | "false", string>;
 
 export function verifiedText(v: "full" | "partial" | "false" | undefined): string {
@@ -36,8 +34,8 @@ export function revisionLine(r: RevisionStatus): string {
 
 export function basisFooter(docs: readonly BasisDoc[], revisions?: readonly RevisionStatus[]): string {
   if (revisions === undefined) {
-    if (docs.length === 0) return ["근거 문서: 없음", NOTICE_NO_REVISION_CHECK].join("\n");
-    return ["근거 문서:", NOTICE_NO_REVISION_CHECK, ...docs.map(basisLine)].join("\n");
+    if (docs.length === 0) return "근거 문서: 없음";
+    return ["근거 문서:", ...docs.map(basisLine)].join("\n");
   }
   if (docs.length === 0) return "근거 문서: 없음";
   return [

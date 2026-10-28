@@ -66,19 +66,31 @@
 
 ---
 근거 문서:
-개정 여부 자동 확인은 아직 제공하지 않습니다. 아래 원문 링크에서 최신 개정 여부를 확인하세요.
+개정 확인 요약: 원문 확인 0 / 개정됨 0 / 확인 불가 0 / 생략 12
 - [parent-allowance-2026] 2026년 부모급여 안내(정책브리핑) (newsId=148957936, 시행 2026-01-01) · 기준일 2026-10-28 · 부분 검증 · https://www.korea.kr/multi/visualNewsView.do?newsId=148957936
+  · 개정 확인: 자동 확인 대상 아님
 - [first-meeting-gov24] 정부24 첫만남이용권 지원 (serviceInfo/135200005015, 개정 2025-11-28) · 기준일 2026-10-28 · 부분 검증 · https://www.gov.kr/portal/service/serviceInfo/135200005015
+  · 개정 확인: 자동 확인 대상 아님
 - [child-allowance-act] 아동수당법 (아동수당법 개정(공포 2026-03-20, 법률 번호 미확인), 공포 2026-03-20) · 기준일 2026-10-28 · 미검증 · https://www.law.go.kr/법령/아동수당법
+  · 개정 확인: 법제처 OC 미설정: 개정 여부 확인 생략
 - [child-allowance-mohw-2026-04] 보건복지부 보도자료: 아동수당 지급 대상·금액 확대 (보도자료 list_no=1490257, 시행 2026-04-24) · 기준일 2026-10-28 · 부분 검증 · https://www.mohw.go.kr/board.es?mid=a10503010100&bid=0027&act=view&list_no=1490257&tag=&nPage=1
+  · 개정 확인: 자동 확인 대상 아님
 - [equal-employment-act] 남녀고용평등과 일·가정 양립 지원에 관한 법률 (법률 제21476호 (MST 284457), 공포 2026-03-17, 시행 2026-09-18) · 기준일 2026-10-28 · 부분 검증 · https://www.law.go.kr/법령/남녀고용평등과일ㆍ가정양립지원에관한법률
+  · 개정 확인: 법제처 OC 미설정: 개정 여부 확인 생략
 - [easylaw-parental-leave-pay] 생활법령정보 육아휴직 급여 (생활법령 csmSeq=1380 ccfNo=2 cciNo=1 cnpClsNo=2, 개정 2026-09-15) · 기준일 2026-10-28 · 부분 검증 · https://easylaw.go.kr/CSP/CnpClsMain.laf?popMenu=ov&csmSeq=1380&ccfNo=2&cciNo=1&cnpClsNo=2
+  · 개정 확인: 자동 확인 대상 아님
 - [health-checkup-standard] 건강검진 실시기준 (보건복지부고시 제2026-6호, 공포 2026-01-07, 시행 2026-01-07) · 기준일 2026-10-28 · 부분 검증 · https://www.nhis.or.kr/lm/lmxsrv/law/lawFullContent.do?SEQ=80
+  · 개정 확인: 법제처 OC 미설정: 개정 여부 확인 생략
 - [easylaw-infant-checkup] 찾기쉬운 생활법령정보: 6세 미만 영유아 건강검진 (csmSeq=1138, 개정 2026-09-15) · 기준일 2026-10-28 · 부분 검증 · https://easylaw.go.kr/CSP/CnpClsMain.laf?popMenu=ov&csmSeq=1138&ccfNo=1&cciNo=2&cnpClsNo=2
+  · 개정 확인: 자동 확인 대상 아님
 - [kdca-schedule-2026] 표준예방접종일정표(2026, 어린이) (예방접종도우미 menuCd=115 일정표 이미지(Immunization_Schedule_for_Children_2026), 개정 2024-01-15) · 기준일 2026-10-28 · 부분 검증 · https://nip.kdca.go.kr/irhp/images/egovframework/rte/infm/Immunization_Schedule_for_Children_2026.jpg
+  · 개정 확인: 자동 확인 대상 아님
 - [kdca-guideline-2026] 2026년 국가예방접종 지침 (KDCA 게시물 309683, 공포 2026-01-09, 개정 2026-10-02) · 기준일 2026-10-28 · 부분 검증 · https://www.kdca.go.kr/bbs/kdca/55/309683/artclView.do
+  · 개정 확인: 자동 확인 대상 아님
 - [kdca-nip-influenza] 국가예방접종 사업 소개(인플루엔자) (예방접종도우미 menuCd=134, 개정 2026-08-25) · 기준일 2026-10-28 · 부분 검증 · https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuLv=1&menuCd=134
+  · 개정 확인: 자동 확인 대상 아님
 - [childcare-waitlist-portal] 아이사랑 등록대기 신청(어린이집 입소대기) (아이사랑 menuno=176, 시행 2026-10-28) · 기준일 2026-10-28 · 미검증 · https://www.childcare.go.kr/?menuno=176
+  · 개정 확인: 자동 확인 대상 아님
 공휴일: 번들(생성일 2026-10-28)
 예방접종 안내 범위: 최소 접종 간격·지연접종(따라잡기)·제품별 세부는 반영하지 않았습니다. 국가예방접종 지침 또는 보건소·의료기관에서 확인하세요.
 의료·법률 면책: 이 결과는 일반 정보이며 의학적 진단이나 법률 자문이 아닙니다. 검진·접종 시기는 의료진과, 신고·신청 기한과 요건은 관할 기관과 확인하세요.
