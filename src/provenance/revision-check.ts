@@ -5,7 +5,7 @@ import { resolveBasis } from "../data-store/load.js";
 import type { BasisDoc, LawApiKey } from "../data-store/schema.js";
 
 export type RevisionState = "confirmed" | "changed" | "unavailable" | "skipped";
-export type UnavailableReason = "no_baseline" | "not_found" | "ambiguous" | "deadline" | "timeout" | "failed" | "bad_response";
+export type UnavailableReason = "no_baseline" | "not_found" | "ambiguous" | "deadline" | "timeout" | "failed" | "bad_response" | "not_approved";
 
 export interface RevisionStatus {
   basisId: string;
@@ -33,6 +33,7 @@ export const UNAVAILABLE_TEXT: Record<UnavailableReason, string> = {
   timeout: "법제처 응답 시간 초과",
   failed: "법제처 조회 실패",
   bad_response: "응답 형식 오류",
+  not_approved: "법제처 사용자 정보 검증 실패(OC·IP 등록 확인)",
 };
 
 const FIELD_LABELS: Record<string, string> = {
@@ -165,6 +166,7 @@ async function checkOne(doc: BasisDoc, ctx: ToolContext, client: LawClient | und
   } catch (err) {
     const kind = err instanceof ToolError ? err.kind : "INTERNAL";
     ctx.log.info("revision check failed", { basisId: doc.id, kind });
+    if (err instanceof ToolError && err.kind === "NOT_APPROVED") return unavailable(doc.id, "not_approved");
     if (err instanceof ToolError && err.kind === "TIMEOUT") return unavailable(doc.id, "timeout");
     if (err instanceof ToolError && err.detail?.reason === "format") return unavailable(doc.id, "bad_response");
     return unavailable(doc.id, "failed");
@@ -218,6 +220,58 @@ export async function checkRevisionDocs(
     summarize(ctx, out, started);
     return out;
   }
+}
+
+export const ISSUE_MARKER = "<!-- kpm:revision-check -->";
+
+export function kstStamp(d: Date): string {
+  const s = new Date(d.getTime() + 9 * 3600_000).toISOString();
+  return `${s.slice(0, 10)} ${s.slice(11, 16)} KST`;
+}
+
+export function buildIssueBody(statuses: readonly RevisionStatus[], docs: readonly BasisDoc[], checkedAt: Date): string {
+  const count = (state: RevisionState): number => statuses.filter((s) => s.state === state).length;
+  const lines: string[] = [
+    ISSUE_MARKER,
+    "# 근거 문서 개정 감지",
+    "",
+    `확인 시각: ${kstStamp(checkedAt)}`,
+    `변경 ${count("changed")}건 · 확인 불가 ${count("unavailable")}건 · 확인됨 ${count("confirmed")}건`,
+    "",
+    "## 변경된 문서",
+  ];
+  for (const s of statuses.filter((x) => x.state === "changed")) {
+    const doc = docs.find((d) => d.id === s.basisId);
+    const title = doc?.title ?? s.basisId;
+    const docNo = doc?.doc_no ?? "-";
+    const url = doc?.url ?? "-";
+    lines.push(
+      `### ${title} (\`${s.basisId}\`)`,
+      `- 문서 번호: ${docNo}`,
+      `- 저장값: ${fmt(s.stored ?? {})}`,
+      `- 현재값: ${fmt(s.current ?? {})}`,
+      `- 원문: ${s.link ?? `${url} (응답에 상세 링크 없음, 등록된 URL)`}`,
+      "",
+    );
+  }
+  lines.push("## 확인 불가 문서");
+  const unavailableStatuses = statuses.filter((s) => s.state === "unavailable");
+  if (unavailableStatuses.length === 0) {
+    lines.push("- 없음");
+  }
+  for (const s of unavailableStatuses) {
+    const title = docs.find((d) => d.id === s.basisId)?.title ?? s.basisId;
+    lines.push(`- ${title} (\`${s.basisId}\`): ${s.message}`);
+  }
+  lines.push(
+    "",
+    "## 후속 조치",
+    "- [ ] 원문을 열어 개정 내용(공포일·시행일·조문)을 확인",
+    "- [ ] `data/basis-documents.json`의 해당 문서 `law_api` 식별값·개정일·`as_of` 갱신",
+    "- [ ] 이 문서를 근거로 하는 정적 일정 데이터(`data/*.json`)를 원문과 대조하고 필요하면 수정 PR 작성",
+    "- [ ] 확인 불가 문서는 원문을 수동으로 대조",
+  );
+  return lines.join("\n") + "\n";
 }
 
 export async function checkRevisions(
