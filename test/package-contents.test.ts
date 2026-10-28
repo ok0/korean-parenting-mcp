@@ -39,6 +39,7 @@ describe("npm package contents", () => {
         expect(p.endsWith(".map"), p).toBe(false);
       }
       expect(paths).toContain("build/index.js");
+      expect(paths).toContain("build/setup/setup.js");
       expect(paths).toContain("data/holidays.json");
       expect(paths).toContain("README.md");
       expect(paths).toContain("LICENSE");

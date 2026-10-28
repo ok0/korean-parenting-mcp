@@ -12,10 +12,17 @@ async function main(): Promise<void> {
   await server.connect(new StdioServerTransport());
 }
 
-main().catch((err) => {
+const isSetup = process.argv[2] === "setup";
+
+async function setupMain(): Promise<void> {
+  const { runSetup } = await import("./setup/setup.js");
+  process.exitCode = await runSetup();
+}
+
+(isSetup ? setupMain : main)().catch((err) => {
   process.stderr.write(
     maskSecrets(
-      `korean-parenting-mcp 시작 실패: ${err instanceof Error ? err.message : String(err)}`,
+      `${isSetup ? "korean-parenting-mcp setup 실패" : "korean-parenting-mcp 시작 실패"}: ${err instanceof Error ? err.message : String(err)}`,
       secretsOf(loadConfig(process.env)),
     ) + "\n",
   );
