@@ -11,11 +11,18 @@ export interface HttpOptions {
   timeoutMs?: number;
   retries?: number;
   retryDelayMs?: number;
+  headers?: Record<string, string>;
+  allowErrorStatus?: boolean;
 }
 
 const RETRYABLE_STATUS: ReadonlySet<number> = new Set([429, 503, 504]);
 
-async function attemptOnce(url: URL, ctx: Pick<ToolContext, "fetch">, timeoutMs: number): Promise<HttpResponse> {
+async function attemptOnce(
+  url: URL,
+  ctx: Pick<ToolContext, "fetch">,
+  timeoutMs: number,
+  headers?: Record<string, string>,
+): Promise<HttpResponse> {
   const ac = new AbortController();
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_, reject) => {
@@ -25,7 +32,10 @@ async function attemptOnce(url: URL, ctx: Pick<ToolContext, "fetch">, timeoutMs:
     }, timeoutMs);
   });
   const request = (async (): Promise<HttpResponse> => {
-    const res = await ctx.fetch(url.href, { signal: ac.signal });
+    const res =
+      headers === undefined
+        ? await ctx.fetch(url.href, { signal: ac.signal })
+        : await ctx.fetch(url.href, { signal: ac.signal, headers: { ...headers } });
     const text = await res.text();
     return { status: res.status, contentType: res.headers.get("content-type") ?? "", text };
   })();
@@ -58,7 +68,7 @@ export async function httpGet(
     const canRetry = attempts <= retries;
     let res: HttpResponse;
     try {
-      res = await attemptOnce(url, ctx, timeoutMs);
+      res = await attemptOnce(url, ctx, timeoutMs, opts.headers);
     } catch (err) {
       if (err instanceof ToolError && err.kind === "TIMEOUT") {
         ctx.log.info("http fail", { host, path, kind: "TIMEOUT" });
@@ -80,6 +90,11 @@ export async function httpGet(
     if (RETRYABLE_STATUS.has(res.status) && canRetry) {
       await delay(retryDelayMs);
       continue;
+    }
+
+    if (opts.allowErrorStatus) {
+      ctx.log.info("http status", { host, path, status: res.status });
+      return res;
     }
 
     if (res.status === 429) {
