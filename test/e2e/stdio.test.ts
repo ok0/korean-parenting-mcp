@@ -8,6 +8,9 @@ import { LATEST_PROTOCOL_VERSION } from "@modelcontextprotocol/sdk/types.js";
 
 const entry = fileURLToPath(new URL("../../build/index.js", import.meta.url));
 
+const SCENARIO_A = { reference_date: "2026-10-28", due_date: "2027-02-10", birth_order: 1, fetus_count: 1, region: "성동구" };
+const SCENARIO_B = { reference_date: "2026-10-28", birth_date: "2026-05-28" };
+
 beforeAll(() => {
   if (!existsSync(entry)) {
     throw new Error("build/index.js 없음: npm run build 먼저 실행");
@@ -51,6 +54,18 @@ describe("stdio e2e", () => {
     expect(tlText).toContain("출생신고 기한");
     expect(tlText).toContain("비공식");
 
+    const pregnantCall = await client.callTool({ name: "get_timeline", arguments: SCENARIO_A });
+    expect(pregnantCall.isError).toBeFalsy();
+    const pregnantText = (pregnantCall.content as { type: string; text: string }[])[0]!.text;
+    expect(pregnantText).toContain("출산예정일 2027-02-10");
+    expect(pregnantText).toContain("근거 문서:");
+    expect(pregnantText).toContain("의료·법률 면책");
+
+    const bornCall = await client.callTool({ name: "get_timeline", arguments: SCENARIO_B });
+    expect(bornCall.isError).toBeFalsy();
+    const bornText = (bornCall.content as { type: string; text: string }[])[0]!.text;
+    expect(bornText).toContain("출생일 2026-05-28");
+
     const again = await client.listTools();
     expect(again.tools.map((t) => t.name)).toEqual(["get_timeline"]);
   });
@@ -58,12 +73,19 @@ describe("stdio e2e", () => {
   it("stdout carries only JSON-RPC lines", async () => {
     const child: ChildProcess = spawn(process.execPath, [entry], {
       stdio: ["pipe", "pipe", "pipe"],
+      env: { ...getDefaultEnvironment() },
     });
 
     let stdout = "";
     child.stdout?.setEncoding("utf8");
     child.stdout?.on("data", (chunk: string) => {
       stdout += chunk;
+    });
+
+    let stderr = "";
+    child.stderr?.setEncoding("utf8");
+    child.stderr?.on("data", (chunk: string) => {
+      stderr += chunk;
     });
 
     const send = (msg: unknown): void => {
@@ -97,11 +119,13 @@ describe("stdio e2e", () => {
     send({ jsonrpc: "2.0", method: "notifications/initialized" });
     send({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} });
     send({ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "nope", arguments: {} } });
+    send({ jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "get_timeline", arguments: SCENARIO_A } });
+    send({ jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "get_timeline", arguments: SCENARIO_B } });
 
     const deadline = Date.now() + 10000;
     while (Date.now() < deadline) {
       const ids = responseIds();
-      if (ids.has(1) && ids.has(2) && ids.has(3)) break;
+      if (ids.has(1) && ids.has(2) && ids.has(3) && ids.has(4) && ids.has(5)) break;
       await new Promise((resolve) => setTimeout(resolve, 50));
     }
 
@@ -122,5 +146,15 @@ describe("stdio e2e", () => {
 
     const callResponse = parsed.find((msg) => msg.id === 3);
     expect(callResponse?.result?.isError).toBe(true);
+
+    for (const id of [4, 5]) {
+      const scenarioResponse = parsed.find((msg) => msg.id === id);
+      expect(scenarioResponse).toBeDefined();
+      expect(scenarioResponse?.result?.isError).not.toBe(true);
+    }
+
+    for (const secret of ["2027-02-10", "2026-05-28", "성동구"]) {
+      expect(stderr).not.toContain(secret);
+    }
   });
 });
