@@ -1,0 +1,18 @@
+# mcpb pack 제외 규칙 (스테이징 디렉터리 기준, 방어용)
+node_modules/
+src/
+test/
+fixtures/
+scripts/
+build-scripts/
+.docs/
+.ensemble/
+.github/
+*.map
+*.bak
+*.key.txt
+*.key
+.env
+*.mcpb
+package-lock.json
+.mcpbignore

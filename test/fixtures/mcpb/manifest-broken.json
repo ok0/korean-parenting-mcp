@@ -1,0 +1,49 @@
+{
+  "manifest_version": "0.3",
+  "display_name": "한국 육아 일정 도우미 (비공식)",
+  "version": "0.1.0",
+  "description": "한국 임신·출산·육아 일정과 공공 정보를 안내하는 비공식 MCP 서버입니다. 정부·공공기관과 관계없는 개인 프로젝트이며 의료·법률 자문이 아닙니다.",
+  "author": {
+    "name": "ok0"
+  },
+  "license": "MIT",
+  "user_config": {
+    "DATA_GO_KR_SERVICE_KEY": {
+      "type": "string",
+      "title": "공공데이터포털 일반 인증키(Decoding)",
+      "description": "공공데이터포털(data.go.kr)에서 API 활용신청 후 마이페이지의 일반 인증키(Decoding)를 그대로 넣습니다. 공휴일 확인 등에 쓰입니다. 비워 둬도 키 없이 동작하는 기능이 있습니다.",
+      "sensitive": true,
+      "required": false
+    },
+    "KINDERGARTEN_API_KEY": {
+      "type": "string",
+      "title": "유치원알리미 OpenAPI 인증키",
+      "description": "유치원알리미(e-childschoolinfo.moe.go.kr)의 OpenAPI 메뉴에서 신청해 발급받은 인증키입니다. 비워 둬도 키 없이 동작하는 기능이 있습니다.",
+      "sensitive": true,
+      "required": false
+    },
+    "LAW_OC": {
+      "type": "string",
+      "title": "국가법령정보 공동활용 OC",
+      "description": "국가법령정보 공동활용(open.law.go.kr)에 가입해 OPEN API를 신청한 뒤 OC 값(가입 이메일의 @ 앞부분)을 넣습니다. get_leave_article에 필요합니다. 비워 둬도 키 없이 동작하는 기능이 있습니다.",
+      "sensitive": true,
+      "required": false
+    },
+    "SAFETYKOREA_AUTH_KEY": {
+      "type": "string",
+      "title": "제품안전정보센터(SafetyKorea) Open API 서비스 ID",
+      "description": "제품안전정보센터(safetykorea.kr)에 이메일로 Open API 사용을 신청해 승인 후 받은 서비스 ID입니다. 비워 둬도 키 없이 동작하는 기능이 있습니다.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32"
+    ],
+    "runtimes": {
+      "node": ">=20.19"
+    }
+  }
+}
