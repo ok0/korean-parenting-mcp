@@ -33,6 +33,8 @@ describe("createServer", () => {
     expect(client.getInstructions()).toContain("get_leave_article");
     expect(client.getInstructions()).toContain("LAW_OC");
     expect(client.getInstructions()).toContain("find_night_pediatric");
+    expect(client.getInstructions()).toContain("find_benefits");
+    expect(client.getInstructions()).toContain("check_pregnancy_drug");
   });
 
   it("tools/list matches registry (empty in M1)", async () => {

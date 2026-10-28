@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import { KEY_ENV } from "../src/core/config.js";
 import { KEY_GUIDE } from "../src/core/errors.js";
 import { runTool } from "../src/core/pipeline.js";
+import { checkPregnancyDrugTool } from "../src/tools/check-pregnancy-drug.js";
+import { findBenefitsTool } from "../src/tools/find-benefits.js";
 import { findNightPediatricTool } from "../src/tools/find-night-pediatric.js";
 import { getLeaveArticleTool } from "../src/tools/get-leave-article.js";
 import { getTimelineTool } from "../src/tools/get-timeline.js";
@@ -38,11 +40,28 @@ describe("unset keys", () => {
     expect(nightText).toContain("DATA_GO_KR_SERVICE_KEY");
     expect(nightText).toContain("설정되지 않았습니다");
 
+    const benefits = await runTool(findBenefitsTool, { stage: "pregnancy" }, ctx);
+    expect(benefits.isError).toBe(true);
+    const benefitsText = benefits.content[0]!.text;
+    expect(benefitsText).toContain("DATA_GO_KR_SERVICE_KEY");
+    expect(benefitsText).toContain("설정되지 않았습니다");
+
+    const drug = await runTool(checkPregnancyDrugTool, { drug_name: "아세트아미노펜" }, ctx);
+    expect(drug.isError).toBe(true);
+    const drugText = drug.content[0]!.text;
+    expect(drugText).toContain("DATA_GO_KR_SERVICE_KEY");
+    expect(drugText).toContain("설정되지 않았습니다");
+
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
   it("DATA_GO_KR guide lists find_night_pediatric", () => {
     expect(KEY_GUIDE.DATA_GO_KR.tools).toContain("find_night_pediatric");
+  });
+
+  it("DATA_GO_KR guide lists find_benefits and check_pregnancy_drug", () => {
+    expect(KEY_GUIDE.DATA_GO_KR.tools).toContain("find_benefits");
+    expect(KEY_GUIDE.DATA_GO_KR.tools).toContain("check_pregnancy_drug");
   });
 
   it("fake LAW_OC is treated as set (regression)", async () => {

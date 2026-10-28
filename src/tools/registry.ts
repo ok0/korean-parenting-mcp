@@ -1,6 +1,8 @@
 import type { z } from "zod";
 import type { KeyName } from "../core/config.js";
 import type { ToolContext } from "../core/context.js";
+import { checkPregnancyDrugTool } from "./check-pregnancy-drug.js";
+import { findBenefitsTool } from "./find-benefits.js";
 import { findNightPediatricTool } from "./find-night-pediatric.js";
 import { getLeaveArticleTool } from "./get-leave-article.js";
 import { getTimelineTool } from "./get-timeline.js";
@@ -26,4 +28,10 @@ export function defineTool<S extends z.ZodObject>(def: ToolDef<S>): ToolDef {
   return def as unknown as ToolDef;
 }
 
-export const allTools: readonly ToolDef[] = [getTimelineTool, getLeaveArticleTool, findNightPediatricTool];
+export const allTools: readonly ToolDef[] = [
+  getTimelineTool,
+  getLeaveArticleTool,
+  findNightPediatricTool,
+  findBenefitsTool,
+  checkPregnancyDrugTool,
+];
