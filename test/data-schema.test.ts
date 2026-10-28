@@ -605,6 +605,23 @@ describe("M5 real data", () => {
     expect(docs.find((x) => x.id === "childcare-waitlist-portal")?.verified).toBe("false");
     expect(docs.find((x) => x.id === "easylaw-parental-leave-pay")?.note).toContain("법적 효력 없음");
   });
+
+  it("law_api identifiers filled for found documents", () => {
+    const foundLawIds = [
+      "holiday-regulation",
+      "public-holiday-act",
+      "family-registration-act",
+      "civil-act",
+      "equal-employment-act",
+      "labor-standards-act",
+      "child-allowance-act",
+    ];
+    const docs = loadData("basis-documents").documents;
+    for (const id of foundLawIds) {
+      const doc = docs.find((x) => x.id === id);
+      expect(doc?.law_api).toMatchObject({ kind: "law", law_id: expect.stringMatching(/\S/) });
+    }
+  });
 });
 
 describe("benefits validation failures", () => {
