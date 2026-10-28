@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { parseDate } from "../src/date/civil-date.js";
 import { bundledCalendar, createCalendar } from "../src/date/holiday-calendar.js";
 import { buildTimeline } from "../src/timeline/engine.js";
-import { renderItemLine, renderTimeline, type TimelineView } from "../src/timeline/render.js";
+import { footerBasisIds, renderItemLine, renderTimeline, type TimelineView } from "../src/timeline/render.js";
 import type { TimelineInput, TimelineItem, TimelineResult } from "../src/timeline/types.js";
 import {
   DISCLAIMER_MEDICAL_LEGAL,
@@ -139,5 +139,27 @@ describe("timeline render", () => {
   it("estimated items carry the estimate note", () => {
     expect(renderItemLine({ ...vac, estimated: true })).toContain(ESTIMATED_NOTE);
     expect(renderItemLine(vac)).not.toContain(ESTIMATED_NOTE);
+  });
+
+  it("footer lists revision status per basis doc", () => {
+    const base = run("2026-01-31", "2026-02-01", 156, true);
+    const ids = footerBasisIds(base.result);
+    const revisions = ids.map((id) => ({
+      basisId: id,
+      state: "skipped" as const,
+      message: "법제처 OC 미설정: 개정 여부 확인 생략",
+    }));
+    const runView: TimelineView = {
+      birthDate: parseDate("2026-01-31"),
+      referenceDate: parseDate("2026-02-01"),
+      monthsAhead: 156,
+      includePast: true,
+      holidaySource: HOLIDAY_SOURCE,
+    };
+    const withRevisions = renderTimeline(base.result, runView, undefined, revisions);
+    const footer = withRevisions.footer ?? "";
+    expect(footer.split("개정 확인 요약:").length - 1).toBe(1);
+    expect(footer.split("\n").filter((l) => l.startsWith("  · 개정 확인: 법제처 OC 미설정")).length).toBe(ids.length);
+    expect(withRevisions.body).toBe(base.body);
   });
 });

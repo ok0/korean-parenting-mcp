@@ -7,6 +7,7 @@ import {
   basisFooter,
   basisLine,
   composeFooter,
+  revisionSummary,
   verifiedText,
 } from "../src/tools/shared/format.js";
 
@@ -57,5 +58,35 @@ describe("format", () => {
 
   it("composeFooter drops undefined and blank sections", () => {
     expect(composeFooter(["a", undefined, " ", "b"])).toBe("---\na\nb");
+  });
+
+  it("basisFooter with revisions", () => {
+    const footer = basisFooter([doc], [
+      {
+        basisId: "x-doc",
+        state: "changed",
+        message: "근거가 개정되었습니다. 원문을 확인하세요 (저장 MST 1 → 현재 2)",
+        link: "https://www.law.go.kr/x",
+      },
+    ]);
+    expect(footer).toContain("개정 확인 요약: 원문 확인 0 / 개정됨 1 / 확인 불가 0 / 생략 0");
+    const lines = footer.split("\n");
+    const idx = lines.indexOf(basisLine(doc));
+    expect(idx).toBeGreaterThanOrEqual(0);
+    const next = lines[idx + 1] ?? "";
+    expect(next.startsWith("  · 개정 확인: 근거가 개정되었습니다")).toBe(true);
+    expect(next.endsWith(" 원문: https://www.law.go.kr/x")).toBe(true);
+    expect(footer).not.toContain(NOTICE_NO_REVISION_CHECK);
+  });
+
+  it("revisionSummary counts each state", () => {
+    expect(
+      revisionSummary([
+        { basisId: "a", state: "confirmed", message: "원문 확인됨" },
+        { basisId: "b", state: "changed", message: "근거가 개정되었습니다. 원문을 확인하세요" },
+        { basisId: "c", state: "unavailable", message: "개정 여부 확인 불가(법제처 조회 실패)" },
+        { basisId: "d", state: "skipped", message: "법제처 OC 미설정: 개정 여부 확인 생략" },
+      ]),
+    ).toBe("개정 확인 요약: 원문 확인 1 / 개정됨 1 / 확인 불가 1 / 생략 1");
   });
 });

@@ -1,4 +1,5 @@
 import type { BasisDoc } from "../../data-store/schema.js";
+import type { RevisionStatus } from "../../provenance/revision-check.js";
 
 export const DISCLAIMER_MEDICAL_LEGAL = "의료·법률 면책: 이 결과는 일반 정보이며 의학적 진단이나 법률 자문이 아닙니다. 검진·접종 시기는 의료진과, 신고·신청 기한과 요건은 관할 기관과 확인하세요.";
 
@@ -24,9 +25,29 @@ export function basisLine(doc: BasisDoc): string {
   return `- [${doc.id}] ${doc.title} (${dates.join(", ")}) · 기준일 ${doc.as_of} · ${verifiedText(doc.verified)} · ${doc.url}`;
 }
 
-export function basisFooter(docs: readonly BasisDoc[]): string {
-  if (docs.length === 0) return ["근거 문서: 없음", NOTICE_NO_REVISION_CHECK].join("\n");
-  return ["근거 문서:", NOTICE_NO_REVISION_CHECK, ...docs.map(basisLine)].join("\n");
+export function revisionSummary(rs: readonly RevisionStatus[]): string {
+  const count = (state: RevisionStatus["state"]): number => rs.filter((r) => r.state === state).length;
+  return `개정 확인 요약: 원문 확인 ${count("confirmed")} / 개정됨 ${count("changed")} / 확인 불가 ${count("unavailable")} / 생략 ${count("skipped")}`;
+}
+
+export function revisionLine(r: RevisionStatus): string {
+  return `  · 개정 확인: ${r.message}` + (r.link ? ` 원문: ${r.link}` : "");
+}
+
+export function basisFooter(docs: readonly BasisDoc[], revisions?: readonly RevisionStatus[]): string {
+  if (revisions === undefined) {
+    if (docs.length === 0) return ["근거 문서: 없음", NOTICE_NO_REVISION_CHECK].join("\n");
+    return ["근거 문서:", NOTICE_NO_REVISION_CHECK, ...docs.map(basisLine)].join("\n");
+  }
+  if (docs.length === 0) return "근거 문서: 없음";
+  return [
+    "근거 문서:",
+    revisionSummary(revisions),
+    ...docs.flatMap((d) => {
+      const found = revisions.find((r) => r.basisId === d.id);
+      return found !== undefined ? [basisLine(d), revisionLine(found)] : [basisLine(d)];
+    }),
+  ].join("\n");
 }
 
 export function composeFooter(sections: readonly (string | undefined)[]): string {

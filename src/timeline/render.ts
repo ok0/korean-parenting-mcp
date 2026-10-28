@@ -1,5 +1,6 @@
 import { addMonthsClamp, compare, formatDate, type CivilDate } from "../date/civil-date.js";
 import { resolveBasis } from "../data-store/load.js";
+import type { RevisionStatus } from "../provenance/revision-check.js";
 import type { ToolOutput } from "../tools/registry.js";
 import {
   DISCLAIMER_MEDICAL_LEGAL,
@@ -50,7 +51,16 @@ export function renderLocalSection(s: LocalGuidanceSection): string {
   return out.join("\n");
 }
 
-export function renderTimeline(result: TimelineResult, view: TimelineView, local?: LocalGuidanceSection): ToolOutput {
+export function footerBasisIds(result: TimelineResult, local?: LocalGuidanceSection): string[] {
+  return [...new Set([...result.basisIds, ...(local?.basisIds ?? [])])];
+}
+
+export function renderTimeline(
+  result: TimelineResult,
+  view: TimelineView,
+  local?: LocalGuidanceSection,
+  revisions?: readonly RevisionStatus[],
+): ToolOutput {
   const horizon = addMonthsClamp(view.referenceDate, view.monthsAhead);
   const count = (status: string): number => result.items.filter((it) => it.status === status).length;
   const summary = `상태 요약: 진행 중 ${count("진행 중")} · 임박 ${count("임박")} · 예정 ${count("예정")}${view.includePast ? ` · 지난 ${count("지난")}` : ""}`;
@@ -77,7 +87,7 @@ export function renderTimeline(result: TimelineResult, view: TimelineView, local
   }
 
   const footerCore = composeFooter([
-    basisFooter(resolveBasis([...new Set([...result.basisIds, ...(local?.basisIds ?? [])])])),
+    basisFooter(resolveBasis(footerBasisIds(result, local)), revisions),
     `공휴일: ${view.holidaySource}`,
     result.warnings.length > 0 ? ["주의:", ...result.warnings.map((w) => `- ${w}`)].join("\n") : undefined,
     result.items.some((it) => it.category === "접종") ? NOTICE_VACCINATION_SCOPE : undefined,
