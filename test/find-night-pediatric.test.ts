@@ -88,7 +88,8 @@ describe("find_night_pediatric summary", () => {
     expect(text).toContain("비공식");
 
     const moonUrl = mock.last("moon")!;
-    expect(new Set(moonUrl.searchParams.keys())).toEqual(new Set(expectedQtKeys()));
+    expect(new Set(moonUrl.searchParams.keys())).toEqual(new Set(["serviceKey", "Q0", "Q1", "numOfRows"]));
+    expect(moonUrl.searchParams.has("QT")).toBe(false);
     expect(moonUrl.searchParams.get("Q0")).toBe("서울특별시");
     expect(moonUrl.searchParams.get("Q1")).toBe("성동구");
 
@@ -188,7 +189,7 @@ describe("find_night_pediatric day slot", () => {
   it("weekday uses Wednesday slot", async () => {
     const { res, text, mock } = await scenario("2026-10-28T21:30");
     expect(res.isError).toBeFalsy();
-    expectQt(mock.last("moon"), "3");
+    expect(mock.last("moon")!.searchParams.has("QT")).toBe(false);
     expectQt(mock.last("peds"), "3");
     expect(text).toContain("판정 기준: 수요일");
   });
@@ -196,21 +197,21 @@ describe("find_night_pediatric day slot", () => {
   it("saturday uses Saturday slot", async () => {
     const { res, text, mock } = await scenario("2026-10-31T10:00");
     expect(res.isError).toBeFalsy();
-    expectQt(mock.last("moon"), "6");
+    expectQt(mock.last("peds"), "6");
     expect(text).toContain("토요일");
   });
 
   it("sunday uses Sunday slot", async () => {
     const { res, text, mock } = await scenario("2026-11-01T10:00");
     expect(res.isError).toBeFalsy();
-    expectQt(mock.last("moon"), "7");
+    expectQt(mock.last("peds"), "7");
     expect(text).toContain("일요일");
   });
 
   it("bundled holiday uses holiday slot even when live lookup fails", async () => {
     const { res, text, mock } = await scenario("2026-10-05T10:00", () => htmlRes200());
     expect(res.isError).toBeFalsy();
-    expectQt(mock.last("moon"), "8");
+    expectQt(mock.last("peds"), "8");
     expect(text).toContain("판정 기준: 공휴일");
     expect(text).toContain("번들(생성일");
   });
@@ -224,12 +225,12 @@ describe("find_night_pediatric day slot", () => {
       );
     const live = await scenario("2026-11-11T10:00", liveRoute);
     expect(live.res.isError).toBeFalsy();
-    expectQt(live.mock.last("moon"), "8");
+    expectQt(live.mock.last("peds"), "8");
     expect(live.text).toContain("공휴일");
     expect(live.text).toContain("공공데이터 API 확인");
 
     const control = await scenario("2026-11-11T10:00", () => htmlRes200());
-    expectQt(control.mock.last("moon"), "3");
+    expectQt(control.mock.last("peds"), "3");
   });
 
   it("no key makes no network call", async () => {
@@ -243,7 +244,7 @@ describe("find_night_pediatric day slot", () => {
   it("year outside bundle is reported as missing", async () => {
     const { res, text, mock } = await scenario("2030-03-05T10:00", () => xmlRes(kasiXml([])));
     expect(res.isError).toBeFalsy();
-    expectQt(mock.last("moon"), "2");
+    expectQt(mock.last("peds"), "2");
     expect(text).toContain("2030년 공휴일 정보 없음");
   });
 });

@@ -166,7 +166,7 @@ async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise
   const qt = NEMC_SEND_QT ? today.slot : undefined;
   const settled = await settleWithin(
     [
-      callDataGoKr(SPECS.nemcMoonlight, { Q0: q.Q0, Q1: q.Q1, QT: qt, numOfRows: MOON_ROWS }, callCtx),
+      callDataGoKr(SPECS.nemcMoonlight, { Q0: q.Q0, Q1: q.Q1, numOfRows: MOON_ROWS }, callCtx),
       callDataGoKr(
         SPECS.nemcList,
         { Q0: q.Q0, Q1: q.Q1, QD: NEMC_DEPT_PEDIATRICS, QT: qt, numOfRows: PEDS_ROWS },

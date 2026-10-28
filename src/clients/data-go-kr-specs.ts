@@ -18,9 +18,9 @@ const NEMC_DATASET_URL = "https://www.data.go.kr/data/15000736/openapi.do";
 const NEMC_ATTRIBUTION = "국립중앙의료원(공공데이터포털)";
 const NEMC_BASE_URL = "https://apis.data.go.kr/B552657/HsptlAsembySearchService";
 
-/** NEMC 진료과목 코드: 소아청소년과(M11 적용 확인, 의미는 M12 실호출로 확정). 한 곳에만 둔다. */
+/** NEMC 진료과목 코드 D002: 진료과목에 소아청소년과를 등록한 병·의원(전문과 무관). M12 실호출: 성동구 110곳 중 소아 계열 이름 19곳, 나머지는 다른 전문과. 한 곳에만 둔다. */
 export const NEMC_DEPT_PEDIATRICS = "D002";
-/** NEMC 진료요일 파라미터(QT) 전송 여부. 판정은 항상 클라이언트에서 한다(M12 R16(c)로 결정). */
+/** 병·의원 목록(nemcList)에만 QT 전송(M12: QT=8에서 110→13곳, 공휴일 시간 유효 기관은 모두 유지). 달빛 목록에는 보내지 않는다(효과 미측정). 판정은 항상 클라이언트. */
 export const NEMC_SEND_QT: boolean = true;
 
 export const SPECS: Readonly<Record<SpecId, ApiSpec>> = {
@@ -37,7 +37,7 @@ export const SPECS: Readonly<Record<SpecId, ApiSpec>> = {
     cacheTtlMs: CACHE_TTL_MS.nightClinic,
     confirmed: true,
     knownParams: ["Q0", "Q1", "QD", "QN", "QT", "numOfRows"],
-    note: "실응답(2026-10-28)으로 확인. 소아청소년과 코드(QD) 미확인, QT 효과 확인(M12: QT=8 시 항목 축소), pageNo·QZ·ORD 미시험, XML 사용(_type=json은 시간 필드 숫자·문자열 혼재, ADR-15)(.docs/api-notes/nemc.md 참조)",
+    note: "실응답(2026-10-28)으로 확인. QD=D002는 소아청소년과 진료과목 등록 기관(전문과 혼재, M12), QT 효과 확인(M12: QT=8 시 항목 축소), pageNo·QZ·ORD 미시험, XML 사용(_type=json은 시간 필드 숫자·문자열 혼재, ADR-15)(.docs/api-notes/nemc.md 참조)",
   },
   nemcMoonlight: {
     id: "nemcMoonlight",
@@ -52,7 +52,7 @@ export const SPECS: Readonly<Record<SpecId, ApiSpec>> = {
     cacheTtlMs: CACHE_TTL_MS.nightClinic,
     confirmed: true,
     knownParams: ["Q0", "Q1", "QN", "numOfRows"],
-    note: "실응답(2026-10-28)으로 확인. 달빛 여부 판정 미확인, QT 효과 미확인, XML 사용(_type=json은 시간 필드 숫자·문자열 혼재, ADR-15)(.docs/api-notes/nemc.md 참조)",
+    note: "실응답(2026-10-28)으로 확인. 달빛 여부 판정 미확인, QT 효과 미측정(보내지 않음), XML 사용(_type=json은 시간 필드 숫자·문자열 혼재, ADR-15)(.docs/api-notes/nemc.md 참조)",
   },
   benefitsList: {
     id: "benefitsList",
