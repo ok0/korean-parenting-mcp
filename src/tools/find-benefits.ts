@@ -247,7 +247,8 @@ async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise
   if (failed.length > 0 || capped) {
     let note = `일부만 조회됨: 전체 ${total}건 중 ${rows.length}건만 조회했습니다`;
     if (failed.length > 0) note += ` (${failed.length}개 페이지 실패: ${failed[0]!.error.message})`;
-    note += ". 잠시 후 다시 조회하면 빠진 페이지만 다시 가져옵니다.";
+    note += ".";
+    if (failed.length > 0) note += " 잠시 후 다시 조회하면 빠진 페이지만 다시 가져옵니다.";
     const action = failed[0]?.error.actions[0];
     if (action !== undefined) note += ` 조치: ${action}`;
     if (capped) note += ` 목록이 커서 앞 ${BENEFITS_MAX_PAGES * BENEFITS_PER_PAGE}건까지만 조회했습니다.`;
