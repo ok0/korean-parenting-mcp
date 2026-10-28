@@ -77,7 +77,7 @@ export const KEY_GUIDE: Record<
       "발급된 서비스 ID를 SAFETYKOREA_AUTH_KEY에 설정합니다. 서버는 이 값을 HTTP 헤더 AuthKey로만 전송하고 URL에는 넣지 않습니다.",
       "MCP 클라이언트를 재시작합니다.",
     ],
-    tools: [],
+    tools: ["check_recall"],
   },
 };
 

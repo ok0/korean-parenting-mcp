@@ -44,9 +44,9 @@ describe("SAFETYKOREA key wiring", () => {
     expect(KEY_ENV.SAFETYKOREA).toBe("SAFETYKOREA_AUTH_KEY");
   });
 
-  it("SAFETYKOREA guide has url and empty tools", () => {
+  it("SAFETYKOREA guide has url and lists check_recall", () => {
     expect(KEY_GUIDE.SAFETYKOREA.url).toBe("https://www.safetykorea.kr");
-    expect(KEY_GUIDE.SAFETYKOREA.tools).toEqual([]);
+    expect(KEY_GUIDE.SAFETYKOREA.tools).toEqual(["check_recall"]);
     expect(KEY_GUIDE.SAFETYKOREA.title).toContain("서비스 ID");
   });
 

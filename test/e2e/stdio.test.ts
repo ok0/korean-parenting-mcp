@@ -48,6 +48,8 @@ describe("stdio e2e", () => {
     expect(names).toContain("find_night_pediatric");
     expect(names).toContain("find_benefits");
     expect(names).toContain("check_pregnancy_drug");
+    expect(names).toContain("check_recall");
+    expect(names).toContain("find_daycare");
 
     const unknown = await client.callTool({ name: "nope", arguments: {} });
     expect(unknown.isError).toBe(true);

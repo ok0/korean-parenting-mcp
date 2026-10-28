@@ -2,7 +2,9 @@ import type { z } from "zod";
 import type { KeyName } from "../core/config.js";
 import type { ToolContext } from "../core/context.js";
 import { checkPregnancyDrugTool } from "./check-pregnancy-drug.js";
+import { checkRecallTool } from "./check-recall.js";
 import { findBenefitsTool } from "./find-benefits.js";
+import { findDaycareTool } from "./find-daycare.js";
 import { findNightPediatricTool } from "./find-night-pediatric.js";
 import { getLeaveArticleTool } from "./get-leave-article.js";
 import { getTimelineTool } from "./get-timeline.js";
@@ -34,4 +36,6 @@ export const allTools: readonly ToolDef[] = [
   findNightPediatricTool,
   findBenefitsTool,
   checkPregnancyDrugTool,
+  checkRecallTool,
+  findDaycareTool,
 ];

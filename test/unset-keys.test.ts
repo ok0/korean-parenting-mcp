@@ -3,7 +3,9 @@ import { KEY_ENV } from "../src/core/config.js";
 import { KEY_GUIDE } from "../src/core/errors.js";
 import { runTool } from "../src/core/pipeline.js";
 import { checkPregnancyDrugTool } from "../src/tools/check-pregnancy-drug.js";
+import { checkRecallTool } from "../src/tools/check-recall.js";
 import { findBenefitsTool } from "../src/tools/find-benefits.js";
+import { findDaycareTool } from "../src/tools/find-daycare.js";
 import { findNightPediatricTool } from "../src/tools/find-night-pediatric.js";
 import { getLeaveArticleTool } from "../src/tools/get-leave-article.js";
 import { getTimelineTool } from "../src/tools/get-timeline.js";
@@ -52,6 +54,15 @@ describe("unset keys", () => {
     expect(drugText).toContain("DATA_GO_KR_SERVICE_KEY");
     expect(drugText).toContain("설정되지 않았습니다");
 
+    const recall = await runTool(checkRecallTool, { product_name: "카시트" }, ctx);
+    expect(recall.isError).toBe(true);
+    const recallText = recall.content[0]!.text;
+    expect(recallText).toContain("SAFETYKOREA_AUTH_KEY");
+    expect(recallText).toContain("설정되지 않았습니다");
+
+    const daycare = await runTool(findDaycareTool, { region: "성동구" }, ctx);
+    expect(daycare.isError).toBeFalsy();
+
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
@@ -62,6 +73,16 @@ describe("unset keys", () => {
   it("DATA_GO_KR guide lists find_benefits and check_pregnancy_drug", () => {
     expect(KEY_GUIDE.DATA_GO_KR.tools).toContain("find_benefits");
     expect(KEY_GUIDE.DATA_GO_KR.tools).toContain("check_pregnancy_drug");
+  });
+
+  it("SAFETYKOREA guide lists check_recall", () => {
+    expect(KEY_GUIDE.SAFETYKOREA.tools).toContain("check_recall");
+  });
+
+  it("no key guide lists find_daycare", () => {
+    for (const k of Object.keys(KEY_GUIDE) as (keyof typeof KEY_GUIDE)[]) {
+      expect(KEY_GUIDE[k].tools).not.toContain("find_daycare");
+    }
   });
 
   it("fake LAW_OC is treated as set (regression)", async () => {

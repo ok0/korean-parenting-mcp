@@ -32,6 +32,36 @@ describe("tool meta", () => {
     expect(problems).toContain("fx_bad_meta.serviceKey: 키 필드 노출");
   });
 
+  it("checker rejects official-service wording", () => {
+    const official = defineTool({
+      name: "fx_official",
+      title: "테스트",
+      description: "아이사랑에서 제공하는 공식 조회 서비스",
+      schema: z.object({ q: keywordField(doc) }),
+      annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+      handler: async () => ({ body: "" }),
+    });
+    expect(checkToolMeta(official)).toContain("fx_official: 공식 서비스 오해 표현");
+    const unofficial = defineTool({
+      name: "fx_official",
+      title: "테스트",
+      description: "비공식 참고 도구",
+      schema: z.object({ q: keywordField(doc) }),
+      annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+      handler: async () => ({ body: "" }),
+    });
+    expect(checkToolMeta(unofficial).some((p) => p.includes("공식 서비스 오해 표현"))).toBe(false);
+  });
+
+  it("new tools are registered with expected hints", () => {
+    const recall = allTools.find((t) => t.name === "check_recall")!;
+    expect(recall.annotations.openWorldHint).toBe(true);
+    expect(recall.requiredKeys).toEqual(["SAFETYKOREA"]);
+    const daycare = allTools.find((t) => t.name === "find_daycare")!;
+    expect(daycare.annotations.openWorldHint).toBe(false);
+    expect(daycare.requiredKeys).toBeUndefined();
+  });
+
   it("checker rejects cross-tool instruction", () => {
     const dup = defineTool({
       name: "fx_dup",
