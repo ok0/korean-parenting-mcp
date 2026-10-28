@@ -28,8 +28,8 @@ export const BENEFITS_PER_PAGE = 1000;
 export const BENEFITS_CONCURRENCY = 3;
 /** 보조금24 최대 페이지 수(약 10,946건 → 11페이지; 상한을 넘는 부분은 "일부만 조회"로 알린다). */
 export const BENEFITS_MAX_PAGES = 20;
-/** DUR 임부금기 numOfRows 전송값. undefined면 보내지 않는다(기본 10건). M13 실호출로 효과 확인 후 결정. */
-export const DUR_NUM_OF_ROWS: number | undefined = undefined;
+/** M13 실호출: numOfRows=50 유효 */
+export const DUR_NUM_OF_ROWS = 50;
 
 export const SPECS: Readonly<Record<SpecId, ApiSpec>> = {
   nemcList: {
@@ -89,8 +89,8 @@ export const SPECS: Readonly<Record<SpecId, ApiSpec>> = {
     resultCodePath: STD_CODE,
     cacheTtlMs: CACHE_TTL_MS.dur,
     confirmed: true,
-    knownParams: ["itemName"],
-    note: "실응답(2026-10-28)으로 확인. _type=json 미적용(XML만 응답), itemName은 성분명 기준(품목명 0건)(.docs/api-notes/dur-pregnancy.md 참조)",
+    knownParams: ["itemName", "numOfRows", "pageNo"],
+    note: "실응답(2026-10-28)으로 확인. _type=json 미적용(XML만 응답), itemName은 성분명 기준, numOfRows 유효(M13)(품목명 0건)(.docs/api-notes/dur-pregnancy.md 참조)",
   },
   vaccClinic: {
     id: "vaccClinic",
