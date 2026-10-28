@@ -60,7 +60,28 @@ export function sameAsStored(oc?: string): LawRoute {
       return jsonRes({ AdmRulSearch: { totalCnt: "1", admrul: [row] } });
     }
     if (target === "licbyl") {
-      return jsonRes({ LicBylSearch: { totalCnt: "0" } });
+      const keys = docs.flatMap((d) =>
+        d.law_api?.kind === "licbyl" &&
+        d.law_api.law_name === query &&
+        (d.law_api.promulgated !== undefined || d.law_api.promulgation_no !== undefined)
+          ? [d.law_api]
+          : [],
+      );
+      if (keys.length === 0) return jsonRes({ LicBylSearch: { totalCnt: "0" } });
+      const rows = keys.map((key) => {
+        const row: Record<string, string> = {
+          관련법령명: key.law_name,
+          별표번호: key.annex_no.replace(/\D/g, "").padStart(4, "0") + "00",
+          별표종류: "별표",
+          별표명: "test",
+          별표서식PDF파일링크: "/LSW/flDownload.do?flSeq=1",
+        };
+        const promulgated = digits(key.promulgated);
+        if (promulgated !== undefined) row.공포일자 = promulgated;
+        if (key.promulgation_no !== undefined) row.공포번호 = key.promulgation_no;
+        return row;
+      });
+      return jsonRes({ LicBylSearch: { totalCnt: String(rows.length), licbyl: rows } });
     }
     return undefined;
   };

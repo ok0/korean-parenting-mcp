@@ -3,7 +3,8 @@ import { addDays, daysBetween, formatDate, parseDate, type CivilDate } from "../
 import { bundledCalendar } from "../src/date/holiday-calendar.js";
 import { buildTimeline } from "../src/timeline/engine.js";
 import { renderItemLine } from "../src/timeline/render.js";
-import { ESTIMATED_NOTE } from "../src/tools/shared/format.js";
+import { ESTIMATED_NOTE, verifiedText } from "../src/tools/shared/format.js";
+import { loadData } from "../src/data-store/load.js";
 import { lmpFromDue, prenatalItems } from "../src/timeline/rules/prenatal.js";
 
 const cal = bundledCalendar();
@@ -36,7 +37,7 @@ describe("prenatal checkup items", () => {
       expect(line).toContain("만 35세 이상");
       expect(line).toContain("다태아");
       expect(line).toContain(ESTIMATED_NOTE);
-      expect(line).toContain("부분 검증");
+      expect(line).toContain(verifiedText(loadData("prenatal").verified));
       expect(it.estimated).toBe(true);
       expect(it.nature).toBe("권장");
       expect(it.category).toBe("검진");

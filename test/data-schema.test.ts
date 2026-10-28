@@ -143,6 +143,22 @@ describe("deadlines/checkups validation failures", () => {
     if (x.checkups[0]) x.checkups[0].to = { months: 1 };
     expect(() => validateDataset("checkups", x, basis)).toThrow(DataValidationError);
   });
+
+  it("rejects a full checkup entry without verifier", () => {
+    const x = structuredClone(loadData("checkups")) as unknown as { checkups: Record<string, unknown>[] };
+    if (x.checkups[0]) x.checkups[0].verified = "full";
+    expect(() => validateDataset("checkups", x, basis)).toThrow(DataValidationError);
+  });
+
+  it("accepts a full checkup entry with verifier and date", () => {
+    const x = structuredClone(loadData("checkups")) as unknown as { checkups: Record<string, unknown>[] };
+    if (x.checkups[0]) {
+      x.checkups[0].verified = "full";
+      x.checkups[0].verified_by = "agent (ok0-editor) — needs human spot-check";
+      x.checkups[0].verified_on = "2026-10-28";
+    }
+    expect(() => validateDataset("checkups", x, basis)).not.toThrow();
+  });
 });
 
 describe("ProvenanceSchema", () => {
@@ -202,6 +218,49 @@ describe("basis-documents validation failures", () => {
     const second = x.documents[1];
     if (second) second.id = x.documents[0]?.id;
     expect(() => validateDataset("basis-documents", x)).toThrow(DataValidationError);
+  });
+
+  it("rejects a full document without verifier and date", () => {
+    const x = structuredClone(loadData("basis-documents")) as unknown as { documents: Record<string, unknown>[] };
+    const first = x.documents[0];
+    if (first) {
+      first.verified = "full";
+      delete first.verified_by;
+      delete first.verified_on;
+    }
+    expect(() => validateDataset("basis-documents", x)).toThrow(DataValidationError);
+  });
+
+  it("rejects a full document without verification date", () => {
+    const x = structuredClone(loadData("basis-documents")) as unknown as { documents: Record<string, unknown>[] };
+    const first = x.documents[0];
+    if (first) {
+      first.verified = "full";
+      first.verified_by = "agent (ok0-editor) — needs human spot-check";
+      delete first.verified_on;
+    }
+    expect(() => validateDataset("basis-documents", x)).toThrow(DataValidationError);
+  });
+
+  it("accepts a full document with verifier and date", () => {
+    const x = structuredClone(loadData("basis-documents")) as unknown as { documents: Record<string, unknown>[] };
+    const first = x.documents[0];
+    if (first) {
+      first.verified = "full";
+      first.verified_by = "agent (ok0-editor) — needs human spot-check";
+      first.verified_on = "2026-10-28";
+    }
+    expect(() => validateDataset("basis-documents", x)).not.toThrow();
+  });
+
+  it("accepts a partial document with a reason note", () => {
+    const x = structuredClone(loadData("basis-documents")) as unknown as { documents: Record<string, unknown>[] };
+    const first = x.documents[0];
+    if (first) {
+      first.verified = "partial";
+      first.note = "미판독: 이미지 전용";
+    }
+    expect(() => validateDataset("basis-documents", x)).not.toThrow();
   });
 });
 
@@ -761,7 +820,6 @@ describe("leave articles", () => {
           ? Boolean(api.promulgated || api.promulgation_no)
           : Boolean(api.mst || api.effective);
     const unconfirmed = docs.filter((d) => d.law_api !== null && !hasComparison(d.law_api));
-    expect(unconfirmed.map((d) => d.id)).toContain("mch-act-rule-annex1");
     for (const d of unconfirmed) {
       expect(d.verified).not.toBe("full");
       expect(d.note).toMatch(/M11|미확인|미대조/);

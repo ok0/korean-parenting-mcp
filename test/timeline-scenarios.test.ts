@@ -56,7 +56,7 @@ describe("fixed timeline scenarios", () => {
   });
 
   it("item lines carry provenance and order", async () => {
-    const itemLine = /^- \[(지난|진행 중|임박|예정)\] \d{4}-\d{2}-\d{2}( ~ \d{4}-\d{2}-\d{2})? \| .+ \| (법정 의무|권장|지원 신청|안내) \| 출처 [a-z0-9-]+(, [a-z0-9-]+)* \| 기준일 \d{4}-\d{2}-\d{2} \| (검증됨|부분 검증|미검증)$/;
+    const itemLine = /^- \[(지난|진행 중|임박|예정)\] \d{4}-\d{2}-\d{2}( ~ \d{4}-\d{2}-\d{2})? \| .+ \| (법정 의무|권장|지원 신청|안내) \| 출처 [a-z0-9-]+(, [a-z0-9-]+)* \| 기준일 \d{4}-\d{2}-\d{2} \| (전체 검증|부분 검증|미검증)$/;
 
     for (const args of [A, B]) {
       const t = text(await runTool(getTimelineTool, args, createTestContext()));

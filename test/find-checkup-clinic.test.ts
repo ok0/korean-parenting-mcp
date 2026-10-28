@@ -5,7 +5,9 @@ import type { ClinicLinkProvider } from "../src/clinic/guide.js";
 import type { ToolContext } from "../src/core/context.js";
 import { runTool } from "../src/core/pipeline.js";
 import { formatDate, parseDate } from "../src/date/civil-date.js";
+import { loadData } from "../src/data-store/load.js";
 import { checkupItems } from "../src/timeline/rules/checkups.js";
+import { verifiedText } from "../src/tools/shared/format.js";
 import { createFindCheckupClinicTool, findCheckupClinicTool } from "../src/tools/find-checkup-clinic.js";
 import { createTestContext } from "./helpers/context.js";
 import { OBSERVED_CLINIC_URLS, URL_RE } from "./helpers/clinic-urls.js";
@@ -190,7 +192,7 @@ describe("find_checkup_clinic", () => {
 
   it("stage birth 5 months", async () => {
     const text = textOf(await run(B5));
-    expect(text).toContain("영유아 건강검진 지금 기간 중인 회차:\n  - 영유아 건강검진 2차 (4~6개월): 2026-09-28~2026-12-27 · 부분 검증");
+    expect(text).toContain(`영유아 건강검진 지금 기간 중인 회차:\n  - 영유아 건강검진 2차 (4~6개월): 2026-09-28~2026-12-27 · ${verifiedText(loadData("checkups").checkups.find((c) => c.id === "infant-checkup-2")!.verified)}`);
     expect(text).toContain("영유아 건강검진 3차 (9~12개월): 2027-02-28~2027-06-27");
     expect(text).toContain("영유아 구강검진 지금 기간 중인 회차: 없음");
 

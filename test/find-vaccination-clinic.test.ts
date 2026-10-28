@@ -6,6 +6,7 @@ import { pickWindows, vaccineWindows } from "../src/clinic/stage.js";
 import type { ToolContext } from "../src/core/context.js";
 import { runTool } from "../src/core/pipeline.js";
 import { parseDate } from "../src/date/civil-date.js";
+import { loadData } from "../src/data-store/load.js";
 import { createFindVaccinationClinicTool, findVaccinationClinicTool } from "../src/tools/find-vaccination-clinic.js";
 import { itemLine } from "../src/tools/shared/clinic-text.js";
 import { OBSERVED_CLINIC_URLS, URL_RE } from "./helpers/clinic-urls.js";
@@ -155,7 +156,7 @@ describe("find_vaccination_clinic", () => {
     for (const i of next) expect(text).toContain(itemLine(i));
 
     expect(text).toContain("출처: 표준예방접종일정표(2026, 어린이)");
-    expect(text).toContain("미검증");
+    if (loadData("vaccinations").vaccines.some((v) => v.verified === "false")) expect(text).toContain("미검증");
     expect(text).toContain("지침 원문 확인 필요");
     expect(text).toContain("로타바이러스 접종 월령 한도");
   });

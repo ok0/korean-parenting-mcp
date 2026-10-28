@@ -75,6 +75,8 @@ export const BasisDocSchema = z
     law_api: LawApiKeySchema.nullable(),
     as_of: IsoDate,
     verified: VerifiedSchema.optional(),
+    verified_by: z.string().min(1).optional(),
+    verified_on: IsoDate.optional(),
     note: z.string().optional(),
   })
   .superRefine((v, ctx) => {
@@ -85,6 +87,7 @@ export const BasisDocSchema = z
         message: "공포·개정·시행일 중 하나 이상이 필요합니다",
       });
     }
+    if (v.verified !== undefined) requireVerifier({ verified: v.verified, verified_by: v.verified_by, verified_on: v.verified_on }, ctx);
   });
 
 export type BasisDoc = z.output<typeof BasisDocSchema>;

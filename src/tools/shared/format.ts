@@ -11,7 +11,7 @@ export const NOTICE_VACCINATION_SCOPE = "예방접종 안내 범위: 최소 접�
 
 export const ESTIMATED_NOTE = "추정: 출산예정일 기준으로 계산한 날짜이며 실제 출생일·진료 일정에 따라 달라집니다.";
 
-export const VERIFIED_LABEL = { full: "검증됨", partial: "부분 검증", false: "미검증" } as const satisfies Record<"full" | "partial" | "false", string>;
+export const VERIFIED_LABEL = { full: "전체 검증", partial: "부분 검증", false: "미검증" } as const satisfies Record<"full" | "partial" | "false", string>;
 
 export function verifiedText(v: "full" | "partial" | "false" | undefined): string {
   return v === undefined ? "검증 상태 미기재" : VERIFIED_LABEL[v];

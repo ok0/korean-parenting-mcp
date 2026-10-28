@@ -4,7 +4,9 @@ import { STALE_AFTER_DAYS } from "../src/date/holiday-calendar.js";
 import { loadData } from "../src/data-store/load.js";
 import { runTool } from "../src/core/pipeline.js";
 import { getTimelineTool } from "../src/tools/get-timeline.js";
-import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_UNOFFICIAL, NOTICE_VACCINATION_SCOPE } from "../src/tools/shared/format.js";
+import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_UNOFFICIAL, NOTICE_VACCINATION_SCOPE, verifiedText } from "../src/tools/shared/format.js";
+import { checkupItems } from "../src/timeline/rules/checkups.js";
+import { doseItems, influenzaItems, UNVERIFIED_NOTE } from "../src/timeline/rules/vaccination.js";
 import { createTestContext } from "./helpers/context.js";
 
 const call = (args: Record<string, unknown>, ctx = createTestContext()) => runTool(getTimelineTool, args, ctx);
@@ -102,11 +104,15 @@ describe("get_timeline", () => {
     expect(t.match(/\| 영유아 건강검진 \d차/g)).toHaveLength(8);
     expect(t.match(/\| 영유아 구강검진 \d차/g)).toHaveLength(4);
 
-    const itemLine = /^- \[(지난|진행 중|임박|예정)\] \d{4}-\d{2}-\d{2}( ~ \d{4}-\d{2}-\d{2})? \| .+ \| (법정 의무|권장|지원 신청|안내) \| 출처 [a-z0-9-]+(, [a-z0-9-]+)* \| 기준일 \d{4}-\d{2}-\d{2} \| (검증됨|부분 검증|미검증)$/;
+    const itemLine = /^- \[(지난|진행 중|임박|예정)\] \d{4}-\d{2}-\d{2}( ~ \d{4}-\d{2}-\d{2})? \| .+ \| (법정 의무|권장|지원 신청|안내) \| 출처 [a-z0-9-]+(, [a-z0-9-]+)* \| 기준일 \d{4}-\d{2}-\d{2} \| (전체 검증|부분 검증|미검증)$/;
     const items = body(t).split("\n").filter((l) => l.startsWith("- ["));
     expect(items.length).toBeGreaterThan(0);
     for (const l of items) expect(l).toMatch(itemLine);
-    for (const l of items.filter((l) => l.includes("| 영유아"))) expect(l).toContain("부분 검증");
+    for (const c of checkupItems(parseDate("2026-01-31"))) {
+      const l = items.find((x) => x.includes(`| ${c.title} |`));
+      expect(l, c.id).toBeDefined();
+      expect(l!.endsWith(`| ${verifiedText(c.provenance.verified)}`), c.id).toBe(true);
+    }
 
     const shifted = text(await call({ birth_date: "2025-08-31", reference_date: "2026-05-01" }));
     expect(shifted).toContain("2026-05-31 ~ 2026-09-29");
@@ -266,21 +272,21 @@ describe("get_timeline", () => {
     ];
     for (const m of markers) expect(body(t)).toContain(m);
 
-    const unverified = blocks(t).filter((b) => /^- .*\| (로타바이러스|HPV)/.test(b.split("\n")[0]!));
-    expect(unverified.length).toBeGreaterThan(0);
-    for (const b of unverified) {
-      expect(b.split("\n")[0]!.endsWith("| 미검증")).toBe(true);
-      expect(b).toContain("지침 원문");
+    const birth = parseDate("2026-01-31");
+    let matched = 0;
+    for (const i of [...doseItems(birth), ...influenzaItems(birth)]) {
+      const b = blocks(t).find((x) => x.split("\n")[0]!.includes(`| ${i.title} |`));
+      if (!b) continue;
+      matched++;
+      expect(b.split("\n")[0]!.endsWith(`| ${verifiedText(i.provenance.verified)}`), i.id).toBe(true);
+      if (i.provenance.verified === "false") expect(b, i.id).toContain(UNVERIFIED_NOTE);
+      else expect(b, i.id).not.toContain(UNVERIFIED_NOTE);
     }
-    const rota = unverified.filter((b) => b.includes("| 로타바이러스"));
+    expect(matched).toBeGreaterThan(0);
+
+    const rota = blocks(t).filter((b) => b.includes("| 로타바이러스"));
     expect(rota.length).toBeGreaterThan(0);
     for (const b of rota) expect(b).toContain("택일");
-
-    const partial = blocks(t).filter((b) =>
-      /\| (BCG|B형간염|DTaP|IPV|Hib|PCV|MMR|수두|A형간염|일본뇌염|인플루엔자)/.test(b.split("\n")[0]!),
-    );
-    expect(partial.length).toBeGreaterThan(0);
-    for (const b of partial) expect(b.split("\n")[0]!.endsWith("| 부분 검증")).toBe(true);
 
     const footer = t.slice(t.indexOf("\n\n---\n"));
     expect(footer).toContain("kdca-guideline-2026");

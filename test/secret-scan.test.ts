@@ -25,6 +25,10 @@ const targets = [
   { files: walk(join(root, "test/fixtures")), heuristic: true },
   { files: walk(join(root, ".docs/api-notes")), heuristic: true },
   { files: walk(join(root, "data")), heuristic: false },
+  {
+    files: existsSync(join(root, ".docs/verification-log.md")) ? [join(root, ".docs/verification-log.md")] : [],
+    heuristic: false,
+  },
 ];
 
 describe("secret scan", () => {
