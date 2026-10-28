@@ -5,8 +5,10 @@ import { runTool } from "../src/core/pipeline.js";
 import { checkPregnancyDrugTool } from "../src/tools/check-pregnancy-drug.js";
 import { checkRecallTool } from "../src/tools/check-recall.js";
 import { findBenefitsTool } from "../src/tools/find-benefits.js";
+import { findCheckupClinicTool } from "../src/tools/find-checkup-clinic.js";
 import { findDaycareTool } from "../src/tools/find-daycare.js";
 import { findNightPediatricTool } from "../src/tools/find-night-pediatric.js";
+import { findVaccinationClinicTool } from "../src/tools/find-vaccination-clinic.js";
 import { getLeaveArticleTool } from "../src/tools/get-leave-article.js";
 import { getTimelineTool } from "../src/tools/get-timeline.js";
 import { createTestContext } from "./helpers/context.js";
@@ -63,6 +65,12 @@ describe("unset keys", () => {
     const daycare = await runTool(findDaycareTool, { region: "성동구" }, ctx);
     expect(daycare.isError).toBeFalsy();
 
+    const vaccination = await runTool(findVaccinationClinicTool, { region: "성동구" }, ctx);
+    expect(vaccination.isError).toBeFalsy();
+
+    const checkup = await runTool(findCheckupClinicTool, { region: "성동구" }, ctx);
+    expect(checkup.isError).toBeFalsy();
+
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
@@ -82,6 +90,13 @@ describe("unset keys", () => {
   it("no key guide lists find_daycare", () => {
     for (const k of Object.keys(KEY_GUIDE) as (keyof typeof KEY_GUIDE)[]) {
       expect(KEY_GUIDE[k].tools).not.toContain("find_daycare");
+    }
+  });
+
+  it("no key guide lists clinic guidance tools", () => {
+    for (const k of Object.keys(KEY_GUIDE) as (keyof typeof KEY_GUIDE)[]) {
+      expect(KEY_GUIDE[k].tools).not.toContain("find_vaccination_clinic");
+      expect(KEY_GUIDE[k].tools).not.toContain("find_checkup_clinic");
     }
   });
 

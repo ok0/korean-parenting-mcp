@@ -60,6 +60,42 @@ describe("tool meta", () => {
     const daycare = allTools.find((t) => t.name === "find_daycare")!;
     expect(daycare.annotations.openWorldHint).toBe(false);
     expect(daycare.requiredKeys).toBeUndefined();
+    for (const name of ["find_vaccination_clinic", "find_checkup_clinic"]) {
+      const clinic = allTools.find((t) => t.name === name)!;
+      expect(clinic.annotations.openWorldHint).toBe(false);
+      expect(clinic.annotations.idempotentHint).toBe(true);
+      expect(clinic.requiredKeys).toBeUndefined();
+    }
+  });
+
+  it("checker rejects portal-name wording", () => {
+    const portal = defineTool({
+      name: "fx_portal",
+      title: "테스트",
+      description: "예방접종도우미 위탁의료기관 조회",
+      schema: z.object({ q: keywordField(doc) }),
+      annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+      handler: async () => ({ body: "" }),
+    });
+    expect(checkToolMeta(portal)).toContain("fx_portal: 공식 서비스 오해 표현");
+    const nhis = defineTool({
+      name: "fx_portal",
+      title: "테스트",
+      description: "건강iN 검진기관 조회",
+      schema: z.object({ q: keywordField(doc) }),
+      annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+      handler: async () => ({ body: "" }),
+    });
+    expect(checkToolMeta(nhis)).toContain("fx_portal: 공식 서비스 오해 표현");
+    const unofficial = defineTool({
+      name: "fx_portal",
+      title: "테스트",
+      description: "비공식 참고 도구",
+      schema: z.object({ q: keywordField(doc) }),
+      annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+      handler: async () => ({ body: "" }),
+    });
+    expect(checkToolMeta(unofficial).some((p) => p.includes("공식 서비스 오해 표현"))).toBe(false);
   });
 
   it("checker rejects cross-tool instruction", () => {
