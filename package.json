@@ -18,8 +18,9 @@
     "clean": "node -e \"require('node:fs').rmSync('build',{recursive:true,force:true})\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "npm run clean && tsc -p tsconfig.build.json",
+    "build:scripts": "node -e \"require('node:fs').rmSync('build-scripts',{recursive:true,force:true})\" && tsc -p tsconfig.scripts.json",
     "test": "vitest run",
-    "verify": "npm run typecheck && npm run build && npm run test",
+    "verify": "npm run typecheck && npm run build && npm run build:scripts && npm run test",
     "start": "node build/index.js"
   },
   "dependencies": {
