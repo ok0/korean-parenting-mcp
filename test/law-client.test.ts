@@ -1,16 +1,16 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { createLawClient, lawLink, normName, toJo } from "../src/clients/law.js";
+import { createLawClient, lawLink, normName, parseAnnexNo, toJo } from "../src/clients/law.js";
 import { ToolError, formatToolError } from "../src/core/errors.js";
 import { createTestContext } from "./helpers/context.js";
 
 const FAKE = "ab+c/d=e1";
 
 const BODY: Record<string, string> = {
-  admrul: readFileSync(new URL("./fixtures/law/admrul-search.json", import.meta.url), "utf8"),
-  law: readFileSync(new URL("./fixtures/law/law-search.json", import.meta.url), "utf8"),
-  licbyl: readFileSync(new URL("./fixtures/law/licbyl-search.json", import.meta.url), "utf8"),
-  lawjosub: readFileSync(new URL("./fixtures/law/lawjosub-074.json", import.meta.url), "utf8"),
+  admrul: readFileSync(new URL("./fixtures/law/admrul/checkup.json", import.meta.url), "utf8"),
+  law: readFileSync(new URL("./fixtures/law/law/labor-standards-act.json", import.meta.url), "utf8"),
+  licbyl: readFileSync(new URL("./fixtures/law/licbyl/mch-rule-p2.json", import.meta.url), "utf8"),
+  lawjosub: readFileSync(new URL("./fixtures/law/lawjosub/labor-074.json", import.meta.url), "utf8"),
 };
 
 function jsonRes(body: string): Response {
@@ -91,18 +91,82 @@ describe("law client", () => {
     const ctx = { ...createTestContext({ env: { LAW_OC: FAKE } }), fetch: mock.fetch };
     const client = createLawClient(ctx);
     const admrul = await client.searchAdmrul("건강검진 실시기준");
-    expect(admrul[0]?.serial).toBe("9000000000001");
-    expect(admrul[0]?.number).toBe("제2026-6호");
+    expect(admrul[0]?.serial).toBe("2100000272270");
+    expect(admrul[0]?.ruleId).toBe("38208");
+    expect(admrul[0]?.number).toBe("2026-6");
+    expect(admrul[0]?.issued).toBe("20260107");
     expect(admrul[0]?.link?.startsWith("https://www.law.go.kr/DRF/lawService.do?")).toBe(true);
     expect(admrul[0]?.link).not.toContain("OC=");
     const laws = await client.searchLaw("근로기준법");
-    expect(laws).toHaveLength(2);
+    expect(laws).toHaveLength(3);
+    expect(laws[0]?.lawId).toBe("001872");
+    expect(laws[0]?.mst).toBe("285279");
+    expect(laws[0]?.effective).toBe("20261008");
     const licbyl = await client.searchLicbyl("모자보건법 시행규칙");
-    expect(licbyl[0]?.annexNo).toBe("0001");
-    const article = await client.getArticle("TEST-LAW-1", toJo(74));
-    expect(article.title).toBe("(테스트) 조문 제목");
-    expect(article.lines.length).toBe(4);
+    const annex1 = licbyl.filter((r) => {
+      const a = parseAnnexNo(r.annexNo);
+      return a?.no === 1 && a.branch === 0;
+    });
+    expect(annex1).toHaveLength(2);
+    const bylRow = annex1.find((r) => r.kind === "별표");
+    expect(bylRow?.promulgated).toBe("20260304");
+    expect(bylRow?.promulgationNo).toBe("01159");
+    expect(bylRow?.pdfLink?.startsWith("https://www.law.go.kr/LSW/flDownload.do?")).toBe(true);
+    const article = await client.getArticle("001872", toJo(74));
+    expect(article.title).toBe("임산부의 보호");
+    expect(article.articleNo).toBe("74");
+    expect(article.branch).toBeUndefined();
     expect(article.articleEffective).toBe("20261008");
+    expect(article.lines.some((l) => l.includes("출산전후휴가"))).toBe(true);
+  });
+
+  it("parses 조문가지번호 and skips 전문 units", async () => {
+    const fixture = (name: string) => readFileSync(new URL(`./fixtures/law/lawjosub/${name}`, import.meta.url), "utf8");
+    const byJo: Record<string, string> = { "001802": fixture("equal-1802.json"), "001900": fixture("equal-1900.json") };
+    const mock = mockFetch((u) => jsonRes(byJo[new URL(u).searchParams.get("JO") ?? ""] ?? "{}"));
+    const ctx = { ...createTestContext({ env: { LAW_OC: FAKE } }), fetch: mock.fetch };
+    const client = createLawClient(ctx);
+    const sub = await client.getArticle("000130", toJo(18, 2));
+    expect(sub.articleNo).toBe("18");
+    expect(sub.branch).toBe("2");
+    expect(sub.title).toBe("배우자 출산전후휴가");
+    const main = await client.getArticle("000130", toJo(19));
+    expect(main.articleNo).toBe("19");
+    expect(main.title).toBe("육아휴직");
+
+    const synthetic = {
+      법령: {
+        조문: {
+          조문단위: [
+            { 조문여부: "전문", 조문번호: "19", 조문내용: "제3절 육아휴직" },
+            { 조문여부: "조문", 조문번호: "19", 조문제목: "육아휴직", 조문내용: "제19조(육아휴직)" },
+          ],
+        },
+      },
+    };
+    const synthMock = mockFetch(() => jsonRes(JSON.stringify(synthetic)));
+    const synthClient = createLawClient({ ...createTestContext({ env: { LAW_OC: FAKE } }), fetch: synthMock.fetch });
+    const skipped = await synthClient.getArticle("000199", toJo(19));
+    expect(skipped.lines).toEqual(["제19조(육아휴직)"]);
+    expect(skipped.title).toBe("육아휴직");
+  });
+
+  it("parseAnnexNo reads 6-digit NNNNBB and plain numbers", () => {
+    expect(parseAnnexNo("000100")).toEqual({ no: 1, branch: 0 });
+    expect(parseAnnexNo("000905")).toEqual({ no: 9, branch: 5 });
+    expect(parseAnnexNo("0001")).toEqual({ no: 1, branch: 0 });
+    expect(parseAnnexNo("1")).toEqual({ no: 1, branch: 0 });
+    expect(parseAnnexNo("")).toBeUndefined();
+    expect(parseAnnexNo(undefined)).toBeUndefined();
+  });
+
+  it("bad OC JSON (HTTP 200) is NOT_APPROVED", async () => {
+    const badOc = readFileSync(new URL("./fixtures/law/law/error-bad-oc.json", import.meta.url), "utf8");
+    const mock = mockFetch(() => new Response(badOc, { status: 200, headers: { "content-type": "application/json;charset=UTF-8" } }));
+    const ctx = { ...createTestContext({ env: { LAW_OC: FAKE } }), fetch: mock.fetch };
+    const client = createLawClient(ctx);
+    const err = await catchTool(client.searchLaw("근로기준법"));
+    expect(err.kind).toBe("NOT_APPROVED");
   });
 
   it("single object item is accepted", async () => {

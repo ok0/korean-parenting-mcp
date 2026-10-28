@@ -112,7 +112,7 @@ function admBody(number = "제2026-1호", serial = "1") {
           행정규칙ID: "TEST-ADM-1",
           발령번호: number,
           발령일자: "20260101",
-          상세링크: "/DRF/lawService.do?OC=test&target=admrul&ID=1&type=HTML",
+          행정규칙상세링크: "/DRF/lawService.do?OC=test&target=admrul&ID=1&type=HTML",
         },
       ],
     },

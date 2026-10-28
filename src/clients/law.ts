@@ -19,6 +19,7 @@ export interface AdmrulRow {
 export interface LicbylRow {
   annexNo?: string;
   name?: string;
+  kind?: string;
   lawName?: string;
   promulgated?: string;
   promulgationNo?: string;
@@ -44,6 +45,7 @@ export interface ArticleRow {
   promulgated?: string;
   effective?: string;
   articleEffective?: string;
+  branch?: string;
 }
 
 export interface LawClient {
@@ -144,17 +146,25 @@ export function lawLink(raw: string | undefined): string | undefined {
   return u.href;
 }
 
+export function parseAnnexNo(raw: string | undefined): { no: number; branch: number } | undefined {
+  const d = (raw ?? "").replace(/\D/g, "");
+  if (d === "") return undefined;
+  if (d.length === 6) return { no: Number(d.slice(0, 4)), branch: Number(d.slice(4)) };
+  return { no: Number(d), branch: 0 };
+}
+
 export function normName(s: string): string {
   return s.replace(/\s/g, "").replace(/[·ㆍ・]/g, "ㆍ");
 }
 
 const SCALAR_FIELDS: Record<
   string,
-  "lawName" | "articleNo" | "title" | "promulgated" | "effective" | "articleEffective"
+  "lawName" | "articleNo" | "branch" | "title" | "promulgated" | "effective" | "articleEffective"
 > = {
   법령명_한글: "lawName",
   법령명한글: "lawName",
   조문번호: "articleNo",
+  조문가지번호: "branch",
   조문제목: "title",
   공포일자: "promulgated",
   시행일자: "effective",
@@ -171,6 +181,7 @@ export function parseArticle(json: unknown): ArticleRow {
       return;
     }
     if (!isRecord(node)) return;
+    if (node["조문여부"] === "전문") return;
     for (const [k, v] of Object.entries(node)) {
       const field = SCALAR_FIELDS[k];
       if (field !== undefined && out[field] === undefined) {
@@ -229,7 +240,7 @@ export function createLawClient(ctx: ToolContext, opts?: { timeoutMs?: number })
             issued: str(r["발령일자"]),
             number: str(r["발령번호"]),
             effective: str(r["시행일자"]),
-            link: lawLink(str(r["상세링크"])),
+            link: lawLink(str(r["행정규칙상세링크"])),
           })),
       );
     },
@@ -241,6 +252,7 @@ export function createLawClient(ctx: ToolContext, opts?: { timeoutMs?: number })
           extractRows(json, "licbyl").map((r) => ({
             annexNo: str(r["별표번호"]),
             name: str(r["별표명"]),
+            kind: str(r["별표종류"]),
             lawName: str(r["관련법령명"]),
             promulgated: str(r["공포일자"]),
             promulgationNo: str(r["공포번호"]),

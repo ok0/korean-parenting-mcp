@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { ToolContext } from "../src/core/context.js";
 import { checkRevisionDocs, checkRevisions, type RevisionStatus } from "../src/provenance/revision-check.js";
@@ -92,7 +93,7 @@ function admBody(number = "제2026-1호", serial = "1") {
           행정규칙ID: "TEST-ADM-1",
           발령번호: number,
           발령일자: "20260101",
-          상세링크: "/DRF/lawService.do?OC=test&target=admrul&ID=1&type=HTML",
+          행정규칙상세링크: "/DRF/lawService.do?OC=test&target=admrul&ID=1&type=HTML",
         },
       ],
     },
@@ -260,5 +261,53 @@ describe("revision check", () => {
     expect(out[0]!.state).toBe("changed");
     expect(blob).not.toContain(FAKE);
     expect(blob).not.toContain(encoded);
+  });
+
+  it("live-format licbyl rows: 6-digit annex number and kind filter", async () => {
+    const rows = (no2: string) => ({
+      licBylSearch: {
+        totalCnt: "2",
+        licbyl: [
+          { 별표번호: "000100", 별표종류: "서식", 관련법령명: "테스트법 시행규칙", 공포번호: "9" },
+          { 별표번호: "000100", 별표종류: "별표", 관련법령명: "테스트법 시행규칙", 공포번호: no2 },
+        ],
+      },
+    });
+    const same = await checkRevisionDocs([BYL_DOC], ctxWith(createLawMock(serve("licbyl", rows("1")))));
+    expect(same[0]!.state).toBe("confirmed");
+    const changed = await checkRevisionDocs([BYL_DOC], ctxWith(createLawMock(serve("licbyl", rows("2")))));
+    expect(changed[0]!.state).toBe("changed");
+  });
+
+  it("live-derived same/changed for law and admrul", async () => {
+    const lawLive = JSON.parse(readFileSync(new URL("./fixtures/law/law/labor-standards-act.json", import.meta.url), "utf8")) as unknown;
+    const admLive = JSON.parse(readFileSync(new URL("./fixtures/law/admrul/checkup.json", import.meta.url), "utf8")) as unknown;
+    const LAW_LIVE = {
+      ...LAW_DOC,
+      id: "live-law",
+      law_api: { kind: "law", law_name: "근로기준법", law_id: "001872", mst: "285279", effective: "2026-10-08" },
+    } as BasisDoc;
+    const ADM_LIVE = {
+      ...ADM_DOC,
+      id: "live-adm",
+      law_api: { kind: "admrul", rule_id: "38208", name: "건강검진 실시기준", serial: "2100000272270", number: "제2026-6호", issued: "2026-01-07" },
+    } as BasisDoc;
+
+    const lawSame = await checkRevisionDocs([LAW_LIVE], ctxWith(createLawMock(serve("law", lawLive))));
+    expect(lawSame[0]!.state).toBe("confirmed");
+    const admSame = await checkRevisionDocs([ADM_LIVE], ctxWith(createLawMock(serve("admrul", admLive))));
+    expect(admSame[0]!.state).toBe("confirmed");
+
+    const lawDerived = structuredClone(lawLive) as { LawSearch: { law: Record<string, string>[] } };
+    lawDerived.LawSearch.law.find((r) => r["법령ID"] === "001872")!["법령일련번호"] = "285280"; // 실응답 파생: 법령일련번호
+    const lawChanged = await checkRevisionDocs([LAW_LIVE], ctxWith(createLawMock(serve("law", lawDerived))));
+    expect(lawChanged[0]!.state).toBe("changed");
+
+    const admDerived = structuredClone(admLive) as { AdmRulSearch: { admrul: Record<string, string> } };
+    admDerived.AdmRulSearch.admrul["발령번호"] = "2026-7"; // 실응답 파생: admrul.발령번호
+    const admChanged = await checkRevisionDocs([ADM_LIVE], ctxWith(createLawMock(serve("admrul", admDerived))));
+    expect(admChanged[0]!.state).toBe("changed");
+    expect(admChanged[0]!.link?.startsWith("https://www.law.go.kr/")).toBe(true);
+    expect(admChanged[0]!.link).not.toContain("OC=");
   });
 });

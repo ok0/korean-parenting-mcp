@@ -107,7 +107,7 @@ function changedAdmrul(doc: BasisDoc): LawRoute {
             행정규칙명: name,
             행정규칙ID: key.rule_id ?? "TEST-ADM-CHANGED",
             발령번호: "제2026-7호",
-            상세링크: `/DRF/lawService.do?OC=${ENC}&target=admrul&ID=1`,
+            행정규칙상세링크: `/DRF/lawService.do?OC=${ENC}&target=admrul&ID=1`,
           },
         ],
       },

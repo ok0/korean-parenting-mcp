@@ -51,7 +51,7 @@ export function sameAsStored(oc?: string): LawRoute {
       const row: Record<string, string> = {
         행정규칙명: key.name,
         행정규칙ID: key.rule_id ?? "TEST-ADM-1",
-        상세링크: `/DRF/lawService.do?OC=${encodeURIComponent(oc ?? "test")}&target=admrul&ID=1`,
+        행정규칙상세링크: `/DRF/lawService.do?OC=${encodeURIComponent(oc ?? "test")}&target=admrul&ID=1`,
       };
       if (key.serial !== undefined) row.행정규칙일련번호 = key.serial;
       if (key.number !== undefined) row.발령번호 = key.number;

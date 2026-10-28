@@ -1,4 +1,4 @@
-import { createLawClient, normName, type AdmrulRow, type LawClient, type LicbylRow, type LawRow } from "../clients/law.js";
+import { createLawClient, normName, parseAnnexNo, type AdmrulRow, type LawClient, type LicbylRow, type LawRow } from "../clients/law.js";
 import type { ToolContext } from "../core/context.js";
 import { ToolError } from "../core/errors.js";
 import { resolveBasis } from "../data-store/load.js";
@@ -120,12 +120,13 @@ async function findRow(key: LawApiKey, client: LawClient): Promise<FindResult> {
   }
   if (key.kind === "licbyl") {
     const rows = await client.searchLicbyl(key.law_name);
-    const wantNo = String(Number(key.annex_no.replace(/\D/g, "")));
-    const row = rows.find(
-      (r) =>
-        (r.lawName === undefined || normName(r.lawName) === normName(key.law_name)) &&
-        String(Number(r.annexNo?.replace(/\D/g, "") || NaN)) === wantNo,
-    );
+    const want = parseAnnexNo(key.annex_no);
+    if (!want) return { reason: "not_found" };
+    const row = rows.find((r) => {
+      if (!((r.lawName === undefined || normName(r.lawName) === normName(key.law_name)) && (r.kind === undefined || r.kind === "별표"))) return false;
+      const got = parseAnnexNo(r.annexNo);
+      return got !== undefined && got.no === want.no && got.branch === want.branch;
+    });
     return row ? { row } : { reason: "not_found" };
   }
   const rows = await client.searchLaw(key.law_name);
