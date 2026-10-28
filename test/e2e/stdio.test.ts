@@ -45,6 +45,7 @@ describe("stdio e2e", () => {
     const names = tools.map((t) => t.name);
     expect(names).toContain("get_timeline");
     expect(names).toContain("get_leave_article");
+    expect(names).toContain("find_night_pediatric");
 
     const unknown = await client.callTool({ name: "nope", arguments: {} });
     expect(unknown.isError).toBe(true);

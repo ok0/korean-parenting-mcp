@@ -32,6 +32,7 @@ describe("createServer", () => {
     expect(client.getInstructions()).toContain("birth_date");
     expect(client.getInstructions()).toContain("get_leave_article");
     expect(client.getInstructions()).toContain("LAW_OC");
+    expect(client.getInstructions()).toContain("find_night_pediatric");
   });
 
   it("tools/list matches registry (empty in M1)", async () => {

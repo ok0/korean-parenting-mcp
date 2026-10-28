@@ -47,7 +47,7 @@ export const KEY_GUIDE: Record<
       "마이페이지 > 개발계정에서 일반 인증키(Decoding)를 복사해 그대로 설정합니다(Encoding 키를 넣으면 이중 인코딩으로 키 오류가 납니다).",
       "개발계정은 API별 일일 호출 한도(약 1,000~10,000회)가 있습니다. 부족하면 마이페이지에서 운영계정을 신청합니다.",
     ],
-    tools: [],
+    tools: ["find_night_pediatric"],
   },
   KINDERGARTEN: {
     env: KEY_ENV.KINDERGARTEN,
