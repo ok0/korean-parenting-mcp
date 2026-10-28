@@ -265,3 +265,161 @@ export const CheckupsSchema = z
     }
   });
 export type CheckupsFile = z.output<typeof CheckupsSchema>;
+
+export const VaccineOffsetSchema = z.union([
+  z.strictObject({ days: z.number().int().min(0).max(400) }),
+  z.strictObject({ months: z.number().int().min(0).max(156) }),
+  z.strictObject({ years: z.number().int().min(0).max(18) }),
+]);
+export type VaccineOffset = z.output<typeof VaccineOffsetSchema>;
+
+function offsetUnit(o: VaccineOffset): "days" | "months" | "years" {
+  if ("days" in o) return "days";
+  if ("months" in o) return "months";
+  return "years";
+}
+
+function offsetValue(o: VaccineOffset): number {
+  if ("days" in o) return o.days;
+  if ("months" in o) return o.months;
+  return o.years;
+}
+
+export const VACCINE_CODES = [
+  "bcg",
+  "hepb",
+  "dtap",
+  "ipv",
+  "hib",
+  "pcv",
+  "rota",
+  "mmr",
+  "var",
+  "hepa",
+  "je",
+  "hpv",
+  "flu",
+] as const;
+export type VaccineCode = (typeof VACCINE_CODES)[number];
+
+export const VaccineDoseSchema = z
+  .strictObject({
+    dose: z.number().int().min(1),
+    from: VaccineOffsetSchema,
+    to: VaccineOffsetSchema,
+    label: z.string().min(1).optional(),
+    alias: z.string().min(1).optional(),
+  })
+  .superRefine((v, ctx) => {
+    if (offsetUnit(v.from) !== offsetUnit(v.to)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["to"],
+        message: "from과 to의 단위(days/months/years)가 같아야 합니다",
+      });
+      return;
+    }
+    if (offsetValue(v.to) < offsetValue(v.from)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["to"],
+        message: "구간 시작이 끝보다 늦습니다(to < from)",
+      });
+    }
+  });
+export type VaccineDose = z.output<typeof VaccineDoseSchema>;
+
+export const VaccineEntrySchema = ProvenanceFields.extend({
+  id: RuleId,
+  code: z.enum(VACCINE_CODES),
+  name: z.string().min(1),
+  doses: z.array(VaccineDoseSchema).min(1),
+  notes: z.array(z.string().min(1)),
+}).superRefine((v, ctx) => {
+  requireVerifier(v, ctx);
+  const doses = v.doses.map((d) => d.dose).sort((a, b) => a - b);
+  const ok = doses.every((n, k) => n === k + 1);
+  if (!ok) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["doses"],
+      message: `${v.id} 차수 번호 불연속: [${doses.join(", ")}]`,
+    });
+  }
+});
+export type VaccineEntry = z.output<typeof VaccineEntrySchema>;
+
+export const InfluenzaSeasonSchema = ProvenanceFields.extend({
+  id: RuleId,
+  label: z.string().min(1),
+  start: IsoDate,
+  end: IsoDate,
+  child_from_months: z.number().int().min(0).max(24),
+  child_max_age_years: z.number().int().min(1).max(18),
+  two_dose_under_years: z.number().int().min(1).max(18),
+  pregnant_doses: z.number().int().min(1).max(2),
+  notes: z.array(z.string().min(1)),
+}).superRefine((v, ctx) => {
+  requireVerifier(v, ctx);
+  if (v.end < v.start) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["end"],
+      message: "절기 시작이 종료보다 늦습니다",
+    });
+  }
+});
+export type InfluenzaSeason = z.output<typeof InfluenzaSeasonSchema>;
+
+export const VaccinationsSchema = z
+  .object({
+    vaccines: z.array(VaccineEntrySchema),
+    influenza: z.object({
+      seasons: z.array(InfluenzaSeasonSchema).min(1, "인플루엔자 절기가 1개 이상 필요합니다"),
+    }),
+  })
+  .superRefine((v, ctx) => {
+    const seen = new Set<string>();
+    const checkId = (id: string, path: (string | number)[]): void => {
+      if (seen.has(id)) {
+        ctx.addIssue({ code: "custom", path, message: `중복 규칙 id: ${id}` });
+      }
+      seen.add(id);
+    };
+    v.vaccines.forEach((e, i) => checkId(e.id, ["vaccines", i, "id"]));
+    v.influenza.seasons.forEach((s, i) => checkId(s.id, ["influenza", "seasons", i, "id"]));
+
+    v.vaccines.forEach((e, i) => {
+      if (e.code === "flu") {
+        ctx.addIssue({
+          code: "custom",
+          path: ["vaccines", i, "code"],
+          message: "인플루엔자는 influenza.seasons에 둡니다",
+        });
+      }
+    });
+
+    const present = new Set(v.vaccines.map((e) => e.code));
+    const missing = VACCINE_CODES.filter((c) => c !== "flu" && !present.has(c));
+    if (missing.length > 0) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["vaccines"],
+        message: `백신 13종 중 누락: ${missing.join(", ")}`,
+      });
+    }
+
+    const seasons = v.influenza.seasons;
+    for (let i = 1; i < seasons.length; i++) {
+      const prev = seasons[i - 1];
+      const next = seasons[i];
+      if (prev && next && next.start <= prev.end) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["influenza", "seasons", i],
+          message: "절기 순서 오류 또는 겹침",
+        });
+      }
+    }
+  });
+export type VaccinationsFile = z.output<typeof VaccinationsSchema>;

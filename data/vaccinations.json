@@ -1,0 +1,232 @@
+{
+  "vaccines": [
+    {
+      "id": "bcg",
+      "code": "bcg",
+      "name": "BCG(결핵)",
+      "doses": [
+        { "dose": 1, "from": { "days": 0 }, "to": { "days": 28 }, "label": "생후 4주 이내" }
+      ],
+      "notes": [],
+      "basis_ids": ["kdca-schedule-2026", "kdca-guideline-2026"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "표준예방접종일정표(2026) 이미지 눈 판독값. 접종 가능 시작·마감 경계는 지침 원문 대조 전"
+    },
+    {
+      "id": "hepb",
+      "code": "hepb",
+      "name": "B형간염",
+      "doses": [
+        { "dose": 1, "from": { "days": 0 }, "to": { "days": 0 }, "label": "출생 시" },
+        { "dose": 2, "from": { "months": 1 }, "to": { "months": 1 } },
+        { "dose": 3, "from": { "months": 6 }, "to": { "months": 6 } }
+      ],
+      "notes": [],
+      "basis_ids": ["kdca-schedule-2026", "kdca-guideline-2026"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "표준예방접종일정표(2026) 이미지 눈 판독값. 접종 가능 시작·마감 경계는 지침 원문 대조 전"
+    },
+    {
+      "id": "dtap",
+      "code": "dtap",
+      "name": "DTaP",
+      "doses": [
+        { "dose": 1, "from": { "months": 2 }, "to": { "months": 2 } },
+        { "dose": 2, "from": { "months": 4 }, "to": { "months": 4 } },
+        { "dose": 3, "from": { "months": 6 }, "to": { "months": 6 } },
+        { "dose": 4, "from": { "months": 15 }, "to": { "months": 18 } },
+        { "dose": 5, "from": { "years": 4 }, "to": { "years": 6 } },
+        { "dose": 6, "from": { "years": 11 }, "to": { "years": 12 }, "alias": "Tdap/Td" }
+      ],
+      "notes": [],
+      "basis_ids": ["kdca-schedule-2026", "kdca-guideline-2026"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "표준예방접종일정표(2026) 이미지 눈 판독값. 접종 가능 시작·마감 경계는 지침 원문 대조 전"
+    },
+    {
+      "id": "ipv",
+      "code": "ipv",
+      "name": "IPV(폴리오)",
+      "doses": [
+        { "dose": 1, "from": { "months": 2 }, "to": { "months": 2 } },
+        { "dose": 2, "from": { "months": 4 }, "to": { "months": 4 } },
+        { "dose": 3, "from": { "months": 6 }, "to": { "months": 18 } },
+        { "dose": 4, "from": { "years": 4 }, "to": { "years": 6 } }
+      ],
+      "notes": [],
+      "basis_ids": ["kdca-schedule-2026", "kdca-guideline-2026"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "표준예방접종일정표(2026) 이미지 눈 판독값. 접종 가능 시작·마감 경계는 지침 원문 대조 전"
+    },
+    {
+      "id": "hib",
+      "code": "hib",
+      "name": "Hib",
+      "doses": [
+        { "dose": 1, "from": { "months": 2 }, "to": { "months": 2 } },
+        { "dose": 2, "from": { "months": 4 }, "to": { "months": 4 } },
+        { "dose": 3, "from": { "months": 6 }, "to": { "months": 6 } },
+        { "dose": 4, "from": { "months": 12 }, "to": { "months": 15 } }
+      ],
+      "notes": [],
+      "basis_ids": ["kdca-schedule-2026", "kdca-guideline-2026"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "표준예방접종일정표(2026) 이미지 눈 판독값. 접종 가능 시작·마감 경계는 지침 원문 대조 전"
+    },
+    {
+      "id": "pcv",
+      "code": "pcv",
+      "name": "PCV(폐렴구균)",
+      "doses": [
+        { "dose": 1, "from": { "months": 2 }, "to": { "months": 2 } },
+        { "dose": 2, "from": { "months": 4 }, "to": { "months": 4 } },
+        { "dose": 3, "from": { "months": 6 }, "to": { "months": 6 } },
+        { "dose": 4, "from": { "months": 12 }, "to": { "months": 15 } }
+      ],
+      "notes": ["24개월~12세 고위험군은 별도 접종 대상입니다(세부는 지침 확인)."],
+      "basis_ids": ["kdca-schedule-2026", "kdca-guideline-2026"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "표준예방접종일정표(2026) 이미지 눈 판독값. 접종 가능 시작·마감 경계는 지침 원문 대조 전"
+    },
+    {
+      "id": "rota-rv1",
+      "code": "rota",
+      "name": "로타바이러스 RV1",
+      "doses": [
+        { "dose": 1, "from": { "months": 2 }, "to": { "months": 2 } },
+        { "dose": 2, "from": { "months": 4 }, "to": { "months": 4 } }
+      ],
+      "notes": ["로타바이러스 백신은 RV1(2회)과 RV5(3회) 제품 중 택일합니다."],
+      "basis_ids": ["kdca-schedule-2026", "kdca-guideline-2026"],
+      "as_of": "2026-10-28",
+      "verified": "false",
+      "note": "지원 월령 한도(1차 생후 14주 6일, 2~3차 8개월 0일까지)는 지자체 자료 값이며 일차 원문 미확인. 응답에 수치 미표시"
+    },
+    {
+      "id": "rota-rv5",
+      "code": "rota",
+      "name": "로타바이러스 RV5",
+      "doses": [
+        { "dose": 1, "from": { "months": 2 }, "to": { "months": 2 } },
+        { "dose": 2, "from": { "months": 4 }, "to": { "months": 4 } },
+        { "dose": 3, "from": { "months": 6 }, "to": { "months": 6 } }
+      ],
+      "notes": ["로타바이러스 백신은 RV1(2회)과 RV5(3회) 제품 중 택일합니다."],
+      "basis_ids": ["kdca-schedule-2026", "kdca-guideline-2026"],
+      "as_of": "2026-10-28",
+      "verified": "false",
+      "note": "지원 월령 한도(1차 생후 14주 6일, 2~3차 8개월 0일까지)는 지자체 자료 값이며 일차 원문 미확인. 응답에 수치 미표시"
+    },
+    {
+      "id": "mmr",
+      "code": "mmr",
+      "name": "MMR",
+      "doses": [
+        { "dose": 1, "from": { "months": 12 }, "to": { "months": 15 } },
+        { "dose": 2, "from": { "years": 4 }, "to": { "years": 6 } }
+      ],
+      "notes": [],
+      "basis_ids": ["kdca-schedule-2026", "kdca-guideline-2026"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "표준예방접종일정표(2026) 이미지 눈 판독값. 접종 가능 시작·마감 경계는 지침 원문 대조 전"
+    },
+    {
+      "id": "var",
+      "code": "var",
+      "name": "수두",
+      "doses": [
+        { "dose": 1, "from": { "months": 12 }, "to": { "months": 15 } }
+      ],
+      "notes": [],
+      "basis_ids": ["kdca-schedule-2026", "kdca-guideline-2026"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "표준예방접종일정표(2026) 이미지 눈 판독값. 접종 가능 시작·마감 경계는 지침 원문 대조 전"
+    },
+    {
+      "id": "hepa",
+      "code": "hepa",
+      "name": "A형간염",
+      "doses": [
+        { "dose": 1, "from": { "months": 12 }, "to": { "months": 23 } },
+        { "dose": 2, "from": { "months": 12 }, "to": { "months": 23 } }
+      ],
+      "notes": [],
+      "basis_ids": ["kdca-schedule-2026", "kdca-guideline-2026"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "표준예방접종일정표(2026) 이미지 눈 판독값. 접종 가능 시작·마감 경계는 지침 원문 대조 전"
+    },
+    {
+      "id": "je-inactivated",
+      "code": "je",
+      "name": "일본뇌염 불활성화 백신",
+      "doses": [
+        { "dose": 1, "from": { "months": 12 }, "to": { "months": 23 } },
+        { "dose": 2, "from": { "months": 12 }, "to": { "months": 23 } },
+        { "dose": 3, "from": { "months": 24 }, "to": { "months": 35 } },
+        { "dose": 4, "from": { "years": 6 }, "to": { "years": 6 } },
+        { "dose": 5, "from": { "years": 12 }, "to": { "years": 12 } }
+      ],
+      "notes": ["일본뇌염은 불활성화 백신(5회)과 약독화 생백신(2회) 제품 중 택일합니다."],
+      "basis_ids": ["kdca-schedule-2026", "kdca-guideline-2026"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "표준예방접종일정표(2026) 이미지 눈 판독값. 접종 가능 시작·마감 경계는 지침 원문 대조 전"
+    },
+    {
+      "id": "je-live",
+      "code": "je",
+      "name": "일본뇌염 약독화 생백신",
+      "doses": [
+        { "dose": 1, "from": { "months": 12 }, "to": { "months": 23 } },
+        { "dose": 2, "from": { "months": 24 }, "to": { "months": 35 } }
+      ],
+      "notes": ["일본뇌염은 불활성화 백신(5회)과 약독화 생백신(2회) 제품 중 택일합니다."],
+      "basis_ids": ["kdca-schedule-2026", "kdca-guideline-2026"],
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "표준예방접종일정표(2026) 이미지 눈 판독값. 접종 가능 시작·마감 경계는 지침 원문 대조 전"
+    },
+    {
+      "id": "hpv",
+      "code": "hpv",
+      "name": "HPV",
+      "doses": [
+        { "dose": 1, "from": { "years": 11 }, "to": { "years": 12 } },
+        { "dose": 2, "from": { "years": 11 }, "to": { "years": 12 } }
+      ],
+      "notes": ["대상 성별 등 지원 대상은 지침 원문으로 확인하세요."],
+      "basis_ids": ["kdca-schedule-2026", "kdca-guideline-2026"],
+      "as_of": "2026-10-28",
+      "verified": "false",
+      "note": "일정표 이미지에 성별 표기 없음(이전 지자체 자료는 여아 12세). 미검증"
+    }
+  ],
+  "influenza": {
+    "seasons": [
+      {
+        "id": "flu-2026-2027",
+        "label": "2026-2027 절기",
+        "start": "2026-09-21",
+        "end": "2027-04-30",
+        "child_from_months": 6,
+        "child_max_age_years": 14,
+        "two_dose_under_years": 9,
+        "pregnant_doses": 1,
+        "notes": [],
+        "basis_ids": ["kdca-nip-influenza"],
+        "as_of": "2026-10-28",
+        "verified": "partial",
+        "note": "국가예방접종 사업 소개(인플루엔자) 최종검토 2026-08-25 기준. 다음 절기는 질병관리청 공지 후 추가"
+      }
+    ]
+  }
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PeriodRuleSchema, ProvenanceSchema } from "../src/data-store/schema.js";
+import { PeriodRuleSchema, ProvenanceSchema, VACCINE_CODES } from "../src/data-store/schema.js";
 import {
   collectBasisIds,
   DataValidationError,
@@ -257,5 +257,199 @@ describe("PeriodRuleSchema", () => {
     expect(
       PeriodRuleSchema.safeParse({ unit: "week", amount: 1, countFirstDay: true, extendIfNonWorking: true }).success,
     ).toBe(false);
+  });
+});
+
+describe("vaccinations real data", () => {
+  it("loads vaccinations and resolves its basis ids", () => {
+    expect(() => loadData("vaccinations")).not.toThrow();
+    expect(() => resolveBasis(collectBasisIds(loadData("vaccinations")))).not.toThrow();
+  });
+});
+
+describe("vaccination schedule", () => {
+  const unitValue = (o: object): [string, number] => {
+    const [key, value] = Object.entries(o as Record<string, number>)[0] ?? ["", 0];
+    return [key.charAt(0), value];
+  };
+
+  it("matches the 2026 schedule table", () => {
+    const rows = loadData("vaccinations").vaccines.flatMap((e) =>
+      e.doses.map((d) => {
+        const [unit, from] = unitValue(d.from);
+        const [, to] = unitValue(d.to);
+        return [e.id, d.dose, unit, from, to];
+      }),
+    );
+    expect(rows).toEqual([
+      ["bcg", 1, "d", 0, 28],
+      ["hepb", 1, "d", 0, 0],
+      ["hepb", 2, "m", 1, 1],
+      ["hepb", 3, "m", 6, 6],
+      ["dtap", 1, "m", 2, 2],
+      ["dtap", 2, "m", 4, 4],
+      ["dtap", 3, "m", 6, 6],
+      ["dtap", 4, "m", 15, 18],
+      ["dtap", 5, "y", 4, 6],
+      ["dtap", 6, "y", 11, 12],
+      ["ipv", 1, "m", 2, 2],
+      ["ipv", 2, "m", 4, 4],
+      ["ipv", 3, "m", 6, 18],
+      ["ipv", 4, "y", 4, 6],
+      ["hib", 1, "m", 2, 2],
+      ["hib", 2, "m", 4, 4],
+      ["hib", 3, "m", 6, 6],
+      ["hib", 4, "m", 12, 15],
+      ["pcv", 1, "m", 2, 2],
+      ["pcv", 2, "m", 4, 4],
+      ["pcv", 3, "m", 6, 6],
+      ["pcv", 4, "m", 12, 15],
+      ["rota-rv1", 1, "m", 2, 2],
+      ["rota-rv1", 2, "m", 4, 4],
+      ["rota-rv5", 1, "m", 2, 2],
+      ["rota-rv5", 2, "m", 4, 4],
+      ["rota-rv5", 3, "m", 6, 6],
+      ["mmr", 1, "m", 12, 15],
+      ["mmr", 2, "y", 4, 6],
+      ["var", 1, "m", 12, 15],
+      ["hepa", 1, "m", 12, 23],
+      ["hepa", 2, "m", 12, 23],
+      ["je-inactivated", 1, "m", 12, 23],
+      ["je-inactivated", 2, "m", 12, 23],
+      ["je-inactivated", 3, "m", 24, 35],
+      ["je-inactivated", 4, "y", 6, 6],
+      ["je-inactivated", 5, "y", 12, 12],
+      ["je-live", 1, "m", 12, 23],
+      ["je-live", 2, "m", 24, 35],
+      ["hpv", 1, "y", 11, 12],
+      ["hpv", 2, "y", 11, 12],
+    ]);
+    const vaccines = loadData("vaccinations").vaccines;
+    expect(vaccines.find((v) => v.id === "dtap")?.doses[5]?.alias).toBe("Tdap/Td");
+    expect(vaccines.find((v) => v.id === "hepb")?.doses[0]?.label).toBe("출생 시");
+  });
+
+  it("covers 13 vaccine kinds", () => {
+    const vaccines = loadData("vaccinations").vaccines;
+    expect(VACCINE_CODES.length).toBe(13);
+    expect(new Set([...vaccines.map((v) => v.code), "flu"])).toEqual(new Set(VACCINE_CODES));
+  });
+
+  it("verification status", () => {
+    const data = loadData("vaccinations");
+    const unverified = new Set(["rota-rv1", "rota-rv5", "hpv"]);
+    for (const v of data.vaccines) {
+      expect(v.verified).toBe(unverified.has(v.id) ? "false" : "partial");
+    }
+    for (const s of data.influenza.seasons) {
+      expect(s.verified).toBe("partial");
+    }
+  });
+
+  it("influenza 2026-2027 season", () => {
+    const seasons = loadData("vaccinations").influenza.seasons;
+    expect(seasons).toHaveLength(1);
+    expect(seasons[0]).toMatchObject({
+      start: "2026-09-21",
+      end: "2027-04-30",
+      child_from_months: 6,
+      child_max_age_years: 14,
+      two_dose_under_years: 9,
+      pregnant_doses: 1,
+    });
+  });
+
+  it("new KDCA basis documents carry number and date", () => {
+    const docs = loadData("basis-documents").documents;
+    for (const id of ["kdca-schedule-2026", "kdca-guideline-2026", "kdca-nip-influenza"]) {
+      const doc = docs.find((d) => d.id === id);
+      expect(doc?.doc_no).toBeTruthy();
+      expect(doc?.promulgated ?? doc?.amended ?? doc?.effective).toBeDefined();
+    }
+    const guideline = docs.find((d) => d.id === "kdca-guideline-2026");
+    expect(guideline?.doc_no).toContain("309683");
+    expect(guideline?.amended).toBe("2026-10-02");
+    expect(docs.find((d) => d.id === "kdca-nip-influenza")?.amended).toBe("2026-08-25");
+  });
+});
+
+describe("vaccinations validation failures", () => {
+  type VaccFixture = {
+    vaccines: {
+      id: string;
+      code: string;
+      doses: { dose: number; from: Record<string, number>; to: Record<string, number> }[];
+      basis_ids: string[];
+      as_of: string;
+    }[];
+    influenza: { seasons: { start: string; end: string }[] };
+  };
+  const basis = loadData("basis-documents");
+  const fixture = () => structuredClone(loadData("vaccinations")) as unknown as VaccFixture;
+  const findVaccine = (x: VaccFixture, id: string) => x.vaccines.find((v) => v.id === id);
+
+  it("rejects a missing vaccine kind", () => {
+    const x = fixture();
+    x.vaccines = x.vaccines.filter((v) => v.id !== "mmr");
+    expect(() => validateDataset("vaccinations", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("vaccinations", x, basis)).toThrow("누락");
+    expect(() => validateDataset("vaccinations", x, basis)).toThrow("mmr");
+  });
+
+  it("rejects non-contiguous dose numbers", () => {
+    const x = fixture();
+    const dtap = findVaccine(x, "dtap");
+    if (dtap) dtap.doses = dtap.doses.filter((d) => d.dose !== 3);
+    expect(() => validateDataset("vaccinations", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("vaccinations", x, basis)).toThrow("불연속");
+  });
+
+  it("rejects a dose whose to is before from", () => {
+    const x = fixture();
+    const dose = findVaccine(x, "dtap")?.doses.find((d) => d.dose === 4);
+    if (dose) dose.to = { months: 14 };
+    expect(() => validateDataset("vaccinations", x, basis)).toThrow(DataValidationError);
+  });
+
+  it("rejects a dose whose from and to units differ", () => {
+    const x = fixture();
+    const dose = findVaccine(x, "dtap")?.doses.find((d) => d.dose === 5);
+    if (dose) dose.to = { months: 6 };
+    expect(() => validateDataset("vaccinations", x, basis)).toThrow(DataValidationError);
+  });
+
+  it("rejects a vaccine with an unknown basis id", () => {
+    const x = fixture();
+    const hpv = findVaccine(x, "hpv");
+    if (hpv) hpv.basis_ids = ["no-such-doc"];
+    expect(() => validateDataset("vaccinations", x, basis)).toThrow(DataValidationError);
+    expect(() => validateDataset("vaccinations", x, basis)).toThrow("no-such-doc");
+  });
+
+  it("rejects a malformed as_of", () => {
+    const x = fixture();
+    const bcg = findVaccine(x, "bcg");
+    if (bcg) bcg.as_of = "2026/10/28";
+    expect(() => validateDataset("vaccinations", x, basis)).toThrow(DataValidationError);
+  });
+
+  it("rejects a season whose end is before its start", () => {
+    const x = fixture();
+    const season = x.influenza.seasons[0];
+    if (season) season.end = "2026-09-01";
+    expect(() => validateDataset("vaccinations", x, basis)).toThrow(DataValidationError);
+  });
+
+  it("rejects influenza listed as a vaccine entry", () => {
+    const x = fixture();
+    const bcg = findVaccine(x, "bcg");
+    if (bcg) x.vaccines.push({ ...structuredClone(bcg), id: "flu-x", code: "flu" });
+    expect(() => validateDataset("vaccinations", x, basis)).toThrow(DataValidationError);
+  });
+
+  it("rejects an empty influenza season list", () => {
+    const x = fixture();
+    x.influenza.seasons = [];
+    expect(() => validateDataset("vaccinations", x, basis)).toThrow(DataValidationError);
   });
 });
