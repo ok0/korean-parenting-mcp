@@ -12,7 +12,7 @@
       "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
       "as_of": "2026-10-28",
       "verified": "partial",
-      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+      "note": "M17 원문 대조: 값 일치, 경계 해석 원문 미규정 (일 단위 기산 방식 미명시). 생활법령 2026-09-15 교차 확인"
     },
     {
       "id": "infant-checkup-2",
@@ -24,7 +24,7 @@
       "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
       "as_of": "2026-10-28",
       "verified": "partial",
-      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+      "note": "M17 원문 대조: 값 일치, 경계 해석 원문 미규정 (월 단위 기산·포함 방식 미명시). 생활법령 2026-09-15 교차 확인"
     },
     {
       "id": "infant-checkup-3",
@@ -36,7 +36,7 @@
       "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
       "as_of": "2026-10-28",
       "verified": "partial",
-      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+      "note": "M17 원문 대조: 값 일치, 경계 해석 원문 미규정 (월 단위 기산·포함 방식 미명시). 생활법령 2026-09-15 교차 확인"
     },
     {
       "id": "infant-checkup-4",
@@ -48,7 +48,7 @@
       "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
       "as_of": "2026-10-28",
       "verified": "partial",
-      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+      "note": "M17 원문 대조: 값 일치, 경계 해석 원문 미규정 (월 단위 기산·포함 방식 미명시). 생활법령 2026-09-15 교차 확인"
     },
     {
       "id": "infant-checkup-5",
@@ -60,7 +60,7 @@
       "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
       "as_of": "2026-10-28",
       "verified": "partial",
-      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+      "note": "M17 원문 대조: 값 일치, 경계 해석 원문 미규정 (월 단위 기산·포함 방식 미명시). 생활법령 2026-09-15 교차 확인"
     },
     {
       "id": "infant-checkup-6",
@@ -72,7 +72,7 @@
       "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
       "as_of": "2026-10-28",
       "verified": "partial",
-      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+      "note": "M17 원문 대조: 값 일치, 경계 해석 원문 미규정 (월 단위 기산·포함 방식 미명시). 생활법령 2026-09-15 교차 확인"
     },
     {
       "id": "infant-checkup-7",
@@ -84,7 +84,7 @@
       "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
       "as_of": "2026-10-28",
       "verified": "partial",
-      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+      "note": "M17 원문 대조: 값 일치, 경계 해석 원문 미규정 (월 단위 기산·포함 방식 미명시). 생활법령 2026-09-15 교차 확인"
     },
     {
       "id": "infant-checkup-8",
@@ -96,7 +96,7 @@
       "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
       "as_of": "2026-10-28",
       "verified": "partial",
-      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+      "note": "M17 원문 대조: 값 일치, 경계 해석 원문 미규정 (월 단위 기산·포함 방식 미명시). 생활법령 2026-09-15 교차 확인"
     },
     {
       "id": "oral-checkup-1",
@@ -108,7 +108,7 @@
       "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
       "as_of": "2026-10-28",
       "verified": "partial",
-      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+      "note": "M17 원문 대조: 값 일치, 경계 해석 원문 미규정 (월 단위 기산·포함 방식 미명시). 생활법령 2026-09-15 교차 확인"
     },
     {
       "id": "oral-checkup-2",
@@ -120,7 +120,7 @@
       "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
       "as_of": "2026-10-28",
       "verified": "partial",
-      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+      "note": "M17 원문 대조: 값 일치, 경계 해석 원문 미규정 (월 단위 기산·포함 방식 미명시). 생활법령 2026-09-15 교차 확인"
     },
     {
       "id": "oral-checkup-3",
@@ -132,7 +132,7 @@
       "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
       "as_of": "2026-10-28",
       "verified": "partial",
-      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+      "note": "M17 원문 대조: 값 일치, 경계 해석 원문 미규정 (월 단위 기산·포함 방식 미명시). 생활법령 2026-09-15 교차 확인"
     },
     {
       "id": "oral-checkup-4",
@@ -144,7 +144,7 @@
       "basis_ids": ["health-checkup-standard", "easylaw-infant-checkup"],
       "as_of": "2026-10-28",
       "verified": "partial",
-      "note": "고시 제8조 제2항 표(이미지) 미판독, 생활법령 2026-09-15 교차 확인. 원문 대조(M17) 전"
+      "note": "M17 원문 대조: 값 일치, 경계 해석 원문 미규정 (월 단위 기산·포함 방식 미명시). 생활법령 2026-09-15 교차 확인"
     }
   ]
 }

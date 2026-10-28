@@ -33,7 +33,7 @@ function one(items: TimelineItem[], id: string): TimelineItem {
 const rng = (it: TimelineItem): string => `${formatDate(it.start)}~${formatDate(it.end ?? it.start)}`;
 
 const SPEC: [string, number, "d" | "m" | "y", number, number][] = [
-  ["bcg", 1, "d", 0, 28],
+  ["bcg", 1, "d", 0, 27],
   ["hepb", 1, "d", 0, 0],
   ["hepb", 2, "m", 1, 1],
   ["hepb", 3, "m", 6, 6],
@@ -64,9 +64,9 @@ const SPEC: [string, number, "d" | "m" | "y", number, number][] = [
   ["mmr", 2, "y", 4, 6],
   ["var", 1, "m", 12, 15],
   ["hepa", 1, "m", 12, 23],
-  ["hepa", 2, "m", 12, 23],
+  ["hepa", 2, "m", 18, 18],
   ["je-inactivated", 1, "m", 12, 23],
-  ["je-inactivated", 2, "m", 12, 23],
+  ["je-inactivated", 2, "m", 13, 23],
   ["je-inactivated", 3, "m", 24, 35],
   ["je-inactivated", 4, "y", 6, 6],
   ["je-inactivated", 5, "y", 12, 12],
@@ -106,7 +106,7 @@ describe("vaccination rules", () => {
   it("2026-01-31 published examples", () => {
     const items = doseItems(parseDate("2026-01-31"));
     const cases: [string, string][] = [
-      ["vac-bcg-1", "2026-01-31~2026-02-28"],
+      ["vac-bcg-1", "2026-01-31~2026-02-27"],
       ["vac-hepb-1", "2026-01-31~2026-01-31"],
       ["vac-hepb-2", "2026-02-28~2026-03-30"],
       ["vac-hepb-3", "2026-07-31~2026-08-30"],
@@ -123,6 +123,8 @@ describe("vaccination rules", () => {
       ["vac-dtap-6", "2037-01-31~2038-01-30"],
       ["vac-ipv-4", "2030-01-31~2032-01-30"],
       ["vac-je-inactivated-4", "2032-01-31~2033-01-30"],
+      ["vac-hepa-2", "2027-07-31~2027-08-30"],
+      ["vac-je-inactivated-2", "2027-02-28~2028-01-30"],
     ];
     for (const [id, range] of cases) {
       expect(rng(one(items, id))).toBe(range);
@@ -147,6 +149,7 @@ describe("vaccination rules", () => {
     expect(one(items, "vac-dtap-4").title).toBe("DTaP 4차 (15~18개월)");
     expect(one(items, "vac-je-inactivated-4").title).toBe("일본뇌염 불활성화 백신 4차 (6세)");
     expect(one(items, "vac-rota-rv1-1").title).toBe("로타바이러스 RV1 1차 (2개월)");
+    expect(one(items, "vac-hepa-2").title).toBe("A형간염 2차 (18개월)");
     for (const it of items) {
       expect(it.category).toBe("접종");
       expect(it.nature).toBe("권장");
@@ -156,25 +159,23 @@ describe("vaccination rules", () => {
 
   it("verification and memos", () => {
     const items = doseItems(parseDate("2026-01-31"));
-    const unverified = (it: TimelineItem) =>
-      it.id.startsWith("vac-rota-rv1-") || it.id.startsWith("vac-rota-rv5-") || it.id.startsWith("vac-hpv-");
+    const status: Record<string, string> = { bcg: "full", hepb: "full", dtap: "full", ipv: "full", hib: "full", pcv: "full", "rota-rv1": "full", "rota-rv5": "full", mmr: "full", var: "full", hepa: "full", "je-inactivated": "partial", "je-live": "full", hpv: "false" };
     for (const it of items) {
-      if (unverified(it)) {
-        expect(it.provenance.verified).toBe("false");
-        expect(it.notes).toContain(UNVERIFIED_NOTE);
-      } else {
-        expect(it.provenance.verified).toBe("partial");
-        expect(it.notes).not.toContain(UNVERIFIED_NOTE);
-      }
+      const vid = it.id.replace(/^vac-/, "").replace(/-\d+$/, "");
+      expect(it.provenance.verified, it.id).toBe(status[vid]);
+      if (status[vid] === "false") expect(it.notes, it.id).toContain(UNVERIFIED_NOTE);
+      else expect(it.notes, it.id).not.toContain(UNVERIFIED_NOTE);
     }
     expect(one(items, "vac-rota-rv1-1").notes.some((n) => n.includes("택일"))).toBe(true);
     expect(one(items, "vac-je-inactivated-1").notes.some((n) => n.includes("택일"))).toBe(true);
-    expect(one(items, "vac-hepa-1").notes).toContain(SAME_PERIOD_NOTE);
-    expect(one(items, "vac-je-inactivated-1").notes).toContain(SAME_PERIOD_NOTE);
+    expect(one(items, "vac-hepa-1").notes).not.toContain(SAME_PERIOD_NOTE);
+    expect(one(items, "vac-je-inactivated-1").notes).not.toContain(SAME_PERIOD_NOTE);
     expect(one(items, "vac-hpv-1").notes).toContain(SAME_PERIOD_NOTE);
     expect(one(items, "vac-dtap-1").notes).not.toContain(SAME_PERIOD_NOTE);
     expect(one(items, "vac-je-inactivated-3").notes).not.toContain(SAME_PERIOD_NOTE);
     expect(one(items, "vac-pcv-4").notes.some((n) => n.includes("고위험"))).toBe(true);
+    expect(one(items, "vac-rota-rv1-1").notes).toContain("1차는 생후 14주 6일까지, 마지막 차수는 생후 8개월 0일까지 접종합니다(2026 국가예방접종 지침).");
+    expect(one(items, "vac-rota-rv5-1").notes).toContain("1차는 생후 14주 6일까지, 마지막 차수는 생후 8개월 0일까지 접종합니다(2026 국가예방접종 지침).");
   });
 
   it("influenza season by birth date", () => {

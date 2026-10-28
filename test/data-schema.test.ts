@@ -345,7 +345,7 @@ describe("vaccination schedule", () => {
       }),
     );
     expect(rows).toEqual([
-      ["bcg", 1, "d", 0, 28],
+      ["bcg", 1, "d", 0, 27],
       ["hepb", 1, "d", 0, 0],
       ["hepb", 2, "m", 1, 1],
       ["hepb", 3, "m", 6, 6],
@@ -376,9 +376,9 @@ describe("vaccination schedule", () => {
       ["mmr", 2, "y", 4, 6],
       ["var", 1, "m", 12, 15],
       ["hepa", 1, "m", 12, 23],
-      ["hepa", 2, "m", 12, 23],
+      ["hepa", 2, "m", 18, 18],
       ["je-inactivated", 1, "m", 12, 23],
-      ["je-inactivated", 2, "m", 12, 23],
+      ["je-inactivated", 2, "m", 13, 23],
       ["je-inactivated", 3, "m", 24, 35],
       ["je-inactivated", 4, "y", 6, 6],
       ["je-inactivated", 5, "y", 12, 12],
@@ -400,12 +400,29 @@ describe("vaccination schedule", () => {
 
   it("verification status", () => {
     const data = loadData("vaccinations");
-    const unverified = new Set(["rota-rv1", "rota-rv5", "hpv"]);
-    for (const v of data.vaccines) {
-      expect(v.verified).toBe(unverified.has(v.id) ? "false" : "partial");
-    }
-    for (const s of data.influenza.seasons) {
-      expect(s.verified).toBe("partial");
+    const expected: Record<string, "full" | "partial" | "false"> = {
+      bcg: "full",
+      hepb: "full",
+      dtap: "full",
+      ipv: "full",
+      hib: "full",
+      pcv: "full",
+      "rota-rv1": "full",
+      "rota-rv5": "full",
+      mmr: "full",
+      var: "full",
+      hepa: "full",
+      "je-inactivated": "partial",
+      "je-live": "full",
+      hpv: "false",
+      "flu-2026-2027": "partial",
+    };
+    expect(data.vaccines).toHaveLength(14);
+    for (const v of data.vaccines) expect(v.verified, v.id).toBe(expected[v.id]);
+    for (const s of data.influenza.seasons) expect(s.verified, s.id).toBe(expected[s.id]);
+    for (const v of data.vaccines.filter((x) => x.verified === "full")) {
+      expect(v.verified_by, v.id).toBe("agent (ok0-editor) — needs human spot-check");
+      expect(v.verified_on, v.id).toBe("2026-10-28");
     }
   });
 
@@ -542,6 +559,37 @@ describe("prenatal schedule", () => {
     expect(doc?.doc_no).toBeTruthy();
     expect(doc?.amended).toBe("2015-07-29");
     expect(doc?.note).toContain("2023-07-27");
+    expect(doc?.title).toContain("임산부ㆍ영유아 및 미숙아등의 정기 건강진단 실시기준");
+    expect(doc?.law_api).toMatchObject({ kind: "licbyl", promulgated: "2026-03-04", promulgation_no: "01159" });
+  });
+});
+
+describe("M17 identifier and verification corrections", () => {
+  const docs = () => loadData("basis-documents").documents;
+
+  it("M17 identifier corrections", () => {
+    const holiday = docs().find((d) => d.id === "holiday-regulation");
+    expect(holiday?.effective).toBe("2026-05-01");
+    expect(holiday?.law_api).toMatchObject({ effective: "2026-05-11" });
+    expect(holiday?.note).toContain("2026-05-11");
+    expect(holiday?.note).toContain("M17");
+    const child = docs().find((d) => d.id === "child-allowance-act");
+    expect(child?.promulgated).toBe("2026-03-20");
+    expect(child?.law_api).not.toHaveProperty("mst");
+    expect(child?.law_api).not.toHaveProperty("effective");
+    expect(child?.note).toContain("M17");
+  });
+
+  it("checkup verification states follow M17 log", () => {
+    const checkups = loadData("checkups").checkups;
+    const ids = [
+      ...Array.from({ length: 8 }, (_, i) => `infant-checkup-${i + 1}`),
+      ...Array.from({ length: 4 }, (_, i) => `oral-checkup-${i + 1}`),
+    ];
+    expect(checkups).toHaveLength(12);
+    for (const id of ids) {
+      expect(checkups.find((c) => c.id === id)?.verified, id).toBe("partial");
+    }
   });
 });
 
