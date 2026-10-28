@@ -18,6 +18,11 @@ const NEMC_DATASET_URL = "https://www.data.go.kr/data/15000736/openapi.do";
 const NEMC_ATTRIBUTION = "국립중앙의료원(공공데이터포털)";
 const NEMC_BASE_URL = "https://apis.data.go.kr/B552657/HsptlAsembySearchService";
 
+/** NEMC 진료과목 코드: 소아청소년과(M11 적용 확인, 의미는 M12 실호출로 확정). 한 곳에만 둔다. */
+export const NEMC_DEPT_PEDIATRICS = "D002";
+/** NEMC 진료요일 파라미터(QT) 전송 여부. 판정은 항상 클라이언트에서 한다(M12 R16(c)로 결정). */
+export const NEMC_SEND_QT: boolean = true;
+
 export const SPECS: Readonly<Record<SpecId, ApiSpec>> = {
   nemcList: {
     id: "nemcList",
