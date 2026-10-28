@@ -2,6 +2,7 @@ import { addMonthsClamp, compare, daysBetween, type CivilDate } from "../date/ci
 import { checkupRule } from "./rules/checkups.js";
 import { benefitDeadlineRule } from "./rules/benefit-deadlines.js";
 import { registrationRule } from "./rules/registration.js";
+import { influenzaNotices, vaccinationRule } from "./rules/vaccination.js";
 import type {
   Status,
   TimelineInput,
@@ -13,9 +14,9 @@ import type {
 
 export const IMMINENT_DAYS = 14;
 
-export const RULES: readonly TimelineRule[] = [registrationRule, benefitDeadlineRule, checkupRule];
+export const RULES: readonly TimelineRule[] = [registrationRule, benefitDeadlineRule, checkupRule, vaccinationRule];
 
-export const NOTICE_RULES: readonly TimelineNoticeRule[] = [];
+export const NOTICE_RULES: readonly TimelineNoticeRule[] = [influenzaNotices];
 
 export function statusOf(start: CivilDate, end: CivilDate | undefined, ref: CivilDate): Status {
   const e = end ?? start;

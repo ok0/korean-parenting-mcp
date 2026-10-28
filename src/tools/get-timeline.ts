@@ -11,7 +11,7 @@ import { boolField, dateField, intField } from "./shared/schema.js";
 
 const schema = z.object({
   birth_date: dateField({
-    purpose: "아기의 생년월일. 출생 후 일정(신고·신청 기한, 검진 기간) 계산 기준입니다.",
+    purpose: "아기의 생년월일. 출생 후 일정(신고·신청 기한, 검진·예방접종 기간) 계산 기준입니다.",
     format: "YYYY-MM-DD, YYYY.MM.DD, YYYYMMDD 중 하나",
     example: "2026-01-31",
   }),
@@ -65,12 +65,12 @@ async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise
 
 const def: ToolDef<typeof schema> = {
   name: "get_timeline",
-  title: "육아 타임라인(출생 후 기한·검진 일정)",
+  title: "육아 타임라인(출생 후 기한·검진·예방접종 일정)",
   description:
-    "아기 생년월일로 출생신고 기한, 부모급여·아동수당 신청 기한(60일 소급 기준), 영유아 건강검진 8회와 구강검진 4회 기간을 날짜순으로 계산합니다. 각 항목에 기간, 성격(법정 의무/권장/지원 신청), 진행 상태, 출처와 검증 상태를 표시합니다. API 키와 네트워크 없이 동작하며 결과는 참고용입니다.",
+    "아기 생년월일로 출생신고 기한, 부모급여·아동수당 신청 기한(60일 소급 기준), 영유아 건강검진 8회와 구강검진 4회 기간, 국가예방접종 13종의 차수별 권장 시기와 인플루엔자 절기 접종 기간을 날짜순으로 계산합니다. 각 항목에 기간, 성격(법정 의무/권장/지원 신청), 진행 상태, 출처와 검증 상태를 표시합니다. 최소 접종 간격·지연접종은 반영하지 않습니다. API 키와 네트워크 없이 동작하며 결과는 참고용입니다.",
   schema,
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
-  maxChars: 12000,
+  maxChars: 16000,
   handler,
 };
 

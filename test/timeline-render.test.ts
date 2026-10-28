@@ -63,7 +63,8 @@ function run(
     includePast,
     holidaySource: HOLIDAY_SOURCE,
   };
-  return renderTimeline(buildTimeline(input), view);
+  const result = buildTimeline(input);
+  return { ...renderTimeline(result, view), result };
 }
 
 describe("timeline render", () => {
@@ -78,15 +79,19 @@ describe("timeline render", () => {
   });
 
   it("zero items gives widening hint", () => {
-    const out = run("2019-01-01", "2026-01-01");
+    const out = run("2005-01-01", "2026-01-01");
     expect(out.body).toContain("표시할 항목이 없습니다");
     expect(out.body).toContain("include_past");
-    expect(out.body).toContain("지난 항목 15개 숨김");
+    expect(out.body).toContain(`지난 항목 ${out.result.hiddenPast}개 숨김`);
+    expect(out.result.hiddenPast).toBeGreaterThan(0);
+    expect(out.result.items.length).toBe(0);
+    expect(out.footer ?? "").not.toContain(NOTICE_VACCINATION_SCOPE);
   });
 
   it("future hidden count", () => {
     const out = run("2026-01-31", "2026-02-01", 1);
-    expect(out.body).toContain("먼 미래 항목 11개 숨김");
+    expect(out.body).toContain(`먼 미래 항목 ${out.result.hiddenFuture}개 숨김`);
+    expect(out.result.hiddenFuture).toBeGreaterThan(0);
   });
 
   it("footer carries basis docs, holiday source, disclaimers", () => {
@@ -99,6 +104,14 @@ describe("timeline render", () => {
     expect(footer).toContain("공휴일: 번들(생성일 2026-10-28)");
     expect(footer).toContain(DISCLAIMER_MEDICAL_LEGAL);
     expect(footer).toContain(NOTICE_UNOFFICIAL);
+    expect(footer).toContain("2026년 국가예방접종 지침");
+    expect(footer).toContain("KDCA 게시물 309683");
+    expect(footer).toContain("개정 2026-10-02");
+    expect(footer).toContain("국가예방접종 사업 소개(인플루엔자)");
+    expect(footer).toContain("개정 2026-08-25");
+    expect(footer).toContain("표준예방접종일정표(2026, 어린이)");
+    expect(footer.split(NOTICE_VACCINATION_SCOPE).length - 1).toBe(1);
+    expect(footer).not.toContain("mch-act-rule-annex1");
   });
 
   it("warnings appear in footer", () => {

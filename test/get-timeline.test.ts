@@ -4,7 +4,7 @@ import { STALE_AFTER_DAYS } from "../src/date/holiday-calendar.js";
 import { loadData } from "../src/data-store/load.js";
 import { runTool } from "../src/core/pipeline.js";
 import { getTimelineTool } from "../src/tools/get-timeline.js";
-import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_UNOFFICIAL } from "../src/tools/shared/format.js";
+import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_UNOFFICIAL, NOTICE_VACCINATION_SCOPE } from "../src/tools/shared/format.js";
 import { createTestContext } from "./helpers/context.js";
 
 const call = (args: Record<string, unknown>, ctx = createTestContext()) => runTool(getTimelineTool, args, ctx);
@@ -12,6 +12,14 @@ const text = (r: { content: { type: string; text?: string }[] }): string => r.co
 
 function body(t: string): string {
   return t.split("\n\n---\n")[0]!;
+}
+
+function blocks(t: string): string[] {
+  return body(t).split(/\n(?=- \[)/);
+}
+
+function countOf(t: string, s: string): number {
+  return t.split(s).length - 1;
 }
 
 function registrationBlock(t: string): string {
@@ -130,11 +138,12 @@ describe("get_timeline", () => {
     expect(withPast).toContain("영유아 건강검진 1차");
 
     const future = text(await call({ birth_date: "2026-01-31", reference_date: "2026-02-01", months_ahead: 1 }));
-    expect(future).toContain("먼 미래 항목 11개 숨김");
+    expect(future).toMatch(/먼 미래 항목 \d+개 숨김/);
 
-    const empty = await call({ birth_date: "2019-01-01", reference_date: "2026-01-01" });
+    const empty = await call({ birth_date: "2005-01-01", reference_date: "2026-01-01" });
     expect(empty.isError).toBeFalsy();
     expect(text(empty)).toContain("표시할 항목이 없습니다");
+    expect(text(empty)).not.toContain(NOTICE_VACCINATION_SCOPE);
   });
 
   it("bundle range and staleness warnings", async () => {
@@ -165,6 +174,7 @@ describe("get_timeline", () => {
     expect(t).toContain(NOTICE_UNOFFICIAL);
     expect(t).toContain("개정 여부 자동 확인은 아직 제공하지 않");
     expect(t).toContain("근거 문서:");
+    expect(t).toContain(NOTICE_VACCINATION_SCOPE);
   });
 
   it("offline, keyless, no birth date in logs", async () => {
@@ -183,14 +193,89 @@ describe("get_timeline", () => {
     expect(logged).not.toContain("2026-02-01");
   });
 
-  it("max output within 12000 chars", async () => {
+  it("max output within maxChars", async () => {
     const args = { birth_date: "2026-01-31", reference_date: "2026-02-01", months_ahead: 156, include_past: true };
     const r = await call(args);
     const t = text(r);
-    expect(t.length).toBeLessThanOrEqual(12000);
+    const max = getTimelineTool.maxChars!;
+    expect(max).toBeLessThanOrEqual(20000);
+    expect(t.length).toBeLessThanOrEqual(max);
     expect(t).not.toContain("자 생략");
     expect(t).toContain(DISCLAIMER_MEDICAL_LEGAL);
-    expect(getTimelineTool.maxChars).toBe(12000);
+    expect(t).toContain(NOTICE_UNOFFICIAL);
+    expect(t).toContain("근거 문서:");
+    expect(countOf(t, NOTICE_VACCINATION_SCOPE)).toBe(1);
     expect(getTimelineTool.requiredKeys === undefined || getTimelineTool.requiredKeys.length === 0).toBe(true);
+  });
+
+  it("vaccination items in default window, offline and deterministic", async () => {
+    const fetchStub = vi.fn(() => {
+      throw new Error("network disabled");
+    });
+    vi.stubGlobal("fetch", fetchStub);
+    const args = { birth_date: "2026-05-28", reference_date: "2026-10-28" };
+    const a = await call(args);
+    const b = await call(args);
+    expect(a.isError).toBeFalsy();
+    expect(b.isError).toBeFalsy();
+    const t = text(a);
+    expect(text(b)).toBe(t);
+    expect(fetchStub).not.toHaveBeenCalled();
+    expect(t).toContain("[예정] 2026-11-28 ~ 2026-12-27 | DTaP 3차 (6개월)");
+    expect(t).toContain("[예정] 2026-11-28 ~ 2027-04-30 | 인플루엔자 (2026-2027 절기)");
+    expect(t).toContain("안내: 인플루엔자: 등록된 절기(2026-2027 절기) 이후 정보 없음");
+    expect(t).not.toContain("자 생략");
+    expect(countOf(t, NOTICE_VACCINATION_SCOPE)).toBe(1);
+
+    const starts = blocks(t)
+      .map((b) => /\] (\d{4}-\d{2}-\d{2})/.exec(b)?.[1])
+      .filter((s): s is string => s !== undefined);
+    expect(starts.length).toBeGreaterThan(0);
+    expect(starts).toEqual([...starts].sort());
+  });
+
+  it("all 13 vaccines with include_past and 156 months", async () => {
+    const r = await call({ birth_date: "2026-01-31", reference_date: "2026-02-01", months_ahead: 156, include_past: true });
+    const t = text(r);
+    const markers = [
+      "| BCG",
+      "| B형간염",
+      "| DTaP",
+      "| IPV",
+      "| Hib",
+      "| PCV",
+      "| 로타바이러스 RV1",
+      "| 로타바이러스 RV5",
+      "| MMR",
+      "| 수두",
+      "| A형간염",
+      "| 일본뇌염",
+      "| HPV",
+      "| 인플루엔자",
+    ];
+    for (const m of markers) expect(body(t)).toContain(m);
+
+    const unverified = blocks(t).filter((b) => /^- .*\| (로타바이러스|HPV)/.test(b.split("\n")[0]!));
+    expect(unverified.length).toBeGreaterThan(0);
+    for (const b of unverified) {
+      expect(b.split("\n")[0]!.endsWith("| 미검증")).toBe(true);
+      expect(b).toContain("지침 원문");
+    }
+    const rota = unverified.filter((b) => b.includes("| 로타바이러스"));
+    expect(rota.length).toBeGreaterThan(0);
+    for (const b of rota) expect(b).toContain("택일");
+
+    const partial = blocks(t).filter((b) =>
+      /\| (BCG|B형간염|DTaP|IPV|Hib|PCV|MMR|수두|A형간염|일본뇌염|인플루엔자)/.test(b.split("\n")[0]!),
+    );
+    expect(partial.length).toBeGreaterThan(0);
+    for (const b of partial) expect(b.split("\n")[0]!.endsWith("| 부분 검증")).toBe(true);
+
+    const footer = t.slice(t.indexOf("\n\n---\n"));
+    expect(footer).toContain("kdca-guideline-2026");
+    expect(footer).toContain("kdca-nip-influenza");
+    expect(footer).not.toContain("mch-act-rule-annex1");
+    expect(footer).not.toContain("산전");
+    expect(countOf(t, NOTICE_VACCINATION_SCOPE)).toBe(1);
   });
 });
