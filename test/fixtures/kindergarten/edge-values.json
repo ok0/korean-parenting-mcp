@@ -1,0 +1,13 @@
+{ "_fixture_note": "합성(M16): null·비숫자·음수·총정원 대체·정원 충족·연령반 없음 경계값, 실응답 아님, 인증 정보 없음",
+  "status": "SUCCESS",
+  "kinderInfo": [
+    { "key": "1", "kinderCode": "synthetic-0001", "rpstYn": "Y", "kindername": "합성유치원가", "establish": "사립(사인)", "addr": "서울특별시 성동구 합성로 1", "telno": "02-0000-0001", "hpaddr": null, "pbnttmng": "20262",
+      "prmstfcnt": null, "ag3fpcnt": null, "ag4fpcnt": "abc", "ag5fpcnt": "-2", "ppcnt3": "5", "ppcnt4": "6", "ppcnt5": "7", "clcnt3": "1", "clcnt4": "1", "clcnt5": "1", "mixfpcnt": "0", "mixppcnt": "0", "mixclcnt": "0", "spcnfpcnt": "0", "shppcnt": "0", "shclcnt": "0", "extra_field": "무시" },
+    { "key": "2", "kindercode": "synthetic-0002", "rpst_yn": "N", "kindername": "합성유치원나", "establish": "공립(단설)", "addr": "서울특별시 성동구 합성로 2", "telno": "02-0000-0002", "hpaddr": "https://example.invalid/kg", "pbnttmng": "20262",
+      "prmstfcnt": "60", "ag3fpcnt": null, "ag4fpcnt": null, "ag5fpcnt": null, "ppcnt3": "10", "ppcnt4": "12", "ppcnt5": "15", "clcnt3": "1", "clcnt4": "1", "clcnt5": "1", "mixfpcnt": "0", "mixppcnt": "0", "mixclcnt": "0", "spcnfpcnt": "0", "shppcnt": "0", "shclcnt": "0", "lttdcdnt": "37.1234567", "lngtcdnt": "127.1234567" },
+    { "key": "3", "kindercode": "synthetic-0003", "rpst_yn": "N", "kindername": "합성유치원다", "establish": "사립(법인)", "addr": "서울특별시 성동구 합성로 3", "telno": "02-0000-0003", "hpaddr": null, "pbnttmng": "20262",
+      "prmstfcnt": "52", "ag3fpcnt": "14", "ag4fpcnt": "18", "ag5fpcnt": "20", "ppcnt3": "14", "ppcnt4": "20", "ppcnt5": "20", "clcnt3": "1", "clcnt4": "1", "clcnt5": "1", "mixfpcnt": "0", "mixppcnt": "0", "mixclcnt": "0", "spcnfpcnt": "0", "shppcnt": "0", "shclcnt": "0" },
+    { "key": "4", "kindercode": "synthetic-0004", "rpst_yn": "N", "kindername": "합성유치원라", "establish": null, "addr": null, "telno": null, "hpaddr": "www.example.invalid", "pbnttmng": "20262",
+      "prmstfcnt": "20", "ag3fpcnt": "0", "ag4fpcnt": "10", "ag5fpcnt": "10", "ppcnt3": "0", "ppcnt4": "7", "ppcnt5": "10", "clcnt3": "0", "clcnt4": "1", "clcnt5": "1", "mixfpcnt": "0", "mixppcnt": "0", "mixclcnt": "0", "spcnfpcnt": "0", "shppcnt": "0", "shclcnt": "0" },
+    { "key": "5", "kindercode": "synthetic-0005", "kindername": null, "pbnttmng": "20262" }
+  ] }
