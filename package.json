@@ -8,7 +8,8 @@
     "korean-parenting-mcp": "build/index.js"
   },
   "files": [
-    "build"
+    "build",
+    "data"
   ],
   "engines": {
     "node": ">=20.19"

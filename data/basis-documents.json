@@ -1,0 +1,64 @@
+{
+  "documents": [
+    {
+      "id": "holiday-regulation",
+      "title": "관공서의 공휴일에 관한 규정",
+      "doc_no": "대통령령 제36290호",
+      "kind": "law",
+      "promulgated": "2026-04-30",
+      "effective": "2026-05-01",
+      "url": "https://www.law.go.kr/법령/관공서의공휴일에관한규정",
+      "law_api": {
+        "kind": "law",
+        "law_name": "관공서의 공휴일에 관한 규정",
+        "mst": "285779",
+        "effective": "2026-05-01"
+      },
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "제2조 단서·2호 개정은 2026-05-11 시행. 법제처 법령ID(law_id)는 M11에서 OC로 확정"
+    },
+    {
+      "id": "public-holiday-act",
+      "title": "공휴일에 관한 법률",
+      "doc_no": "MST 283311",
+      "kind": "law",
+      "promulgated": "2026-02-10",
+      "effective": "2026-05-11",
+      "url": "https://www.law.go.kr/법령/공휴일에관한법률",
+      "law_api": {
+        "kind": "law",
+        "law_name": "공휴일에 관한 법률",
+        "mst": "283311",
+        "effective": "2026-05-11"
+      },
+      "as_of": "2026-10-28",
+      "verified": "false",
+      "note": "법률 번호 미확인으로 doc_no에 MST 기재. 본문 미판독(제헌절 공휴일 근거 추정)"
+    },
+    {
+      "id": "kasi-calendar-2027",
+      "title": "한국천문연구원 달력자료 2027 (월력요항 반영, 비공식 게시)",
+      "doc_no": "calendarData?year=2027 V1.0a",
+      "kind": "web",
+      "promulgated": "2026-06-30",
+      "url": "https://astro.kasi.re.kr/kor/life/post/calendarData?year=2027",
+      "law_api": null,
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "게시일을 promulgated에 기록. 페이지에 공식 발표 자료 아님 명시"
+    },
+    {
+      "id": "press-2027-calendar",
+      "title": "2027년 월력요항 발표 보도(파이낸셜뉴스)",
+      "doc_no": "202606290904291637",
+      "kind": "web",
+      "promulgated": "2026-06-29",
+      "url": "https://www.fnnews.com/news/202606290904291637",
+      "law_api": null,
+      "as_of": "2026-10-28",
+      "verified": "partial",
+      "note": "우주항공청 월력요항 원문 미접근, 언론 경유"
+    }
+  ]
+}
