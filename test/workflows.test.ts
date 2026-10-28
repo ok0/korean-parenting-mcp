@@ -86,6 +86,7 @@ describe("workflows", () => {
     expect(text).toContain("npm ci");
     expect(text).toContain("npm run verify");
     expect(text).toContain("npm run smoke:pack");
+    expect(text).toContain("npm run smoke:mcpb");
     expect(text).toMatch(/node:\s*\[\s*"20",\s*"22"\s*\]/);
     expect(text).toContain("${{ matrix.node }}");
     expect(text).toContain("rhysd/actionlint");
