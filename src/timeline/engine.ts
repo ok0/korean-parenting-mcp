@@ -72,7 +72,7 @@ export function buildTimeline(
       items.push(it);
     }
   }
-  const basisIds = [...new Set(all.flatMap((it) => it.provenance.basis_ids))];
+  const basisIds = [...new Set(items.flatMap((it) => it.provenance.basis_ids))];
   const warnings = [...new Set(input.holidays.notes)];
   const notices = [...new Set(noticeRules.flatMap((r) => r(input)))];
   return { items, hiddenPast, hiddenFuture, warnings, basisIds, notices };

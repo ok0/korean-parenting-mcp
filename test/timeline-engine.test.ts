@@ -84,11 +84,13 @@ describe("buildTimeline", () => {
     expect(result.hiddenFuture).toBe(1);
   });
 
-  it("basisIds include hidden items and warnings are deduped", () => {
+  it("basisIds cover visible items only and warnings are deduped", () => {
     const past = { ...item("past", addDays(R, -10), addDays(R, -1)), provenance: { ...prov, basis_ids: ["b2"] } };
     const shown = { ...item("shown", R, addDays(R, 5)), provenance: { ...prov, basis_ids: ["b1"] } };
     const result = buildTimeline(input({ includePast: false }), fixed([shown, past]));
-    expect(result.basisIds).toEqual(["b2", "b1"]);
+    expect(result.basisIds).toEqual(["b1"]);
+    const all = buildTimeline(input({ includePast: true }), fixed([shown, past]));
+    expect(all.basisIds).toEqual(["b2", "b1"]);
 
     const warned = buildTimeline(
       input({ holidays: createCalendar({}, ["n1", "n1", "n2"]) }),
