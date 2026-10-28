@@ -1,0 +1,55 @@
+name: holidays-refresh
+on:
+  schedule:
+    - cron: "23 0 1 * *" # 매월 1일 09:23 KST
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: holidays-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    env:
+      BRANCH: automation/holidays-refresh
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run build:scripts
+      - name: refresh holidays
+        id: refresh
+        env:
+          DATA_GO_KR_SERVICE_KEY: ${{ secrets.DATA_GO_KR_SERVICE_KEY }}
+        run: |
+          set +e
+          node build-scripts/scripts/refresh-holidays.js --file data/holidays.json --summary-out "$RUNNER_TEMP/pr-body.md" 2> "$RUNNER_TEMP/refresh.log"
+          code=$?
+          set -e
+          cat "$RUNNER_TEMP/refresh.log" >&2
+          { echo "### 공휴일 갱신"; echo '```'; cat "$RUNNER_TEMP/refresh.log"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" -ne 0 ] && [ "$code" -ne 10 ]; then exit "$code"; fi
+      - name: open or update pull request
+        if: steps.refresh.outputs.code == '10'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE: ${{ github.event.repository.default_branch }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$BRANCH"
+          git add data/holidays.json
+          git commit -m "chore(data): refresh holidays from KASI"
+          git push --force origin "$BRANCH"
+          number="$(gh pr list --head "$BRANCH" --state open --limit 1 --json number --jq '.[0].number // empty')"
+          if [ -n "$number" ]; then
+            gh pr edit "$number" --body-file "$RUNNER_TEMP/pr-body.md"
+          else
+            gh pr create --base "$BASE" --head "$BRANCH" --title "공휴일 데이터 갱신(KASI)" --body-file "$RUNNER_TEMP/pr-body.md"
+          fi
