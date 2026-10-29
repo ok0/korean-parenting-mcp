@@ -69,9 +69,9 @@ function sectionBody(id: PrivacySectionId, opts: { contact: string; hosting: Hos
     case "items":
       return `<ul><li>도구 인자(질의 내용)는 응답을 만드는 동안 메모리에서만 처리하며 기록하지 않습니다.</li><li>접속 IP 주소는 요청 한도 계산을 위해 약 2분 동안 메모리에서만 사용하며 기록하거나 해시로 저장하지 않습니다.</li><li>호스팅 업체의 플랫폼 접근 로그(접속 IP 주소, 요청 시각 등)가 운영자와 별도로 생성될 수 있습니다.</li><li>서버 캐시는 공공 API 응답을 잠시 보관하는 휘발성 메모리이며 요청자와 연결되지 않습니다.</li><li>이름·연락처 등 식별정보와 건강 관련 정보는 입력하지 마세요. 건강 관련 입력이 신경 쓰이면 로컬 모드(npm·.mcpb)를 사용하세요.</li></ul>`;
     case "retention":
-      return `<p>도구 인자와 접속 IP 주소는 응답 후 폐기합니다.</p><p>호스팅 업체 접근 로그 보존기간: ${logRetention}</p>`;
+      return `<p>도구 인자는 응답 후 폐기하며, 접속 IP 주소는 요청 한도 계산용으로 최대 2분 안에 메모리에서 폐기합니다.</p><p>호스팅 업체 접근 로그 보존기간: ${logRetention}</p>`;
     case "destruction":
-      return `<p>서버가 질의와 접속 정보를 저장하지 않으므로 별도 파기 대상이 없으며, 메모리의 값은 처리 후 사라집니다. 호스팅 접근 로그는 호스팅 업체의 보존기간이 지나면 삭제됩니다.</p>`;
+      return `<p>서버가 질의와 접속 정보를 저장하지 않으므로 별도 파기 대상이 없으며, 메모리의 값은 처리 후 또는 최대 2분 안에 사라집니다. 호스팅 접근 로그는 호스팅 업체의 보존기간이 지나면 삭제됩니다.</p>`;
     case "outsourcing":
       return `<ul><li>수탁자: ${provider}</li><li>위탁 업무: 서버 호스팅 및 접속 로그 처리</li><li>국가·리전: ${country} / ${region}</li><li>보유기간: ${logRetention}</li></ul>`;
     case "transfer":

@@ -3,6 +3,7 @@ import type { IncomingHttpHeaders } from "node:http";
 
 export const WINDOW_MS = 60_000;
 export const DEFAULT_MAX_CLIENTS = 10_000;
+const SWEEP_INTERVAL_MS = 30_000;
 
 export type TakeResult =
   | { ok: true; pool: "direct" | "shared"; release(): void }
@@ -20,6 +21,7 @@ export interface RateLimitOptions {
   maxConcurrent: number;
   sharedEgressCidrs: readonly string[];
   maxClients?: number;
+  sweepIntervalMs?: number;
 }
 
 export interface ClientKeyOptions {
@@ -61,12 +63,15 @@ export function createRateLimiter(opts: RateLimitOptions): RateLimiter {
   const egress = toBlockList(opts.sharedEgressCidrs);
   const max = opts.maxClients ?? DEFAULT_MAX_CLIENTS;
   const retry = (c: Window, now: number): number => Math.max(1, Math.ceil((c.windowStart + WINDOW_MS - now) / 1000));
+  const sweep = (now: number): void => {
+    for (const [k, c] of clients) if (now - c.windowStart >= WINDOW_MS) clients.delete(k);
+  };
+  const timer = setInterval(() => sweep(Date.now()), opts.sweepIntervalMs ?? SWEEP_INTERVAL_MS);
+  timer.unref();
 
   return {
     async take(key: string, now: number): Promise<TakeResult> {
-      for (const [k, c] of clients) {
-        if (now - c.windowStart >= WINDOW_MS) clients.delete(k);
-      }
+      sweep(now);
       if (now - shared.windowStart >= WINDOW_MS) {
         shared.windowStart = now;
         shared.count = 0;

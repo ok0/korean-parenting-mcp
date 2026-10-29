@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   createClientKeyResolver,
   createRateLimiter,
@@ -115,5 +115,18 @@ describe("rate limit", () => {
     expect(
       xff({ socket: { remoteAddress: "127.0.0.1" }, headers: { "x-real-ip": "203.0.113.9" } }),
     ).toBe("127.0.0.1");
+  });
+
+  it("idle entries are swept by timer within 2 minutes", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(t);
+    const lim = createRateLimiter(base);
+    await lim.take("1.2.3.4", Date.now());
+    expect(lim.trackedClients).toBe(1);
+    vi.advanceTimersByTime(31_000);
+    expect(lim.trackedClients).toBe(1);
+    vi.advanceTimersByTime(89_000);
+    expect(lim.trackedClients).toBe(0);
+    vi.useRealTimers();
   });
 });

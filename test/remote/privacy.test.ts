@@ -109,6 +109,7 @@ describe("privacy pages", () => {
     expect(items).toContain("호스팅 업체");
     const retention = section(html, "retention");
     expect(retention).toContain("응답 후 폐기");
+    expect(retention).toContain("최대 2분");
     expect(retention).toContain("log-retention-sentinel-30d");
     const outsourcing = section(html, "outsourcing");
     for (const v of ["host-provider-sentinel", "KR", "host-region-sentinel", "log-retention-sentinel-30d"]) {
