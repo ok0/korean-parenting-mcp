@@ -3,12 +3,14 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { PROVIDER_LABELS, REMOTE_POLICY } from "../../src/remote/allowlist.js";
+import { PRIVACY_SECTIONS } from "../../src/remote/privacy.js";
 import { UPSTREAM_BUCKETS, DEFAULT_BUDGETS, DEFAULT_MIN_TTL_MS } from "../../src/core/upstream-guard.js";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const ALLOW = join(root, ".docs/remote/allowlist.md");
 const CONF = join(root, ".docs/remote/provider-confirmations.md");
 const QUOTA = join(root, ".docs/remote/quota.md");
+const PRIVACY = join(root, ".docs/remote/privacy-policy-draft.md");
 
 describe.skipIf(!existsSync(ALLOW))("remote allowlist doc", () => {
   const lines = existsSync(ALLOW) ? readFileSync(ALLOW, "utf8").split("\n") : [];
@@ -98,6 +100,47 @@ describe.skipIf(!existsSync(QUOTA))("quota doc", () => {
       "최대 30분",
     ]) {
       expect(text, s).toContain(s);
+    }
+  });
+});
+
+describe.skipIf(!existsSync(PRIVACY))("privacy policy draft doc", () => {
+  const text = existsSync(PRIVACY) ? readFileSync(PRIVACY, "utf8") : "";
+  const lines = text.split("\n");
+  const ENV_NAMES = ["KPM_OPERATOR_CONTACT", "KPM_HOST_PROVIDER", "KPM_HOST_COUNTRY", "KPM_HOST_REGION", "KPM_HOST_LOG_RETENTION"];
+
+  it("has sections a–e and legal disclaimer", () => {
+    for (const h of ["## (a) 게시 내용 초안", "## (b) 필수 항목별 근거", "## (c) 작성지침 대조 체크리스트 (MANUAL)", "## (d) 환경변수 값 예시", "## (e) 코드 동작과 처리방침 문장 대응표"]) {
+      expect(text).toContain(h);
+    }
+    expect(text).toContain("법률 자문이 아닙니다");
+  });
+
+  it("has MANUAL checklist with blank verifier/date", () => {
+    expect(lines.some((l) => l.includes("| 항목 | 지침 조항 | 검증자 | 일자 | 결과 |"))).toBe(true);
+    const start = text.indexOf("## (c) 작성지침 대조 체크리스트 (MANUAL)");
+    const end = text.indexOf("## (d)", start);
+    const section = text.slice(start, end);
+    for (const id of PRIVACY_SECTIONS.map((s) => s.id)) {
+      expect(section.split("\n").some((l) => l.startsWith(`| ${id}`) || l.includes(`\`${id}\``)), id).toBe(true);
+    }
+  });
+
+  it("env examples are placeholders", () => {
+    for (const name of ENV_NAMES) {
+      expect(new RegExp("^" + name + "=<[^>]+>$", "m").test(text), name).toBe(true);
+    }
+  });
+
+  it("no real contact, vendor or key values", () => {
+    for (const m of text.match(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g) ?? []) {
+      expect(m.endsWith("example.com"), m).toBe(true);
+    }
+    expect(text).not.toMatch(/\b(aws|lightsail|fly\.io|cloudflare|vercel|netlify|heroku|railway)\b/i);
+    for (const name of [...ENV_NAMES, "DATA_GO_KR_SERVICE_KEY", "KINDERGARTEN_API_KEY", "LAW_OC", "SAFETYKOREA_AUTH_KEY"]) {
+      const v = process.env[name];
+      if (v === undefined || v.length < 8) continue;
+      expect(text.includes(v), `value of ${name} must not appear in the doc`).toBe(false);
     }
   });
 });

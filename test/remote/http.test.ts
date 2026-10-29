@@ -94,7 +94,7 @@ describe("remote http", () => {
     expect(query.status).toBe(400);
     expectSecurity(query.headers);
 
-    for (const path of ["/nope", "/privacy", "/"]) {
+    for (const path of ["/nope", "/privacy/x", "/index.html"]) {
       const r = await rawRequest(port, { method: "GET", path });
       expect(r.status, path).toBe(404);
       expectSecurity(r.headers);

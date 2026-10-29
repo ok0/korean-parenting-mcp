@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { checkRequest, normalizeHost, type GuardConfig } from "../../src/remote/request-guard.js";
 import { loadRemoteConfig } from "../../src/remote/remote-config.js";
+import { REMOTE_TEST_ENV } from "../helpers/remote-env.js";
 
 const TOKEN = "t".repeat(40);
-const rc: GuardConfig = { ...loadRemoteConfig({}) };
+const rc: GuardConfig = { ...loadRemoteConfig(REMOTE_TEST_ENV) };
 const JSON_TYPE = { "content-type": "application/json" };
 
 function req(method: string, url: string, extra: Record<string, string | undefined> = {}) {
@@ -62,8 +63,31 @@ describe("checkRequest", () => {
       .toEqual({ ok: false, status: 405, reason: "method", allow: "GET" });
   });
 
-  it.each(["/privacy", "/", "/nope"])("returns 404 for %s", (url) => {
-    expect(checkRequest(req("GET", url), rc)).toEqual({ ok: false, status: 404, reason: "path" });
+  it("returns 404 for /nope", () => {
+    expect(checkRequest(req("GET", "/nope"), rc)).toEqual({ ok: false, status: 404, reason: "path" });
+  });
+
+  it.each([
+    ["/privacy", "privacy"],
+    ["/", "landing"],
+  ])("routes GET and HEAD %s", (url, route) => {
+    expect(checkRequest(req("GET", url), rc)).toEqual({ ok: true, route });
+    expect(checkRequest(req("HEAD", url), rc)).toEqual({ ok: true, route });
+  });
+
+  it.each(["/privacy", "/"])("rejects POST %s as 405", (url) => {
+    expect(checkRequest(req("POST", url), rc))
+      .toEqual({ ok: false, status: 405, reason: "method", allow: "GET, HEAD" });
+  });
+
+  it("rejects /privacy with query as 400", () => {
+    expect(checkRequest(req("GET", "/privacy?x=1"), rc))
+      .toEqual({ ok: false, status: 400, reason: "query" });
+  });
+
+  it("rejects /privacy with foreign host as 403", () => {
+    expect(checkRequest(req("GET", "/privacy", { host: "evil.example" }), rc))
+      .toEqual({ ok: false, status: 403, reason: "host" });
   });
 
   it("rejects a query string as 400", () => {

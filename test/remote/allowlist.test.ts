@@ -9,9 +9,11 @@ import {
   policyViolations,
   REMOTE_EXCLUDED_HEADING,
   REMOTE_POLICY,
+  REMOTE_PRIVACY_HEADING,
   remoteTools,
   type RemotePolicy,
 } from "../../src/remote/allowlist.js";
+import { REMOTE_INPUT_NOTICE } from "../../src/remote/privacy.js";
 
 const names = allTools.map((t) => t.name);
 
@@ -77,6 +79,23 @@ describe("remote allowlist policy", () => {
     expect(text).toContain("check_recall");
     expect(text).toContain("https://www.safetykorea.kr");
     const allExposed = REMOTE_POLICY.map((p) => ({ ...p, expose: true }));
-    expect(buildRemoteInstructions(allExposed)).toBe(SERVER_INSTRUCTIONS);
+    expect(buildRemoteInstructions(allExposed)).toBe(
+      `${SERVER_INSTRUCTIONS}\n\n${REMOTE_PRIVACY_HEADING}\n${REMOTE_INPUT_NOTICE}\n개인정보 처리방침: 이 서버의 /privacy 경로에서 볼 수 있습니다.`,
+    );
+    expect(buildRemoteInstructions(allExposed)).not.toContain(REMOTE_EXCLUDED_HEADING);
+    expect(text.endsWith("/privacy 경로에서 볼 수 있습니다.")).toBe(true);
+  });
+
+  it("remote descriptions carry the notice and do not mutate local tools", () => {
+    const originals = new Map(allTools.map((t) => [t.name, t.description]));
+    for (const t of remoteTools(allTools)) {
+      const o = allTools.find((x) => x.name === t.name)!;
+      expect(t.description).toBe(`${o.description}\n\n${REMOTE_INPUT_NOTICE}`);
+      expect(t).not.toBe(o);
+    }
+    for (const t of allTools) {
+      expect(t.description).not.toContain(REMOTE_INPUT_NOTICE);
+      expect(t.description).toBe(originals.get(t.name));
+    }
   });
 });

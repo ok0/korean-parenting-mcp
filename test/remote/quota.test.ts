@@ -9,6 +9,7 @@ import { runTool } from "../../src/core/pipeline.js";
 import { buildRemoteDeps } from "../../src/remote/app.js";
 import { createMetricsLog, createRemoteLogger, QUOTA_KEYS } from "../../src/remote/metrics-log.js";
 import { loadRemoteConfig } from "../../src/remote/remote-config.js";
+import { REMOTE_TEST_ENV } from "../helpers/remote-env.js";
 import { findNightPediatricTool } from "../../src/tools/find-night-pediatric.js";
 import { createNemcMock, TEST_KEY } from "../helpers/nemc-mock.js";
 import { mcpHeaders, rawRequest, startRemote, type StartedRemote } from "../helpers/remote-server.js";
@@ -50,7 +51,7 @@ const parseLines = (lines: string[]): Record<string, unknown>[] =>
 
 describe("remote quota wiring", () => {
   it("remote context wires guard, stale cache; local does not", () => {
-    const deps = buildRemoteDeps(loadRemoteConfig({}));
+    const deps = buildRemoteDeps(loadRemoteConfig(REMOTE_TEST_ENV));
     expect(deps.baseCtx.upstream).toBeDefined();
     expect(deps.baseCtx.cache).toBeInstanceOf(TtlCache);
     expect((deps.baseCtx.cache as TtlCache).staleRetentionMs).toBe(86_400_000);
@@ -63,7 +64,7 @@ describe("remote quota wiring", () => {
   });
 
   it("no TTL 0 cacheable call remotely", () => {
-    const deps = buildRemoteDeps(loadRemoteConfig({}));
+    const deps = buildRemoteDeps(loadRemoteConfig(REMOTE_TEST_ENV));
     const guard = deps.baseCtx.upstream!;
     for (const spec of Object.values(SPECS).filter((s) => s.confirmed)) {
       expect(Math.max(spec.cacheTtlMs, guard.minTtl(dataGoKrCacheKey(spec, {})))).toBeGreaterThan(0);
@@ -109,7 +110,7 @@ describe("remote quota wiring", () => {
   });
 
   it("webhook: same JSON once per bucket·level·day, never delays, URL hidden", async () => {
-    const rc = loadRemoteConfig({
+    const rc = loadRemoteConfig({ ...REMOTE_TEST_ENV,
       DATA_GO_KR_SERVICE_KEY: TEST_KEY,
       KPM_BUDGET_NEMC_LIST: "1",
       KPM_BUDGET_NEMC_MOONLIGHT: "1",
@@ -155,7 +156,7 @@ describe("remote quota wiring", () => {
   });
 
   it("webhook failure is silent and never changes the result", async () => {
-    const rc = loadRemoteConfig({
+    const rc = loadRemoteConfig({ ...REMOTE_TEST_ENV,
       DATA_GO_KR_SERVICE_KEY: TEST_KEY,
       KPM_BUDGET_NEMC_LIST: "1",
       KPM_BUDGET_NEMC_MOONLIGHT: "1",

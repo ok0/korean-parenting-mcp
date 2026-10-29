@@ -5,6 +5,7 @@ import { createLogger } from "../../src/core/logger.js";
 import { buildRemoteDeps, createRemoteHandler, type RemoteDepsExtras, type RemoteHandler } from "../../src/remote/app.js";
 import { createMetricsLog } from "../../src/remote/metrics-log.js";
 import { loadRemoteConfig, type RemoteConfig } from "../../src/remote/remote-config.js";
+import { REMOTE_TEST_ENV } from "./remote-env.js";
 
 export interface StartedRemote {
   port: number;
@@ -20,7 +21,7 @@ export async function startRemote(
   extras: RemoteDepsExtras = {},
 ): Promise<StartedRemote> {
   const rc: RemoteConfig = {
-    ...loadRemoteConfig(env),
+    ...loadRemoteConfig({ ...REMOTE_TEST_ENV, ...env }),
     rate: { perClientPerMin: 1_000_000, sharedPoolPerMin: 1_000_000, globalPerMin: 1_000_000, maxConcurrent: 1_000 },
     ...rcOver,
   };

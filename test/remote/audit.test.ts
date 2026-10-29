@@ -9,6 +9,7 @@ import {
   type MetricsEvent,
 } from "../../src/remote/metrics-log.js";
 import { loadRemoteConfig } from "../../src/remote/remote-config.js";
+import { REMOTE_TEST_ENV } from "../helpers/remote-env.js";
 import { createDgkMock } from "../helpers/dgk-mock.js";
 import { TEST_KEY as DGK } from "../helpers/nemc-mock.js";
 import { KG_TEST_KEY as KG } from "../helpers/kg-mock.js";
@@ -87,7 +88,7 @@ beforeAll(async () => {
   };
   spies.push(vi.spyOn(process.stderr, "write").mockImplementation(capture as never));
   spies.push(vi.spyOn(process.stdout, "write").mockImplementation(capture as never));
-  const secrets = loadRemoteConfig(ENV).secrets;
+  const secrets = loadRemoteConfig({ ...REMOTE_TEST_ENV, ...ENV }).secrets;
   const cfg = { trustProxy: "xff" as const };
 
   const s1 = await startRemote(
@@ -232,7 +233,7 @@ describe("sentinel audit", () => {
   });
 
   it("SAFETYKOREA removed from remote base", () => {
-    const rc = loadRemoteConfig(ENV);
+    const rc = loadRemoteConfig({ ...REMOTE_TEST_ENV, ...ENV });
     expect(rc.base.keys.SAFETYKOREA).toBeUndefined();
     expect(rc.secrets).toContain(SK);
   });

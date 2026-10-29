@@ -3,10 +3,11 @@ import { loadConfig } from "../../src/core/config.js";
 import { DEFAULT_BUDGETS, DEFAULT_MIN_TTL_MS, UPSTREAM_BUCKETS } from "../../src/core/upstream-guard.js";
 import { REMOTE_POLICY } from "../../src/remote/allowlist.js";
 import { loadRemoteConfig, RemoteConfigError, restrictKeys } from "../../src/remote/remote-config.js";
+import { REMOTE_TEST_ENV, REQUIRED_REMOTE_ENV } from "../helpers/remote-env.js";
 
 describe("loadRemoteConfig", () => {
   it("defaults", () => {
-    const rc = loadRemoteConfig({});
+    const rc = loadRemoteConfig(REMOTE_TEST_ENV);
     expect(rc.port).toBe(8080);
     expect(rc.host).toBe("127.0.0.1");
     expect(rc.allowedHosts).toEqual(["localhost", "127.0.0.1"]);
@@ -24,7 +25,7 @@ describe("loadRemoteConfig", () => {
   });
 
   it("parses lists", () => {
-    const rc = loadRemoteConfig({
+    const rc = loadRemoteConfig({ ...REMOTE_TEST_ENV,
       KPM_ALLOWED_HOSTS: " Example.COM ,localhost",
       KPM_ALLOWED_ORIGINS: "https://a.example/",
     });
@@ -53,7 +54,7 @@ describe("loadRemoteConfig", () => {
   ])("invalid %s fails with item name only", (name, value) => {
     let caught: unknown;
     try {
-      loadRemoteConfig({ [name]: value });
+      loadRemoteConfig({ ...REMOTE_TEST_ENV, [name]: value });
     } catch (err) {
       caught = err;
     }
@@ -66,19 +67,19 @@ describe("loadRemoteConfig", () => {
 
   it("bearer token accepted and masked", () => {
     const token = "a".repeat(40);
-    const rc = loadRemoteConfig({ KPM_REMOTE_BEARER_TOKEN: token });
+    const rc = loadRemoteConfig({ ...REMOTE_TEST_ENV, KPM_REMOTE_BEARER_TOKEN: token });
     expect(rc.bearerToken).toBe(token);
     expect(rc.secrets).toContain(token);
   });
 
   it("keys use local env names", () => {
-    const rc = loadRemoteConfig({ LAW_OC: "fake-law-oc-value" });
+    const rc = loadRemoteConfig({ ...REMOTE_TEST_ENV, LAW_OC: "fake-law-oc-value" });
     expect(rc.base.keys.LAW_OC).toBe("fake-law-oc-value");
     expect(rc.secrets).toContain("fake-law-oc-value");
   });
 
   it("parses rate and cidr env", () => {
-    const rc = loadRemoteConfig({
+    const rc = loadRemoteConfig({ ...REMOTE_TEST_ENV,
       KPM_RATE_PER_CLIENT_PER_MIN: "5",
       KPM_SHARED_EGRESS_CIDRS: "10.1.0.0/16, ::ffff:0:0/96",
     });
@@ -87,7 +88,7 @@ describe("loadRemoteConfig", () => {
   });
 
   it("removes keys used only by excluded tools", () => {
-    const rc = loadRemoteConfig({ SAFETYKOREA_AUTH_KEY: "Sk-fake-value-1234", LAW_OC: "fake-law-oc-value" });
+    const rc = loadRemoteConfig({ ...REMOTE_TEST_ENV, SAFETYKOREA_AUTH_KEY: "Sk-fake-value-1234", LAW_OC: "fake-law-oc-value" });
     expect(rc.base.keys.SAFETYKOREA).toBeUndefined();
     expect(rc.base.keys.LAW_OC).toBe("fake-law-oc-value");
     expect(rc.secrets).toContain("Sk-fake-value-1234");
@@ -104,7 +105,7 @@ describe("loadRemoteConfig", () => {
 
 describe("loadRemoteConfig quota", () => {
   it("quota defaults", () => {
-    const rc = loadRemoteConfig({});
+    const rc = loadRemoteConfig(REMOTE_TEST_ENV);
     expect(rc.quota).toEqual({
       budgets: { ...DEFAULT_BUDGETS },
       minTtlMs: { ...DEFAULT_MIN_TTL_MS },
@@ -118,7 +119,7 @@ describe("loadRemoteConfig quota", () => {
 
   it("quota overrides and webhook secret", () => {
     const url = "https://hook.example/abc";
-    const rc = loadRemoteConfig({
+    const rc = loadRemoteConfig({ ...REMOTE_TEST_ENV,
       KPM_BUDGET_NEMC_LIST: "900",
       KPM_BUDGET_SAFETYKOREA: "0",
       KPM_MIN_TTL_NEMC_MOONLIGHT_MS: "600000",
@@ -147,7 +148,7 @@ describe("loadRemoteConfig quota", () => {
   ])("invalid %s=%s fails with item name only", (name, value) => {
     let caught: unknown;
     try {
-      loadRemoteConfig({ [name]: value });
+      loadRemoteConfig({ ...REMOTE_TEST_ENV, [name]: value });
     } catch (err) {
       caught = err;
     }
@@ -156,5 +157,51 @@ describe("loadRemoteConfig quota", () => {
     expect(err.item).toBe(name);
     expect(err.message).toContain(name);
     expect(err.message).not.toContain(value);
+  });
+});
+
+describe("loadRemoteConfig hosting disclosure", () => {
+  it("reads hosting disclosure and contact", () => {
+    const rc = loadRemoteConfig(REMOTE_TEST_ENV);
+    expect(rc.hosting).toEqual({
+      provider: "host-provider-sentinel",
+      country: "KR",
+      region: "host-region-sentinel",
+      logRetention: "log-retention-sentinel-30d",
+    });
+    expect(rc.operatorContact).toBe("operator-contact-sentinel@example.com");
+    expect(rc.secrets).not.toContain("operator-contact-sentinel@example.com");
+  });
+
+  it.each(REQUIRED_REMOTE_ENV)("missing or blank %s fails with item name only", (name) => {
+    for (const env of [
+      Object.fromEntries(Object.entries(REMOTE_TEST_ENV).filter(([k]) => k !== name)),
+      { ...REMOTE_TEST_ENV, [name]: "   " },
+    ]) {
+      let caught: unknown;
+      try {
+        loadRemoteConfig(env);
+      } catch (err) {
+        caught = err;
+      }
+      expect(caught).toBeInstanceOf(RemoteConfigError);
+      expect((caught as RemoteConfigError).item).toBe(name);
+    }
+  });
+
+  it.each(REQUIRED_REMOTE_ENV)("too long or control char %s fails", (name) => {
+    for (const value of [`SENTINELVAL${"x".repeat(200)}`, "ab\u0007cd"]) {
+      let caught: unknown;
+      try {
+        loadRemoteConfig({ ...REMOTE_TEST_ENV, [name]: value });
+      } catch (err) {
+        caught = err;
+      }
+      expect(caught).toBeInstanceOf(RemoteConfigError);
+      const err = caught as RemoteConfigError;
+      expect(err.item).toBe(name);
+      expect(err.message).not.toContain("SENTINELVAL");
+    }
+    expect(() => loadRemoteConfig({ ...REMOTE_TEST_ENV, [name]: "y".repeat(200) })).not.toThrow();
   });
 });

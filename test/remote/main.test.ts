@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
 import { VERSION } from "../../src/version.js";
+import { REMOTE_TEST_ENV, REQUIRED_REMOTE_ENV } from "../helpers/remote-env.js";
 import { rawRequest } from "../helpers/remote-server.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
@@ -16,10 +17,12 @@ interface Run {
   exit: Promise<number | null>;
 }
 
-function launch(extra: Record<string, string>): Run {
+function launch(extra: Record<string, string>, omit: readonly string[] = []): Run {
+  const env: Record<string, string> = { PATH: process.env.PATH ?? "", ...REMOTE_TEST_ENV, ...extra };
+  for (const k of omit) delete env[k];
   const child = spawn(process.execPath, [MAIN], {
     cwd: root,
-    env: { PATH: process.env.PATH ?? "", ...extra },
+    env,
   });
   let err = "";
   let out = "";
@@ -149,6 +152,27 @@ describe("remote entry point", () => {
     expect(await run.exit).toBe(1);
     expect(run.stderr()).toContain("KPM_ALERT_RATIO");
     expect(run.stderr()).not.toContain("9.9");
+  });
+
+  it.each(REQUIRED_REMOTE_ENV)("missing %s exits 1 with item name only", async (name) => {
+    const run = launch({}, [name]);
+    expect(await run.exit).toBe(1);
+    expect(run.stderr()).toContain(name);
+  });
+
+  it.each(REQUIRED_REMOTE_ENV)("blank or oversized %s exits 1 without value", async (name) => {
+    const blank = launch({ [name]: " " });
+    expect(await blank.exit).toBe(1);
+    expect(blank.stderr()).toContain(name);
+
+    const long = launch({ [name]: `SENTINELVAL${"z".repeat(200)}` });
+    expect(await long.exit).toBe(1);
+    expect(long.stderr()).toContain(name);
+    expect(long.stderr()).not.toContain("SENTINELVAL");
+
+    const ctl = launch({ [name]: "ab\u0007SENTINELCTL" });
+    expect(await ctl.exit).toBe(1);
+    expect(ctl.stderr()).not.toContain("SENTINELCTL");
   });
 
   it.each([
