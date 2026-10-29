@@ -173,7 +173,7 @@ describe("project structure", () => {
     }
   });
 
-  it("no hosting vendor specifics in src", () => {
+  it("no hosting vendor SDKs, headers or env names in src (GCP/AWS/others)", () => {
     const banned = [
       "@aws-sdk",
       "aws-sdk",
@@ -187,6 +187,18 @@ describe("project structure", () => {
       "x-amzn-",
       "x-appengine-",
       "@netlify/",
+      "@google-cloud/",
+      "googleapis",
+      "x-goog-",
+      "x-cloud-trace-context",
+      "x-serverless-authorization",
+      "k_service",
+      "k_revision",
+      "k_configuration",
+      "google_cloud_project",
+      "gcloud",
+      "aws_region",
+      "aws_lambda",
     ];
     for (const f of srcFiles) {
       const text = readFileSync(f, "utf8").toLowerCase();

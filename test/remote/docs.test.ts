@@ -107,13 +107,18 @@ describe.skipIf(!existsSync(QUOTA))("quota doc", () => {
 describe.skipIf(!existsSync(PRIVACY))("privacy policy draft doc", () => {
   const text = existsSync(PRIVACY) ? readFileSync(PRIVACY, "utf8") : "";
   const lines = text.split("\n");
-  const ENV_NAMES = ["KPM_OPERATOR_CONTACT", "KPM_HOST_PROVIDER", "KPM_HOST_COUNTRY", "KPM_HOST_REGION", "KPM_HOST_LOG_RETENTION"];
+  const ENV_NAMES = ["KPM_OPERATOR_CONTACT", "KPM_HOST_PROVIDER", "KPM_HOST_COUNTRY", "KPM_HOST_REGION", "KPM_HOST_LOG_RETENTION", "KPM_HOST_REQUEST_LOGS"];
 
   it("has sections a–e and legal disclaimer", () => {
     for (const h of ["## (a) 게시 내용 초안", "## (b) 필수 항목별 근거", "## (c) 작성지침 대조 체크리스트 (MANUAL)", "## (d) 환경변수 값 예시", "## (e) 코드 동작과 처리방침 문장 대응표"]) {
       expect(text).toContain(h);
     }
     expect(text).toContain("법률 자문이 아닙니다");
+  });
+
+  it("draft has no 2-minute wording", () => {
+    expect(text).not.toContain("약 2분");
+    expect(text).not.toContain("최대 2분");
   });
 
   it("has MANUAL checklist with blank verifier/date", () => {

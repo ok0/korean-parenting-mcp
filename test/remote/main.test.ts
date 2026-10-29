@@ -83,6 +83,21 @@ describe("remote entry point", () => {
     expect(run.stderr()).not.toContain("abc");
   });
 
+  it("PORT used when KPM_HTTP_PORT absent", async () => {
+    const run = launch({ PORT: "0" });
+    const m = await waitForMatch(run, /listening on 127\.0\.0\.1:(\d+)/, 10_000);
+    expect(Number(m[1])).toBeGreaterThan(0);
+    run.child.kill("SIGTERM");
+    expect(await run.exit).toBe(0);
+  });
+
+  it("invalid PORT fails with item name only", async () => {
+    const run = launch({ PORT: "abc" });
+    expect(await run.exit).toBe(1);
+    expect(run.stderr()).toContain("원격 서버 설정 오류: PORT\n");
+    expect(run.stderr()).not.toContain("abc");
+  });
+
   it("short bearer token exits 1 with item name only", async () => {
     const value = "short-token-value-123";
     const run = launch({ KPM_REMOTE_BEARER_TOKEN: value });

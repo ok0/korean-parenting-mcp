@@ -88,7 +88,7 @@ describe("rate limit", () => {
   });
 
   it("exposes no key listing", async () => {
-    expect(Object.keys(createRateLimiter(base)).sort()).toEqual(["take", "trackedClients"]);
+    expect(Object.keys(createRateLimiter(base)).sort()).toEqual(["clear", "take", "trackedClients"]);
     expect(Object.keys(await import("../../src/remote/rate-limit.js")).sort()).toEqual([
       "DEFAULT_MAX_CLIENTS",
       "WINDOW_MS",
@@ -96,6 +96,63 @@ describe("rate limit", () => {
       "createRateLimiter",
       "normalizeIp",
     ]);
+  });
+
+  it("clear empties all windows", async () => {
+    const lim = createRateLimiter({ ...base, perClientPerMin: 1 });
+    for (const ip of ["10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5"]) {
+      await lim.take(ip, t);
+    }
+    expect(await lim.take("160.79.104.10", t)).toMatchObject({ ok: true, pool: "shared" });
+    expect(lim.trackedClients).toBe(5);
+    lim.clear();
+    expect(lim.trackedClients).toBe(0);
+    expect(await lim.take("10.0.0.1", t)).toMatchObject({ ok: true });
+  });
+
+  it("take sweeps expired entries without timer (AC6)", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(t);
+    const lim = createRateLimiter({ ...base, sweepIntervalMs: 0 });
+    for (const ip of ["10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5"]) {
+      await lim.take(ip, t);
+    }
+    vi.advanceTimersByTime(120_000);
+    expect(lim.trackedClients).toBe(5);
+    await lim.take("9.9.9.9", t + 60_000);
+    expect(lim.trackedClients).toBe(1);
+    vi.useRealTimers();
+  });
+
+  it("daily cap per KST day", async () => {
+    const lim = createRateLimiter({ ...base, perClientPerMin: 100, globalPerMin: 1000, dailyCap: 2 });
+    const t0 = Date.parse("2026-10-28T14:59:00Z");
+    expect((await lim.take("10.0.0.1", t0)).ok).toBe(true);
+    expect((await lim.take("10.0.0.1", t0)).ok).toBe(true);
+    expect(await lim.take("10.0.0.1", t0)).toMatchObject({ ok: false, scope: "daily", retryAfterSec: 60 });
+    expect((await lim.take("10.0.0.1", Date.parse("2026-10-28T15:00:00Z"))).ok).toBe(true);
+  });
+
+  it("daily checked after global", async () => {
+    const lim = createRateLimiter({ ...base, globalPerMin: 1, dailyCap: 1 });
+    expect((await lim.take("10.0.0.1", t)).ok).toBe(true);
+    expect(await lim.take("10.0.0.2", t)).toMatchObject({ ok: false, scope: "global" });
+  });
+
+  it("xff client index", () => {
+    const req = {
+      socket: { remoteAddress: "127.0.0.1" },
+      headers: { "x-forwarded-for": "198.51.100.7, 203.0.113.5" },
+    };
+    const resolver = (n: number) => createClientKeyResolver({
+      trustProxy: "xff",
+      trustedProxyCidrs: ["127.0.0.0/8"],
+      xffClientIndexFromRight: n,
+    });
+    expect(resolver(1)(req)).toBe("203.0.113.5");
+    expect(resolver(2)(req)).toBe("198.51.100.7");
+    expect(resolver(3)(req)).toBe("127.0.0.1");
+    expect(resolver(2)({ socket: { remoteAddress: "8.8.8.8" }, headers: req.headers })).toBe("8.8.8.8");
   });
 
   it("client key resolver", () => {

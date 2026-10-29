@@ -59,6 +59,15 @@ function compositeFetch(): typeof fetch {
 
 type CallOut = { content: unknown; isError?: boolean };
 
+const normRevision = (content: unknown): string =>
+  JSON.stringify(
+    (content as { type: string; text?: string }[]).map((c) =>
+      c.text === undefined ? c : { ...c, text: c.text.replace(/개정 확인[^\n]*/g, "개정 확인<norm>") },
+    ),
+  );
+const same = (tool: string, content: unknown): string =>
+  tool === "get_timeline" ? normRevision(content) : JSON.stringify(content);
+
 async function runInMemory(env: Record<string, string>, fx: typeof fetch, cases: typeof CASES): Promise<CallOut[]> {
   const ctx = createDefaultContext(loadConfig(env), { clock, fetch: fx, cache: new TtlCache(), log: silent });
   const [ct, st] = InMemoryTransport.createLinkedPair();
@@ -98,16 +107,16 @@ afterAll(async () => {
 describe("remote parity with local surface", () => {
   it("exposed tools cover every CASES tool", () => {
     expect(new Set(CASES.map((c) => c.tool))).toEqual(new Set(remoteTools(allTools).map((t) => t.name)));
-    expect(new Set(CASES.map((c) => c.tool)).size).toBe(9);
+    expect(new Set(CASES.map((c) => c.tool)).size).toBe(8);
   });
 
-  it("9 exposed tools x 2 inputs answer identically over InMemory and HTTP", async () => {
+  it("8 exposed tools x 2 inputs answer identically over InMemory and HTTP", async () => {
     const mem = await runInMemory(ENV, compositeFetch(), CASES);
     const http = await runHttp(ENV, compositeFetch(), CASES, opened);
     expect(http.length).toBe(mem.length);
     for (let i = 0; i < CASES.length; i++) {
       const label = `${CASES[i]!.tool} #${i}`;
-      expect(JSON.stringify(http[i]!.content), label).toBe(JSON.stringify(mem[i]!.content));
+      expect(same(CASES[i]!.tool, http[i]!.content), label).toBe(same(CASES[i]!.tool, mem[i]!.content));
       expect(Boolean(http[i]!.isError), label).toBe(Boolean(mem[i]!.isError));
     }
   });
@@ -121,6 +130,30 @@ describe("remote parity with local surface", () => {
     const http = await runHttp({}, failing, cases, opened);
     const mem = await runInMemory({}, failing, cases);
     expect(http[0]!.isError).toBeFalsy();
-    expect(JSON.stringify(http[0]!.content)).toBe(JSON.stringify(mem[0]!.content));
+    expect(normRevision(http[0]!.content)).toBe(normRevision(mem[0]!.content));
+  });
+
+  it("remote get_timeline: no law.go.kr calls and original links (AC2)", async () => {
+    const inner = compositeFetch();
+    let lawCalls = 0;
+    const counted: typeof fetch = (input, init) => {
+      const href = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+      if (new URL(href).hostname === "www.law.go.kr") lawCalls++;
+      return inner(input, init);
+    };
+    const http = await runHttp(ENV, counted, [{ tool: "get_timeline", args: FIRST.get_timeline! }], opened);
+    expect(lawCalls).toBe(0);
+    const text = (http[0]!.content as { text: string }[]).map((c) => c.text).join("\n");
+    expect(text).toContain("개정 여부 확인 불가(원격) 원문: https://");
+    expect(text).not.toContain("법제처 OC 미설정");
+  });
+
+  it("KPM_LAW_REMOTE=on leaves revisionCheck unset", async () => {
+    const on = await startRemote({}, {}, { KPM_LAW_REMOTE: "on" });
+    opened.push(on);
+    expect(on.deps.baseCtx.revisionCheck).toBeUndefined();
+    const off = await startRemote();
+    opened.push(off);
+    expect(off.deps.baseCtx.revisionCheck).toBe("remote-unavailable");
   });
 });

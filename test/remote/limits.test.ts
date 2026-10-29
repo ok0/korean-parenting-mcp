@@ -226,6 +226,52 @@ describe("remote limits", () => {
     expect(parsed(h.lines).some((p) => p.reason === "parse" && p.outcome === "rejected")).toBe(true);
   });
 
+  it("daily request cap (AC4)", async () => {
+    const h = await start({ dailyRequestCap: 2 });
+    expect((await post(h.port)).status).toBe(200);
+    expect((await post(h.port)).status).toBe(200);
+
+    const capped = await post(h.port);
+    expect(capped.status).toBe(429);
+    expect(Number(capped.headers["retry-after"])).toBeGreaterThan(0);
+    expect(String(capped.headers["retry-after"])).toMatch(/^\d+$/);
+    expect((JSON.parse(capped.body) as { error: { message: string } }).error.message).toContain("오늘 원격 사용량 한도");
+    expect(capped.body).not.toContain("127.0.0.1");
+    expect(JSON.stringify(capped.headers)).not.toContain("127.0.0.1");
+    expect(capped.body).not.toContain("tools/list");
+
+    await waitFor(() => parsed(h.lines).some((p) => p.outcome === "rate_limited"));
+    for (const line of h.lines) {
+      const obj = JSON.parse(line) as Record<string, unknown>;
+      for (const k of Object.keys(obj)) expect(REQ_KEYS).toContain(k);
+    }
+    expect(parsed(h.lines).find((p) => p.outcome === "rate_limited")).toBeDefined();
+
+    h.clock.t += 4 * 3_600_000;
+    expect((await post(h.port)).status).toBe(200);
+  });
+
+  it("xff client index selects key (AC8)", async () => {
+    const rate8 = { perClientPerMin: 1, sharedPoolPerMin: 1000, globalPerMin: 1000, maxConcurrent: 16 };
+    const h = await start({ trustProxy: "xff", xffClientIndexFromRight: 2, rate: rate8 });
+    expect((await post(h.port, "198.51.100.7, 203.0.113.5")).status).toBe(200);
+    expect((await post(h.port, "198.51.100.8, 203.0.113.5")).status).toBe(200);
+    expect((await post(h.port, "160.79.104.10, 203.0.113.5")).status).toBe(200);
+    await waitFor(() => h.lines.length >= 3);
+    expect(parsed(h.lines)[2]?.pool).toBe("shared");
+
+    const h1 = await start({ trustProxy: "xff", xffClientIndexFromRight: 1, rate: rate8 });
+    expect((await post(h1.port, "198.51.100.7, 203.0.113.5")).status).toBe(200);
+    expect((await post(h1.port, "198.51.100.8, 203.0.113.5")).status).toBe(429);
+    expect((await post(h1.port, "160.79.104.10, 203.0.113.5")).status).toBe(429);
+    await waitFor(() => h1.lines.length >= 3);
+    expect(parsed(h1.lines)[2]?.pool).toBe("direct");
+
+    const h3 = await start({ trustProxy: "xff", xffClientIndexFromRight: 3, rate: rate8 });
+    expect((await post(h3.port, "198.51.100.7, 203.0.113.5")).status).toBe(200);
+    expect((await post(h3.port, "198.51.100.8, 203.0.113.6")).status).toBe(429);
+  });
+
   it("metrics: one req line per request, none for healthz", async () => {
     const h = await start();
     const parsedLines = () => parsed(h.lines);

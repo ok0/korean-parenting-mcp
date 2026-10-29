@@ -2,7 +2,7 @@ import { request, createServer as createHttpServer, type IncomingHttpHeaders, ty
 import type { AddressInfo } from "node:net";
 import type { ToolContext } from "../../src/core/context.js";
 import { createLogger } from "../../src/core/logger.js";
-import { buildRemoteDeps, createRemoteHandler, type RemoteDepsExtras, type RemoteHandler } from "../../src/remote/app.js";
+import { buildRemoteDeps, createRemoteHandler, type RemoteDeps, type RemoteDepsExtras, type RemoteHandler } from "../../src/remote/app.js";
 import { createMetricsLog } from "../../src/remote/metrics-log.js";
 import { loadRemoteConfig, type RemoteConfig } from "../../src/remote/remote-config.js";
 import { REMOTE_TEST_ENV } from "./remote-env.js";
@@ -11,6 +11,7 @@ export interface StartedRemote {
   port: number;
   url: URL;
   handler: RemoteHandler;
+  deps: RemoteDeps;
   close(): Promise<void>;
 }
 
@@ -27,7 +28,8 @@ export async function startRemote(
   };
   const overrides: Partial<ToolContext> = { ...ctxOver };
   if (!overrides.log) overrides.log = createLogger(rc.secrets, "warn", () => {});
-  const handler = createRemoteHandler(buildRemoteDeps(rc, overrides, { metrics: createMetricsLog(() => {}), ...extras }));
+  const deps = buildRemoteDeps(rc, overrides, { metrics: createMetricsLog(() => {}), ...extras });
+  const handler = createRemoteHandler(deps);
   const server: Server = createHttpServer((req, res) => {
     void handler(req, res);
   });
@@ -38,6 +40,7 @@ export async function startRemote(
     port,
     url,
     handler,
+    deps,
     close: async () => {
       handler.closeStreams();
       server.closeAllConnections();

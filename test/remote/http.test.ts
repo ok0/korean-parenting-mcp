@@ -50,7 +50,9 @@ describe("remote http", () => {
     const { tools } = await client.listTools();
     expect(tools.map((t) => t.name)).toEqual(remoteTools(allTools).map((t) => t.name));
     expect(tools.map((t) => t.name)).not.toContain("check_recall");
+    expect(tools.map((t) => t.name)).not.toContain("get_leave_article");
     expect(client.getInstructions()).toContain(REMOTE_EXCLUDED_HEADING);
+    expect(client.getInstructions()).toContain("get_leave_article");
 
     const tl = await client.callTool({
       name: "get_timeline",
@@ -62,6 +64,10 @@ describe("remote http", () => {
     const recall = await client.callTool({ name: "check_recall", arguments: {} });
     expect(recall.isError).toBeFalsy();
     expect(textOf(recall)).toContain("https://www.safetykorea.kr");
+
+    const leave = await client.callTool({ name: "get_leave_article", arguments: {} });
+    expect(leave.isError).toBeFalsy();
+    expect(textOf(leave)).toContain("https://www.law.go.kr/");
 
     const bad = await client.callTool({ name: "no_such_tool", arguments: {} });
     expect(bad.isError).toBe(true);
@@ -218,6 +224,6 @@ describe("remote http", () => {
       JSON.stringify({ jsonrpc: "2.0", id: 2, method: "tools/list", params: { _meta: { protocolVersion: "2025-11-25" } } }),
     );
     expect(list.status).toBe(200);
-    expect((JSON.parse(list.body) as { result: { tools: unknown[] } }).result.tools).toHaveLength(9);
+    expect((JSON.parse(list.body) as { result: { tools: unknown[] } }).result.tools).toHaveLength(8);
   });
 });

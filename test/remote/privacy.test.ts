@@ -7,6 +7,7 @@ import {
   buildRemoteInstructions,
   REMOTE_EXCLUDED_HEADING,
   REMOTE_PRIVACY_HEADING,
+  REMOTE_SERVER_INSTRUCTIONS,
   remoteTools,
 } from "../../src/remote/allowlist.js";
 import {
@@ -218,21 +219,27 @@ describe("privacy pages", () => {
       const local = allTools.find((x) => x.name === t.name);
       expect(local).toBeDefined();
       expect(t.description!.endsWith("\n\n" + REMOTE_INPUT_NOTICE)).toBe(true);
-      expect(t.description!.startsWith(local!.description)).toBe(true);
+      const base = t.name === "get_timeline"
+        ? local!.description.replace(
+            "LAW_OC가 설정되어 있으면 근거 문서의 개정 여부를 법제처에서 확인해 함께 표시합니다.",
+            "원격 모드는 법제처 조회를 하지 않아 근거 문서마다 \"개정 여부 확인 불가(원격)\"과 원문 링크를 표시합니다.",
+          )
+        : local!.description;
+      expect(t.description!.startsWith(base)).toBe(true);
     }
     const instructions = client.getInstructions() ?? "";
     expect(instructions).toContain(REMOTE_INPUT_NOTICE);
     expect(instructions).toContain("/privacy");
     expect(instructions).toContain(REMOTE_PRIVACY_HEADING);
     expect(instructions).toContain(REMOTE_EXCLUDED_HEADING);
-    expect(instructions.startsWith(SERVER_INSTRUCTIONS)).toBe(true);
+    expect(instructions.startsWith(REMOTE_SERVER_INSTRUCTIONS)).toBe(true);
   });
 
   it("wording checks cover remote text (AC7, R14)", () => {
     for (const t of remoteTools(allTools)) {
       expect(checkToolMeta(t, allTools.map((n) => n.name))).toEqual([]);
     }
-    const added = buildRemoteInstructions().slice(SERVER_INSTRUCTIONS.length);
+    const added = buildRemoteInstructions().slice(REMOTE_SERVER_INSTRUCTIONS.length);
     expect(matchedPatterns(added, OFFICIAL_CLAIM_META)).toEqual([]);
     expect(matchedPatterns(added, OFFICIAL_CLAIM_OUTPUT)).toEqual([]);
 

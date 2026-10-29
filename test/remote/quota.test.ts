@@ -109,7 +109,7 @@ describe("remote quota wiring", () => {
     }
   });
 
-  it("webhook: same JSON once per bucket·level·day, never delays, URL hidden", async () => {
+  it("webhook: same JSON once per bucket·level·day, awaited up to timeout, URL hidden", async () => {
     const rc = loadRemoteConfig({ ...REMOTE_TEST_ENV,
       DATA_GO_KR_SERVICE_KEY: TEST_KEY,
       KPM_BUDGET_NEMC_LIST: "1",
@@ -123,7 +123,7 @@ describe("remote quota wiring", () => {
     const deps = buildRemoteDeps(
       rc,
       { clock: FIXED, fetch: mock.fetch, log: createRemoteLogger(rc.secrets, (l) => logs.push(l)) },
-      { metrics: createMetricsLog((l) => lines.push(l)), webhookFetch: webhookFetch as unknown as typeof fetch },
+      { metrics: createMetricsLog((l) => lines.push(l)), webhookFetch: webhookFetch as unknown as typeof fetch, webhookTimeoutMs: 300 },
     );
 
     const texts: string[] = [];
@@ -153,6 +153,62 @@ describe("remote quota wiring", () => {
       expect(text).not.toContain("secret-path-123");
     }
     expect(rc.secrets).toContain(HOOK);
+  });
+
+  it("webhook completes before the tool result (AC7)", async () => {
+    const rc = loadRemoteConfig({ ...REMOTE_TEST_ENV,
+      DATA_GO_KR_SERVICE_KEY: TEST_KEY,
+      KPM_BUDGET_NEMC_LIST: "1",
+      KPM_BUDGET_NEMC_MOONLIGHT: "1",
+      KPM_ALERT_WEBHOOK_URL: HOOK,
+    });
+    const mock = createNemcMock();
+    let delivered = 0;
+    const bodies: string[] = [];
+    const webhookFetch = vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
+      bodies.push(String(init?.body));
+      await new Promise((r) => setTimeout(r, 150));
+      delivered++;
+      return new Response("ok");
+    });
+    const deps = buildRemoteDeps(
+      rc,
+      { clock: FIXED, fetch: mock.fetch, log: createRemoteLogger(rc.secrets, () => {}) },
+      { webhookFetch: webhookFetch as unknown as typeof fetch, metrics: createMetricsLog(() => {}) },
+    );
+
+    const t0 = Date.now();
+    await runTool(findNightPediatricTool, { region: "성동구" }, { ...deps.baseCtx, notices: [] });
+    const elapsed = Date.now() - t0;
+
+    expect(webhookFetch.mock.calls.length).toBeGreaterThanOrEqual(1);
+    expect(delivered).toBe(webhookFetch.mock.calls.length);
+    expect(elapsed).toBeGreaterThanOrEqual(140);
+    for (const b of bodies) expect(b).not.toContain("성동구");
+  });
+
+  it("slow webhook bounded by timeout", async () => {
+    const rc = loadRemoteConfig({ ...REMOTE_TEST_ENV,
+      DATA_GO_KR_SERVICE_KEY: TEST_KEY,
+      KPM_BUDGET_NEMC_LIST: "1",
+      KPM_BUDGET_NEMC_MOONLIGHT: "1",
+      KPM_ALERT_WEBHOOK_URL: HOOK,
+    });
+    const mock = createNemcMock();
+    const webhookFetch = vi.fn((_url: string | URL | Request, _init?: RequestInit) => new Promise<Response>(() => {}));
+    const deps = buildRemoteDeps(
+      rc,
+      { clock: FIXED, fetch: mock.fetch, log: createRemoteLogger(rc.secrets, () => {}) },
+      { webhookFetch: webhookFetch as unknown as typeof fetch, webhookTimeoutMs: 200, metrics: createMetricsLog(() => {}) },
+    );
+
+    const t0 = Date.now();
+    const res = await runTool(findNightPediatricTool, { region: "성동구" }, { ...deps.baseCtx, notices: [] });
+    const elapsed = Date.now() - t0;
+
+    expect(elapsed).toBeGreaterThanOrEqual(180);
+    expect(elapsed).toBeLessThan(1500);
+    expect(JSON.parse(JSON.stringify(res)).isError).toBeUndefined();
   });
 
   it("webhook failure is silent and never changes the result", async () => {
