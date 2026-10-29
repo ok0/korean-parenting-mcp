@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { loadConfig } from "../../src/core/config.js";
+import { DEFAULT_BUDGETS, DEFAULT_MIN_TTL_MS, UPSTREAM_BUCKETS } from "../../src/core/upstream-guard.js";
 import { REMOTE_POLICY } from "../../src/remote/allowlist.js";
 import { loadRemoteConfig, RemoteConfigError, restrictKeys } from "../../src/remote/remote-config.js";
 
@@ -98,5 +99,62 @@ describe("loadRemoteConfig", () => {
       REMOTE_POLICY.map((p) => ({ ...p, expose: true })),
     );
     expect(config.keys.SAFETYKOREA).toBe("x".repeat(10));
+  });
+});
+
+describe("loadRemoteConfig quota", () => {
+  it("quota defaults", () => {
+    const rc = loadRemoteConfig({});
+    expect(rc.quota).toEqual({
+      budgets: { ...DEFAULT_BUDGETS },
+      minTtlMs: { ...DEFAULT_MIN_TTL_MS },
+      defaultMinTtlMs: 3_600_000,
+      staleMaxMs: 86_400_000,
+      alertRatio: 0.8,
+    });
+    expect(rc.quota.alertWebhookUrl).toBeUndefined();
+    for (const b of UPSTREAM_BUCKETS) expect(rc.quota.minTtlMs[b]).toBeGreaterThan(0);
+  });
+
+  it("quota overrides and webhook secret", () => {
+    const url = "https://hook.example/abc";
+    const rc = loadRemoteConfig({
+      KPM_BUDGET_NEMC_LIST: "900",
+      KPM_BUDGET_SAFETYKOREA: "0",
+      KPM_MIN_TTL_NEMC_MOONLIGHT_MS: "600000",
+      KPM_ALERT_RATIO: "0.5",
+      KPM_ALERT_WEBHOOK_URL: url,
+    });
+    expect(rc.quota.budgets.nemcList).toBe(900);
+    expect(rc.quota.budgets.safetykorea).toBe(0);
+    expect(rc.quota.minTtlMs.nemcMoonlight).toBe(600_000);
+    expect(rc.quota.alertRatio).toBe(0.5);
+    expect(rc.quota.alertWebhookUrl).toBe(url);
+    expect(rc.secrets).toContain(url);
+  });
+
+  it.each([
+    ["KPM_BUDGET_DUR", "-1"],
+    ["KPM_BUDGET_DUR", "1.5"],
+    ["KPM_BUDGET_LAW", "abc"],
+    ["KPM_MIN_TTL_NEMC_LIST_MS", "0"],
+    ["KPM_MIN_TTL_DEFAULT_MS", "x"],
+    ["KPM_ALERT_RATIO", "0"],
+    ["KPM_ALERT_RATIO", "1.5"],
+    ["KPM_ALERT_RATIO", "abc"],
+    ["KPM_ALERT_WEBHOOK_URL", "http://hook.example"],
+    ["KPM_ALERT_WEBHOOK_URL", "not a url"],
+  ])("invalid %s=%s fails with item name only", (name, value) => {
+    let caught: unknown;
+    try {
+      loadRemoteConfig({ [name]: value });
+    } catch (err) {
+      caught = err;
+    }
+    expect(caught).toBeInstanceOf(RemoteConfigError);
+    const err = caught as RemoteConfigError;
+    expect(err.item).toBe(name);
+    expect(err.message).toContain(name);
+    expect(err.message).not.toContain(value);
   });
 });

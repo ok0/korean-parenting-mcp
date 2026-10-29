@@ -2,6 +2,7 @@ import type { Logger, LogMeta } from "../core/logger.js";
 import { maskSecrets } from "../core/secrets.js";
 import { DEFAULT_ACTIONS, type ErrorKind } from "../core/errors.js";
 import { allTools } from "../tools/registry.js";
+import { UPSTREAM_BUCKETS, type QuotaEvent } from "../core/upstream-guard.js";
 import type { GuardReason } from "./request-guard.js";
 
 export type Rpc = "initialize" | "server/discover" | "tools/list" | "tools/call" | "get-sse" | "other";
@@ -22,7 +23,8 @@ export type MetricsEvent =
       pool?: "direct" | "shared";
     }
   | { ev: "start"; version: string }
-  | { ev: "crash"; kind: string };
+  | { ev: "crash"; kind: string }
+  | ({ ev: "quota" } & QuotaEvent);
 export interface MetricsLog {
   emit(e: MetricsEvent): void;
 }
@@ -41,6 +43,8 @@ export const REQ_KEYS = [
   "metaProto",
   "pool",
 ] as const;
+
+export const QUOTA_KEYS = ["ev", "bucket", "day", "count", "limit", "level"] as const;
 
 export const ALLOWED_META_KEYS = [
   "tool",
@@ -83,6 +87,17 @@ const NAME = /^[A-Za-z0-9_]{1,40}$/;
 const VERSION_RE = /^[0-9A-Za-z.+-]{1,32}$/;
 const MSG_RE = /^[A-Za-z0-9 ._:-]{1,60}$/;
 const META_STR_RE = /^[A-Za-z0-9._:-]{1,40}$/;
+const isCount = (v: unknown): v is number => typeof v === "number" && Number.isSafeInteger(v) && v >= 0;
+
+export function quotaJson(e: unknown): string | undefined {
+  if (typeof e !== "object" || e === null) return undefined;
+  const r = e as Record<string, unknown>;
+  const bucket = typeof r.bucket === "string" && (UPSTREAM_BUCKETS as readonly string[]).includes(r.bucket) ? r.bucket : undefined;
+  const level = r.level === "near" || r.level === "exhausted" ? r.level : undefined;
+  if (bucket === undefined || level === undefined) return undefined;
+  if (typeof r.day !== "string" || !DATE.test(r.day) || !isCount(r.count) || !isCount(r.limit)) return undefined;
+  return JSON.stringify({ ev: "quota", bucket, day: r.day, count: r.count, limit: r.limit, level });
+}
 
 function pick(v: unknown, list: readonly string[]): string | undefined {
   return typeof v === "string" && list.includes(v) ? v : undefined;
@@ -133,6 +148,11 @@ export function createMetricsLog(sink: (line: string) => void = (l) => {
           };
         else if (r.ev === "crash")
           obj = { ev: "crash", kind: typeof r.kind === "string" && NAME.test(r.kind) ? r.kind : "unknown" };
+        else if (r.ev === "quota") {
+          const j = quotaJson(r);
+          if (j !== undefined) sink(j + "\n");
+          return;
+        }
         if (obj === undefined) return;
         sink(JSON.stringify(obj) + "\n");
       } catch {

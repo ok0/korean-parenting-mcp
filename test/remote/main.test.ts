@@ -137,6 +137,20 @@ describe("remote entry point", () => {
     expect(run.stderr()).not.toContain("abc");
   });
 
+  it("invalid budget env exits 1 with item name only", async () => {
+    const run = launch({ KPM_BUDGET_NEMC_LIST: "abc-sentinel" });
+    expect(await run.exit).toBe(1);
+    expect(run.stderr()).toContain("KPM_BUDGET_NEMC_LIST");
+    expect(run.stderr()).not.toContain("abc-sentinel");
+  });
+
+  it("invalid alert ratio exits 1", async () => {
+    const run = launch({ KPM_ALERT_RATIO: "9.9" });
+    expect(await run.exit).toBe(1);
+    expect(run.stderr()).toContain("KPM_ALERT_RATIO");
+    expect(run.stderr()).not.toContain("9.9");
+  });
+
   it.each([
     ["uncaughtException", "setTimeout(() => { throw new TypeError('sentinel-crash-msg'); }, 0);", "TypeError"],
     ["unhandledRejection", "Promise.reject(new RangeError('sentinel-crash-msg'));", "RangeError"],

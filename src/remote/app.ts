@@ -1,8 +1,10 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { SUPPORTED_PROTOCOL_VERSIONS } from "@modelcontextprotocol/sdk/types.js";
+import { TtlCache } from "../core/cache.js";
 import { createDefaultContext, type Clock, type ToolContext } from "../core/context.js";
 import type { ErrorKind, ToolResult } from "../core/errors.js";
+import { createUpstreamGuard } from "../core/upstream-guard.js";
 import { createServer } from "../server/create-server.js";
 import { allTools, type ToolDef } from "../tools/registry.js";
 import { buildRemoteInstructions, excludedFallback, remoteTools } from "./allowlist.js";
@@ -14,8 +16,9 @@ import {
   type Outcome,
   type Rpc,
 } from "./metrics-log.js";
+import { createWebhookNotifier } from "./quota-alert.js";
 import { createClientKeyResolver, createRateLimiter, type RateLimiter } from "./rate-limit.js";
-import type { RemoteConfig } from "./remote-config.js";
+import { REMOTE_CACHE_MAX_ENTRIES, type RemoteConfig } from "./remote-config.js";
 import { checkRequest } from "./request-guard.js";
 
 export const SECURITY_HEADERS: Readonly<Record<string, string>> = {
@@ -36,7 +39,7 @@ export interface RemoteDeps {
   clientKey: (req: IncomingMessage) => string;
 }
 
-export type RemoteDepsExtras = Partial<Pick<RemoteDeps, "metrics" | "limiter" | "clock">>;
+export type RemoteDepsExtras = Partial<Pick<RemoteDeps, "metrics" | "limiter" | "clock">> & { webhookFetch?: typeof fetch };
 
 export interface RemoteHandler {
   (req: IncomingMessage, res: ServerResponse): Promise<void>;
@@ -61,9 +64,22 @@ export function buildRemoteDeps(
   overrides: Partial<ToolContext> = {},
   extras: RemoteDepsExtras = {},
 ): RemoteDeps {
+  const metrics = extras.metrics ?? createMetricsLog();
+  const notify = rc.quota.alertWebhookUrl
+    ? createWebhookNotifier(rc.quota.alertWebhookUrl, extras.webhookFetch ?? globalThis.fetch.bind(globalThis))
+    : undefined;
+  const upstream = createUpstreamGuard({
+    ...rc.quota,
+    onEvent: (e) => {
+      metrics.emit({ ev: "quota", ...e });
+      notify?.(e);
+    },
+  });
   const baseCtx = createDefaultContext(rc.base, {
     secrets: rc.secrets,
     log: createRemoteLogger(rc.secrets),
+    cache: new TtlCache(REMOTE_CACHE_MAX_ENTRIES, rc.quota.staleMaxMs),
+    upstream,
     ...overrides,
   });
   return {
@@ -72,7 +88,7 @@ export function buildRemoteDeps(
     tools: remoteTools(allTools),
     instructions: buildRemoteInstructions(),
     fallback: (n) => excludedFallback(n),
-    metrics: extras.metrics ?? createMetricsLog(),
+    metrics,
     limiter: extras.limiter ?? createRateLimiter({ ...rc.rate, sharedEgressCidrs: rc.sharedEgressCidrs }),
     clock: extras.clock ?? baseCtx.clock,
     clientKey: createClientKeyResolver({ trustProxy: rc.trustProxy, trustedProxyCidrs: rc.trustedProxyCidrs }),
@@ -326,6 +342,7 @@ export function createRemoteHandler(deps: RemoteDeps): RemoteHandler {
         describeRpc(parsed, m);
         const ctx: ToolContext = {
           ...deps.baseCtx,
+          notices: [],
           onToolDone: (e) => {
             m.done = { ok: e.ok, ...(e.kind ? { kind: e.kind } : {}) };
           },
@@ -350,7 +367,7 @@ export function createRemoteHandler(deps: RemoteDeps): RemoteHandler {
       openStreams++;
       let opened: Awaited<ReturnType<typeof open>>;
       try {
-        opened = await open({ ...deps.baseCtx });
+        opened = await open({ ...deps.baseCtx, notices: [] });
       } catch (err) {
         openStreams--;
         throw err;

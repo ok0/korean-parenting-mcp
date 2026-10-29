@@ -4,10 +4,12 @@ import type { ToolContext } from "../../src/core/context.js";
 import {
   createMetricsLog,
   createRemoteLogger,
+  QUOTA_KEYS,
   REQ_KEYS,
   type MetricsEvent,
 } from "../../src/remote/metrics-log.js";
 import { loadRemoteConfig } from "../../src/remote/remote-config.js";
+import { createDgkMock } from "../helpers/dgk-mock.js";
 import { TEST_KEY as DGK } from "../helpers/nemc-mock.js";
 import { KG_TEST_KEY as KG } from "../helpers/kg-mock.js";
 import { SK_TEST_KEY as SK } from "../helpers/sk-mock.js";
@@ -28,6 +30,7 @@ const metrics: string[] = [];
 const logs: string[] = [];
 const std: string[] = [];
 const http: string[] = [];
+const hooks: string[] = [];
 let toolsListBody = "";
 
 const push = (arr: string[]) => (line: string): void => {
@@ -124,7 +127,32 @@ beforeAll(async () => {
   started.push(s2);
   await send(s2, call(6, "get_timeline", { birth_date: "2025-03-17" }));
 
-  await waitFor(() => metrics.length >= 6);
+  const s3 = await startRemote(
+    cfg,
+    {
+      clock: FIXED,
+      fetch: createDgkMock().fetch,
+      log: createRemoteLogger(secrets, push(logs)),
+    } as Partial<ToolContext>,
+    { ...ENV, KPM_BUDGET_DUR: "1", KPM_ALERT_WEBHOOK_URL: "https://hook.example/audit-sentinel" },
+    {
+      metrics: createMetricsLog(push(metrics)),
+      webhookFetch: async (_u, init) => {
+        hooks.push(String(init?.body));
+        return new Response("ok");
+      },
+    },
+  );
+  started.push(s3);
+  await send(s3, call(7, "check_pregnancy_drug", { drug_name: "센티넬약품명" }));
+  await send(s3, call(8, "check_pregnancy_drug", { drug_name: "센티넬약품명B" }));
+
+  await waitFor(
+    () =>
+      metrics.filter((l) => l.includes('"ev":"req"')).length >= 8 &&
+      metrics.filter((l) => l.includes('"ev":"quota"')).length >= 2 &&
+      hooks.length >= 2,
+  );
   for (const spy of spies) spy.mockRestore();
 });
 
@@ -135,7 +163,7 @@ afterAll(async () => {
 
 describe("sentinel audit", () => {
   it("no keys, args or IP anywhere", () => {
-    for (const text of [...metrics, ...logs, ...std, ...http]) {
+    for (const text of [...metrics, ...logs, ...std, ...http, ...hooks]) {
       for (const k of KEYS) expect(text.includes(k), k).toBe(false);
       expect(text.includes(IP), "IP").toBe(false);
       expect(text.includes(UA), "UA").toBe(false);
@@ -143,7 +171,7 @@ describe("sentinel audit", () => {
   });
 
   it("metrics, logs and stdio hold no arg sentinels", () => {
-    for (const text of [...metrics, ...logs, ...std]) {
+    for (const text of [...metrics, ...logs, ...std, ...hooks]) {
       for (const s of [...ARG_SENTINELS, UNKNOWN_TOOL]) expect(text.includes(s), s).toBe(false);
     }
   });
@@ -151,13 +179,27 @@ describe("sentinel audit", () => {
   it("metrics lines are whitelisted", () => {
     const parsed = metrics.map((l) => JSON.parse(l) as Record<string, unknown>);
     for (const obj of parsed) {
-      for (const k of Object.keys(obj)) expect(REQ_KEYS as readonly string[]).toContain(k);
+      const allowed: readonly string[] = obj.ev === "quota" ? QUOTA_KEYS : REQ_KEYS;
+      for (const k of Object.keys(obj)) expect(allowed).toContain(k);
     }
     const kinds = parsed.map((o) => o.kind);
     expect(kinds).toContain("BAD_INPUT");
     expect(kinds).toContain("UPSTREAM");
     expect(kinds).toContain("INTERNAL");
     expect(parsed.some((o) => o.tool === "unknown")).toBe(true);
+    expect(parsed.some((o) => o.ev === "quota" && o.level === "near")).toBe(true);
+    expect(parsed.some((o) => o.ev === "quota" && o.level === "exhausted")).toBe(true);
+  });
+
+  it("webhook URL never logged", () => {
+    for (const text of [...metrics, ...logs, ...std, ...http]) {
+      expect(text.includes("hook.example"), "hook").toBe(false);
+    }
+    expect(hooks.length).toBeGreaterThanOrEqual(2);
+    for (const h of hooks) {
+      const obj = JSON.parse(h) as Record<string, unknown>;
+      for (const k of Object.keys(obj)) expect(QUOTA_KEYS as readonly string[]).toContain(k);
+    }
   });
 
   it("injected extra keys are not written", () => {

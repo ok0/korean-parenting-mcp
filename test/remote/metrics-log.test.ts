@@ -4,6 +4,7 @@ import {
   createMetricsLog,
   createRemoteLogger,
   installCrashHandlers,
+  QUOTA_KEYS,
   REQ_KEYS,
   type MetricsEvent,
 } from "../../src/remote/metrics-log.js";
@@ -129,5 +130,35 @@ describe("metrics log", () => {
     ee.emit("unhandledRejection", "str");
     expect(lines).toHaveLength(1);
     expect(codes).toEqual([1, 1]);
+  });
+
+  it("quota event whitelisted", () => {
+    const lines: string[] = [];
+    createMetricsLog((l) => lines.push(l)).emit({
+      ev: "quota",
+      bucket: "dur",
+      day: "2026-10-28",
+      count: 8,
+      limit: 10,
+      level: "near",
+      url: "https://x",
+      args: "센티넬",
+    } as unknown as MetricsEvent);
+    expect(lines).toHaveLength(1);
+    const parsed = JSON.parse(lines[0] as string) as Record<string, unknown>;
+    expect(Object.keys(parsed)).toEqual([...QUOTA_KEYS]);
+    expect(lines[0]).not.toContain("센티넬");
+    expect(lines[0]).not.toContain("https");
+  });
+
+  it("invalid quota dropped", () => {
+    const lines: string[] = [];
+    const m = createMetricsLog((l) => lines.push(l));
+    const base = { ev: "quota", bucket: "dur", day: "2026-10-28", count: 8, limit: 10, level: "near" };
+    m.emit({ ...base, bucket: "unknownBucket" } as unknown as MetricsEvent);
+    m.emit({ ...base, day: "28-10-2026" } as unknown as MetricsEvent);
+    m.emit({ ...base, count: -1 } as unknown as MetricsEvent);
+    m.emit({ ...base, level: "warn" } as unknown as MetricsEvent);
+    expect(lines).toEqual([]);
   });
 });

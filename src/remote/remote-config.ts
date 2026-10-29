@@ -1,6 +1,16 @@
 import { isIP } from "node:net";
 import { loadConfig, secretsOf, type Config, type KeyName } from "../core/config.js";
 import { KEY_GUIDE } from "../core/errors.js";
+import {
+  UPSTREAM_BUCKETS,
+  DEFAULT_BUDGETS,
+  DEFAULT_MIN_TTL_MS,
+  DEFAULT_MIN_TTL_FALLBACK_MS,
+  DEFAULT_STALE_MAX_MS,
+  DEFAULT_ALERT_RATIO,
+  type QuotaConfig,
+  type UpstreamBucket,
+} from "../core/upstream-guard.js";
 import { REMOTE_POLICY, type RemotePolicy } from "./allowlist.js";
 
 export const DEFAULT_HTTP_PORT = 8080;
@@ -11,6 +21,17 @@ export const DEFAULT_MAX_BODY_BYTES = 65_536;
 export const DEFAULT_RATE = { perClientPerMin: 30, sharedPoolPerMin: 600, globalPerMin: 900, maxConcurrent: 16 } as const;
 export const DEFAULT_TRUSTED_PROXY_CIDRS = ["127.0.0.0/8", "::1/128", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "fc00::/7"];
 export const DEFAULT_SHARED_EGRESS_CIDRS = ["160.79.104.0/21"];
+export const REMOTE_CACHE_MAX_ENTRIES = 5000;
+export const BUCKET_ENV: Readonly<Record<UpstreamBucket, string>> = {
+  nemcList: "NEMC_LIST",
+  nemcMoonlight: "NEMC_MOONLIGHT",
+  benefits: "BENEFITS",
+  dur: "DUR",
+  kasi: "KASI",
+  law: "LAW",
+  kindergarten: "KINDERGARTEN",
+  safetykorea: "SAFETYKOREA",
+};
 
 export interface RemoteConfig {
   base: Config; secrets: string[]; port: number; host: string;
@@ -19,6 +40,7 @@ export interface RemoteConfig {
   sseMaxMs: number; sseMaxStreams: number;
   trustedProxyCidrs: string[]; sharedEgressCidrs: string[]; maxBodyBytes: number;
   rate: { perClientPerMin: number; sharedPoolPerMin: number; globalPerMin: number; maxConcurrent: number };
+  quota: QuotaConfig;
 }
 
 export class RemoteConfigError extends Error {
@@ -145,15 +167,55 @@ export function loadRemoteConfig(env: Record<string, string | undefined>): Remot
     maxConcurrent: strictInt(env, "KPM_RATE_MAX_CONCURRENT", 16, 1, 1_000),
   };
 
+  const budgets = Object.fromEntries(
+    UPSTREAM_BUCKETS.map((b) => [b, strictInt(env, `KPM_BUDGET_${BUCKET_ENV[b]}`, DEFAULT_BUDGETS[b], 0, 10_000_000)]),
+  ) as Record<UpstreamBucket, number>;
+  const minTtlMs = Object.fromEntries(
+    UPSTREAM_BUCKETS.map((b) => [
+      b,
+      strictInt(env, `KPM_MIN_TTL_${BUCKET_ENV[b]}_MS`, DEFAULT_MIN_TTL_MS[b], 1, 604_800_000),
+    ]),
+  ) as Record<UpstreamBucket, number>;
+  const defaultMinTtlMs = strictInt(env, "KPM_MIN_TTL_DEFAULT_MS", DEFAULT_MIN_TTL_FALLBACK_MS, 1, 604_800_000);
+  const rawRatio = opt(env, "KPM_ALERT_RATIO");
+  let alertRatio = DEFAULT_ALERT_RATIO;
+  if (rawRatio !== undefined) {
+    const n = Number(rawRatio);
+    if (!/^\d+(\.\d+)?$/.test(rawRatio) || !(n > 0 && n <= 1)) throw new RemoteConfigError("KPM_ALERT_RATIO");
+    alertRatio = n;
+  }
+  const webhook = opt(env, "KPM_ALERT_WEBHOOK_URL");
+  if (webhook !== undefined) {
+    let parsed: URL;
+    try {
+      parsed = new URL(webhook);
+    } catch {
+      throw new RemoteConfigError("KPM_ALERT_WEBHOOK_URL");
+    }
+    if (parsed.protocol !== "https:" || /\s/.test(webhook)) throw new RemoteConfigError("KPM_ALERT_WEBHOOK_URL");
+  }
+  const quota: QuotaConfig = {
+    budgets,
+    minTtlMs,
+    defaultMinTtlMs,
+    staleMaxMs: DEFAULT_STALE_MAX_MS,
+    alertRatio,
+    ...(webhook !== undefined ? { alertWebhookUrl: webhook } : {}),
+  };
+
   const loaded = loadConfig(env);
   const base = restrictKeys(loaded);
-  const secrets = [...secretsOf(loaded), ...(rawToken !== undefined ? [rawToken] : [])];
+  const secrets = [
+    ...secretsOf(loaded),
+    ...(rawToken !== undefined ? [rawToken] : []),
+    ...(webhook !== undefined ? [webhook] : []),
+  ];
 
   const config: RemoteConfig = {
     base, secrets, port, host, allowedHosts, allowedOrigins,
     trustProxy, originPolicy, getMode,
     sseMaxMs: SSE_MAX_MS, sseMaxStreams: SSE_MAX_STREAMS,
-    trustedProxyCidrs, sharedEgressCidrs, maxBodyBytes, rate,
+    trustedProxyCidrs, sharedEgressCidrs, maxBodyBytes, rate, quota,
   };
   if (rawToken !== undefined) config.bearerToken = rawToken;
   return config;
