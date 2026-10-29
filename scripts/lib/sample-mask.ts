@@ -81,9 +81,10 @@ export type SampleFormat = "xml" | "json" | "html" | "text";
 
 export function detectFormat(text: string, contentType: string): SampleFormat {
   const body = text.trimStart();
-  if (/^<(!doctype html|html)/i.test(body) || contentType.toLowerCase().includes("text/html")) return "html";
-  if (body.startsWith("<")) return "xml";
+  if (/^<(!doctype\s+html|html[\s>])/i.test(body)) return "html";
   if (body.startsWith("{") || body.startsWith("[")) return "json";
+  if (body.startsWith("<")) return "xml";
+  if (contentType.toLowerCase().includes("text/html")) return "html";
   return "text";
 }
 

@@ -77,6 +77,28 @@ describe("sample-mask", () => {
     expect(detectFormat("plain words", "text/plain")).toBe("text");
   });
 
+  it("detects formats body-first regardless of text/html", () => {
+    expect(detectFormat('{"a":1}', "text/html; charset=UTF-8")).toBe("json");
+    expect(detectFormat("[1]", "text/html")).toBe("json");
+    expect(detectFormat('<?xml version="1.0"?><a/>', "text/html")).toBe("xml");
+    expect(detectFormat("<response><header/></response>", "text/html")).toBe("xml");
+    expect(detectFormat("  <!DOCTYPE html><html></html>", "application/xml")).toBe("html");
+    expect(detectFormat('<html lang="ko"></html>', "application/json")).toBe("html");
+    expect(detectFormat("", "text/html")).toBe("html");
+    expect(detectFormat("plain words", "text/html")).toBe("html");
+    expect(detectFormat("plain words", "application/json")).toBe("text");
+  });
+
+  it("classifies xml body served as text/html", () => {
+    const s = summarize(
+      '<?xml version="1.0"?><response><header><resultCode>00</resultCode></header></response>',
+      200,
+      "text/html",
+    );
+    expect(s.format).toBe("xml");
+    expect(s.classification).toBe("확인됨");
+  });
+
   it("classifies", () => {
     expect(summarize("", null, "").classification).toBe("한도·장애");
     expect(summarize("", 503, "").classification).toBe("한도·장애");
