@@ -149,7 +149,7 @@ describe("mcpb manifest", () => {
   });
 
   it(".mcpbignore excludes dev-only paths", () => {
-    for (const p of ["node_modules/", "test/", "fixtures/", "scripts/", ".docs/", ".ensemble/", ".github/", "*.map", "*.bak", "*.key.txt"]) {
+    for (const p of ["node_modules/", "test/", "fixtures/", "scripts/", ".docs/", ".ensemble/", ".github/", "*.map", "*.bak", "*.key.txt", "Dockerfile", ".dockerignore", "deploy/", "build/remote/"]) {
       expect(mcpbignoreLines.has(p), p).toBe(true);
     }
   });

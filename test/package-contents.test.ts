@@ -59,6 +59,7 @@ describe("npm package contents", () => {
       expect(paths.filter((p) => /\.key(\.txt)?$|(^|\/)\.env/.test(p))).toEqual([]);
       expect(paths.filter((p) => p.startsWith("build/") && p.endsWith(".js")).length).toBeGreaterThan(1);
       expect(paths.filter((p) => p.startsWith("build/remote/"))).toEqual([]);
+      expect(paths.filter((p) => /^(Dockerfile|\.dockerignore)$/.test(p) || p.startsWith("deploy/") || /remote-smoke|container-smoke/.test(p))).toEqual([]);
     },
     60000,
   );

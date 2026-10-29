@@ -17,6 +17,8 @@ const CONFIG_FILES = [
   "vitest.config.ts",
   ".gitignore",
   ".mcpbignore",
+  "Dockerfile",
+  ".dockerignore",
 ];
 
 const isGitRepo = spawnSync("git", ["rev-parse", "--is-inside-work-tree"], { cwd: root }).status === 0;
@@ -50,7 +52,7 @@ describe("document placement (P12)", () => {
   it("config and build files are not documents", () => {
     const entries: RootEntry[] = [
       ...CONFIG_FILES.map((name) => ({ name, isDir: false })),
-      ...["src", "test", "data", ".github"].map((name) => ({ name, isDir: true })),
+      ...["src", "test", "data", ".github", "deploy"].map((name) => ({ name, isDir: true })),
     ];
     expect(rootDocViolations(entries)).toEqual([]);
   });

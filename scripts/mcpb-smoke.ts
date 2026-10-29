@@ -15,7 +15,7 @@ const ENCODED = encodeURIComponent(FAKE);
 const packScript = join(root, "build-scripts/scripts/build-mcpb.js");
 const keyNames = Object.values(KEY_ENV);
 const ALLOWED_DATA = /^data\/[^/]+\.json$/;
-const FORBIDDEN = ["node_modules/", "test/", "fixtures", "scripts/", ".docs/", ".ensemble/", ".github/", ".map", ".bak", ".key.txt"];
+const FORBIDDEN = ["node_modules/", "test/", "fixtures", "scripts/", ".docs/", ".ensemble/", ".github/", ".map", ".bak", ".key.txt", "Dockerfile", ".dockerignore", "deploy/", "build/remote", "remote-smoke", "container-smoke"];
 
 const calls: ToolCall[] = [
   { name: "get_timeline", arguments: { reference_date: "2026-10-28", birth_date: "2026-05-28" } },

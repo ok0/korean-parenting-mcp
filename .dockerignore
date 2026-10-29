@@ -1,0 +1,21 @@
+# Build context exclusions (secrets, VCS, docs, tests, build outputs)
+.git
+.github
+.docs
+.ensemble
+node_modules
+test
+fixtures
+scripts
+build
+build-scripts
+build-mcpb
+*.mcpb
+deploy
+*.key.txt
+**/*.key.txt
+*.key
+**/*.key
+.env*
+**/.env*
+*.log

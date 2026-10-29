@@ -16,3 +16,7 @@ build-scripts/
 *.mcpb
 package-lock.json
 .mcpbignore
+Dockerfile
+.dockerignore
+deploy/
+build/remote/
