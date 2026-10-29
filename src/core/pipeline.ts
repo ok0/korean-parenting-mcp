@@ -42,9 +42,11 @@ export function findOversizedArg(value: unknown): OversizeFinding | null {
   return walk(value, [], 1);
 }
 
-export function finalize(out: ToolOutput, max: number, secrets: readonly string[]): string {
+export function finalize(out: ToolOutput, max: number, secrets: readonly string[], notices?: readonly string[]): string {
+  const extra = notices && notices.length > 0 ? [...new Set(notices)].join("\n") : "";
+  const footer = extra === "" ? out.footer : out.footer ? out.footer + "\n" + extra : extra;
   let body = maskSecrets(out.body, secrets);
-  const footerPart = out.footer ? "\n\n" + maskSecrets(out.footer, secrets) : "";
+  const footerPart = footer ? "\n\n" + maskSecrets(footer, secrets) : "";
   const budget = Math.max(0, max - footerPart.length - 80);
   if (body.length > budget) {
     const omitted = body.length - budget;
@@ -85,8 +87,9 @@ export async function runTool(def: ToolDef, rawArgs: unknown, ctx: ToolContext):
     const missing = (def.requiredKeys ?? []).filter((k) => !ctx.config.keys[k]);
     if (missing.length > 0) throw missingKeyError(missing);
 
-    const out = await def.handler(parsed.data, ctx);
-    const text = finalize(out, def.maxChars ?? ctx.config.maxResponseChars, ctx.secrets);
+    const callCtx: ToolContext = ctx.notices ? { ...ctx, notices: [] } : ctx;
+    const out = await def.handler(parsed.data, callCtx);
+    const text = finalize(out, def.maxChars ?? ctx.config.maxResponseChars, ctx.secrets, callCtx.notices);
     ctx.log.debug("tool call", { tool: def.name, ms: Date.now() - t0 });
     result = { content: [{ type: "text", text }] };
   } catch (e) {

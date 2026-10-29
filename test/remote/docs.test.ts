@@ -3,10 +3,12 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { PROVIDER_LABELS, REMOTE_POLICY } from "../../src/remote/allowlist.js";
+import { UPSTREAM_BUCKETS, DEFAULT_BUDGETS, DEFAULT_MIN_TTL_MS } from "../../src/core/upstream-guard.js";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const ALLOW = join(root, ".docs/remote/allowlist.md");
 const CONF = join(root, ".docs/remote/provider-confirmations.md");
+const QUOTA = join(root, ".docs/remote/quota.md");
 
 describe.skipIf(!existsSync(ALLOW))("remote allowlist doc", () => {
   const lines = existsSync(ALLOW) ? readFileSync(ALLOW, "utf8").split("\n") : [];
@@ -66,4 +68,36 @@ describe.skipIf(!existsSync(CONF))("provider confirmations doc", () => {
       expect(text.includes(v), `value of ${name} must not appear in the doc`).toBe(false);
     },
   );
+});
+
+describe.skipIf(!existsSync(QUOTA))("quota doc", () => {
+  const text = existsSync(QUOTA) ? readFileSync(QUOTA, "utf8") : "";
+  const lines = text.split("\n");
+
+  it.each(UPSTREAM_BUCKETS.map((b) => [b] as const))("table matches defaults for %s", (b) => {
+    const line = lines.find((l) => l.startsWith(`| ${b} |`));
+    expect(line).toBeDefined();
+    const cells = line!.split("|").slice(1, -1).map((c) => c.trim());
+    expect(cells[1]).toBe(String(DEFAULT_BUDGETS[b]));
+    expect(cells[2]).toBe(String(DEFAULT_MIN_TTL_MS[b]));
+  });
+
+  it("mentions env and limits", () => {
+    for (const s of [
+      "KPM_BUDGET_NEMC_LIST",
+      "KPM_MIN_TTL_NEMC_LIST_MS",
+      "KPM_MIN_TTL_DEFAULT_MS",
+      "KPM_ALERT_RATIO",
+      "KPM_ALERT_WEBHOOK_URL",
+      "86400000",
+      "ADR-27",
+      "ADR-34",
+      "M25",
+      "재시작",
+      "단일 인스턴스",
+      "최대 30분",
+    ]) {
+      expect(text, s).toContain(s);
+    }
+  });
 });

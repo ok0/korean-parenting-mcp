@@ -52,7 +52,7 @@ function delay(ms: number): Promise<void> {
 
 export async function httpGet(
   url: URL,
-  ctx: Pick<ToolContext, "fetch" | "log" | "config">,
+  ctx: Pick<ToolContext, "fetch" | "log" | "config"> & Partial<Pick<ToolContext, "upstream" | "clock">>,
   opts: HttpOptions = {},
 ): Promise<HttpResponse> {
   const timeoutMs = opts.timeoutMs ?? ctx.config.httpTimeoutMs;
@@ -67,6 +67,10 @@ export async function httpGet(
     attempts += 1;
     const canRetry = attempts <= retries;
     let res: HttpResponse;
+    if (ctx.upstream) {
+      if (!ctx.clock) throw new ToolError("INTERNAL", "upstream guard requires clock");
+      await ctx.upstream.admit(url, ctx.clock.now().getTime());
+    }
     try {
       res = await attemptOnce(url, ctx, timeoutMs, opts.headers);
     } catch (err) {
