@@ -2,16 +2,21 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { CallToolRequestSchema, ListToolsRequestSchema, type Tool } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import type { ToolContext } from "../core/context.js";
-import { ToolError, formatToolError } from "../core/errors.js";
+import { ToolError, formatToolError, type ToolResult } from "../core/errors.js";
 import { runTool } from "../core/pipeline.js";
 import { allTools, type ToolDef } from "../tools/registry.js";
 import { SERVER_INSTRUCTIONS } from "./instructions.js";
 import { VERSION } from "../version.js";
 
-export function createServer(ctx: ToolContext, tools: readonly ToolDef[] = allTools): Server {
+export interface CreateServerOptions {
+  instructions?: string;
+  fallback?: (name: string) => ToolResult | undefined;
+}
+
+export function createServer(ctx: ToolContext, tools: readonly ToolDef[] = allTools, opts: CreateServerOptions = {}): Server {
   const server = new Server(
     { name: "korean-parenting-mcp", version: VERSION },
-    { capabilities: { tools: {} }, instructions: SERVER_INSTRUCTIONS },
+    { capabilities: { tools: {} }, instructions: opts.instructions ?? SERVER_INSTRUCTIONS },
   );
 
   const byName = new Map<string, ToolDef>();
@@ -41,6 +46,8 @@ export function createServer(ctx: ToolContext, tools: readonly ToolDef[] = allTo
     const { name, arguments: args } = request.params;
     const def = byName.get(name);
     if (!def) {
+      const fb = opts.fallback?.(name);
+      if (fb) return fb;
       return formatToolError(
         new ToolError("BAD_INPUT", `알 수 없는 도구: ${name}`, {
           actions: [

@@ -1,14 +1,15 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { describe, expect, it } from "vitest";
-import { createServer } from "../src/server/create-server.js";
+import { createServer, type CreateServerOptions } from "../src/server/create-server.js";
+import { SERVER_INSTRUCTIONS } from "../src/server/instructions.js";
 import { allTools, type ToolDef } from "../src/tools/registry.js";
 import { createTestContext } from "./helpers/context.js";
 import { echoTool, validFixtureTools } from "./helpers/fixture-tools.js";
 
-async function connect(tools?: readonly ToolDef[]) {
+async function connect(tools?: readonly ToolDef[], opts?: CreateServerOptions) {
   const [ct, st] = InMemoryTransport.createLinkedPair();
-  const server = createServer(createTestContext(), tools);
+  const server = createServer(createTestContext(), tools, opts);
   await server.connect(st);
   const client = new Client({ name: "t", version: "0" });
   await client.connect(ct);
@@ -87,5 +88,33 @@ describe("createServer", () => {
 
   it("duplicate tool names throw", () => {
     expect(() => createServer(createTestContext(), [echoTool, echoTool])).toThrow("중복");
+  });
+
+  it("opts.instructions replaces instructions", async () => {
+    const { client } = await connect(undefined, { instructions: "X" });
+    expect(client.getInstructions()).toBe("X");
+  });
+
+  it("fallback answers unregistered names only", async () => {
+    const fallback = (n: string) =>
+      n === "gone" ? { content: [{ type: "text" as const, text: "안내" }] } : undefined;
+    const { client } = await connect(validFixtureTools, { fallback });
+
+    const gone = await client.callTool({ name: "gone", arguments: {} });
+    expect(textOf(gone)).toBe("안내");
+    expect(gone.isError).toBeFalsy();
+
+    const other = await client.callTool({ name: "other", arguments: {} });
+    expect(other.isError).toBe(true);
+    expect(textOf(other)).toContain("알 수 없는 도구");
+
+    const ok = await client.callTool({ name: "fx_echo", arguments: { text: "hi" } });
+    expect(ok.isError).toBeFalsy();
+    expect(textOf(ok)).toBe("hi");
+  });
+
+  it("no opts keeps SERVER_INSTRUCTIONS", async () => {
+    const { client } = await connect();
+    expect(client.getInstructions()).toBe(SERVER_INSTRUCTIONS);
   });
 });
