@@ -19,6 +19,7 @@
   "author": "ok0",
   "files": [
     "build",
+    "!build/remote",
     "data",
     "README.md",
     "LICENSE"

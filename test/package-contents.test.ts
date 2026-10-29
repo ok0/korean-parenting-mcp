@@ -58,6 +58,7 @@ describe("npm package contents", () => {
       expect(paths.filter((p) => /\.(test|spec)\.[cm]?[jt]s$/.test(p))).toEqual([]);
       expect(paths.filter((p) => /\.key(\.txt)?$|(^|\/)\.env/.test(p))).toEqual([]);
       expect(paths.filter((p) => p.startsWith("build/") && p.endsWith(".js")).length).toBeGreaterThan(1);
+      expect(paths.filter((p) => p.startsWith("build/remote/"))).toEqual([]);
     },
     60000,
   );

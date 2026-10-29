@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { join, relative, sep } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { VERSION } from "../src/version.js";
@@ -36,6 +36,29 @@ function rel(file: string): string {
   return relative(root, file).split(sep).join("/");
 }
 
+function localImports(file: string): string[] {
+  const text = readFileSync(file, "utf8");
+  const re = /(?:from\s+|import\s*\(\s*|import\s+)["'](\.{1,2}\/[^"']+)["']/g;
+  const out: string[] = [];
+  for (const m of text.matchAll(re)) {
+    out.push(rel(resolve(dirname(file), m[1] as string).replace(/\.js$/, ".ts")));
+  }
+  return out;
+}
+
+function reach(entry: string): Set<string> {
+  const seen = new Set<string>();
+  const queue = [entry];
+  while (queue.length > 0) {
+    const next = queue.shift() as string;
+    if (seen.has(next)) continue;
+    seen.add(next);
+    const full = join(root, next);
+    if (existsSync(full)) queue.push(...localImports(full));
+  }
+  return seen;
+}
+
 const srcFiles = listTs(join(root, "src"));
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as PackageJson;
 
@@ -51,7 +74,7 @@ describe("project structure", () => {
     const files = srcFiles
       .filter((f) => readFileSync(f, "utf8").includes("@modelcontextprotocol/sdk"))
       .map(rel);
-    const allowed = new Set(["src/index.ts", "src/server/create-server.ts"]);
+    const allowed = new Set(["src/index.ts", "src/server/create-server.ts", "src/remote/app.ts"]);
     for (const f of files) {
       expect(allowed.has(f)).toBe(true);
     }
@@ -82,7 +105,7 @@ describe("project structure", () => {
   });
 
   it("data ships with package", () => {
-    expect([...(pkg.files ?? [])].sort()).toEqual(["LICENSE", "README.md", "build", "data"]);
+    expect([...(pkg.files ?? [])].sort()).toEqual(["!build/remote", "LICENSE", "README.md", "build", "data"]);
     expect(existsSync(join(root, "data/basis-documents.json"))).toBe(true);
     expect(existsSync(join(root, "data/holidays.json"))).toBe(true);
   });
@@ -124,6 +147,61 @@ describe("project structure", () => {
     for (const f of files) {
       expect(f.startsWith("src/setup/"), f).toBe(true);
     }
+  });
+
+  it("remote code is isolated", () => {
+    for (const f of srcFiles) {
+      const r = rel(f);
+      if (r.startsWith("src/remote/")) continue;
+      for (const target of localImports(f)) {
+        expect(target.startsWith("src/remote/"), `${r} -> ${target}`).toBe(false);
+      }
+    }
+  });
+
+  it("remote entry does not load stdio-guard", () => {
+    const reached = reach("src/remote/main.ts");
+    expect(reached.has("src/stdio-guard.ts")).toBe(false);
+    expect(reached.has("src/index.ts")).toBe(false);
+    expect(reached.has("src/remote/app.ts")).toBe(true);
+  });
+
+  it("local entry does not reach remote code", () => {
+    const reached = reach("src/index.ts");
+    for (const f of reached) {
+      expect(f.startsWith("src/remote/"), f).toBe(false);
+    }
+  });
+
+  it("no hosting vendor specifics in src", () => {
+    const banned = [
+      "@aws-sdk",
+      "aws-sdk",
+      "lightsail",
+      "fly-client-ip",
+      "fly-region",
+      "fly.toml",
+      "cf-connecting-ip",
+      "@cloudflare/",
+      "x-vercel-",
+      "x-amzn-",
+      "x-appengine-",
+      "@netlify/",
+    ];
+    for (const f of srcFiles) {
+      const text = readFileSync(f, "utf8").toLowerCase();
+      for (const b of banned) {
+        expect(text.includes(b), `${rel(f)} ${b}`).toBe(false);
+      }
+    }
+  });
+
+  it("remote env read only in remote entry", () => {
+    const files = srcFiles
+      .filter((f) => rel(f).startsWith("src/remote/"))
+      .filter((f) => readFileSync(f, "utf8").includes("process.env"))
+      .map(rel);
+    expect(files).toEqual(["src/remote/main.ts"]);
   });
 
   it("packaging tools are dev-only", () => {
