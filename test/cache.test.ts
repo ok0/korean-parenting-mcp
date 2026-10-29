@@ -31,6 +31,20 @@ describe("TtlCache", () => {
   });
 });
 
+describe("TtlCache clear", () => {
+  it("TtlCache.clear empties entries and inflight", () => {
+    const c = new TtlCache();
+    c.set("a", 1, 60_000, 0);
+    c.set("b", 2, 60_000, 0);
+    c.set("c", 3, 60_000, 0);
+    c.inflight.set("a", Promise.resolve(1));
+    c.clear();
+    expect(c.size).toBe(0);
+    expect(c.keys()).toEqual([]);
+    expect(c.inflight.size).toBe(0);
+  });
+});
+
 describe("cached", () => {
   function clockCtx() {
     const base = createTestContext();

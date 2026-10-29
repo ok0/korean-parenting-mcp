@@ -21,6 +21,7 @@ export interface RevisionStatus {
 export const REVISION_TEXT = {
   skippedNoOc: "법제처 OC 미설정: 개정 여부 확인 생략",
   skippedNoApi: "자동 확인 대상 아님",
+  skippedRemote: "개정 여부 확인 불가(원격)",
   confirmed: "원문 확인됨",
   changed: "근거가 개정되었습니다. 원문을 확인하세요",
   unavailable: "개정 여부 확인 불가",
@@ -102,8 +103,8 @@ function unavailable(basisId: string, reason: UnavailableReason): RevisionStatus
   return { basisId, state: "unavailable", reason, message: `${REVISION_TEXT.unavailable}(${UNAVAILABLE_TEXT[reason]})` };
 }
 
-function skipped(basisId: string, message: string): RevisionStatus {
-  return { basisId, state: "skipped", message };
+function skipped(basisId: string, message: string, link?: string): RevisionStatus {
+  return { basisId, state: "skipped", message, ...(link !== undefined ? { link } : {}) };
 }
 
 type FindResult = { row: AdmrulRow | LicbylRow | LawRow } | { reason: UnavailableReason };
@@ -199,6 +200,11 @@ export async function checkRevisionDocs(
   opts?: { deadlineMs?: number; client?: LawClient },
 ): Promise<RevisionStatus[]> {
   const started = Date.now();
+  if (ctx.revisionCheck === "remote-unavailable") {
+    const out = docs.map((d) => skipped(d.id, REVISION_TEXT.skippedRemote, d.url));
+    summarize(ctx, out, started);
+    return out;
+  }
   const deadlineMs = opts?.deadlineMs ?? ctx.config.lawCheckTimeoutMs;
   try {
     const client = ctx.config.keys.LAW_OC

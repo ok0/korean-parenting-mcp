@@ -1,9 +1,10 @@
 import type { ToolResult } from "../core/errors.js";
 import { KEY_GUIDE } from "../core/errors.js";
+import { loadData, resolveBasis } from "../data-store/load.js";
 import type { ToolDef } from "../tools/registry.js";
 import { NOTICE_UNOFFICIAL } from "../tools/shared/format.js";
 import { SERVER_INSTRUCTIONS } from "../server/instructions.js";
-import { REMOTE_INPUT_NOTICE } from "./privacy.js";
+import { REMOTE_INPUT_NOTICE, REMOTE_LAW_NOTICE } from "./privacy.js";
 
 export type Provider = "nemc" | "mois" | "mfds" | "kasi" | "moleg" | "kinder" | "safetykorea";
 export type Confirmation = "not-asked" | "asked" | "allowed" | "conditional" | "denied";
@@ -17,6 +18,7 @@ export interface RemotePolicy {
   conditions: string[];
   confirmation: Partial<Record<Provider, Confirmation>>;
   replacement?: { summary: string; links: { title: string; url: string }[] };
+  blockedBy?: "ip-registration";
 }
 
 export const PROVIDER_LABELS: Record<Provider, string> = {
@@ -29,26 +31,52 @@ export const PROVIDER_LABELS: Record<Provider, string> = {
   safetykorea: "제품안전정보센터(SafetyKorea)",
 };
 
+const LOCAL_LEAVE_SENTENCE =
+  " 배우자 출산휴가·출산전후휴가·육아휴직의 근거 법 조문 원문이 필요하면 get_leave_article(LAW_OC 필요)을 사용하세요.";
+
+const DESCRIPTION_REWRITES: Readonly<Record<string, readonly [string, string]>> = {
+  get_timeline: [
+    "LAW_OC가 설정되어 있으면 근거 문서의 개정 여부를 법제처에서 확인해 함께 표시합니다.",
+    "원격 모드는 법제처 조회를 하지 않아 근거 문서마다 \"개정 여부 확인 불가(원격)\"과 원문 링크를 표시합니다.",
+  ],
+};
+
+function leaveLink(topic: "spouse_leave" | "maternity_leave" | "parental_leave", label: string): { title: string; url: string } {
+  const doc = resolveBasis(loadData("leave").articles[topic].basis_ids)[0];
+  if (!doc) throw new Error(`leave basis missing: ${topic}`);
+  return { title: `${label} 근거: ${doc.title}(국가법령정보센터)`, url: doc.url };
+}
+
 export const REMOTE_POLICY: readonly RemotePolicy[] = [
   {
     tool: "get_timeline",
     expose: true,
-    providers: ["kasi", "moleg"],
+    providers: ["kasi"],
     verdict: "허용(추정)",
-    conditions: ["법제처 출처·개정 확인 footer 유지"],
-    confirmation: { kasi: "not-asked", moleg: "not-asked" },
+    conditions: ["원격은 법제처 개정 확인 없이 '개정 여부 확인 불가(원격)'·원문 링크 표시"],
+    confirmation: { kasi: "not-asked" },
   },
   {
     tool: "get_leave_article",
-    expose: true,
+    expose: false,
     providers: ["moleg"],
     verdict: "조건부 허용",
     conditions: [
       "출처 \"법제처 국가법령정보센터\" 표시",
       "조문 본문 원문 무변경",
-      "운영 서버 IP의 법제처 등록이 확인되지 않으면 expose=false(M24)",
+      "고정 출구 IP 확보·법제처 IP 등록 전까지 제외(blockedBy: ip-registration)",
     ],
     confirmation: { moleg: "not-asked" },
+    replacement: {
+      summary:
+        "배우자 출산휴가·출산전후휴가·육아휴직 근거 법 조문 원문 조회는 원격 모드에서 제공하지 않습니다. 원격은 고정 출구 IP가 없어 법제처 조회를 하지 않으며 조문 조회는 로컬 모드(npm·.mcpb)에서 가능합니다. 아래 국가법령정보센터 원문에서 해당 조문을 확인하세요.",
+      links: [
+        leaveLink("spouse_leave", "배우자 출산휴가"),
+        leaveLink("maternity_leave", "출산전후휴가"),
+        leaveLink("parental_leave", "육아휴직"),
+      ],
+    },
+    blockedBy: "ip-registration",
   },
   {
     tool: "find_night_pediatric",
@@ -149,6 +177,9 @@ export function policyViolations(policy: readonly RemotePolicy[], toolNames: rea
     if (p.expose && Object.values(p.confirmation).includes("denied")) {
       out.push(`${p.tool}: 거부된 제공처가 있는데 노출되어 있습니다`);
     }
+    if (p.blockedBy !== undefined && p.expose) {
+      out.push(`${p.tool}: ${p.blockedBy} 차단 사유가 있는데 노출되어 있습니다`);
+    }
     if (!p.expose) {
       const r = p.replacement;
       if (!r || r.summary === "" || r.links.length === 0) {
@@ -164,10 +195,19 @@ export function policyViolations(policy: readonly RemotePolicy[], toolNames: rea
   return out;
 }
 
+export const REMOTE_SERVER_INSTRUCTIONS: string = SERVER_INSTRUCTIONS.split("\n")
+  .map((l) => (l.startsWith("API 키:") ? `원격 모드: ${REMOTE_LAW_NOTICE}` : l.replace(LOCAL_LEAVE_SENTENCE, "")))
+  .join("\n");
+
+function rewrite(name: string, description: string): string {
+  const pair = DESCRIPTION_REWRITES[name];
+  return pair === undefined ? description : description.replace(pair[0], pair[1]);
+}
+
 export function remoteTools(all: readonly ToolDef[], policy: readonly RemotePolicy[] = REMOTE_POLICY): ToolDef[] {
   return all
     .filter((t) => policy.find((p) => p.tool === t.name)?.expose === true)
-    .map((t) => ({ ...t, description: `${t.description}\n\n${REMOTE_INPUT_NOTICE}` }));
+    .map((t) => ({ ...t, description: `${rewrite(t.name, t.description)}\n\n${REMOTE_INPUT_NOTICE}` }));
 }
 
 export function excludedFallback(name: string, policy: readonly RemotePolicy[] = REMOTE_POLICY): ToolResult | undefined {
@@ -187,8 +227,8 @@ export function excludedFallback(name: string, policy: readonly RemotePolicy[] =
 export function buildRemoteInstructions(policy: readonly RemotePolicy[] = REMOTE_POLICY): string {
   const privacy = `${REMOTE_PRIVACY_HEADING}\n${REMOTE_INPUT_NOTICE}\n개인정보 처리방침: 이 서버의 /privacy 경로에서 볼 수 있습니다.`;
   const rows = policy.flatMap((p) => (p.expose || !p.replacement ? [] : [{ tool: p.tool, replacement: p.replacement }]));
-  if (rows.length === 0) return `${SERVER_INSTRUCTIONS}\n\n${privacy}`;
-  return `${SERVER_INSTRUCTIONS}\n\n${REMOTE_EXCLUDED_HEADING}\n${rows
+  if (rows.length === 0) return `${REMOTE_SERVER_INSTRUCTIONS}\n\n${privacy}`;
+  return `${REMOTE_SERVER_INSTRUCTIONS}\n\n${REMOTE_EXCLUDED_HEADING}\n${rows
     .map((r) => `- ${r.tool}: ${r.replacement.summary} (${r.replacement.links.map((l) => `${l.title} ${l.url}`).join(", ")})`)
     .join("\n")}\n\n${privacy}`;
 }

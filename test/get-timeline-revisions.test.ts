@@ -3,7 +3,7 @@ import type { ToolContext } from "../src/core/context.js";
 import { runTool } from "../src/core/pipeline.js";
 import { resolveBasis } from "../src/data-store/load.js";
 import type { BasisDoc } from "../src/data-store/schema.js";
-import { storedFields } from "../src/provenance/revision-check.js";
+import { checkRevisions, REVISION_TEXT, storedFields } from "../src/provenance/revision-check.js";
 import { getTimelineTool } from "../src/tools/get-timeline.js";
 import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_UNOFFICIAL, NOTICE_VACCINATION_SCOPE } from "../src/tools/shared/format.js";
 import { createTestContext } from "./helpers/context.js";
@@ -327,5 +327,60 @@ describe("get_timeline revision status integration (mocked law.go.kr)", () => {
     for (const s of [FAKE, ENC, "OC=", "2027-02-10", "20270210", "2026-05-28", "20260528", "성동구"]) {
       expect(logged).not.toContain(s);
     }
+  });
+});
+
+function countingFetch(inner: typeof fetch): { f: typeof fetch; hits: string[] } {
+  const hits: string[] = [];
+  const f = (async (input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
+    const raw = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+    if (new URL(raw).hostname === "www.law.go.kr") hits.push(raw);
+    return inner(input, init);
+  }) as typeof fetch;
+  return { f, hits };
+}
+
+function remoteCtx(env: Record<string, string>): { ctx: ToolContext; hits: string[] } {
+  const mock = createLawMock(sameAsStored(FAKE));
+  const counted = countingFetch(mock.fetch);
+  return { ctx: { ...ctxWith({ fetch: counted.f }, env), revisionCheck: "remote-unavailable" }, hits: counted.hits };
+}
+
+describe("remote revision skip (M28)", () => {
+  const IDS = ["equal-employment-act", "labor-standards-act"];
+
+  it("remote flag skips law.go.kr even with LAW_OC", async () => {
+    const { ctx, hits } = remoteCtx(LIVE_ENV);
+    const out = await checkRevisions(IDS, ctx);
+    expect(hits).toHaveLength(0);
+    expect(out.length).toBeGreaterThan(0);
+    for (const s of out) {
+      expect(s.state).toBe("skipped");
+      expect(s.message).toBe(REVISION_TEXT.skippedRemote);
+      expect(s.link).toBe(resolveBasis([s.basisId])[0]!.url);
+    }
+  });
+
+  it("remote flag wins without LAW_OC", async () => {
+    const { ctx, hits } = remoteCtx({});
+    const out = await checkRevisions(IDS, ctx);
+    expect(hits).toHaveLength(0);
+    expect(out.length).toBeGreaterThan(0);
+    for (const s of out) {
+      expect(s.state).toBe("skipped");
+      expect(s.message).toBe(REVISION_TEXT.skippedRemote);
+      expect(s.message).not.toBe(REVISION_TEXT.skippedNoOc);
+      expect(s.link).toBe(resolveBasis([s.basisId])[0]!.url);
+    }
+  });
+
+  it("get_timeline remote output", async () => {
+    const { ctx, hits } = remoteCtx(LIVE_ENV);
+    const t = text(await runTool(getTimelineTool, { birth_date: "2026-01-31", reference_date: "2026-02-01" }, ctx));
+    const revisionLines = t.split("\n").filter((l) => l.includes("· 개정 확인:"));
+    expect(revisionLines.length).toBeGreaterThan(0);
+    for (const l of revisionLines) expect(l).toContain("개정 여부 확인 불가(원격) 원문: https://");
+    expect(hits).toHaveLength(0);
+    expect(t).not.toContain("법제처 OC 미설정");
   });
 });

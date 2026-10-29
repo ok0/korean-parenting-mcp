@@ -16,7 +16,10 @@ import type { HostingDisclosure } from "./privacy.js";
 
 export const DEFAULT_HTTP_PORT = 8080;
 export const MAX_DISCLOSURE_LENGTH = 200;
-export const SSE_MAX_MS = 300_000;
+export const SSE_MAX_MS = 60_000;
+export const SSE_MAX_MS_RANGE = [1_000, 300_000] as const;
+export const DEFAULT_DAILY_REQUEST_CAP = 10_000;
+export const DEFAULT_XFF_CLIENT_INDEX = 1;
 export const SSE_MAX_STREAMS = 32;
 export const MIN_BEARER_TOKEN_LENGTH = 32;
 export const DEFAULT_MAX_BODY_BYTES = 65_536;
@@ -41,6 +44,7 @@ export interface RemoteConfig {
   trustProxy: "none" | "xff"; originPolicy: "strict" | "report"; getMode: "sse" | "405";
   sseMaxMs: number; sseMaxStreams: number;
   trustedProxyCidrs: string[]; sharedEgressCidrs: string[]; maxBodyBytes: number;
+  xffClientIndexFromRight: number; dailyRequestCap: number; lawRemote: boolean;
   rate: { perClientPerMin: number; sharedPoolPerMin: number; globalPerMin: number; maxConcurrent: number };
   quota: QuotaConfig;
   hosting: HostingDisclosure; operatorContact: string;
@@ -118,10 +122,13 @@ const HOST_PATTERN = /^([a-z0-9-]+\.)*[a-z0-9-]+$|^\[[0-9a-f:]+\]$/;
 
 export function loadRemoteConfig(env: Record<string, string | undefined>): RemoteConfig {
   const rawPort = opt(env, "KPM_HTTP_PORT");
+  const rawPortFallback = rawPort === undefined ? opt(env, "PORT") : undefined;
+  const portName = rawPort !== undefined ? "KPM_HTTP_PORT" : "PORT";
+  const portText = rawPort ?? rawPortFallback;
   let port = DEFAULT_HTTP_PORT;
-  if (rawPort !== undefined) {
-    const n = Number(rawPort);
-    if (!/^\d+$/.test(rawPort) || n < 0 || n > 65535) throw new RemoteConfigError("KPM_HTTP_PORT");
+  if (portText !== undefined) {
+    const n = Number(portText);
+    if (!/^\d+$/.test(portText) || n < 0 || n > 65535) throw new RemoteConfigError(portName);
     port = n;
   }
 
@@ -177,6 +184,10 @@ export function loadRemoteConfig(env: Record<string, string | undefined>): Remot
     globalPerMin: strictInt(env, "KPM_RATE_GLOBAL_PER_MIN", 900, 1, 100_000),
     maxConcurrent: strictInt(env, "KPM_RATE_MAX_CONCURRENT", 16, 1, 1_000),
   };
+  const xffClientIndexFromRight = strictInt(env, "KPM_XFF_CLIENT_INDEX", 1, 1, 32);
+  const dailyRequestCap = strictInt(env, "KPM_DAILY_REQUEST_CAP", 10_000, 1, 100_000_000);
+  const sseMaxMs = strictInt(env, "KPM_SSE_MAX_MS", SSE_MAX_MS, SSE_MAX_MS_RANGE[0], SSE_MAX_MS_RANGE[1]);
+  const lawRemote = choice(env, "KPM_LAW_REMOTE", ["on", "off"] as const, "off") === "on";
 
   const budgets = Object.fromEntries(
     UPSTREAM_BUCKETS.map((b) => [b, strictInt(env, `KPM_BUDGET_${BUCKET_ENV[b]}`, DEFAULT_BUDGETS[b], 0, 10_000_000)]),
@@ -215,12 +226,15 @@ export function loadRemoteConfig(env: Record<string, string | undefined>): Remot
   };
 
   const operatorContact = requiredText(env, "KPM_OPERATOR_CONTACT");
-  const hosting: HostingDisclosure = {
+  const hostingText = {
     provider: requiredText(env, "KPM_HOST_PROVIDER"),
     country: requiredText(env, "KPM_HOST_COUNTRY"),
     region: requiredText(env, "KPM_HOST_REGION"),
     logRetention: requiredText(env, "KPM_HOST_LOG_RETENTION"),
   };
+  const requestLogs = opt(env, "KPM_HOST_REQUEST_LOGS");
+  if (requestLogs !== "excluded" && requestLogs !== "retained") throw new RemoteConfigError("KPM_HOST_REQUEST_LOGS");
+  const hosting: HostingDisclosure = { ...hostingText, requestLogs };
 
   const loaded = loadConfig(env);
   const base = restrictKeys(loaded);
@@ -233,8 +247,9 @@ export function loadRemoteConfig(env: Record<string, string | undefined>): Remot
   const config: RemoteConfig = {
     base, secrets, port, host, allowedHosts, allowedOrigins,
     trustProxy, originPolicy, getMode,
-    sseMaxMs: SSE_MAX_MS, sseMaxStreams: SSE_MAX_STREAMS,
+    sseMaxMs, sseMaxStreams: SSE_MAX_STREAMS,
     trustedProxyCidrs, sharedEgressCidrs, maxBodyBytes, rate, quota,
+    xffClientIndexFromRight, dailyRequestCap, lawRemote,
     hosting, operatorContact,
   };
   if (rawToken !== undefined) config.bearerToken = rawToken;

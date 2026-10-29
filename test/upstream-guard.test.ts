@@ -50,7 +50,7 @@ describe("upstream guard defaults", () => {
       benefits: 9000,
       dur: 9000,
       kasi: 9000,
-      law: 3000,
+      law: 0,
       kindergarten: 3000,
       safetykorea: 0,
     });
@@ -109,6 +109,21 @@ describe("budget and events", () => {
   it("budget 0 always rejects", async () => {
     const t = setup();
     await rejectionOf(t.guard.admit(SK_URL, t.now()));
+  });
+
+  it("law bucket rejects by default", async () => {
+    const events: QuotaEvent[] = [];
+    const guard = createUpstreamGuard({
+      budgets: { ...DEFAULT_BUDGETS },
+      minTtlMs: { ...DEFAULT_MIN_TTL_MS },
+      defaultMinTtlMs: 3_600_000,
+      staleMaxMs: 86_400_000,
+      alertRatio: 0.8,
+      onEvent: (e) => events.push(e),
+    });
+    const err = await rejectionOf(guard.admit(new URL("https://www.law.go.kr/DRF/lawSearch.do"), Date.now()));
+    expect(err.kind).toBe("DAILY_LIMIT");
+    expect(err.detail?.source).toBe("guard");
   });
 
   it("unclassified url not counted", async () => {

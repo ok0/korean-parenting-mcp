@@ -5,6 +5,7 @@ export interface HostingDisclosure {
   country: string;
   region: string;
   logRetention: string;
+  requestLogs: "excluded" | "retained";
 }
 
 export const PRIVACY_POLICY_EFFECTIVE = "2026-10-29";
@@ -37,6 +38,18 @@ export const PRIVACY_SECTIONS: readonly { id: PrivacySectionId; title: string }[
 export const REMOTE_INPUT_NOTICE =
   "원격 서버 이용 중: 이름·연락처 등 식별정보를 입력하지 마세요. 건강 관련 입력이 신경 쓰이면 로컬 모드(npm·.mcpb)를 쓰세요.";
 
+export const REMOTE_LAW_NOTICE =
+  "원격 서버는 고정 출구 IP가 없어 법제처(국가법령정보센터) 조회를 하지 않습니다. get_timeline의 근거 문서에는 \"개정 여부 확인 불가(원격)\"과 원문 링크가 표시되며, 법령 조문 원문 조회(get_leave_article)는 로컬 모드(npm·.mcpb)에서 쓸 수 있습니다.";
+
+const IP_TEXT =
+  "접속 IP 주소는 요청 한도 계산을 위해 메모리에만 두고 기록하거나 해시로 저장하지 않습니다. 1분 창이 지난 값은 다음 요청 처리 때 지워지고, 서버 인스턴스가 멈추면 모두 사라집니다. Anthropic 커넥터 출구 범위의 IP는 개별로 저장하지 않고 공유 풀로만 셉니다.";
+
+const REQUEST_LOGS_EXCLUDED =
+  "플랫폼 요청 로그(IP·User-Agent·요청 시각)는 운영자가 저장 제외 설정으로 보관하지 않으며, 호스팅 업체가 자체 목적으로 처리하는 정보는 업체 정책을 따릅니다.";
+
+const requestLogsRetained = (ret: string): string =>
+  `플랫폼 요청 로그(IP·User-Agent·요청 시각)가 ${ret} 동안 보관됩니다.`;
+
 export const PAGE_CSP = "default-src 'none'; style-src 'unsafe-inline'";
 
 export function escapeHtml(s: string): string {
@@ -63,15 +76,16 @@ function sectionBody(id: PrivacySectionId, opts: { contact: string; hosting: Hos
   const country = escapeHtml(hosting.country);
   const region = escapeHtml(hosting.region);
   const logRetention = escapeHtml(hosting.logRetention);
+  const reqLogs = hosting.requestLogs === "excluded" ? REQUEST_LOGS_EXCLUDED : requestLogsRetained(logRetention);
   switch (id) {
     case "purpose":
       return `<p>질의 응답 생성: 이용자가 입력한 질의에 대한 응답을 만드는 목적으로만 처리합니다.</p><p>그 외 목적으로 쓰지 않습니다.</p>`;
     case "items":
-      return `<ul><li>도구 인자(질의 내용)는 응답을 만드는 동안 메모리에서만 처리하며 기록하지 않습니다.</li><li>접속 IP 주소는 요청 한도 계산을 위해 약 2분 동안 메모리에서만 사용하며 기록하거나 해시로 저장하지 않습니다.</li><li>호스팅 업체의 플랫폼 접근 로그(접속 IP 주소, 요청 시각 등)가 운영자와 별도로 생성될 수 있습니다.</li><li>서버 캐시는 공공 API 응답을 잠시 보관하는 휘발성 메모리이며 요청자와 연결되지 않습니다.</li><li>이름·연락처 등 식별정보와 건강 관련 정보는 입력하지 마세요. 건강 관련 입력이 신경 쓰이면 로컬 모드(npm·.mcpb)를 사용하세요.</li></ul>`;
+      return `<ul><li>도구 인자(질의 내용)는 응답을 만드는 동안 메모리에서만 처리하며 기록하지 않습니다.</li><li>${IP_TEXT}</li><li>${reqLogs}</li><li>서버 캐시는 공공 API 응답을 잠시 보관하는 휘발성 메모리이며 요청자와 연결되지 않습니다.</li><li>이름·연락처 등 식별정보와 건강 관련 정보는 입력하지 마세요. 건강 관련 입력이 신경 쓰이면 로컬 모드(npm·.mcpb)를 사용하세요.</li></ul>`;
     case "retention":
-      return `<p>도구 인자는 응답 후 폐기하며, 접속 IP 주소는 요청 한도 계산용으로 최대 2분 안에 메모리에서 폐기합니다.</p><p>호스팅 업체 접근 로그 보존기간: ${logRetention}</p>`;
+      return `<p>도구 인자는 응답 후 폐기합니다. 접속 IP 주소는 1분 창이 지난 뒤 다음 요청 처리 때 메모리에서 지워지며, 서버 인스턴스가 멈추면 모두 사라집니다.</p><p>${reqLogs}</p><p>앱 지표 로그(IP·도구 인자 없음) 보존기간: ${logRetention}</p>`;
     case "destruction":
-      return `<p>서버가 질의와 접속 정보를 저장하지 않으므로 별도 파기 대상이 없으며, 메모리의 값은 처리 후 또는 최대 2분 안에 사라집니다. 호스팅 접근 로그는 호스팅 업체의 보존기간이 지나면 삭제됩니다.</p>`;
+      return `<p>서버가 질의와 접속 정보를 저장하지 않으므로 별도 파기 대상이 없습니다. 메모리의 접속 IP 값은 1분 창이 지난 뒤 다음 요청 처리 때 지워지고 서버 인스턴스가 멈추면 모두 사라집니다. 호스팅 업체가 보관하는 로그는 해당 보존기간이 지나면 삭제됩니다.</p>`;
     case "outsourcing":
       return `<ul><li>수탁자: ${provider}</li><li>위탁 업무: 서버 호스팅 및 접속 로그 처리</li><li>국가·리전: ${country} / ${region}</li><li>보유기간: ${logRetention}</li></ul>`;
     case "transfer":
@@ -91,7 +105,7 @@ function sectionBody(id: PrivacySectionId, opts: { contact: string; hosting: Hos
 }
 
 export function renderPrivacyPage(opts: { contact: string; host: string; hosting: HostingDisclosure }): string {
-  const header = `<h1>korean-parenting-mcp 원격 서버 개인정보 처리방침</h1><p>이 개인정보 처리방침은 ${escapeHtml(opts.host)} 원격 서버에 적용됩니다.</p><p><a href="/">처음으로</a></p>`;
+  const header = `<h1>korean-parenting-mcp 원격 서버 개인정보 처리방침</h1><p>이 개인정보 처리방침은 ${escapeHtml(opts.host)} 원격 서버에 적용됩니다.</p><p>${escapeHtml(REMOTE_LAW_NOTICE)}</p><p><a href="/">처음으로</a></p>`;
   const sections = PRIVACY_SECTIONS.map(
     (s) => `<section id="${s.id}"><h2>${s.title}</h2>${sectionBody(s.id, { contact: opts.contact, hosting: opts.hosting })}</section>`,
   ).join("");
@@ -99,6 +113,6 @@ export function renderPrivacyPage(opts: { contact: string; host: string; hosting
 }
 
 export function renderLandingPage(opts: { host: string }): string {
-  const body = `<h1>korean-parenting-mcp 원격 서버</h1><p>한국 임신·출산·육아 일정과 공공 정보를 안내하는 비공식 MCP 서버의 원격 접속 주소입니다.</p><p>커넥터 URL: <code>https://${escapeHtml(opts.host)}/mcp</code></p><p><a href="/privacy">개인정보 처리방침</a></p><p>${escapeHtml(REMOTE_INPUT_NOTICE)}</p><p>건강 정보 입력이 신경 쓰이면 npm 패키지나 .mcpb 번들로 설치하는 로컬 모드를 사용하세요.</p>`;
+  const body = `<h1>korean-parenting-mcp 원격 서버</h1><p>한국 임신·출산·육아 일정과 공공 정보를 안내하는 비공식 MCP 서버의 원격 접속 주소입니다.</p><p>커넥터 URL: <code>https://${escapeHtml(opts.host)}/mcp</code></p><p><a href="/privacy">개인정보 처리방침</a></p><p>${escapeHtml(REMOTE_LAW_NOTICE)}</p><p>${escapeHtml(REMOTE_INPUT_NOTICE)}</p><p>건강 정보 입력이 신경 쓰이면 npm 패키지나 .mcpb 번들로 설치하는 로컬 모드를 사용하세요.</p>`;
   return skeleton("korean-parenting-mcp 원격 서버", body);
 }

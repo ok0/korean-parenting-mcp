@@ -4,7 +4,7 @@ import { SUPPORTED_PROTOCOL_VERSIONS } from "@modelcontextprotocol/sdk/types.js"
 import { TtlCache } from "../core/cache.js";
 import { createDefaultContext, type Clock, type ToolContext } from "../core/context.js";
 import type { ErrorKind, ToolResult } from "../core/errors.js";
-import { createUpstreamGuard } from "../core/upstream-guard.js";
+import { createUpstreamGuard, type UpstreamGuard } from "../core/upstream-guard.js";
 import { createServer } from "../server/create-server.js";
 import { allTools, type ToolDef } from "../tools/registry.js";
 import { buildRemoteInstructions, excludedFallback, remoteTools } from "./allowlist.js";
@@ -17,7 +17,7 @@ import {
   type Rpc,
 } from "./metrics-log.js";
 import { PAGE_CSP, renderLandingPage, renderPrivacyPage } from "./privacy.js";
-import { createWebhookNotifier } from "./quota-alert.js";
+import { createWebhookNotifier, WEBHOOK_TIMEOUT_MS } from "./quota-alert.js";
 import { createClientKeyResolver, createRateLimiter, type RateLimiter } from "./rate-limit.js";
 import { REMOTE_CACHE_MAX_ENTRIES, type RemoteConfig } from "./remote-config.js";
 import { checkRequest } from "./request-guard.js";
@@ -40,7 +40,10 @@ export interface RemoteDeps {
   clientKey: (req: IncomingMessage) => string;
 }
 
-export type RemoteDepsExtras = Partial<Pick<RemoteDeps, "metrics" | "limiter" | "clock">> & { webhookFetch?: typeof fetch };
+export type RemoteDepsExtras = Partial<Pick<RemoteDeps, "metrics" | "limiter" | "clock">> & {
+  webhookFetch?: typeof fetch;
+  webhookTimeoutMs?: number;
+};
 
 export interface RemoteHandler {
   (req: IncomingMessage, res: ServerResponse): Promise<void>;
@@ -67,20 +70,49 @@ export function buildRemoteDeps(
 ): RemoteDeps {
   const metrics = extras.metrics ?? createMetricsLog();
   const notify = rc.quota.alertWebhookUrl
-    ? createWebhookNotifier(rc.quota.alertWebhookUrl, extras.webhookFetch ?? globalThis.fetch.bind(globalThis))
+    ? createWebhookNotifier(
+        rc.quota.alertWebhookUrl,
+        extras.webhookFetch ?? globalThis.fetch.bind(globalThis),
+        extras.webhookTimeoutMs ?? WEBHOOK_TIMEOUT_MS,
+      )
     : undefined;
-  const upstream = createUpstreamGuard({
+  const pending = new Set<Promise<void>>();
+  const drain = async (): Promise<void> => {
+    if (pending.size > 0) await Promise.allSettled([...pending]);
+  };
+  const guard = createUpstreamGuard({
     ...rc.quota,
     onEvent: (e) => {
       metrics.emit({ ev: "quota", ...e });
-      notify?.(e);
+      if (notify) {
+        const p = notify(e);
+        pending.add(p);
+        void p.then(() => pending.delete(p));
+      }
     },
   });
+  const upstream: UpstreamGuard = {
+    async admit(url, nowMs) {
+      try {
+        await guard.admit(url, nowMs);
+      } finally {
+        await drain();
+      }
+    },
+    minTtl: (k) => guard.minTtl(k),
+    staleMaxMs: guard.staleMaxMs,
+    async markExhausted(b, nowMs) {
+      await guard.markExhausted(b, nowMs);
+      await drain();
+    },
+    counts: (n) => guard.counts(n),
+  };
   const baseCtx = createDefaultContext(rc.base, {
     secrets: rc.secrets,
     log: createRemoteLogger(rc.secrets),
     cache: new TtlCache(REMOTE_CACHE_MAX_ENTRIES, rc.quota.staleMaxMs),
     upstream,
+    ...(rc.lawRemote ? {} : { revisionCheck: "remote-unavailable" as const }),
     ...overrides,
   });
   return {
@@ -90,9 +122,13 @@ export function buildRemoteDeps(
     instructions: buildRemoteInstructions(),
     fallback: (n) => excludedFallback(n),
     metrics,
-    limiter: extras.limiter ?? createRateLimiter({ ...rc.rate, sharedEgressCidrs: rc.sharedEgressCidrs }),
+    limiter: extras.limiter ?? createRateLimiter({ ...rc.rate, sharedEgressCidrs: rc.sharedEgressCidrs, dailyCap: rc.dailyRequestCap }),
     clock: extras.clock ?? baseCtx.clock,
-    clientKey: createClientKeyResolver({ trustProxy: rc.trustProxy, trustedProxyCidrs: rc.trustedProxyCidrs }),
+    clientKey: createClientKeyResolver({
+      trustProxy: rc.trustProxy,
+      trustedProxyCidrs: rc.trustedProxyCidrs,
+      xffClientIndexFromRight: rc.xffClientIndexFromRight,
+    }),
   };
 }
 
@@ -322,7 +358,10 @@ export function createRemoteHandler(deps: RemoteDeps): RemoteHandler {
         if (!t.ok) {
           m.outcome = "rate_limited";
           req.resume();
-          rejectJson(res, 429, -32029, `요청이 많습니다. ${t.retryAfterSec}초 후 다시 시도하세요.`, {
+          const msg = t.scope === "daily"
+            ? "오늘 원격 사용량 한도에 도달했습니다. 한국 시간 자정 이후 다시 시도하세요."
+            : `요청이 많습니다. ${t.retryAfterSec}초 후 다시 시도하세요.`;
+          rejectJson(res, 429, -32029, msg, {
             "retry-after": String(t.retryAfterSec),
           });
           return;
@@ -419,4 +458,10 @@ export function createRemoteHandler(deps: RemoteDeps): RemoteHandler {
   Object.defineProperty(result, "closeStreams", { value: closeStreams, enumerable: true });
   Object.defineProperty(result, "openStreams", { get: () => openStreams, enumerable: true });
   return result;
+}
+
+export function releaseRemoteState(deps: RemoteDeps, handler: RemoteHandler): void {
+  handler.closeStreams();
+  deps.limiter.clear();
+  void deps.baseCtx.cache.clear?.();
 }

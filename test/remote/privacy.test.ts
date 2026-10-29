@@ -16,6 +16,7 @@ import {
   PRIVACY_POLICY_EFFECTIVE,
   PRIVACY_SECTIONS,
   REMOTE_INPUT_NOTICE,
+  REMOTE_LAW_NOTICE,
   renderLandingPage,
   renderPrivacyPage,
 } from "../../src/remote/privacy.js";
@@ -105,11 +106,15 @@ describe("privacy pages", () => {
     const items = section(html, "items");
     expect(items).toContain("도구 인자");
     expect(items).toContain("기록하지 않습니다");
-    expect(items).toContain("약 2분");
-    expect(items).toContain("호스팅 업체");
+    expect(items).toContain("메모리에만 두고");
+    expect(items).toContain("다음 요청 처리 때 지워지고");
+    expect(items).toContain("서버 인스턴스가 멈추면");
+    expect(items).toContain("공유 풀");
+    expect(html).not.toContain("최대 2분");
+    expect(html).not.toContain("약 2분");
     const retention = section(html, "retention");
     expect(retention).toContain("응답 후 폐기");
-    expect(retention).toContain("최대 2분");
+    expect(retention).toContain("앱 지표 로그");
     expect(retention).toContain("log-retention-sentinel-30d");
     const outsourcing = section(html, "outsourcing");
     for (const v of ["host-provider-sentinel", "KR", "host-region-sentinel", "log-retention-sentinel-30d"]) {
@@ -161,6 +166,28 @@ describe("privacy pages", () => {
     expect(r.body).toContain("&quot;&gt;&lt;img");
   });
 
+  it("request-log wording follows KPM_HOST_REQUEST_LOGS", async () => {
+    const excluded = await start();
+    const ex = await rawRequest(excluded.port, { method: "GET", path: "/privacy" });
+    expect(ex.body).toContain("저장 제외 설정으로 보관하지 않으며");
+    expect(ex.body).not.toContain("동안 보관됩니다");
+    assertClean(ex);
+
+    const retained = await start({ KPM_HOST_REQUEST_LOGS: "retained" });
+    const re = await rawRequest(retained.port, { method: "GET", path: "/privacy" });
+    expect(re.body).toContain("플랫폼 요청 로그(IP·User-Agent·요청 시각)가 log-retention-sentinel-30d 동안 보관됩니다");
+    expect(re.body).not.toContain("저장 제외 설정");
+    assertClean(re);
+  });
+
+  it("privacy and landing state no law.go.kr lookup in remote", async () => {
+    const srv = await start();
+    const privacy = await rawRequest(srv.port, { method: "GET", path: "/privacy" });
+    const landing = await rawRequest(srv.port, { method: "GET", path: "/" });
+    expect(privacy.body).toContain(escapeHtml(REMOTE_LAW_NOTICE));
+    expect(landing.body).toContain(escapeHtml(REMOTE_LAW_NOTICE));
+  });
+
   it("escapeHtml replaces the five special characters", () => {
     expect(escapeHtml("&<>\"'")).toBe("&amp;&lt;&gt;&quot;&#39;");
   });
@@ -183,7 +210,10 @@ describe("privacy pages", () => {
     const client = new Client({ name: "t", version: "0" });
     await client.connect(new StreamableHTTPClientTransport(srv.url));
     const { tools } = await client.listTools();
-    expect(tools).toHaveLength(9);
+    expect(tools).toHaveLength(8);
+    const toolNames = tools.map((t) => t.name);
+    expect(toolNames).not.toContain("get_leave_article");
+    expect(toolNames).not.toContain("check_recall");
     for (const t of tools) {
       const local = allTools.find((x) => x.name === t.name);
       expect(local).toBeDefined();
@@ -206,7 +236,7 @@ describe("privacy pages", () => {
     expect(matchedPatterns(added, OFFICIAL_CLAIM_META)).toEqual([]);
     expect(matchedPatterns(added, OFFICIAL_CLAIM_OUTPUT)).toEqual([]);
 
-    const hosting = { provider: "p", country: "US", region: "r", logRetention: "l" };
+    const hosting = { provider: "p", country: "US", region: "r", logRetention: "l", requestLogs: "excluded" as const };
     const privacy = renderPrivacyPage({ contact: "c", host: "h", hosting });
     const landing = renderLandingPage({ host: "h" });
     for (const page of [privacy, landing]) {

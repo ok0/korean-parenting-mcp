@@ -1,6 +1,6 @@
 import { createServer as createHttpServer } from "node:http";
 import { VERSION } from "../version.js";
-import { buildRemoteDeps, createRemoteHandler } from "./app.js";
+import { buildRemoteDeps, createRemoteHandler, releaseRemoteState } from "./app.js";
 import { createMetricsLog, installCrashHandlers } from "./metrics-log.js";
 import { loadRemoteConfig, RemoteConfigError, type RemoteConfig } from "./remote-config.js";
 
@@ -20,7 +20,8 @@ try {
   process.exit(1);
 }
 
-const handler = createRemoteHandler(buildRemoteDeps(rc, {}, { metrics }));
+const deps = buildRemoteDeps(rc, {}, { metrics });
+const handler = createRemoteHandler(deps);
 const server = createHttpServer((req, res) => {
   void handler(req, res);
 });
@@ -38,7 +39,7 @@ server.listen(rc.port, rc.host, () => {
 });
 
 const shutdown = (): void => {
-  handler.closeStreams();
+  releaseRemoteState(deps, handler);
   server.close(() => process.exit(0));
   server.closeIdleConnections();
   setTimeout(() => {

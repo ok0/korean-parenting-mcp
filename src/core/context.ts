@@ -18,6 +18,7 @@ export interface ToolContext {
   log: Logger;
   secrets: string[];
   onToolDone?: (e: { tool: string; ok: boolean; kind?: ErrorKind; ms: number }) => void;
+  revisionCheck?: "remote-unavailable"; // remote only (M28): skip law.go.kr revision checks
 }
 
 export function createDefaultContext(config: Config, overrides: Partial<ToolContext> = {}): ToolContext {

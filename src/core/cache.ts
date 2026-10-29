@@ -14,6 +14,7 @@ export interface CacheStore {
   readonly inflight: Map<string, Promise<unknown>>;
   keys(): string[];
   readonly size: number;
+  clear?(): MaybePromise<void>;
 }
 
 interface Entry {
@@ -72,6 +73,11 @@ export class TtlCache implements CacheStore {
 
   keys(): string[] {
     return [...this.map.keys()];
+  }
+
+  clear(): void {
+    this.map.clear();
+    this.inflight.clear();
   }
 }
 

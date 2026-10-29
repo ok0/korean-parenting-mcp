@@ -26,7 +26,7 @@ export const DEFAULT_BUDGETS: Readonly<Record<UpstreamBucket, number>> = {
   benefits: 9000,
   dur: 9000,
   kasi: 9000,
-  law: 3000,
+  law: 0, // remote has no fixed egress IP: law.go.kr never admitted (M28, ADR-37)
   kindergarten: 3000,
   safetykorea: 0,
 };

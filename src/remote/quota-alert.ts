@@ -7,14 +7,20 @@ export function createWebhookNotifier(
   url: string,
   fetchImpl: typeof fetch,
   timeoutMs = WEBHOOK_TIMEOUT_MS,
-): (e: QuotaEvent) => void {
+): (e: QuotaEvent) => Promise<void> {
   return (e) => {
     const body = quotaJson(e);
-    if (body === undefined) return;
-    void (async () => {
-      const ac = new AbortController();
-      const t = setTimeout(() => ac.abort(), timeoutMs);
-      t.unref();
+    if (body === undefined) return Promise.resolve();
+    const ac = new AbortController();
+    let t: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<void>((resolve) => {
+      t = setTimeout(() => {
+        ac.abort();
+        resolve();
+      }, timeoutMs);
+      t.unref?.();
+    });
+    const send = (async () => {
       try {
         const res = await fetchImpl(url, {
           method: "POST",
@@ -23,10 +29,8 @@ export function createWebhookNotifier(
           signal: ac.signal,
         });
         void res.body?.cancel().catch(() => {});
-      } catch {
-      } finally {
-        clearTimeout(t);
-      }
+      } catch {}
     })();
+    return Promise.race([send, timeout]).finally(() => clearTimeout(t));
   };
 }

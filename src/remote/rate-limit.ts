@@ -4,13 +4,17 @@ import type { IncomingHttpHeaders } from "node:http";
 export const WINDOW_MS = 60_000;
 export const DEFAULT_MAX_CLIENTS = 10_000;
 const SWEEP_INTERVAL_MS = 30_000;
+const DAY_MS = 86_400_000;
+const KST_OFFSET_MS = 9 * 3_600_000;
+const kstDayIndex = (ms: number): number => Math.floor((ms + KST_OFFSET_MS) / DAY_MS);
 
 export type TakeResult =
   | { ok: true; pool: "direct" | "shared"; release(): void }
-  | { ok: false; pool: "direct" | "shared"; retryAfterSec: number; scope: "client" | "shared" | "global" | "concurrency" };
+  | { ok: false; pool: "direct" | "shared"; retryAfterSec: number; scope: "client" | "shared" | "global" | "daily" | "concurrency" };
 
 export interface RateLimiter {
   take(clientKey: string, nowMs: number): Promise<TakeResult>;
+  clear(): void; // empties all windows (SIGTERM)
   readonly trackedClients: number;
 }
 
@@ -21,12 +25,14 @@ export interface RateLimitOptions {
   maxConcurrent: number;
   sharedEgressCidrs: readonly string[];
   maxClients?: number;
-  sweepIntervalMs?: number;
+  dailyCap?: number;
+  sweepIntervalMs?: number; // 0 = no timer; helper only, correctness comes from take()
 }
 
 export interface ClientKeyOptions {
   trustProxy: "none" | "xff";
   trustedProxyCidrs: readonly string[];
+  xffClientIndexFromRight?: number;
 }
 
 interface Window {
@@ -66,8 +72,12 @@ export function createRateLimiter(opts: RateLimitOptions): RateLimiter {
   const sweep = (now: number): void => {
     for (const [k, c] of clients) if (now - c.windowStart >= WINDOW_MS) clients.delete(k);
   };
-  const timer = setInterval(() => sweep(Date.now()), opts.sweepIntervalMs ?? SWEEP_INTERVAL_MS);
-  timer.unref();
+  const daily = { day: Number.NaN, count: 0 };
+  const interval = opts.sweepIntervalMs ?? SWEEP_INTERVAL_MS;
+  if (interval > 0) {
+    const timer = setInterval(() => sweep(Date.now()), interval);
+    timer.unref();
+  }
 
   return {
     async take(key: string, now: number): Promise<TakeResult> {
@@ -79,6 +89,11 @@ export function createRateLimiter(opts: RateLimitOptions): RateLimiter {
       if (now - global.windowStart >= WINDOW_MS) {
         global.windowStart = now;
         global.count = 0;
+      }
+      const day = kstDayIndex(now);
+      if (day !== daily.day) {
+        daily.day = day;
+        daily.count = 0;
       }
 
       const ip = normalizeIp(key) ?? key;
@@ -93,12 +108,17 @@ export function createRateLimiter(opts: RateLimitOptions): RateLimiter {
       if (global.count >= opts.globalPerMin) {
         return { ok: false, pool, scope: "global", retryAfterSec: retry(global, now) };
       }
+      if (opts.dailyCap !== undefined && daily.count >= opts.dailyCap) {
+        const resetMs = (day + 1) * DAY_MS - KST_OFFSET_MS;
+        return { ok: false, pool, scope: "daily", retryAfterSec: Math.max(1, Math.ceil((resetMs - now) / 1000)) };
+      }
       if (active >= opts.maxConcurrent) {
         return { ok: false, pool, scope: "concurrency", retryAfterSec: 1 };
       }
 
       counter.count++;
       global.count++;
+      daily.count++;
       active++;
       if (!isShared && !clients.has(ip)) clients.set(ip, counter);
       while (clients.size > max) {
@@ -118,6 +138,13 @@ export function createRateLimiter(opts: RateLimitOptions): RateLimiter {
         },
       };
     },
+    clear() {
+      clients.clear();
+      shared.windowStart = -Infinity;
+      shared.count = 0;
+      global.windowStart = -Infinity;
+      global.count = 0;
+    },
     get trackedClients() {
       return clients.size;
     },
@@ -135,7 +162,9 @@ export function createClientKeyResolver(
     const h = req.headers["x-forwarded-for"];
     const raw = Array.isArray(h) ? h.join(",") : h;
     if (raw === undefined) return sock;
-    const last = raw.split(",").pop() ?? "";
-    return normalizeIp(last) ?? sock;
+    const parts = raw.split(",");
+    const pick = parts[parts.length - (opts.xffClientIndexFromRight ?? 1)];
+    if (pick === undefined) return sock;
+    return normalizeIp(pick) ?? sock;
   };
 }
