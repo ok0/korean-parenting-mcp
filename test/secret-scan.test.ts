@@ -44,6 +44,16 @@ const targets: { files: string[]; heuristic: boolean; secrets: readonly string[]
   },
   { files: [join(root, "README.md"), join(root, "LICENSE")], heuristic: true, secrets: strong },
   { files: topDocs(), heuristic: true, secrets: strong },
+  {
+    files: [join(root, "Dockerfile"), join(root, ".dockerignore"), ...walk(join(root, "deploy"))].filter(existsSync),
+    heuristic: true,
+    secrets: strong,
+  },
+  {
+    files: existsSync(join(root, ".docs/remote/cloud-run.md")) ? [join(root, ".docs/remote/cloud-run.md")] : [],
+    heuristic: true,
+    secrets: strong,
+  },
 ];
 
 describe("secret scan", () => {

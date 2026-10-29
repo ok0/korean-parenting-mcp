@@ -5,12 +5,15 @@ import { describe, expect, it } from "vitest";
 import { PROVIDER_LABELS, REMOTE_POLICY } from "../../src/remote/allowlist.js";
 import { PRIVACY_SECTIONS } from "../../src/remote/privacy.js";
 import { UPSTREAM_BUCKETS, DEFAULT_BUDGETS, DEFAULT_MIN_TTL_MS } from "../../src/core/upstream-guard.js";
+import { findLeaks } from "../../scripts/lib/sample-mask.js";
+import { remoteEnvReads } from "../helpers/remote-env-reads.js";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const ALLOW = join(root, ".docs/remote/allowlist.md");
 const CONF = join(root, ".docs/remote/provider-confirmations.md");
 const QUOTA = join(root, ".docs/remote/quota.md");
 const PRIVACY = join(root, ".docs/remote/privacy-policy-draft.md");
+const CLOUD_RUN = join(root, ".docs/remote/cloud-run.md");
 
 describe.skipIf(!existsSync(ALLOW))("remote allowlist doc", () => {
   const lines = existsSync(ALLOW) ? readFileSync(ALLOW, "utf8").split("\n") : [];
@@ -147,5 +150,58 @@ describe.skipIf(!existsSync(PRIVACY))("privacy policy draft doc", () => {
       if (v === undefined || v.length < 8) continue;
       expect(text.includes(v), `value of ${name} must not appear in the doc`).toBe(false);
     }
+  });
+});
+
+describe.skipIf(!existsSync(CLOUD_RUN))("cloud run operations doc", () => {
+  const text = existsSync(CLOUD_RUN) ? readFileSync(CLOUD_RUN, "utf8") : "";
+
+  it("covers required topics", () => {
+    for (const s of [
+      "asia-northeast3",
+      "Secret Manager",
+      "--data-file=-",
+      "_Default",
+      "run.googleapis.com/requests",
+      "7일",
+      "USD 1",
+      "--max-instances=1",
+      "--timeout=300",
+      "240초",
+      "롤백",
+      "update-traffic",
+      "services delete",
+      "Cloud NAT",
+      "min-instances",
+      "CPU 상시 할당",
+      "승인",
+      "비공개",
+      "deploy.sh",
+      "smoke:remote",
+    ]) {
+      expect(text, s).toContain(s);
+    }
+    expect(text).not.toContain(":latest");
+  });
+
+  it("KPM_* table lists every remote env read", () => {
+    for (const name of remoteEnvReads()) {
+      expect(text, name).toContain(name);
+    }
+  });
+
+  it("blank MANUAL results table B1–B12", () => {
+    expect(text).toContain("| 항목 ID | 절차 | 기대 | 관측값 | 판정 | 수행자·일자 |");
+    for (let n = 1; n <= 12; n++) {
+      expect(text, `B${n}`).toMatch(new RegExp("^\\| B" + n + " \\|[^|]+\\|[^|]+\\|\\s*\\|\\s*\\|\\s*\\|$", "m"));
+    }
+  });
+
+  it("no real contact or key values", () => {
+    for (const m of text.match(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g) ?? []) {
+      expect(m.endsWith("example.com"), m).toBe(true);
+    }
+    expect(text).not.toContain("API정보");
+    expect(findLeaks(text, [], { heuristic: true })).toEqual([]);
   });
 });
