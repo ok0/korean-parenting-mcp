@@ -1,0 +1,49 @@
+{
+  "_fixture_note": "M14 실호출 녹화(2026-10-30), 앞 2건만, 인증 정보 없음",
+  "resultCode": "2000",
+  "resultMsg": "Success",
+  "resultData": [
+    {
+      "fRecallUid": "10037084",
+      "recallModelName": "N0001(Night), N0048(Cappuccino), N0460(Cloud), N9939(Charcoal)",
+      "recallModelCnt": "4",
+      "recallProductName": "2인용 유모차",
+      "recallBrandName": "Valco Baby",
+      "makerName": "Valco Baby",
+      "makingCntryName": "국외>아시아지역>중국",
+      "recallTypeName": "자발적리콜",
+      "recallPblshCntryName": "국외>미주지역>캐나다",
+      "recallPblshOrgnName": "캐나다 Health Canada",
+      "recallMeans": "기타",
+      "violateDscr": "캐나다 보건부의 샘플링 및 평가 프로그램 결과, 이 유모차는 캐나다의 유모차 규정을 충족하지 않는 것으로 확인되었습니다. 유모차가 사용 중 전복되어 어린이에게 낙상 및 부상 위험을 초래할 수 있습니다. 좌석 앞쪽의 다리 구멍으로 어린이의 몸통이 빠져나갈 수 있어 끼임으로 인한 심각한 부상 위험이 있습니다. 또한 좌석 주변의 특정 부위가 어린이에게 전단 또는 끼임 위험을 노출시킬 수 있습니다. 2026년 9월 25일 현재, 해당 회사는 캐나다에서 사고 또는 부상 보고를 받지 않았습니다.\n",
+      "accidentCaseDscr": "소비자는 리콜 대상인 발코 베이비 트렌드 듀오 더블 유모차의 사용을 즉시 중단하고 주니어 브랜즈 코퍼레이션에 연락하여 위험 요소를 제거하는 방법에 대한 추가 정보를 얻어야 합니다.\n",
+      "publishActionDscr": "기타(회사에 문의)",
+      "recallProductDscr": "이번 리콜은 Valco Baby Trend Duo 더블 유모차(Night, Charcoal, Cappuccino, Cloud 총 4가지 색상)에 해당됨. 2024년 8월부터 2025년 12월까지 판매되었습니다.\n",
+      "recallUrl": "https://recalls-rappels.canada.ca/en/alert-recall/health-canada-orders-junior-brands-corp-recall-valco-baby-trend-duo-double-stroller\n",
+      "publishDate": "20261001",
+      "signDttm": "20261015",
+      "imageUrl": "http://office.safetykorea.kr/fileData/fRecall/2026/10/1792037137900_캐나다133.jpg,http://office.safetykorea.kr/fileData/fRecall/2026/10/1792037137900_캐나다133-1.jpg"
+    },
+    {
+      "fRecallUid": "10036545",
+      "recallModelName": "X-001, X-002, X-012A, X-015D",
+      "recallModelCnt": "4",
+      "recallProductName": "유모차 부속품 (버기보드)",
+      "recallBrandName": "Babybee",
+      "makerName": "-",
+      "makingCntryName": "국외>아시아지역>중국",
+      "recallTypeName": "자발적리콜",
+      "recallPblshCntryName": "국외>아시아지역>오스트레일리아",
+      "recallPblshOrgnName": "호주 ACCC",
+      "recallMeans": "교환",
+      "violateDscr": "탈착식 좌석이 제품의 주 기둥에 부착되는 지점에서 파손될 수 있습니다. 사용 중 탈착식 좌석이 파손될 경우 어린이가 떨어져 중상을 입을 위험이 있습니다.\n",
+      "accidentCaseDscr": "1. 유아 보드 사용을 즉시 중지하고 Babybee 유아 보드 밑면의 배치 번호를 확인하십시오. 2. 유아 보드의 배치 번호가 X-001, X-002, X-012A 또는 X-015D인 경우, 유아 보드에서 탈착식 좌석을 제거하십시오. 유아 보드는 탈착식 좌석 없이 서서 타는 방식으로 계속 사용할 수 있습니다. 3. 영향을 받은 탈착식 좌석을 가정용 일반 쓰레기통에 폐기하십시오. 4. 영향을 받은 제품을 https://babybeeonline.com/pages/recall 에 등록하십시오. Babybee는 영향을 받은 소비자에게 교체용 탈착식 좌석을 무료로 제공합니다. 교체용 좌석은 2026년 10월 초경부터 제공될 것으로 예상됩니다. 등록한 소비자는 교체용 좌석 발송 준비가 완료되면 연락을 받게 되며, 이 일정이 변경될 경우 업데이트를 받게 됩니다. 5. 이 리콜에 대한 추가 정보나 지원이 필요한 경우 Babybee에 연락하십시오.\n",
+      "publishActionDscr": "교환",
+      "recallProductDscr": "유아용 보드는 유모차 액세서리로, 유아가 서서 탈 수 있는 보드로 사용하거나 탈착식 시트와 함께 사용할 수 있습니다. 분리형 시트만 리콜 대상입니다. 유아용 보드 자체는 리콜 대상이 아닙니다. 탈착식 시트가 포함된 유아용 보드의 제조 번호는 X-001, X-002, X-012A 및 X-015D입니다. 이 번호는 유아용 보드 밑면에서 확인할 수 있습니다.\n",
+      "recallUrl": "https://www.productsafety.gov.au/search-consumer-product-recalls/babybee-toddler-board-with-detachable-seat\n",
+      "publishDate": "20260821",
+      "signDttm": "20260826",
+      "imageUrl": "http://office.safetykorea.kr/fileData/fRecall/2026/08/1787730206127_호주103.png,http://office.safetykorea.kr/fileData/fRecall/2026/08/1787730206143_호주103-1.jpg"
+    }
+  ]
+}

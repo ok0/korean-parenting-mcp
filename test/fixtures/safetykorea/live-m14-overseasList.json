@@ -1,0 +1,29 @@
+{
+  "_fixture_note": "M14 실호출 녹화(2026-10-30), 앞 2건만, 인증 정보 없음",
+  "resultCode": "2000",
+  "resultMsg": "Success",
+  "resultData": [
+    {
+      "overseasUid": "10022948",
+      "publishDate": "20260428",
+      "productName": "유모차(유모차)",
+      "modelName": "어린이 산책 아기 유모차 유아 여행 캐리지 카트 4 바퀴 유모차 아이 접이식 트롤리 아기",
+      "brandName": "-",
+      "makingCntryName": "국외>아시아지역>중국",
+      "harmDscr": "ㅇ 내구성 부적합\r\n- 측정값: 19회 시험 후 리벳 파손됨\r\n- 기준치: 유모차의 안전성을 저해하는 제품의 파손 또는 변형이 없어야 함\n",
+      "accidentCaseDscr": "ㅇ 사용 중 제품 결함으로 유아가 낙상하여 상해 발생 가능",
+      "imageUrl": "http://office.safetykorea.kr/fileData/2026_어린이제품_해외직구 1차(봄, 야외활동)/03/202604/2026-4-16-14-14-18_전체사진.PNG,http://office.safetykorea.kr/fileData/2026_어린이제품_해외직구 1차(봄, 야외활동)/04/202604/2026-4-16-14-14-18_부분사진.PNG"
+    },
+    {
+      "overseasUid": "10022947",
+      "publishDate": "20260428",
+      "productName": "유모차(유모차)",
+      "modelName": "캐노피가 있는 가볍고 컴팩트한 코스트 라이더 유모차 한 손으로 쉽게 접을",
+      "brandName": "-",
+      "makingCntryName": "국외>아시아지역>중국",
+      "harmDscr": "ㅇ 내구성 부적합\r\n- 부위: 버클(가랑이 벨트)\r\n- 측정값: 버클 파손(벨트 연결부위 튿어짐)\r\n- 기준치: 6.4.9에 따라 시험할 때 유모차의 안전성을 저해하는 제품의 파손 또는 변형이 없어야 함\n",
+      "accidentCaseDscr": "ㅇ 사용 중 제품 결함으로 유아가 낙상하여 상해 발생 가능",
+      "imageUrl": "http://office.safetykorea.kr/fileData/2026_어린이제품_해외직구 1차(봄, 야외활동)/03/202604/2026-4-14-14-43-33_유모차-2_전체사진.PNG,http://office.safetykorea.kr/fileData/2026_어린이제품_해외직구 1차(봄, 야외활동)/04/202604/2026-4-14-14-43-33_유모차-2_부분사진(안전기준).PNG"
+    }
+  ]
+}
