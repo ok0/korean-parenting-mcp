@@ -31,7 +31,7 @@ describe.skipIf(!existsSync(docs))("local release guides (.docs)", () => {
     for (const t of allTools) {
       expect(row(status, t.name), t.name).not.toBe("");
     }
-    expect(row(status, "check_recall")).toContain("(ii)");
+    expect(row(status, "check_recall")).toContain("(i)");
     const daycare = row(status, "find_daycare");
     expect(daycare).toContain("(iii)");
     expect(daycare).toContain("D1");
