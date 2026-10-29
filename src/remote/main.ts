@@ -1,6 +1,16 @@
 import { createServer as createHttpServer } from "node:http";
+import { VERSION } from "../version.js";
 import { buildRemoteDeps, createRemoteHandler } from "./app.js";
+import { createMetricsLog, installCrashHandlers } from "./metrics-log.js";
 import { loadRemoteConfig, RemoteConfigError, type RemoteConfig } from "./remote-config.js";
+
+const metrics = createMetricsLog();
+const exitAfterFlush = (code: number): void => {
+  process.exitCode = code;
+  setTimeout(() => process.exit(code), 2000).unref();
+  process.stdout.write("", () => process.exit(code));
+};
+installCrashHandlers(process, metrics, exitAfterFlush);
 
 let rc: RemoteConfig;
 try {
@@ -10,7 +20,7 @@ try {
   process.exit(1);
 }
 
-const handler = createRemoteHandler(buildRemoteDeps(rc));
+const handler = createRemoteHandler(buildRemoteDeps(rc, {}, { metrics }));
 const server = createHttpServer((req, res) => {
   void handler(req, res);
 });
@@ -24,6 +34,7 @@ server.listen(rc.port, rc.host, () => {
   const a = server.address();
   const port = typeof a === "object" && a ? a.port : rc.port;
   process.stderr.write(`korean-parenting-mcp remote listening on ${rc.host}:${port}\n`);
+  metrics.emit({ ev: "start", version: VERSION });
 });
 
 const shutdown = (): void => {
