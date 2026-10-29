@@ -217,4 +217,12 @@ describe("project structure", () => {
       }
     }
   });
+
+  it("no file write APIs in remote and core", () => {
+    for (const f of srcFiles) {
+      const r = rel(f);
+      if (!(r.startsWith("src/remote/") || r.startsWith("src/core/"))) continue;
+      expect(/writeFile|appendFile|createWriteStream/.test(readFileSync(f, "utf8")), r).toBe(false);
+    }
+  });
 });

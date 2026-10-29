@@ -1,5 +1,5 @@
 import type { ToolDef, ToolOutput } from "../tools/registry.js";
-import { missingKeyError, ToolError, formatToolError, type ToolResult } from "./errors.js";
+import { missingKeyError, ToolError, formatToolError, type ErrorKind, type ToolResult } from "./errors.js";
 import type { ToolContext } from "./context.js";
 import { maskSecrets } from "./secrets.js";
 
@@ -61,6 +61,8 @@ function describeFinding(f: OversizeFinding): string {
 
 export async function runTool(def: ToolDef, rawArgs: unknown, ctx: ToolContext): Promise<ToolResult> {
   const t0 = Date.now();
+  let result: ToolResult;
+  let kind: ErrorKind | undefined;
   try {
     const f = findOversizedArg(rawArgs);
     if (f) {
@@ -86,8 +88,14 @@ export async function runTool(def: ToolDef, rawArgs: unknown, ctx: ToolContext):
     const out = await def.handler(parsed.data, ctx);
     const text = finalize(out, def.maxChars ?? ctx.config.maxResponseChars, ctx.secrets);
     ctx.log.debug("tool call", { tool: def.name, ms: Date.now() - t0 });
-    return { content: [{ type: "text", text }] };
+    result = { content: [{ type: "text", text }] };
   } catch (e) {
-    return formatToolError(e, def.name, ctx);
+    kind = e instanceof ToolError ? e.kind : "INTERNAL";
+    result = formatToolError(e, def.name, ctx);
   }
+  if (ctx.onToolDone) {
+    const ev = kind === undefined ? { tool: def.name, ok: true, ms: Date.now() - t0 } : { tool: def.name, ok: false, kind, ms: Date.now() - t0 };
+    try { ctx.onToolDone(ev); } catch { /* hook errors never change the result */ }
+  }
+  return result;
 }

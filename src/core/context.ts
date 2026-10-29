@@ -1,5 +1,6 @@
 import { TtlCache } from "./cache.js";
 import { secretsOf, type Config } from "./config.js";
+import type { ErrorKind } from "./errors.js";
 import { createLogger, type Logger } from "./logger.js";
 
 export interface Clock {
@@ -13,6 +14,7 @@ export interface ToolContext {
   cache: TtlCache;
   log: Logger;
   secrets: string[];
+  onToolDone?: (e: { tool: string; ok: boolean; kind?: ErrorKind; ms: number }) => void;
 }
 
 export function createDefaultContext(config: Config, overrides: Partial<ToolContext> = {}): ToolContext {
