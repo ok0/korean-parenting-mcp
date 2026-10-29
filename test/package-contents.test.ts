@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
@@ -51,6 +51,13 @@ describe("npm package contents", () => {
         dependencies?: Record<string, string>;
       };
       expect(Object.keys(pkg.dependencies ?? {})).not.toContain("pdfjs-dist");
+
+      for (const n of readdirSync(join(root, "data")).filter((n) => n.endsWith(".json"))) {
+        expect(paths).toContain("data/" + n);
+      }
+      expect(paths.filter((p) => /\.(test|spec)\.[cm]?[jt]s$/.test(p))).toEqual([]);
+      expect(paths.filter((p) => /\.key(\.txt)?$|(^|\/)\.env/.test(p))).toEqual([]);
+      expect(paths.filter((p) => p.startsWith("build/") && p.endsWith(".js")).length).toBeGreaterThan(1);
     },
     60000,
   );
