@@ -3,6 +3,7 @@ import { KEY_GUIDE } from "../core/errors.js";
 import type { ToolDef } from "../tools/registry.js";
 import { NOTICE_UNOFFICIAL } from "../tools/shared/format.js";
 import { SERVER_INSTRUCTIONS } from "../server/instructions.js";
+import { REMOTE_INPUT_NOTICE } from "./privacy.js";
 
 export type Provider = "nemc" | "mois" | "mfds" | "kasi" | "moleg" | "kinder" | "safetykorea";
 export type Confirmation = "not-asked" | "asked" | "allowed" | "conditional" | "denied";
@@ -123,6 +124,7 @@ export const REMOTE_POLICY: readonly RemotePolicy[] = [
 ];
 
 export const REMOTE_EXCLUDED_HEADING = "## 원격 모드에서 제공하지 않는 기능";
+export const REMOTE_PRIVACY_HEADING = "## 원격 모드 개인정보 안내";
 
 export function policyViolations(policy: readonly RemotePolicy[], toolNames: readonly string[]): string[] {
   const out: string[] = [];
@@ -163,7 +165,9 @@ export function policyViolations(policy: readonly RemotePolicy[], toolNames: rea
 }
 
 export function remoteTools(all: readonly ToolDef[], policy: readonly RemotePolicy[] = REMOTE_POLICY): ToolDef[] {
-  return all.filter((t) => policy.find((p) => p.tool === t.name)?.expose === true);
+  return all
+    .filter((t) => policy.find((p) => p.tool === t.name)?.expose === true)
+    .map((t) => ({ ...t, description: `${t.description}\n\n${REMOTE_INPUT_NOTICE}` }));
 }
 
 export function excludedFallback(name: string, policy: readonly RemotePolicy[] = REMOTE_POLICY): ToolResult | undefined {
@@ -181,9 +185,10 @@ export function excludedFallback(name: string, policy: readonly RemotePolicy[] =
 }
 
 export function buildRemoteInstructions(policy: readonly RemotePolicy[] = REMOTE_POLICY): string {
+  const privacy = `${REMOTE_PRIVACY_HEADING}\n${REMOTE_INPUT_NOTICE}\n개인정보 처리방침: 이 서버의 /privacy 경로에서 볼 수 있습니다.`;
   const rows = policy.flatMap((p) => (p.expose || !p.replacement ? [] : [{ tool: p.tool, replacement: p.replacement }]));
-  if (rows.length === 0) return SERVER_INSTRUCTIONS;
+  if (rows.length === 0) return `${SERVER_INSTRUCTIONS}\n\n${privacy}`;
   return `${SERVER_INSTRUCTIONS}\n\n${REMOTE_EXCLUDED_HEADING}\n${rows
     .map((r) => `- ${r.tool}: ${r.replacement.summary} (${r.replacement.links.map((l) => `${l.title} ${l.url}`).join(", ")})`)
-    .join("\n")}`;
+    .join("\n")}\n\n${privacy}`;
 }

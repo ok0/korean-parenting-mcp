@@ -16,6 +16,7 @@ import {
   type Outcome,
   type Rpc,
 } from "./metrics-log.js";
+import { PAGE_CSP, renderLandingPage, renderPrivacyPage } from "./privacy.js";
 import { createWebhookNotifier } from "./quota-alert.js";
 import { createClientKeyResolver, createRateLimiter, type RateLimiter } from "./rate-limit.js";
 import { REMOTE_CACHE_MAX_ENTRIES, type RemoteConfig } from "./remote-config.js";
@@ -292,6 +293,18 @@ export function createRemoteHandler(deps: RemoteDeps): RemoteHandler {
         res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
         if ((req.method ?? "").toUpperCase() === "HEAD") res.end();
         else res.end("ok");
+        return;
+      }
+
+      if (g.route === "privacy" || g.route === "landing") {
+        record = false;
+        const host = deps.rc.allowedHosts[0] ?? "localhost";
+        const html = g.route === "privacy"
+          ? renderPrivacyPage({ contact: deps.rc.operatorContact, host, hosting: deps.rc.hosting })
+          : renderLandingPage({ host });
+        res.writeHead(200, { "content-type": "text/html; charset=utf-8", "content-security-policy": PAGE_CSP });
+        if ((req.method ?? "").toUpperCase() === "HEAD") res.end();
+        else res.end(html);
         return;
       }
 

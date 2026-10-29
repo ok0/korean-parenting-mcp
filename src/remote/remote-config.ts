@@ -12,8 +12,10 @@ import {
   type UpstreamBucket,
 } from "../core/upstream-guard.js";
 import { REMOTE_POLICY, type RemotePolicy } from "./allowlist.js";
+import type { HostingDisclosure } from "./privacy.js";
 
 export const DEFAULT_HTTP_PORT = 8080;
+export const MAX_DISCLOSURE_LENGTH = 200;
 export const SSE_MAX_MS = 300_000;
 export const SSE_MAX_STREAMS = 32;
 export const MIN_BEARER_TOKEN_LENGTH = 32;
@@ -41,6 +43,7 @@ export interface RemoteConfig {
   trustedProxyCidrs: string[]; sharedEgressCidrs: string[]; maxBodyBytes: number;
   rate: { perClientPerMin: number; sharedPoolPerMin: number; globalPerMin: number; maxConcurrent: number };
   quota: QuotaConfig;
+  hosting: HostingDisclosure; operatorContact: string;
 }
 
 export class RemoteConfigError extends Error {
@@ -53,6 +56,14 @@ export class RemoteConfigError extends Error {
 function opt(env: Record<string, string | undefined>, name: string): string | undefined {
   const value = env[name]?.trim();
   return value === "" ? undefined : value;
+}
+
+function requiredText(env: Record<string, string | undefined>, name: string): string {
+  const value = opt(env, name);
+  if (value === undefined || value.length > MAX_DISCLOSURE_LENGTH || /[\u0000-\u001f\u007f-\u009f]/.test(value)) {
+    throw new RemoteConfigError(name);
+  }
+  return value;
 }
 
 function splitList(raw: string): string[] {
@@ -203,6 +214,14 @@ export function loadRemoteConfig(env: Record<string, string | undefined>): Remot
     ...(webhook !== undefined ? { alertWebhookUrl: webhook } : {}),
   };
 
+  const operatorContact = requiredText(env, "KPM_OPERATOR_CONTACT");
+  const hosting: HostingDisclosure = {
+    provider: requiredText(env, "KPM_HOST_PROVIDER"),
+    country: requiredText(env, "KPM_HOST_COUNTRY"),
+    region: requiredText(env, "KPM_HOST_REGION"),
+    logRetention: requiredText(env, "KPM_HOST_LOG_RETENTION"),
+  };
+
   const loaded = loadConfig(env);
   const base = restrictKeys(loaded);
   const secrets = [
@@ -216,6 +235,7 @@ export function loadRemoteConfig(env: Record<string, string | undefined>): Remot
     trustProxy, originPolicy, getMode,
     sseMaxMs: SSE_MAX_MS, sseMaxStreams: SSE_MAX_STREAMS,
     trustedProxyCidrs, sharedEgressCidrs, maxBodyBytes, rate, quota,
+    hosting, operatorContact,
   };
   if (rawToken !== undefined) config.bearerToken = rawToken;
   return config;
