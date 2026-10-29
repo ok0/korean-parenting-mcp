@@ -51,6 +51,11 @@ export function checkRequest(
       return { ok: false, status: 405, reason: "method", allow: "GET" };
     }
     route = "healthz";
+  } else if (path === "/privacy" || path === "/") {
+    if (method !== "GET" && method !== "HEAD") {
+      return { ok: false, status: 405, reason: "method", allow: "GET, HEAD" };
+    }
+    route = path === "/privacy" ? "privacy" : "landing";
   } else {
     return { ok: false, status: 404, reason: "path" };
   }
