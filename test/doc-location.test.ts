@@ -65,4 +65,18 @@ describe("document placement (P12)", () => {
       expect(checkIgnored(p), p).toBe(1);
     }
   });
+
+  it("assets/ holds only .svg and .gif files", () => {
+    const dir = join(root, "assets");
+    if (!existsSync(dir)) return;
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      if (e.name === ".DS_Store") continue;
+      const ok = e.isFile() && /\.(svg|gif)$/.test(e.name);
+      expect(ok, e.name).toBe(true);
+    }
+  });
+
+  it.skipIf(!isGitRepo)("assets/ is not git-ignored", () => {
+    expect(checkIgnored("assets/tool-map-light.svg")).toBe(1);
+  });
 });

@@ -26,7 +26,18 @@ describe("npm package contents", () => {
         encoding: "utf8",
       });
       const paths = (JSON.parse(out) as PackEntry[])[0]?.files.map((f) => f.path) ?? [];
-      const forbidden = ["scripts/", ".github/", "test/", "build-scripts/", "build-mcpb/", ".docs/", ".ensemble/"];
+      const forbidden = [
+        "scripts/",
+        ".github/",
+        "test/",
+        "build-scripts/",
+        "build-mcpb/",
+        ".docs/",
+        ".ensemble/",
+        "assets/",
+        "site/",
+        "build-site/",
+      ];
       for (const p of paths) {
         for (const prefix of forbidden) {
           expect(p.startsWith(prefix), p).toBe(false);

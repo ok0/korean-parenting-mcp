@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="759" viewBox="0 0 1200 759" role="img" aria-labelledby="title desc" font-family="Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif">
+<title id="title">임신부터 만 6세까지 육아 일정 예시</title>
+<desc id="desc">출산예정일 2027-03-15 예시로 계산한 산전검진·예방접종·영유아검진·신고와 신청 기한·지원금·휴가·어린이집과 유치원 안내 단계 그림입니다.</desc>
+<rect x="0" y="0" width="1200" height="759" fill="#FFFFFF"/>
+<text x="30" y="44" font-size="22" fill="#1A1F26" data-max-w="1140" letter-spacing="-0.4" font-weight="700"><tspan x="30" y="44">임신부터 만 6세까지 한눈에 (예시)</tspan></text>
+<text x="30" y="70" font-size="13" fill="#4A5563" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="70">출산예정일 2027-03-15 예시로 계산한 일정이에요 (개인 맞춤 아님)</tspan></text>
+<rect x="200" y="100" width="109.9" height="36" fill="#FCE8EC"/>
+<text x="254.9" y="123" font-size="13" fill="#1A1F26" data-max-w="101.9" letter-spacing="-0.1" font-weight="700" text-anchor="middle"><tspan x="254.9" y="123">임신</tspan></text>
+<rect x="309.9" y="100" width="430.1" height="36" fill="#E6F0FB"/>
+<text x="524.9" y="123" font-size="13" fill="#1A1F26" data-max-w="422.1" letter-spacing="-0.1" font-weight="700" text-anchor="middle"><tspan x="524.9" y="123">영아 (만 0~2세)</tspan></text>
+<rect x="739.9" y="100" width="430.1" height="36" fill="#E8F5EA"/>
+<text x="955" y="123" font-size="13" fill="#1A1F26" data-max-w="422.1" letter-spacing="-0.1" font-weight="700" text-anchor="middle"><tspan x="955" y="123">유아 (만 3~5세)</tspan></text>
+<text x="315.9" y="154" font-size="12" fill="#1A1F26" data-max-w="418.1" letter-spacing="-0.1" font-weight="700"><tspan x="315.9" y="154">출산 예정 2027-03-15</tspan></text>
+<text x="1170" y="154" font-size="12" fill="#1A1F26" data-max-w="200" letter-spacing="-0.1" text-anchor="end"><tspan x="1170" y="154">만 6세 2033-03-15</tspan></text>
+<line x1="309.9" y1="136" x2="309.9" y2="166" stroke="#1A1F26" opacity="0.5" stroke-dasharray="4 4"/>
+<line x1="309.9" y1="170" x2="309.9" y2="192" stroke="#1A1F26" opacity="0.5" stroke-dasharray="4 4"/>
+<text x="30" y="204" font-size="13" fill="#1A1F26" data-max-w="160" letter-spacing="-0.1" font-weight="700"><tspan x="30" y="204">산전검진</tspan></text>
+<line x1="30" y1="230" x2="1170" y2="230" stroke="#C9D1DB" stroke-width="1"/>
+<line x1="309.9" y1="234" x2="309.9" y2="256" stroke="#1A1F26" opacity="0.5" stroke-dasharray="4 4"/>
+<text x="30" y="268" font-size="13" fill="#1A1F26" data-max-w="160" letter-spacing="-0.1" font-weight="700"><tspan x="30" y="268">예방접종</tspan></text>
+<line x1="30" y1="294" x2="1170" y2="294" stroke="#C9D1DB" stroke-width="1"/>
+<line x1="309.9" y1="298" x2="309.9" y2="320" stroke="#1A1F26" opacity="0.5" stroke-dasharray="4 4"/>
+<text x="30" y="332" font-size="13" fill="#1A1F26" data-max-w="160" letter-spacing="-0.1" font-weight="700"><tspan x="30" y="332">영유아·구강검진</tspan></text>
+<line x1="30" y1="358" x2="1170" y2="358" stroke="#C9D1DB" stroke-width="1"/>
+<line x1="309.9" y1="362" x2="309.9" y2="384" stroke="#1A1F26" opacity="0.5" stroke-dasharray="4 4"/>
+<text x="30" y="396" font-size="13" fill="#1A1F26" data-max-w="160" letter-spacing="-0.1" font-weight="700"><tspan x="30" y="396">신고·신청 기한</tspan></text>
+<line x1="30" y1="422" x2="1170" y2="422" stroke="#C9D1DB" stroke-width="1"/>
+<line x1="309.9" y1="426" x2="309.9" y2="448" stroke="#1A1F26" opacity="0.5" stroke-dasharray="4 4"/>
+<text x="30" y="460" font-size="13" fill="#1A1F26" data-max-w="160" letter-spacing="-0.1" font-weight="700"><tspan x="30" y="460">지원금</tspan></text>
+<line x1="30" y1="486" x2="1170" y2="486" stroke="#C9D1DB" stroke-width="1"/>
+<line x1="309.9" y1="490" x2="309.9" y2="512" stroke="#1A1F26" opacity="0.5" stroke-dasharray="4 4"/>
+<text x="30" y="524" font-size="13" fill="#1A1F26" data-max-w="160" letter-spacing="-0.1" font-weight="700"><tspan x="30" y="524">휴가</tspan></text>
+<line x1="30" y1="550" x2="1170" y2="550" stroke="#C9D1DB" stroke-width="1"/>
+<line x1="309.9" y1="554" x2="309.9" y2="576" stroke="#1A1F26" opacity="0.5" stroke-dasharray="4 4"/>
+<text x="30" y="588" font-size="13" fill="#1A1F26" data-max-w="160" letter-spacing="-0.1" font-weight="700"><tspan x="30" y="588">어린이집·유치원 안내</tspan></text>
+<line x1="30" y1="614" x2="1170" y2="614" stroke="#C9D1DB" stroke-width="1"/>
+<rect data-item="prenatal-checkup-1" data-lane="prenatal" x="200" y="176" width="79.3" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="pregnancy-medical-cost" data-lane="support" x="200" y="432" width="109.9" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-flu-2026-2027-pregnant" data-lane="vaccination" x="241.2" y="240" width="68.7" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="prenatal-checkup-2" data-lane="prenatal" x="279.7" y="176" width="21.6" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="spouse-leave" data-lane="leave" x="290.3" y="496" width="66.7" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="prenatal-checkup-3" data-lane="prenatal" x="301.6" y="176" width="8.2" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<circle data-item="maternity-leave" data-lane="leave" cx="309.9" cy="501" r="5" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-hepb-1" data-lane="vaccination" x="309.9" y="240" width="3" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-bcg-1" data-lane="vaccination" x="309.9" y="240" width="10.6" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="birth-registration" data-lane="deadline" x="309.9" y="368" width="11.8" height="10" rx="2" fill="#D9822B" fill-opacity="0.55"/>
+<rect data-item="child-allowance" data-lane="deadline" x="309.9" y="368" width="23.5" height="10" rx="2" fill="#D9822B" fill-opacity="0.55"/>
+<rect data-item="parent-allowance" data-lane="deadline" x="309.9" y="368" width="23.5" height="10" rx="2" fill="#D9822B" fill-opacity="0.55"/>
+<rect data-item="parent-allowance-age0" data-lane="support" x="309.9" y="432" width="143.2" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="first-meeting" data-lane="deadline" x="309.9" y="368" width="286.4" height="10" rx="2" fill="#D9822B" fill-opacity="0.55"/>
+<rect data-item="child-allowance-period" data-lane="support" x="309.9" y="432" width="860.1" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="parental-leave" data-lane="leave" x="309.9" y="496" width="860.1" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="infant-checkup-1" data-lane="checkup" x="315.4" y="304" width="8.2" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-hepb-2" data-lane="vaccination" x="322" y="240" width="11.4" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-dtap-1" data-lane="vaccination" x="333.8" y="240" width="11.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-hib-1" data-lane="vaccination" x="333.8" y="240" width="11.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-ipv-1" data-lane="vaccination" x="333.8" y="240" width="11.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-pcv-1" data-lane="vaccination" x="333.8" y="240" width="11.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-rota-rv1-1" data-lane="vaccination" x="333.8" y="240" width="11.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-rota-rv5-1" data-lane="vaccination" x="333.8" y="240" width="11.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-dtap-2" data-lane="vaccination" x="357.7" y="240" width="11.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-hib-2" data-lane="vaccination" x="357.7" y="240" width="11.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-ipv-2" data-lane="vaccination" x="357.7" y="240" width="11.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-pcv-2" data-lane="vaccination" x="357.7" y="240" width="11.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-rota-rv1-2" data-lane="vaccination" x="357.7" y="240" width="11.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-rota-rv5-2" data-lane="vaccination" x="357.7" y="240" width="11.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="infant-checkup-2" data-lane="checkup" x="357.7" y="304" width="35.7" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-dtap-3" data-lane="vaccination" x="382.1" y="240" width="11.4" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-hepb-3" data-lane="vaccination" x="382.1" y="240" width="11.4" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-hib-3" data-lane="vaccination" x="382.1" y="240" width="11.4" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-pcv-3" data-lane="vaccination" x="382.1" y="240" width="11.4" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-rota-rv5-3" data-lane="vaccination" x="382.1" y="240" width="11.4" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-ipv-3" data-lane="vaccination" x="382.1" y="240" width="155" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="infant-checkup-3" data-lane="checkup" x="417.8" y="304" width="47.5" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-hib-4" data-lane="vaccination" x="453.5" y="240" width="47.5" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-mmr-1" data-lane="vaccination" x="453.5" y="240" width="47.5" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-pcv-4" data-lane="vaccination" x="453.5" y="240" width="47.5" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-var-1" data-lane="vaccination" x="453.5" y="240" width="47.5" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="parent-allowance-age1" data-lane="support" x="453.5" y="432" width="142.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-hepa-1" data-lane="vaccination" x="453.5" y="240" width="142.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-je-inactivated-1" data-lane="vaccination" x="453.5" y="240" width="142.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-je-live-1" data-lane="vaccination" x="453.5" y="240" width="142.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-je-inactivated-2" data-lane="vaccination" x="465.7" y="240" width="130.7" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-dtap-4" data-lane="vaccination" x="489.6" y="240" width="47.5" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-hepa-2" data-lane="vaccination" x="525.7" y="240" width="11.4" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="infant-checkup-4" data-lane="checkup" x="525.7" y="304" width="82.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="oral-checkup-1" data-lane="checkup" x="525.7" y="304" width="142.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-je-inactivated-3" data-lane="vaccination" x="596.7" y="240" width="142.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-je-live-2" data-lane="vaccination" x="596.7" y="240" width="142.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="infant-checkup-5" data-lane="checkup" x="668.9" y="304" width="82.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="oral-checkup-2" data-lane="checkup" x="668.9" y="304" width="142.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="infant-checkup-6" data-lane="checkup" x="812.1" y="304" width="82.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="oral-checkup-3" data-lane="checkup" x="812.1" y="304" width="142.8" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-dtap-5" data-lane="vaccination" x="883.2" y="240" width="286.4" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-ipv-4" data-lane="vaccination" x="883.2" y="240" width="286.4" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-mmr-2" data-lane="vaccination" x="883.2" y="240" width="286.4" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="infant-checkup-7" data-lane="checkup" x="955.4" y="304" width="83.2" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="oral-checkup-4" data-lane="checkup" x="955.4" y="304" width="143.2" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="infant-checkup-8" data-lane="checkup" x="1099" y="304" width="70.6" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<rect data-item="vac-je-inactivated-4" data-lane="vaccination" x="1170" y="240" width="3" height="10" rx="2" fill="#7FA6DD" fill-opacity="0.55"/>
+<text x="204" y="204" font-size="12" fill="#1A1F26" data-max-w="966" letter-spacing="-0.1"><tspan x="204" y="204">임신 중 정기 검진 2026-06-08부터</tspan><tspan x="204" y="220">막달에는 매주 · ~2027-03-15</tspan></text>
+<text x="313.9" y="268" font-size="12" fill="#1A1F26" data-max-w="565.3" letter-spacing="-0.1"><tspan x="313.9" y="268">첫 예방접종(태어날 때) 2027-03-15</tspan></text>
+<text x="887.2" y="268" font-size="12" fill="#1A1F26" data-max-w="282.8" letter-spacing="-0.1"><tspan x="887.2" y="268">만 4~6세 접종 ~2033-03-14</tspan></text>
+<text x="319.4" y="332" font-size="12" fill="#1A1F26" data-max-w="850.6" letter-spacing="-0.1"><tspan x="319.4" y="332">영유아 건강검진 8번 · 구강검진 4번</tspan></text>
+<text x="313.9" y="396" font-size="12" fill="#1A1F26" data-max-w="856.1" letter-spacing="-0.1"><tspan x="313.9" y="396">출생신고 ~2027-04-14</tspan><tspan x="313.9" y="412">부모급여 신청 ~2027-05-14</tspan></text>
+<text x="204" y="460" font-size="12" fill="#1A1F26" data-max-w="966" letter-spacing="-0.1"><tspan x="204" y="460">임신·출산 진료비 지원 ~2027-03-15</tspan><tspan x="204" y="476">부모급여 2027-03-15부터 · 아동수당 ~2036-03-14</tspan></text>
+<text x="294.3" y="524" font-size="12" fill="#1A1F26" data-max-w="875.7" letter-spacing="-0.1"><tspan x="294.3" y="524">배우자 출산휴가 2027-01-24~2027-07-13</tspan><tspan x="294.3" y="540">출산전후휴가 2027-03-15부터 · 육아휴직 ~2036-03-14</tspan></text>
+<g data-stage="m0_11" data-tools="find_daycare find_kindergarten">
+<line x1="309.9" y1="558" x2="309.9" y2="572" stroke="#1F5FBF" stroke-width="2"/>
+<text x="313.9" y="588" font-size="12" fill="#1A1F26" data-max-w="135.6" letter-spacing="-0.1"><tspan x="313.9" y="588">0~11개월 안내</tspan><tspan x="313.9" y="604">2027-03-15</tspan></text>
+</g>
+<g data-stage="m12_23" data-tools="find_daycare find_kindergarten">
+<line x1="453.5" y1="558" x2="453.5" y2="572" stroke="#1F5FBF" stroke-width="2"/>
+<text x="457.5" y="588" font-size="12" fill="#1A1F26" data-max-w="135.2" letter-spacing="-0.1"><tspan x="457.5" y="588">12~23개월 안내</tspan><tspan x="457.5" y="604">2028-03-15</tspan></text>
+</g>
+<g data-stage="m24_35" data-tools="find_daycare find_kindergarten">
+<line x1="596.7" y1="558" x2="596.7" y2="572" stroke="#1F5FBF" stroke-width="2"/>
+<text x="600.7" y="588" font-size="12" fill="#1A1F26" data-max-w="135.2" letter-spacing="-0.1"><tspan x="600.7" y="588">24~35개월 안내</tspan><tspan x="600.7" y="604">2029-03-15</tspan></text>
+</g>
+<g data-stage="age3plus" data-tools="find_daycare find_kindergarten">
+<line x1="739.9" y1="558" x2="739.9" y2="572" stroke="#1F5FBF" stroke-width="2"/>
+<text x="743.9" y="588" font-size="12" fill="#1A1F26" data-max-w="426.1" letter-spacing="-0.1"><tspan x="743.9" y="588">만 3세 이상 안내(유치원 포함)</tspan><tspan x="743.9" y="604">2030-03-15</tspan></text>
+</g>
+<line x1="200" y1="622" x2="1170" y2="622" stroke="#4A5563" stroke-width="1"/>
+<text x="281.2" y="638" font-size="11" fill="#4A5563" data-max-w="60" letter-spacing="-0.1" text-anchor="middle"><tspan x="281.2" y="638">2027년</tspan></text>
+<text x="424.4" y="638" font-size="11" fill="#4A5563" data-max-w="60" letter-spacing="-0.1" text-anchor="middle"><tspan x="424.4" y="638">2028년</tspan></text>
+<text x="568.1" y="638" font-size="11" fill="#4A5563" data-max-w="60" letter-spacing="-0.1" text-anchor="middle"><tspan x="568.1" y="638">2029년</tspan></text>
+<text x="711.3" y="638" font-size="11" fill="#4A5563" data-max-w="60" letter-spacing="-0.1" text-anchor="middle"><tspan x="711.3" y="638">2030년</tspan></text>
+<text x="854.5" y="638" font-size="11" fill="#4A5563" data-max-w="60" letter-spacing="-0.1" text-anchor="middle"><tspan x="854.5" y="638">2031년</tspan></text>
+<text x="997.7" y="638" font-size="11" fill="#4A5563" data-max-w="60" letter-spacing="-0.1" text-anchor="middle"><tspan x="997.7" y="638">2032년</tspan></text>
+<text x="1141.4" y="638" font-size="11" fill="#4A5563" data-max-w="60" letter-spacing="-0.1" text-anchor="middle"><tspan x="1141.4" y="638">2033년</tspan></text>
+<text x="30" y="668" font-size="12" fill="#1A1F26" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="668">예시 그림: 출산예정일 2027-03-15 · 기준일 2026-06-08로 계산 · 개인 맞춤 아님</tspan></text>
+<text x="30" y="689" font-size="12" fill="#1A1F26" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="689">비공식 도구예요. 실제 일정과 기한은 관할 기관과 의료진에게 꼭 확인하세요 · 데이터 기준일 2026-10-28</tspan></text>
+<text x="30" y="710" font-size="12" fill="#4A5563" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="710">※ 2029년 공휴일 정보가 아직 없어, 그 해에 끝나는 기한은 휴일로 늦춰지는 경우를 넣지 않고 원래 날짜로 그렸어요.</tspan></text>
+<text x="30" y="731" font-size="12" fill="#4A5563" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="731">※ 만 6세 이후 일정 4개는 그림에서 뺐어요.</tspan></text>
+</svg>
