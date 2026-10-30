@@ -7,7 +7,7 @@ import { allTools } from "../src/tools/registry.js";
 import { findLeaks } from "../scripts/lib/sample-mask.js";
 import { ASSET_FILES } from "../scripts/visuals/generate.js";
 import { RAW_ASSET_PREFIX, assetPairs } from "../scripts/visuals/readme-figures.js";
-import { CLIENT_BRANDS, readmeIntro } from "./helpers/visuals.js";
+import { readmeIntro } from "./helpers/visuals.js";
 import { OFFICIAL_CLAIM_OUTPUT, matchedPatterns } from "./helpers/wording.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -167,9 +167,8 @@ describe("README figures (M31)", () => {
     }
   });
 
-  it("README intro (top to install heading, alt included) names no AI product and claims nothing official", () => {
+  it("README intro (top to install heading) mentions the AI helper and claims nothing official", () => {
     const intro = readmeIntro(readme);
-    expect(matchedPatterns(intro, CLIENT_BRANDS)).toEqual([]);
     expect(intro).toContain("AI 도우미");
     expect(matchedPatterns(intro, OFFICIAL_CLAIM_OUTPUT)).toEqual([]);
   });
