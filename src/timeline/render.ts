@@ -1,6 +1,6 @@
 import { addMonthsClamp, compare, formatDate, type CivilDate } from "../date/civil-date.js";
 import { resolveBasis } from "../data-store/load.js";
-import type { RevisionStatus } from "../provenance/revision-check.js";
+import type { RevisionStatus } from "../provenance/revision-text.js";
 import type { ToolOutput } from "../tools/registry.js";
 import {
   DISCLAIMER_MEDICAL_LEGAL,

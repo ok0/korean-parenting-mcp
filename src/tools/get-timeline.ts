@@ -1,20 +1,18 @@
 import { z } from "zod";
 import type { ToolContext } from "../core/context.js";
-import { ToolError } from "../core/errors.js";
 import { loadData } from "../data-store/load.js";
-import { compare, daysBetween, parseDate, todayKst, type CivilDate } from "../date/civil-date.js";
+import { todayKst } from "../date/civil-date.js";
 import { bundledCalendar, holidaySourceLabel, trackCalendarYears } from "../date/holiday-calendar.js";
 import { resolveHolidayCalendar } from "../clients/holiday-resolve.js";
 import { buildTimeline } from "../timeline/engine.js";
 import { localGuidance } from "../timeline/rules/local.js";
+import { resolveTimelineInput, type ResolvedTimelineInput } from "../timeline/input.js";
 import { checkRevisions } from "../provenance/revision-check.js";
 import { footerBasisIds, renderTimeline } from "../timeline/render.js";
-import type { TimelineInput, TimelineMode } from "../timeline/types.js";
+import type { TimelineInput } from "../timeline/types.js";
 import type { ToolDef, ToolOutput } from "./registry.js";
 import { boolField, dateField, intField, keywordField } from "./shared/schema.js";
 
-const MAX_DUE_AHEAD_DAYS = 300;
-const MAX_DUE_PAST_DAYS = 90;
 const DATE_FORMAT = "YYYY-MM-DD, YYYY.MM.DD, YYYYMMDD 중 하나";
 
 const schema = z.object({
@@ -80,28 +78,10 @@ function sameMembers(a: readonly string[], b: readonly string[]): boolean {
   return setA.size === setB.size && [...setA].every((id) => setB.has(id));
 }
 
-async function buildOutput(
-  args: z.output<typeof schema>,
-  referenceDate: CivilDate,
-  mode: TimelineMode,
-  birthDate: CivilDate,
-  dueDate: CivilDate | undefined,
-  ctx: ToolContext,
-): Promise<ToolOutput> {
-  const monthsAhead = args.months_ahead ?? 12;
-  const includePast = args.include_past ?? false;
-  const local = localGuidance({ mode, region: args.region });
-  const base: Omit<TimelineInput, "holidays"> = {
-    mode,
-    birthDate,
-    dueDate,
-    region: args.region,
-    birthOrder: args.birth_order,
-    fetusCount: args.fetus_count,
-    referenceDate,
-    monthsAhead,
-    includePast,
-  };
+async function buildOutput(input: ResolvedTimelineInput, ctx: ToolContext): Promise<ToolOutput> {
+  const { mode, birthDate, referenceDate, monthsAhead, includePast } = input;
+  const local = localGuidance({ mode, region: input.region });
+  const base: Omit<TimelineInput, "holidays"> = { ...input };
   const probe = trackCalendarYears(bundledCalendar({ referenceDate }));
   const probeIds = footerBasisIds(buildTimeline({ ...base, holidays: probe.calendar }), local);
   const [holidays, probeRevisions] = await Promise.all([
@@ -122,56 +102,7 @@ async function buildOutput(
 }
 
 async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise<ToolOutput> {
-  const hasDue = args.due_date !== undefined;
-  const hasBirth = args.birth_date !== undefined;
-  if (hasDue === hasBirth) {
-    throw new ToolError(
-      "BAD_INPUT",
-      hasDue
-        ? "due_date(출산예정일)와 birth_date(생년월일)를 함께 줄 수 없습니다. 둘 중 하나만 주세요."
-        : "due_date(출산예정일) 또는 birth_date(생년월일) 중 하나가 필요합니다.",
-      {
-        actions: [
-          "임신 중이면 출산예정일만 주세요(예: due_date: \"2027-02-10\").",
-          "출산 후면 생년월일만 주세요(예: birth_date: \"2026-01-31\").",
-        ],
-      },
-    );
-  }
-  const referenceDate = args.reference_date !== undefined ? parseDate(args.reference_date) : todayKst(ctx.clock);
-
-  if (args.due_date !== undefined) {
-    const dueDate = parseDate(args.due_date);
-    const ahead = daysBetween(referenceDate, dueDate);
-    if (ahead > MAX_DUE_AHEAD_DAYS || ahead < -MAX_DUE_PAST_DAYS) {
-      throw new ToolError(
-        "BAD_INPUT",
-        `due_date(출산예정일)는 기준일 ${MAX_DUE_PAST_DAYS}일 전부터 ${MAX_DUE_AHEAD_DAYS}일 후까지만 받습니다. 출산 후라면 birth_date(생년월일)를 사용하세요.`,
-        {
-          actions: [
-            "출산 후면 birth_date로 다시 호출하세요(예: birth_date: \"2026-10-20\").",
-            "예정일을 확인해 다시 주세요(예: due_date: \"2027-02-10\").",
-          ],
-        },
-      );
-    }
-    return buildOutput(args, referenceDate, "pregnant", dueDate, dueDate, ctx);
-  }
-
-  const birthDate = parseDate(args.birth_date as string);
-  if (compare(referenceDate, birthDate) < 0) {
-    throw new ToolError(
-      "BAD_INPUT",
-      "birth_date(생년월일)가 reference_date(기준일)보다 뒤입니다. 아직 태어나지 않았다면(임신 중) due_date(출산예정일)를 사용하세요.",
-      {
-        actions: [
-          "임신 중이면 due_date로 다시 호출하세요(예: due_date: \"2027-02-10\").",
-          "기준일을 바꾸려면 생년월일 이후 날짜를 주세요(예: reference_date: \"2026-02-01\").",
-        ],
-      },
-    );
-  }
-  return buildOutput(args, referenceDate, "born", birthDate, undefined, ctx);
+  return buildOutput(resolveTimelineInput(args, todayKst(ctx.clock)), ctx);
 }
 
 const def: ToolDef<typeof schema> = {

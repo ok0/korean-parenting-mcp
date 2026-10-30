@@ -1,5 +1,5 @@
 import type { BasisDoc } from "../../data-store/schema.js";
-import type { RevisionStatus } from "../../provenance/revision-check.js";
+import type { RevisionStatus } from "../../provenance/revision-text.js";
 
 export const DISCLAIMER_MEDICAL_LEGAL = "의료·법률 면책: 이 결과는 일반 정보이며 의학적 진단이나 법률 자문이 아닙니다. 검진·접종 시기는 의료진과, 신고·신청 기한과 요건은 관할 기관과 확인하세요.";
 

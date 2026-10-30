@@ -3,40 +3,8 @@ import type { ToolContext } from "../core/context.js";
 import { ToolError } from "../core/errors.js";
 import { resolveBasis } from "../data-store/load.js";
 import type { BasisDoc, LawApiKey } from "../data-store/schema.js";
-
-export type RevisionState = "confirmed" | "changed" | "unavailable" | "skipped";
-export type UnavailableReason = "no_baseline" | "not_found" | "ambiguous" | "deadline" | "timeout" | "failed" | "bad_response" | "not_approved";
-
-export interface RevisionStatus {
-  basisId: string;
-  state: RevisionState;
-  message: string;
-  reason?: UnavailableReason;
-  link?: string;
-  attachment?: { pdfLink?: string; fileLink?: string };
-  stored?: Record<string, string>;
-  current?: Record<string, string>;
-}
-
-export const REVISION_TEXT = {
-  skippedNoOc: "법제처 OC 미설정: 개정 여부 확인 생략",
-  skippedNoApi: "자동 확인 대상 아님",
-  skippedRemote: "개정 여부 확인 불가(원격)",
-  confirmed: "원문 확인됨",
-  changed: "근거가 개정되었습니다. 원문을 확인하세요",
-  unavailable: "개정 여부 확인 불가",
-} as const;
-
-export const UNAVAILABLE_TEXT: Record<UnavailableReason, string> = {
-  no_baseline: "비교 기준 미등록",
-  not_found: "조회 결과에 대상 없음",
-  ambiguous: "같은 이름 행정규칙이 여러 건",
-  deadline: "확인 시간 초과",
-  timeout: "법제처 응답 시간 초과",
-  failed: "법제처 조회 실패",
-  bad_response: "응답 형식 오류",
-  not_approved: "법제처 사용자 정보 검증 실패(OC·IP 등록 확인)",
-};
+import { REVISION_TEXT, UNAVAILABLE_TEXT, skippedStatus, type RevisionState, type RevisionStatus, type UnavailableReason } from "./revision-text.js";
+export { REVISION_TEXT, UNAVAILABLE_TEXT, keylessStatus, skippedStatus, type RevisionState, type RevisionStatus, type UnavailableReason } from "./revision-text.js";
 
 const FIELD_LABELS: Record<string, string> = {
   serial: "일련번호",
@@ -103,10 +71,6 @@ function unavailable(basisId: string, reason: UnavailableReason): RevisionStatus
   return { basisId, state: "unavailable", reason, message: `${REVISION_TEXT.unavailable}(${UNAVAILABLE_TEXT[reason]})` };
 }
 
-function skipped(basisId: string, message: string, link?: string): RevisionStatus {
-  return { basisId, state: "skipped", message, ...(link !== undefined ? { link } : {}) };
-}
-
 type FindResult = { row: AdmrulRow | LicbylRow | LawRow } | { reason: UnavailableReason };
 
 async function findRow(key: LawApiKey, client: LawClient): Promise<FindResult> {
@@ -139,8 +103,8 @@ async function findRow(key: LawApiKey, client: LawClient): Promise<FindResult> {
 
 async function checkOne(doc: BasisDoc, ctx: ToolContext, client: LawClient | undefined): Promise<RevisionStatus> {
   const key = doc.law_api;
-  if (key === null) return skipped(doc.id, REVISION_TEXT.skippedNoApi);
-  if (!ctx.config.keys.LAW_OC) return skipped(doc.id, REVISION_TEXT.skippedNoOc);
+  if (key === null) return skippedStatus(doc.id, REVISION_TEXT.skippedNoApi);
+  if (!ctx.config.keys.LAW_OC) return skippedStatus(doc.id, REVISION_TEXT.skippedNoOc);
   const stored = storedFields(key);
   if (Object.keys(stored).length === 0) return unavailable(doc.id, "no_baseline");
   if (client === undefined) return unavailable(doc.id, "failed");
@@ -201,7 +165,7 @@ export async function checkRevisionDocs(
 ): Promise<RevisionStatus[]> {
   const started = Date.now();
   if (ctx.revisionCheck === "remote-unavailable") {
-    const out = docs.map((d) => skipped(d.id, REVISION_TEXT.skippedRemote, d.url));
+    const out = docs.map((d) => skippedStatus(d.id, REVISION_TEXT.skippedRemote, d.url));
     summarize(ctx, out, started);
     return out;
   }
