@@ -106,7 +106,7 @@ Claude Desktop 설치 확인은 아직 수동 점검 단계입니다.
 | `check_pregnancy_drug` | 임부금기 의약품 정보 조회 | `DATA_GO_KR_SERVICE_KEY` | (i) 실제 API 호출로 동작 확인 |
 | `find_kindergarten` | 유치원 정원·현원·여석 추정 조회 | `KINDERGARTEN_API_KEY` | (i) 실제 API 호출로 동작 확인 |
 | `get_leave_article` | 출산·육아 휴가 근거 법 조문 조회 | `LAW_OC` | (i) 실제 API 호출로 동작 확인 |
-| `check_recall` | 어린이제품 리콜 이력 조회 | `SAFETYKOREA_AUTH_KEY` | (ii) 키 승인 대기 — 모의 응답으로만 검증 |
+| `check_recall` | 어린이제품 리콜 이력 조회 | `SAFETYKOREA_AUTH_KEY` | (i) 실제 API 호출로 동작 확인 |
 
 ### 공공데이터포털 — `DATA_GO_KR_SERVICE_KEY`
 

@@ -84,7 +84,8 @@ describe("root documents", () => {
         expect(rowIdx(t.name), t.name).toBeLessThan(adv);
       }
     }
-    expect(row("check_recall")).toContain("(ii)");
+    expect(row("check_recall")).toContain("(i) ");
+    expect(row("check_recall")).not.toContain("(ii)");
     expect(row("find_daycare")).toContain("(iii)");
     expect(row("find_vaccination_clinic")).toContain("(iii)");
     expect(row("find_checkup_clinic")).toContain("(iii)");
