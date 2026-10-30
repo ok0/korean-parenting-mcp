@@ -38,6 +38,6 @@ export const CLIENT_PAGES: readonly ClientPage[] = [
   { id: "gemini", path: "docs/clients/gemini.md", name: "Gemini CLI·Gemini Code Assist", format: "json", wrapper: "mcpServers", typeField: "any", required: true },
   { id: "antigravity", path: "docs/clients/antigravity.md", name: "Antigravity", format: "json", wrapper: "mcpServers", typeField: "forbidden", required: true },
   { id: "codex", path: "docs/clients/codex.md", name: "Codex", format: "toml", wrapper: "mcp_servers", typeField: "any", required: true },
-  { id: "claude-desktop", path: "docs/clients/claude-desktop.md", name: "Claude Desktop", format: "json", wrapper: "mcpServers", typeField: "any", required: true },
+  { id: "claude-desktop", path: "docs/clients/claude-desktop.md", name: DESKTOP_APP_NAME, format: "json", wrapper: "mcpServers", typeField: "any", required: true },
   { id: "claude-code", path: "docs/clients/claude-code.md", name: "Claude Code", format: "cli", wrapper: null, typeField: "any", required: true },
 ];

@@ -133,5 +133,7 @@ describe("docs link constants (M34)", () => {
     const claudeCode = byId("claude-code");
     expect(claudeCode?.format).toBe("cli");
     expect(claudeCode?.wrapper).toBeNull();
+    expect(byId("claude-desktop")?.name).toBe(DESKTOP_APP_NAME);
+    for (const p of CLIENT_PAGES) expect(p.required, p.id).toBe(true);
   });
 });
