@@ -59,6 +59,40 @@ function reach(entry: string): Set<string> {
   return seen;
 }
 
+function runtimeSpecifiers(file: string): string[] {
+  const text = readFileSync(file, "utf8");
+  const out: string[] = [];
+  for (const m of text.matchAll(/(?:^|\n)[ \t]*(?:import|export)\s+([^;]*?)\s*from\s*["']([^"']+)["']/g)) {
+    const clause = (m[1] as string).trim();
+    if (clause.startsWith("type ")) continue;
+    const braces = /^\{([\s\S]*)\}$/.exec(clause);
+    if (braces) {
+      const names = (braces[1] as string).split(",").map((s) => s.trim()).filter((s) => s !== "");
+      if (names.length > 0 && names.every((s) => s.startsWith("type "))) continue;
+    }
+    out.push(m[2] as string);
+  }
+  for (const m of text.matchAll(/(?:^|\n)[ \t]*import\s*["']([^"']+)["']/g)) out.push(m[1] as string);
+  return out;
+}
+
+function reachRuntime(entry: string): Set<string> {
+  const seen = new Set<string>();
+  const queue = [entry];
+  while (queue.length > 0) {
+    const next = queue.shift() as string;
+    if (seen.has(next)) continue;
+    seen.add(next);
+    const full = join(root, next);
+    if (!existsSync(full)) continue;
+    for (const spec of runtimeSpecifiers(full)) {
+      if (!spec.startsWith(".")) continue;
+      queue.push(rel(resolve(dirname(full), spec).replace(/\.js$/, ".ts")));
+    }
+  }
+  return seen;
+}
+
 const srcFiles = listTs(join(root, "src"));
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as PackageJson;
 
@@ -236,5 +270,37 @@ describe("project structure", () => {
       if (!(r.startsWith("src/remote/") || r.startsWith("src/core/"))) continue;
       expect(/writeFile|appendFile|createWriteStream/.test(readFileSync(f, "utf8")), r).toBe(false);
     }
+  });
+
+  it("offline path reaches no node, client, http or cache modules", () => {
+    const entries = [
+      "src/timeline/offline.ts",
+      "src/timeline/input.ts",
+      "src/data-store/validate.ts",
+      "src/provenance/revision-text.ts",
+    ];
+    const boundary = "src/data-store/load.ts";
+    const banned = ["src/core/http.ts", "src/core/cache.ts", "src/tools/registry.ts"];
+    for (const e of entries) {
+      expect(existsSync(join(root, e)), e).toBe(true);
+      for (const file of reachRuntime(e)) {
+        const full = join(root, file);
+        if (!existsSync(full)) continue;
+        expect(/\bimport\s*\(/.test(readFileSync(full, "utf8")), `${e} -> ${file} dynamic import`).toBe(false);
+        expect(file.startsWith("src/clients/"), `${e} -> ${file}`).toBe(false);
+        expect(banned.includes(file), `${e} -> ${file}`).toBe(false);
+        if (file !== boundary) {
+          for (const spec of runtimeSpecifiers(full)) {
+            expect(spec.startsWith("node:"), `${e} -> ${file} ${spec}`).toBe(false);
+          }
+        }
+      }
+    }
+    for (const e of entries.slice(1)) {
+      expect(reachRuntime(e).has(boundary), e).toBe(false);
+    }
+    expect(reachRuntime("src/timeline/offline.ts").has(boundary)).toBe(true);
+    const boundarySpecs = [...new Set(runtimeSpecifiers(join(root, boundary)).filter((s) => s.startsWith(".")))];
+    expect(boundarySpecs).toEqual(["./validate.js"]);
   });
 });
