@@ -10,7 +10,7 @@ import { matchedPatterns } from "./helpers/wording.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const readme = readFileSync(join(root, "README.md"), "utf8");
-const built = buildAll();
+const built = await buildAll();
 
 describe("client-neutral wording (M30b)", () => {
   it("README names AI products only in the mcpb line and the client sub-list (ADR-49, ADR-51, M39b E2)", () => {

@@ -37,7 +37,7 @@ import {
 } from "./helpers/wording.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
-const built = buildAll();
+const built = await buildAll();
 
 function must<T>(v: T | null | undefined, what: string): T {
   if (v === undefined || v === null) throw new Error(`없음: ${what}`);
@@ -70,9 +70,9 @@ function allowedDates(t: ReturnType<typeof exampleTimeline>): Set<string> {
 }
 
 describe("visual assets (M30)", () => {
-  it("buildAll is deterministic and matches committed assets", () => {
+  it("buildAll is deterministic and matches committed assets", async () => {
     expect(Object.keys(built)).toEqual([...ASSET_FILES]);
-    expect(buildAll()).toEqual(built);
+    expect(await buildAll()).toEqual(built);
     for (const f of ASSET_FILES) {
       expect(readFileSync(join(root, "assets", f), "utf8"), f).toBe(svgOf(f));
     }
@@ -100,27 +100,27 @@ describe("visual assets (M30)", () => {
     }
   });
 
-  it("diffAssets reports changed, missing and extra svg files and ignores gifs", () => {
+  it("diffAssets reports changed, missing and extra svg files and ignores gifs", async () => {
     const dir = mkdtempSync(join(tmpdir(), "kpm-visuals-"));
     try {
       for (const f of ASSET_FILES) writeFileSync(join(dir, f), svgOf(f));
-      expect(diffAssets(dir)).toEqual([]);
+      expect(await diffAssets(dir)).toEqual([]);
 
       writeFileSync(join(dir, "demo-1.gif"), "GIF89a");
-      expect(diffAssets(dir)).toEqual([]);
+      expect(await diffAssets(dir)).toEqual([]);
 
       const dark = join(dir, "tool-map-dark.svg");
       writeFileSync(dark, `${svgOf("tool-map-dark.svg")}<!-- x -->`);
-      expect(diffAssets(dir)).toEqual(["tool-map-dark.svg"]);
+      expect(await diffAssets(dir)).toEqual(["tool-map-dark.svg"]);
       writeFileSync(dark, svgOf("tool-map-dark.svg"));
 
       const life = join(dir, "life-timeline-light.svg");
       rmSync(life);
-      expect(diffAssets(dir)).toEqual(["life-timeline-light.svg"]);
+      expect(await diffAssets(dir)).toEqual(["life-timeline-light.svg"]);
       writeFileSync(life, svgOf("life-timeline-light.svg"));
 
       writeFileSync(join(dir, "extra.svg"), "<svg/>");
-      expect(diffAssets(dir)).toEqual(["extra.svg"]);
+      expect(await diffAssets(dir)).toEqual(["extra.svg"]);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

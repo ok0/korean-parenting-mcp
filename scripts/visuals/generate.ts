@@ -4,7 +4,8 @@ import { allTools } from "../../src/tools/registry.js";
 import { isMainModule } from "../lib/script-io.js";
 import { exampleTimeline } from "./example.js";
 import { renderLifeTimeline } from "./life-timeline.js";
-import { buildReportModel, renderReport, reportTimeline } from "./report.js";
+import { buildReportModel, renderReport } from "./report.js";
+import { loadReportSource } from "./report-source.js";
 import { renderStories } from "./stories.js";
 import { FONT_STACK, THEMES } from "./theme.js";
 import { renderToolMap } from "./tool-map.js";
@@ -27,9 +28,9 @@ export const FIGURES = [
   { name: "report-example", caption: "한 장 보고서 예시" },
 ] as const;
 
-export function buildAll(): Record<string, string> {
+export async function buildAll(opts: { sourceDir?: string } = {}): Promise<Record<string, string>> {
   const t = exampleTimeline();
-  const report = buildReportModel(reportTimeline());
+  const report = buildReportModel(loadReportSource(opts.sourceDir));
   const rendered: Record<string, string> = {};
   for (const theme of [THEMES.light, THEMES.dark]) {
     rendered[`tool-map-${theme.name}.svg`] = renderToolMap(allTools, theme);
@@ -46,8 +47,8 @@ export function buildAll(): Record<string, string> {
   return out;
 }
 
-export function diffAssets(dir: string): string[] {
-  const expected = buildAll();
+export async function diffAssets(dir: string, opts: { sourceDir?: string } = {}): Promise<string[]> {
+  const expected = await buildAll(opts);
   const diff: string[] = [];
   for (const [f, svg] of Object.entries(expected)) {
     const p = join(dir, f);
@@ -72,15 +73,15 @@ export function previewHtml(): string {
   return `${head}${figures}</body>\n</html>\n`;
 }
 
-export function main(
+export async function main(
   argv: readonly string[],
   io: { stdout(t: string): void; stderr(t: string): void },
   root: string,
-): number {
+): Promise<number> {
   if (argv.length === 0) {
     const assets = join(root, "assets");
     mkdirSync(assets, { recursive: true });
-    for (const [f, svg] of Object.entries(buildAll())) {
+    for (const [f, svg] of Object.entries(await buildAll())) {
       const p = join(assets, f);
       writeFileSync(p, svg);
       io.stdout(`${p}\n`);
@@ -92,7 +93,7 @@ export function main(
     return 0;
   }
   if (argv.length === 1 && argv[0] === "--check") {
-    const d = diffAssets(join(root, "assets"));
+    const d = await diffAssets(join(root, "assets"));
     if (d.length > 0) {
       io.stderr(`${d.join("\n")}\n그림이 코드·데이터와 다릅니다. npm run visuals 로 다시 만드세요.\n`);
       return 1;
@@ -104,9 +105,17 @@ export function main(
 }
 
 if (isMainModule(import.meta.url)) {
-  process.exitCode = main(
+  main(
     process.argv.slice(2),
     { stdout: (s) => process.stdout.write(s), stderr: (s) => process.stderr.write(s) },
     process.cwd(),
+  ).then(
+    (c) => {
+      process.exitCode = c;
+    },
+    (e: unknown) => {
+      process.stderr.write(`${e instanceof Error ? e.message : String(e)}\n`);
+      process.exitCode = 1;
+    },
   );
 }

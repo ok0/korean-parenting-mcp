@@ -28,7 +28,7 @@ function collector(): { io: { stdout(t: string): void; stderr(t: string): void }
 describe("visuals refresh rehearsal (M31)", () => {
   it.skipIf(!hasGit)(
     "stale figure: check fails, regenerate fixes it, only assets/*.svg change, works without .docs",
-    () => {
+    async () => {
       const tmp = mkdtempSync(join(tmpdir(), "kpm-visuals-"));
       try {
         cpSync(join(root, "assets"), join(tmp, "assets"), { recursive: true });
@@ -44,11 +44,11 @@ describe("visuals refresh rehearsal (M31)", () => {
         expect(existsSync(join(tmp, ".docs"))).toBe(false);
 
         const check = collector();
-        expect(main(["--check"], check.io, tmp)).toBe(1);
+        expect(await main(["--check"], check.io, tmp)).toBe(1);
         expect(check.err.join("")).toContain(target);
 
         const gen = collector();
-        expect(main([], gen.io, tmp)).toBe(0);
+        expect(await main([], gen.io, tmp)).toBe(0);
         expect(existsSync(join(tmp, PREVIEW_PATH))).toBe(true);
 
         const lines = git(tmp, ["status", "--porcelain", "--untracked-files=all"])
@@ -57,7 +57,7 @@ describe("visuals refresh rehearsal (M31)", () => {
         expect(lines).toEqual([` M assets/${target}`]);
 
         const recheck = collector();
-        expect(main(["--check"], recheck.io, tmp)).toBe(0);
+        expect(await main(["--check"], recheck.io, tmp)).toBe(0);
       } finally {
         rmSync(tmp, { recursive: true, force: true });
       }
