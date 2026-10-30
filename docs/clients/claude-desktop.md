@@ -16,7 +16,7 @@ macOS에서는 `~/Library/Application Support/Claude/claude_desktop_config.json`
 
 Windows에서는 `%APPDATA%\Claude\claude_desktop_config.json` 파일이에요.
 
-Linux에서는 경로를 확인하지 못했어요(미검증).
+Linux에서는 경로를 아직 직접 확인하지 못했어요.
 
 파일에 이미 내용이 있으면 `mcpServers` 안에 `korean-parenting` 항목만 추가하세요. 쉼표와 중괄호가 짝이 맞는지 확인하세요.
 
@@ -44,9 +44,7 @@ AI에게 "출산예정일 2027-03-15 일정 알려줘"라고 물어보세요. `g
 
 앱의 도구 목록에 `korean-parenting`이 보이는지도 확인할 수 있어요.
 
-## 근거와 확인 수준
-
-확인 수준: 공식 문서 근거
+## 근거
 
 아래 공식 문서를 읽고 정리한 내용이에요. 이 프로젝트에서 직접 연결해 확인한 것은 아니에요.
 

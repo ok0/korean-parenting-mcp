@@ -27,16 +27,16 @@ import { parseMiniToml, type TomlTable } from "./helpers/mini-toml.js";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const read = (rel: string): string => readFileSync(join(root, rel), "utf8");
 
-const SECTIONS: readonly string[] = ["설정 위치", "설정 예시(키 없이)", "설정 예시(선택 키 포함)", "적용하기", "연결 확인", "근거와 확인 수준"];
+const SECTIONS: readonly string[] = ["설정 위치", "설정 예시(키 없이)", "설정 예시(선택 키 포함)", "적용하기", "연결 확인", "근거"];
 const KEYLESS = "설정 예시(키 없이)";
 const KEYED = "설정 예시(선택 키 포함)";
-const LEVELS: readonly string[] = ["공식 문서 근거", "미검증"];
 const KEY_NAMES = new Set<string>(Object.values(KEY_ENV));
 const PLACEHOLDER = /^<[^>]+>$/;
 const ENV_REF = /^\$\{env:([A-Z_]+)\}$/;
 const runLine = [RUN.command, ...RUN.args].join(" ");
 const FENCE_LANG: Record<ClientFormat, string> = { json: "json", toml: "toml", cli: "sh" };
-const LEVEL_LINE = /^확인 수준: (.+)$/;
+const LABEL = /확인 수준|미검증/;
+const CAUTION = "아직 직접 확인하지 못했어요";
 
 type Mode = "none" | "keys" | "any";
 
@@ -213,13 +213,9 @@ function pageProblems(page: ClientPage, md: string): string[] {
   const sections = level2Sections(md);
   if (!isDeepStrictEqual(sections.map((s) => s.text), [...SECTIONS])) problems.push("섹션 목록 불일치");
 
-  const levelLines = lines.filter((l) => LEVEL_LINE.test(l));
-  if (levelLines.length !== 1) problems.push("확인 수준 줄은 하나여야 해요");
-  const levelMatch = LEVEL_LINE.exec(levelLines[0] ?? "");
-  if (!levelMatch || !LEVELS.includes(levelMatch[1] ?? "")) problems.push("확인 수준 값 오류");
   const last = sections.at(-1);
-  if (!last || !last.body.split(/\r?\n/).some((l) => LEVEL_LINE.test(l))) problems.push("확인 수준 줄이 마지막 구획에 없음");
   if (!last?.body.includes("https://")) problems.push("마지막 구획에 공식 문서 링크 없음");
+  if (lines.some((l) => LABEL.test(l))) problems.push("확인 수준·미검증 표기 금지");
 
   const first = firstLineAfterNotice(md) ?? "";
   if (!first.includes("](../install.md)") && !first.includes("](README.md)")) problems.push("뒤로 링크 없음");
@@ -276,12 +272,12 @@ function pageProblems(page: ClientPage, md: string): string[] {
     for (const u of ["../mcpb.md", "../setup-wizard.md"]) {
       if (!urls.includes(u)) problems.push(`${u} 링크 없음`);
     }
-    if (!lines.some((l) => l.includes("Linux") && l.includes("미검증"))) problems.push("Linux 미검증 문구 없음");
+    if (!lines.some((l) => l.includes("Linux") && l.includes(CAUTION))) problems.push("Linux 주의 문장 없음");
   }
   return problems;
 }
 
-function clientsIndexProblems(md: string, levels: Map<string, string>): string[] {
+function clientsIndexProblems(md: string): string[] {
   const out: string[] = [];
   const lines = md.split(/\r?\n/);
   const first = firstLineAfterNotice(md) ?? "";
@@ -291,20 +287,20 @@ function clientsIndexProblems(md: string, levels: Map<string, string>): string[]
   if (!after.includes("](../mcpb.md)") || !after.includes(DESKTOP_APP_NAME)) out.push("데스크톱 안내 줄 없음");
 
   const rows = tableRows(md);
-  if (!isDeepStrictEqual(rows[0], ["앱", "설정 위치", "형식", "확인 수준", "문서"])) out.push("표 머리글 불일치");
+  if (!isDeepStrictEqual(rows[0], ["앱", "설정 위치", "형식", "문서"])) out.push("표 머리글 불일치");
   for (const p of CLIENT_PAGES) {
     const rel = posix.relative("docs/clients", p.path);
-    const row = rows.find((r) => extractLinks(r[4] ?? "").some((l) => l.url === rel));
+    const row = rows.find((r) => extractLinks(r[3] ?? "").some((l) => l.url === rel));
     if (!row) {
       out.push(`표에 ${p.id} 행 없음`);
       continue;
     }
     if (row[0] !== p.name) out.push(`앱 이름 불일치: ${p.id}`);
-    if (row[3] !== levels.get(p.id)) out.push(`확인 수준 불일치: ${p.id}`);
   }
 
   const last = lines.filter((l) => l.trim() !== "").at(-1) ?? "";
   if (!last.includes("ChatGPT") || !last.includes("원격")) out.push("마지막 줄 ChatGPT·원격 문구 없음");
+  if (md.includes("확인 수준")) out.push("확인 수준 표기 금지");
   return out;
 }
 
@@ -313,7 +309,7 @@ const OTHERS: readonly { heading: string; wrapper: string | null }[] = [
   { heading: "Zed", wrapper: "context_servers" },
   { heading: "JetBrains AI Assistant", wrapper: null },
 ];
-const OTHERS_REASON = "미검증인 이유: ";
+const OTHERS_CAUTION = CAUTION + ". ";
 
 function othersProblems(md: string): string[] {
   const out: string[] = [];
@@ -326,15 +322,13 @@ function othersProblems(md: string): string[] {
 
   const sections = level2Sections(md);
   if (!isDeepStrictEqual(sections.map((s) => s.text), [...OTHERS.map((o) => o.heading), "연결 확인"])) out.push("섹션 목록 불일치");
-  if (lines.filter((l) => LEVEL_LINE.test(l)).length !== OTHERS.length) out.push("확인 수준 줄 개수 불일치");
+  if (lines.some((l) => LABEL.test(l))) out.push("확인 수준·미검증 표기 금지");
 
   for (const o of OTHERS) {
     const body = sections.find((s) => s.text === o.heading)?.body ?? "";
     const bodyLines = body.split(/\r?\n/);
-    const levels = bodyLines.filter((l) => LEVEL_LINE.test(l));
-    if (levels.length !== 1 || levels[0] !== "확인 수준: 미검증") out.push(`${o.heading}: 확인 수준 줄 오류`);
-    const reasons = bodyLines.filter((l) => l.startsWith(OTHERS_REASON));
-    if (reasons.length !== 1 || (reasons[0] ?? "").slice(OTHERS_REASON.length).length < 10) out.push(`${o.heading}: 미검증인 이유 오류`);
+    const cautions = bodyLines.filter((l) => l.startsWith(OTHERS_CAUTION));
+    if (cautions.length !== 1 || (cautions[0] ?? "").slice(OTHERS_CAUTION.length).length < 10) out.push(`${o.heading}: 주의 문장 오류`);
     if (!body.includes("https://")) out.push(`${o.heading}: 출처 링크 없음`);
     const blocks = codeBlocks(body);
     if (blocks.length !== 1 || blocks[0]?.lang !== "json") {
@@ -377,14 +371,6 @@ function othersProblems(md: string): string[] {
   return out;
 }
 
-function levelOf(md: string): string | undefined {
-  return /^확인 수준: (.+)$/m.exec(md)?.[1];
-}
-
-function levelMap(): Map<string, string> {
-  return new Map<string, string>(CLIENT_PAGES.map((p): [string, string] => [p.id, levelOf(read(p.path)) ?? ""]));
-}
-
 function exampleBody(page: ClientPage, withKey: boolean): string {
   if (page.format === "json") {
     if (page.wrapper === null) throw new Error("wrapper 없음");
@@ -410,7 +396,7 @@ function docWith(page: ClientPage, keyless: string, keyed: string): string {
   const block = (body: string): string => "```" + fence + "\n" + body + "\n```";
   const isDesktop = page.id === "claude-desktop";
   const desktopLinks = isDesktop ? " · [파일 하나로 설치하기](../mcpb.md) · [설정 마법사로 설치하기](../setup-wizard.md)" : "";
-  const linuxLine = isDesktop ? "\n\nLinux에서는 경로를 확인하지 못했어요(미검증)." : "";
+  const linuxLine = isDesktop ? "\n\nLinux에서는 경로를 아직 직접 확인하지 못했어요." : "";
   return [
     `# ${page.name}에 연결하기`,
     "",
@@ -440,9 +426,9 @@ function docWith(page: ClientPage, keyless: string, keyed: string): string {
     "",
     "AI에게 물어보세요. `get_timeline` 도구가 불리면 연결된 거예요.",
     "",
-    "## 근거와 확인 수준",
+    "## 근거",
     "",
-    "확인 수준: 공식 문서 근거",
+    "아래 공식 문서를 읽고 정리한 내용이에요.",
     "",
     "<https://example.com/x>",
     "",
@@ -489,9 +475,9 @@ describe("client docs (M36)", () => {
     }
   });
 
-  it("clients README links all pages with matching levels (R3, R8)", () => {
+  it("clients README links all pages (R3, R8)", () => {
     const clientsPath = DOC_PAGES.find((p) => p.id === "clients")?.path ?? "";
-    expect(clientsIndexProblems(read(clientsPath), levelMap())).toEqual([]);
+    expect(clientsIndexProblems(read(clientsPath))).toEqual([]);
   });
 
   it("ChatGPT lines mention 원격 across docs (R9)", () => {
@@ -526,7 +512,8 @@ describe("client docs (M36)", () => {
       ["claude-code 줄 끝 npx 단독", cc, goodDoc(cc).replaceAll(`-y ${RUN.args[1]}`, RUN.args[1])],
       ["ChatGPT 줄 추가", vs, goodDoc(vs) + "\nChatGPT에서도 써요.\n"],
       ["섹션 순서 뒤바꿈", vs, swapSections(goodDoc(vs))],
-      ["확인 수준 줄 두 개", vs, goodDoc(vs) + "\n확인 수준: 미검증\n"],
+      ["확인 수준 줄 추가", vs, goodDoc(vs) + "\n확인 수준: 공식 문서 근거\n"],
+      ["데스크톱 Linux 주의 문장 없음", dk, goodDoc(dk).replace("Linux에서는 경로를 아직 직접 확인하지 못했어요.", "")],
       ["비 cursor 설정에 ${env:} 값", vs, goodDoc(vs).replace("<발급받은 키>", "${env:DATA_GO_KR_SERVICE_KEY}")],
       ["codex toml에 잘못된 줄", cx, goodDoc(cx).replaceAll('command = "npx"', 'command = "npx"\nx = 1')],
       ["키 없이 섹션에 env", vs, docWith(vs, exampleBody(vs, true), exampleBody(vs, true))],
@@ -534,6 +521,12 @@ describe("client docs (M36)", () => {
     ];
     for (const [name, page, doc] of cases) {
       expect(pageProblems(page, doc), name).not.toEqual([]);
+    }
+  });
+
+  it("client docs carry no 확인 수준 or 미검증 label (M39 scope addition)", () => {
+    for (const f of listDocMarkdown(root).filter((f) => f.startsWith("docs/clients/"))) {
+      expect(read(f).split("\n").filter((l) => LABEL.test(l)), f).toEqual([]);
     }
   });
 
@@ -560,30 +553,25 @@ describe("client docs (M36)", () => {
   it("clients README violations fail", () => {
     const clientsPath = DOC_PAGES.find((p) => p.id === "clients")?.path ?? "";
     const readme = read(clientsPath);
-    const levels = levelMap();
-    expect(clientsIndexProblems(readme.split("\n").filter((l) => !l.startsWith("| VS Code |")).join("\n"), levels)).not.toEqual([]);
+    expect(clientsIndexProblems(readme.split("\n").filter((l) => !l.startsWith("| VS Code |")).join("\n"))).not.toEqual([]);
     expect(
-      clientsIndexProblems(
-        readme.split("\n").map((l) => (l.startsWith("| Cursor |") ? l.replace("공식 문서 근거", "미검증") : l)).join("\n"),
-        levels,
-      ),
+      clientsIndexProblems(readme.replace("| 앱 | 설정 위치 | 형식 | 문서 |", "| 앱 | 설정 위치 | 형식 | 확인 수준 | 문서 |")),
     ).not.toEqual([]);
-    expect(clientsIndexProblems(readme.replace(/^ChatGPT 등[^\n]*$/m, "ChatGPT에서도 돼요"), levels)).not.toEqual([]);
+    expect(clientsIndexProblems(readme.replace(/^ChatGPT 등[^\n]*$/m, "ChatGPT에서도 돼요"))).not.toEqual([]);
   });
 
   it("others page lists unverified apps (M37 AC3, AC4)", () => {
     expect(othersProblems(read(pageOf("others").path))).toEqual([]);
-    expect(levelMap().get("others")).toBe("미검증");
   });
 
   it("others synthetic violations fail (M37)", () => {
     const good = read(pageOf("others").path);
     const cases: [string, string][] = [
-      ["확인 수준을 공식 문서 근거로", good.replace("확인 수준: 미검증", "확인 수준: 공식 문서 근거")],
+      ["확인 수준 줄 추가", good.replace("## Zed", "확인 수준: 미검증\n\n## Zed")],
       ["밑줄 서버 키", good.replaceAll(`"${SERVER_NAME}"`, '"korean_parenting"')],
       ["실행 명령 변경", good.replace('"command": "npx"', '"command": "node"')],
       ["env 추가", good.replace('"command": "npx",', '"command": "npx", "env": { "LAW_OC": "x" },')],
-      ["미검증인 이유 제거", good.replace(/^미검증인 이유: .*\n/m, "")],
+      ["주의 문장 제거", good.replace(/^아직 직접 확인하지 못했어요\. .*\n/m, "")],
     ];
     for (const [name, doc] of cases) {
       expect(othersProblems(doc), name).not.toEqual([]);
