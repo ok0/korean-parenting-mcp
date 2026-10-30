@@ -100,6 +100,23 @@ describe.skipIf(!existsSync(guidePath))("visuals guide (M31)", () => {
     }
   });
 
+  it("covers the page check before publishing (M33)", () => {
+    for (const phrase of [
+      "## 게시 전 페이지 확인",
+      "npm run build:site",
+      "python3 -m http.server -d build-site 8080",
+      "http://localhost:8080/",
+      "증명하는 것",
+      "증명하지 못하는",
+      "https://ok0.github.io/korean-parenting-mcp/",
+      "네트워크",
+      "모바일",
+      "게시한 뒤에만",
+    ]) {
+      expect(text, phrase).toContain(phrase);
+    }
+  });
+
   it("contains no leaked secrets", () => {
     expect(findLeaks(text, secretsFromEnv(process.env), { heuristic: true })).toEqual([]);
   });

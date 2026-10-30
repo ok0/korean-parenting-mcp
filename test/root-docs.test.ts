@@ -173,3 +173,11 @@ describe("README figures (M31)", () => {
     expect(matchedPatterns(intro, OFFICIAL_CLAIM_OUTPUT)).toEqual([]);
   });
 });
+
+describe("README Pages link (M33)", () => {
+  it("README links the Pages trial in the intro (M33)", () => {
+    const intro = readmeIntro(readme);
+    expect(intro).toContain("](https://ok0.github.io/korean-parenting-mcp/)");
+    expect(intro).toContain("체험");
+  });
+});
