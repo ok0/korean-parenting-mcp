@@ -11,6 +11,7 @@ const WORKFLOWS = [
   ".github/workflows/revision-check.yml",
   ".github/workflows/holidays-refresh.yml",
   ".github/workflows/visuals-refresh.yml",
+  ".github/workflows/pages.yml",
 ] as const;
 
 const USES =
@@ -201,6 +202,40 @@ describe("workflows", () => {
     expect([...text.matchAll(/git add[^\n]*/g)].map((m) => m[0])).toEqual([
       "git add -- data/holidays.json 'assets/*.svg'",
     ]);
+  });
+
+  it("pages.yml (M33)", () => {
+    const text = read(".github/workflows/pages.yml");
+    expect(text).toContain("branches: [main]");
+    expect(text).toContain('    paths: ["site/**", "assets/**", "src/**", "data/**", "scripts/build-site.ts"]');
+    expect(text).toMatch(/^\s+workflow_dispatch:/m);
+    expect(text).not.toMatch(/pull_request|schedule:/);
+
+    expect(topPermissions(text)).toEqual({ contents: "read", pages: "write", "id-token": "write" });
+    expect(text).toContain("group: pages");
+
+    const order = [
+      /actions\/checkout@/,
+      /actions\/setup-node@/,
+      /^\s*run: npm ci$/m,
+      /^\s*run: npm run build:site$/m,
+      /actions\/configure-pages@/,
+      /actions\/upload-pages-artifact@/,
+    ].map((re) => stepIndex(text, re));
+    for (const i of order) expect(i).toBeGreaterThanOrEqual(0);
+    for (let i = 1; i < order.length; i++) {
+      expect(order[i - 1]! < order[i]!).toBe(true);
+    }
+    expect(block(text, "upload-pages-artifact")).toContain("path: build-site");
+    expect(block(text, "setup-node")).toContain('node-version: "22"');
+
+    expect(text).toContain("needs: build");
+    expect(text).toContain("name: github-pages");
+    expect(text).toMatch(/uses: actions\/deploy-pages@v\d+\.\d+\.\d+/);
+    expect(stepIndex(text, /deploy-pages/)).toBeGreaterThan(stepIndex(text, /upload-pages-artifact/));
+
+    expect(secretNames(text)).toEqual([]);
+    expect(text).not.toContain("continue-on-error");
   });
 
   it.runIf(hasActionlint)("actionlint passes", () => {
