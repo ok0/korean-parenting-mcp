@@ -5,6 +5,7 @@ node_modules/
 build/
 build-scripts/
 build-mcpb/
+build-site/
 *.mcpb
 .env
 
