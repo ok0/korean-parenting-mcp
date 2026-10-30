@@ -234,3 +234,20 @@ export function indexListLines(pages: readonly DocPage[], href: (p: DocPage) => 
     .filter((p) => p.id !== "index")
     .map((p) => (p.parent ? "  " : "") + "- [" + p.title + "](" + href(p) + ") — " + p.summary);
 }
+
+/** docs/README.md 클라이언트 하위 목록 줄(4칸 들여쓰기). */
+export const CLIENT_LIST_LINE = /^ {4}- \[[^\]]+\]\(clients\/[a-z-]+\.md\) — \S/;
+
+/** 줄 수를 유지한 채 조건에 맞는 줄을 빈 줄로 바꾼다. */
+export function blankLines(md: string, pred: (line: string) => boolean): string {
+  return md.split(/\r?\n/).map((l) => (pred(l) ? "" : l)).join("\n");
+}
+
+/** 앱별 문서용: 앱 이름은 허용, "전용" 단정만 금지. */
+export function brandExclusiveProblems(file: string, md: string): string[] {
+  const problems: string[] = [];
+  for (const { line, text } of proseLines(md)) {
+    if (CLIENT_BRANDS.some((r) => r.test(text)) && text.includes("전용")) problems.push(`${file}:${line} ${text}`);
+  }
+  return problems;
+}

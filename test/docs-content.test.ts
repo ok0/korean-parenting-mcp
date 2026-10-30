@@ -5,10 +5,13 @@ import { describe, expect, it } from "vitest";
 import { KEY_ENV } from "../src/core/config.js";
 import { allTools } from "../src/tools/registry.js";
 import { listDocMarkdown } from "../scripts/docs/files.js";
-import { DESKTOP_APP_NAME, DOC_NOTICE, DOC_PAGES, MCPB_URL, RUN, SERVER_NAME, STATUS_BADGE, STATUS_LEGEND } from "../scripts/docs/links.js";
+import { CLIENT_PAGES, DESKTOP_APP_NAME, DOC_NOTICE, DOC_PAGES, MCPB_URL, RUN, SERVER_NAME, STATUS_BADGE, STATUS_LEGEND } from "../scripts/docs/links.js";
 import { findLeaks } from "../scripts/lib/sample-mask.js";
 import { codeBlocks, extractLinks, headings } from "./helpers/markdown.js";
 import {
+  CLIENT_LIST_LINE,
+  blankLines,
+  brandExclusiveProblems,
   brandProblems,
   firstBlockquote,
   firstCellTools,
@@ -29,6 +32,9 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const read = (rel: string): string => readFileSync(join(root, rel), "utf8");
 const docFiles = listDocMarkdown(root);
 const mainDocs = docFiles.filter((f) => !f.startsWith("docs/clients/"));
+const clientsPath = DOC_PAGES.find((p) => p.id === "clients")?.path ?? "";
+const pageDocs = docFiles.filter((f) => DOC_PAGES.some((p) => p.path === f));
+const clientAppDocs = CLIENT_PAGES.map((p) => p.path);
 const runLine = [RUN.command, ...RUN.args].join(" ");
 
 // M35 착수 시 README 5개 구획(14–33, 59–67, 69–86, 88–96, 98–146)의 URL·인라인 코드 전부
@@ -126,21 +132,24 @@ const statusCell = (md: string, tool: string): string => {
 };
 
 describe("public docs content (M35)", () => {
-  it("seven docs exist, docs/ holds .md only (R1)", () => {
-    expect([...mainDocs].sort()).toEqual(DOC_PAGES.filter((p) => p.id !== "clients").map((p) => p.path).sort());
+  it("DOC_PAGES and CLIENT_PAGES docs exist, docs/ holds .md only (R1, M36)", () => {
+    expect([...docFiles].sort()).toEqual([...DOC_PAGES.map((p) => p.path), ...CLIENT_PAGES.map((p) => p.path)].sort());
     expect(docsDirViolations(root)).toEqual([]);
-    for (const f of mainDocs) {
+    for (const f of docFiles) {
       const hangul = read(f).match(/[가-힣]/g) ?? [];
       expect(hangul.length, f).toBeGreaterThanOrEqual(30);
     }
   });
 
   it("each doc opens with its DOC_PAGES title and DOC_NOTICE (R2)", () => {
-    for (const f of mainDocs) {
+    for (const f of pageDocs) {
       const md = read(f);
       const page = DOC_PAGES.find((p) => p.path === f);
       expect(page, f).toBeDefined();
       expect(md.split(/\r?\n/)[0], f).toBe("# " + (page?.title ?? ""));
+    }
+    for (const f of docFiles) {
+      const md = read(f);
       const bq = firstBlockquote(md);
       expect(bq?.text, f).toBe(DOC_NOTICE);
       const h2 = headings(md).find((h) => h.level === 2);
@@ -202,15 +211,33 @@ describe("public docs content (M35)", () => {
     const start = DOC_PAGES.find((p) => p.id === "start");
     expect(firstLineAfterNotice(index)).toBe("처음이라면 → [" + (start?.title ?? "") + "](start.md)");
     const listed = index.split(/\r?\n/).filter((l) => /^\s*- /.test(l));
-    expect(listed).toEqual(indexListLines(DOC_PAGES, (p) => posix.relative("docs", p.path)));
+    const top = listed.filter((l) => !CLIENT_LIST_LINE.test(l));
+    expect(top).toEqual(indexListLines(DOC_PAGES, (p) => posix.relative("docs", p.path)));
+    const sub = listed.filter((l) => CLIENT_LIST_LINE.test(l));
+    const prefixes = CLIENT_PAGES.filter((p) => p.required).map(
+      (p) => "    - [" + p.name + "](" + posix.relative("docs", p.path) + ") — ",
+    );
+    expect(sub.length).toBe(prefixes.length);
+    prefixes.forEach((prefix, i) => expect(sub[i]?.startsWith(prefix), prefix).toBe(true));
+    const clientsLine = top.find((l) => l.includes("(clients/README.md)")) ?? "";
+    const at = listed.indexOf(clientsLine);
+    expect(at).toBeGreaterThanOrEqual(0);
+    expect(listed.slice(at + 1, at + 1 + sub.length)).toEqual(sub);
   });
 
   it("client-neutral and app naming (R9, R10)", () => {
     for (const f of mainDocs) {
       const md = read(f);
-      expect(brandProblems(f, md), f).toEqual([]);
-      if (f !== "docs/mcpb.md") expect(proseText(md), f).not.toContain(".mcpb");
-      expect(proseText(md), f).not.toContain("Claude Desktop");
+      const body = f === "docs/README.md" ? blankLines(md, (l) => CLIENT_LIST_LINE.test(l)) : md;
+      expect(brandProblems(f, body), f).toEqual([]);
+    }
+    expect(
+      brandProblems(clientsPath, blankLines(read(clientsPath), (l) => l.startsWith("|") || l.includes("ChatGPT"))),
+    ).toEqual([]);
+    for (const f of clientAppDocs) expect(brandExclusiveProblems(f, read(f)), f).toEqual([]);
+    for (const f of docFiles) {
+      if (f !== "docs/mcpb.md") expect(proseText(read(f)), f).not.toContain(".mcpb");
+      expect(proseText(read(f)), f).not.toContain("Claude Desktop");
     }
     expect(read("docs/setup-wizard.md")).toContain("소유자만 읽고 쓸 수 있게(0600)");
     expect(brandProblems("docs/x.md", "Claude Desktop 전용 설치")).not.toEqual([]);
@@ -219,6 +246,10 @@ describe("public docs content (M35)", () => {
     expect(brandProblems("docs/start.md", "## 이게 뭔가요\n" + DESKTOP_APP_NAME)).not.toEqual([]);
     expect(brandProblems("docs/x.md", "그 밖의 AI 앱(예: VS Code, Cursor 등)")).toEqual([]);
     expect(brandProblems("docs/x.md", DESKTOP_APP_NAME + "에서 열어요")).toEqual([]);
+    expect(CLIENT_LIST_LINE.test("    - [Cursor](clients/cursor.md) — 설명")).toBe(true);
+    expect(brandProblems("docs/README.md", "- Cursor 추천")).not.toEqual([]);
+    expect(brandExclusiveProblems("docs/clients/x.md", "Cursor 전용 설정")).not.toEqual([]);
+    expect(brandExclusiveProblems("docs/clients/x.md", "Cursor 설정 파일")).toEqual([]);
   });
 
   it("mcpb.md links MCPB_URL without asserting unpublished behaviour (R10)", () => {
@@ -229,7 +260,7 @@ describe("public docs content (M35)", () => {
   });
 
   it("status badges and legend (R11)", () => {
-    for (const f of mainDocs) expect(statusProblems(read(f)), f).toEqual([]);
+    for (const f of docFiles) expect(statusProblems(read(f)), f).toEqual([]);
     const keyless = read("docs/keyless.md");
     const advanced = read("docs/advanced.md");
     expect(statusTables(keyless).length).toBeGreaterThanOrEqual(1);
@@ -280,7 +311,7 @@ describe("public docs content (M35)", () => {
   });
 
   it("run command and server name come from RUN and SERVER_NAME (R13)", () => {
-    for (const f of mainDocs) {
+    for (const f of docFiles) {
       for (const block of codeBlocks(read(f))) {
         if (block.lang !== "bash" && block.lang !== "sh") continue;
         for (const raw of block.body.split("\n")) {
