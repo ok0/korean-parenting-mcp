@@ -1,5 +1,6 @@
 export const REPO = "ok0/korean-parenting-mcp";
-export const RAW_ASSET_PREFIX = "https://raw.githubusercontent.com/ok0/korean-parenting-mcp/main/assets/";
+export const BRANCH = "main";
+export const RAW_ASSET_PREFIX = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/assets/`;
 export const LOCAL_ASSET_PREFIX = "../../assets/";
 
 export interface FigurePair {
