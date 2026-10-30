@@ -128,7 +128,7 @@ describe("workflows", () => {
 
   it("visuals-refresh.yml", () => {
     const text = read(".github/workflows/visuals-refresh.yml");
-    expect(text).toMatch(/^  push:\n    branches: \[main\]\n    paths: \["data\/\*\*", "src\/\*\*", "scripts\/visuals\/\*\*"\]$/m);
+    expect(text).toMatch(/^  push:\n    branches: \[main\]\n    paths: \["data\/\*\*", "src\/\*\*", "scripts\/visuals\/\*\*", "test\/fixtures\/visuals\/\*\*"\]$/m);
     expect(text).toMatch(/^  workflow_dispatch:$/m);
     expect(text).not.toMatch(/^\s+(schedule|pull_request|pull_request_target):/m);
 

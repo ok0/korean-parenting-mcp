@@ -2,7 +2,7 @@ name: visuals-refresh
 on:
   push:
     branches: [main]
-    paths: ["data/**", "src/**", "scripts/visuals/**"]
+    paths: ["data/**", "src/**", "scripts/visuals/**", "test/fixtures/visuals/**"]
   workflow_dispatch:
 permissions:
   contents: write
