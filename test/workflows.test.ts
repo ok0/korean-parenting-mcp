@@ -3,6 +3,18 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { MCPB_ASSET } from "../scripts/docs/links.js";
+import { OUTPUT_FILE } from "../scripts/lib/mcpb.js";
+import {
+  USES,
+  block,
+  blockIndex,
+  mcpbReleaseProblems,
+  secretNames,
+  stepIndex,
+  steps,
+  topPermissions,
+} from "./helpers/workflows.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
@@ -12,46 +24,11 @@ const WORKFLOWS = [
   ".github/workflows/holidays-refresh.yml",
   ".github/workflows/visuals-refresh.yml",
   ".github/workflows/pages.yml",
+  ".github/workflows/mcpb-release.yml",
 ] as const;
-
-const USES =
-  /^(actions\/[a-z-]+(\/[a-z-]+)?@v\d+\.\d+\.\d+|docker:\/\/rhysd\/actionlint:\d+\.\d+\.\d+|[\w.-]+\/[\w.-]+@[0-9a-f]{40})$/;
 
 function read(rel: string): string {
   return readFileSync(join(root, rel), "utf8");
-}
-
-function steps(text: string): string[] {
-  return text.split(/^ {6}- /m);
-}
-
-function block(text: string, needle: string): string {
-  return steps(text).find((s) => s.includes(needle)) ?? "";
-}
-
-function blockIndex(text: string, needle: string): number {
-  return steps(text).findIndex((s) => s.includes(needle));
-}
-
-function secretNames(text: string): string[] {
-  return [...text.matchAll(/\$\{\{\s*secrets\.([A-Za-z_]+)\s*\}\}/g)].map((m) => m[1] ?? "");
-}
-
-function topPermissions(text: string): Record<string, string> {
-  const lines = text.split("\n");
-  const idx = lines.indexOf("permissions:");
-  const out: Record<string, string> = {};
-  if (idx < 0) return out;
-  for (const line of lines.slice(idx + 1)) {
-    const m = /^ {2}([\w-]+): (\S+)\s*$/.exec(line);
-    if (!m) break;
-    out[m[1] ?? ""] = m[2] ?? "";
-  }
-  return out;
-}
-
-function stepIndex(text: string, re: RegExp): number {
-  return steps(text).findIndex((s) => re.test(s));
 }
 
 const hasActionlint = spawnSync("actionlint", ["-version"]).status === 0;
@@ -236,6 +213,52 @@ describe("workflows", () => {
 
     expect(secretNames(text)).toEqual([]);
     expect(text).not.toContain("continue-on-error");
+  });
+
+  it("mcpb-release.yml (M38 R1–R3, R7)", () => {
+    const text = read(".github/workflows/mcpb-release.yml");
+    expect(mcpbReleaseProblems(text)).toEqual([]);
+    expect(OUTPUT_FILE).toBe(MCPB_ASSET);
+
+    const swappedSteps = steps(text);
+    const smokeIdx = stepIndex(text, /^\s*run: npm run smoke:mcpb$/m);
+    const publishIdx = stepIndex(text, /gh release upload/);
+    [swappedSteps[smokeIdx], swappedSteps[publishIdx]] = [
+      swappedSteps[publishIdx] ?? "",
+      swappedSteps[smokeIdx] ?? "",
+    ];
+    const swapped = swappedSteps.join("      - ");
+
+    const samples = [
+      swapped,
+      text.replace("  contents: write", "  contents: write\n  pull-requests: write"),
+      text.replace("  workflow_dispatch:", "  workflow_dispatch:\n  pull_request:"),
+      text.replace(" --clobber", ""),
+      text.replace(
+        "      - name: publish rolling prerelease",
+        "      - name: publish rolling prerelease\n        if: always()",
+      ),
+      text.replace("GH_TOKEN: ${{ github.token }}", "GH_TOKEN: ${{ secrets.PAT }}"),
+      text.replace("run: npm run verify", "run: npm run verify || true"),
+      text.replace("::warning", "::notice"),
+    ];
+    for (const sample of samples) {
+      expect(mcpbReleaseProblems(sample).length).toBeGreaterThan(0);
+    }
+  });
+
+  it("contents: write set is pinned and only mcpb-release writes releases (M38 R3)", () => {
+    const writers = WORKFLOWS.filter((f) => topPermissions(read(f)).contents === "write").sort();
+    expect(writers).toEqual(
+      [
+        ".github/workflows/holidays-refresh.yml",
+        ".github/workflows/visuals-refresh.yml",
+        ".github/workflows/mcpb-release.yml",
+      ].sort(),
+    );
+    for (const f of WORKFLOWS.filter((f) => f !== ".github/workflows/mcpb-release.yml")) {
+      expect(read(f)).not.toMatch(/gh release|refs\/tags|git tag/);
+    }
   });
 
   it.runIf(hasActionlint)("actionlint passes", () => {
