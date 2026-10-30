@@ -1,20 +1,26 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, posix } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   GH_ARGS,
+  PREVIEW_DIR,
   README_PREVIEW_PATH,
+  checkDocPreview,
   checkPreview,
+  localAssetPrefix,
+  localizeDocLinks,
   localizeImages,
   main,
   previewDocument,
+  previewPathFor,
   type GhResult,
 } from "../scripts/readme-preview.js";
+import { DOCS_BLOB, MCPB_URL, REPO_BLOB_PATH } from "../scripts/docs/links.js";
 import { ASSET_FILES } from "../scripts/visuals/generate.js";
-import { RAW_ASSET_PREFIX, assetPairs } from "../scripts/visuals/readme-figures.js";
+import { LOCAL_ASSET_PREFIX, RAW_ASSET_PREFIX, assetPairs } from "../scripts/visuals/readme-figures.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const pairs = assetPairs(ASSET_FILES);
@@ -204,5 +210,196 @@ describe("README preview (M31)", () => {
     if (inRepo) {
       expect(spawnSync("git", ["check-ignore", "-q", README_PREVIEW_PATH], { cwd: root }).status).toBe(0);
     }
+  });
+});
+
+describe("docs preview (M34)", () => {
+  const docPage = "docs/install.md";
+  const vscodePage = "docs/clients/vscode.md";
+
+  function fixtureDocs(): { README: string; install: string; vscode: string } {
+    return {
+      README: fixture(pairs) + `<a href="${DOCS_BLOB}docs/install.md">i</a>`,
+      install: `<a href="clients/vscode.md#연결-확인">v</a><img src="${RAW_ASSET_PREFIX}${ASSET_FILES[0]}">`,
+      vscode: `<a href="../install.md">i</a><a href="${MCPB_URL}">m</a>`,
+    };
+  }
+
+  function docsRoot(): string {
+    const dir = makeRoot();
+    writeFileSync(join(dir, "README.md"), "# t\n");
+    mkdirSync(join(dir, "assets"));
+    for (const f of ASSET_FILES) writeFileSync(join(dir, "assets", f), "<svg/>");
+    mkdirSync(join(dir, "docs", "clients"), { recursive: true });
+    writeFileSync(join(dir, "docs", "install.md"), "# install\n");
+    writeFileSync(join(dir, "docs", "clients", "vscode.md"), "# vscode\n");
+    return dir;
+  }
+
+  function ghByText(texts: Record<string, string>, calls: string[]): (args: readonly string[], input: string) => GhResult {
+    return (_args, input) => {
+      const text = (JSON.parse(input) as { text: string }).text;
+      calls.push(text);
+      const html = texts[text];
+      return { status: 0, stdout: html ?? "", stderr: "" };
+    };
+  }
+
+  it("previewPathFor and localAssetPrefix follow the output depth", () => {
+    expect(previewPathFor("docs/install.md")).toBe(".docs/visuals/preview/docs/install.html");
+    expect(localAssetPrefix(README_PREVIEW_PATH)).toBe(LOCAL_ASSET_PREFIX);
+    expect(localAssetPrefix(previewPathFor("README.md"))).toBe("../../../assets/");
+    expect(localAssetPrefix(previewPathFor("docs/install.md"))).toBe("../../../../assets/");
+    expect(localAssetPrefix(previewPathFor("docs/clients/vscode.md"))).toBe("../../../../../assets/");
+  });
+
+  it("localizeDocLinks rewrites doc links relative to fromPath", () => {
+    const from = "docs/clients/vscode.md";
+    expect(localizeDocLinks(`<a href="${DOCS_BLOB}docs/install.md#설치">x</a>`, from)).toBe(
+      `<a href="../install.html#설치">x</a>`,
+    );
+    expect(localizeDocLinks(`<a href="../install.md#a">x</a>`, from)).toBe(`<a href="../install.html#a">x</a>`);
+    expect(localizeDocLinks(`<a href="README.md">x</a>`, from)).toBe(`<a href="README.html">x</a>`);
+    expect(localizeDocLinks(`<a href="${REPO_BLOB_PATH}docs/install.md">x</a>`, from)).toBe(
+      `<a href="../install.html">x</a>`,
+    );
+    expect(localizeDocLinks(`<a href="${DOCS_BLOB}docs/clients/README.md">x</a>`, "README.md")).toBe(
+      `<a href="docs/clients/README.html">x</a>`,
+    );
+  });
+
+  it("localizeDocLinks points images at real assets at any depth", () => {
+    const root = docsRoot();
+    for (const fromPath of ["README.md", "docs/install.md", "docs/clients/vscode.md"]) {
+      const html = `<img src="${RAW_ASSET_PREFIX}${ASSET_FILES[0]}"><source srcset="${RAW_ASSET_PREFIX}${ASSET_FILES[1]}">`;
+      const localized = localizeDocLinks(html, fromPath);
+      const values = [...localized.matchAll(/(?:src|srcset)="([^"]*)"/g)].map((m) => m[1] ?? "");
+      expect(values).toHaveLength(2);
+      const expectedFiles = [ASSET_FILES[0], ASSET_FILES[1]];
+      values.forEach((v, i) => {
+        const resolved = posix.normalize(posix.join(posix.dirname(previewPathFor(fromPath)), v));
+        expect(resolved).toBe(`assets/${expectedFiles[i]}`);
+        expect(existsSync(join(root, resolved))).toBe(true);
+      });
+    }
+
+    const relative = localizeDocLinks(`<img src="../../assets/${ASSET_FILES[0]}">`, vscodePage);
+    const resolvedRel = posix.normalize(posix.join(posix.dirname(previewPathFor(vscodePage)), relative.match(/src="([^"]*)"/)?.[1] ?? ""));
+    expect(resolvedRel).toBe(`assets/${ASSET_FILES[0]}`);
+
+    const camo = localizeDocLinks(
+      `<img src="https://camo.githubusercontent.com/x" data-canonical-src="${RAW_ASSET_PREFIX}${ASSET_FILES[0]}">`,
+      docPage,
+    );
+    expect(camo).not.toContain("camo");
+    expect(camo).not.toContain("data-canonical-src");
+    expect(camo).toMatch(/src="[^"]*assets\//);
+  });
+
+  it("localizeDocLinks leaves external, mcpb, mailto, anchors and non-md blobs", () => {
+    const inputs = [
+      "https://example.com/x",
+      MCPB_URL,
+      "mailto:a@b.kr",
+      "#local",
+      `${DOCS_BLOB}LICENSE`,
+    ];
+    for (const v of inputs) {
+      const html = `<a href="${v}">x</a>`;
+      expect(localizeDocLinks(html, docPage)).toBe(html);
+    }
+  });
+
+  it("checkDocPreview reports leftovers and missing targets", () => {
+    const outPath = previewPathFor(docPage);
+    const exists = (r: string): boolean => r === "assets/a.svg" || r === ".docs/visuals/preview/docs/ok.html";
+    expect(checkDocPreview(`<a href="ok.html">x</a><img src="../../../../assets/a.svg">`, outPath, exists)).toEqual([]);
+
+    const remoteDoc = checkDocPreview(`<a href="${DOCS_BLOB}docs/x.md">x</a>`, outPath, exists);
+    expect(remoteDoc.filter((p) => p.startsWith("원격 문서 링크가 남아 있습니다:"))).toHaveLength(1);
+
+    const remoteImg = checkDocPreview(`<img src="${RAW_ASSET_PREFIX}a.svg">`, outPath, exists);
+    expect(remoteImg.filter((p) => p.startsWith("원격 그림 주소가 남아 있습니다:"))).toHaveLength(1);
+
+    expect(checkDocPreview(`<a href="missing.html">x</a>`, outPath, exists)).toEqual([
+      "없는 파일을 가리킵니다: .docs/visuals/preview/docs/missing.html",
+    ]);
+    expect(checkDocPreview(`<img src="../../../../assets/none.svg">`, outPath, exists)).toEqual([
+      "없는 파일을 가리킵니다: assets/none.svg",
+    ]);
+    expect(checkDocPreview(`<a href="${DOCS_BLOB}LICENSE">x</a>`, outPath, exists)).toEqual([]);
+  });
+
+  it("main previews README and every docs markdown", () => {
+    const dir = docsRoot();
+    const texts = fixtureDocs();
+    const seen: string[] = [];
+    const gh = ghByText({ "# t\n": texts.README, "# install\n": texts.install, "# vscode\n": texts.vscode }, seen);
+    const c = collector();
+    expect(main([], c.io, dir, gh)).toBe(0);
+    expect(seen).toHaveLength(3);
+
+    expect(existsSync(join(dir, README_PREVIEW_PATH))).toBe(true);
+    expect(existsSync(join(dir, previewPathFor("README.md")))).toBe(true);
+    expect(existsSync(join(dir, previewPathFor(docPage)))).toBe(true);
+    expect(existsSync(join(dir, previewPathFor(vscodePage)))).toBe(true);
+
+    const install = readFileSync(join(dir, previewPathFor(docPage)), "utf8");
+    expect(install).toContain('href="clients/vscode.html#연결-확인"');
+    expect(install).not.toContain(RAW_ASSET_PREFIX);
+
+    const readme = readFileSync(join(dir, previewPathFor("README.md")), "utf8");
+    expect(readme).toContain('href="docs/install.html"');
+
+    const vscode = readFileSync(join(dir, previewPathFor(vscodePage)), "utf8");
+    expect(vscode).toContain(MCPB_URL);
+  });
+
+  it("main without docs/ writes only README outputs", () => {
+    const dir = makeRoot();
+    writeFileSync(join(dir, "README.md"), "# t\n");
+    mkdirSync(join(dir, "assets"));
+    for (const f of ASSET_FILES) writeFileSync(join(dir, "assets", f), "<svg/>");
+    const c = collector();
+    expect(main([], c.io, dir, () => ({ status: 0, stdout: fixture(pairs), stderr: "" }))).toBe(0);
+    expect(existsSync(join(dir, previewPathFor("README.md")))).toBe(true);
+    expect(readdirSync(join(dir, PREVIEW_DIR))).toEqual(["README.html"]);
+  });
+
+  it("main writes nothing when one doc fails the check", () => {
+    const dir = docsRoot();
+    const texts = fixtureDocs();
+    const broken = texts.install.replace("clients/vscode.md#연결-확인", `${DOCS_BLOB}docs/missing.md`);
+    const outFile = join(dir, README_PREVIEW_PATH);
+    mkdirSync(join(dir, ".docs", "visuals", "preview"), { recursive: true });
+    writeFileSync(outFile, "<html>stale</html>");
+    writeFileSync(join(dir, PREVIEW_DIR, "old.html"), "<html>old</html>");
+    const gh = ghByText({ "# t\n": texts.README, "# install\n": broken, "# vscode\n": texts.vscode }, []);
+    const c = collector();
+    expect(main([], c.io, dir, gh)).toBe(1);
+    const err = c.err.join("");
+    expect(err).toContain("문서 미리보기 검사 실패");
+    expect(err).toContain("docs/install.md");
+    expect(err).toContain("missing");
+    expect(existsSync(outFile)).toBe(false);
+    expect(existsSync(join(dir, PREVIEW_DIR))).toBe(false);
+  });
+
+  it("main reports a doc render failure with its path and no token", () => {
+    const dir = docsRoot();
+    const gh = (_args: readonly string[], input: string): GhResult => {
+      const text = (JSON.parse(input) as { text: string }).text;
+      if (text === "# t\n") return { status: 0, stdout: fixture(pairs), stderr: "" };
+      if (text === "# vscode\n") return { status: 0, stdout: fixtureDocs().vscode, stderr: "" };
+      return { status: 1, stdout: "", stderr: "gh: Server Error (HTTP 500)\nAuthorization: token gho_FAKE0123456789abcdef" };
+    };
+    const c = collector();
+    expect(main([], c.io, dir, gh)).toBe(1);
+    const err = c.err.join("");
+    expect(err).toContain("docs/install.md:");
+    expect(err).toContain("HTTP 500");
+    expect(err).not.toContain("gho_");
+    expect(existsSync(join(dir, README_PREVIEW_PATH))).toBe(false);
+    expect(existsSync(join(dir, PREVIEW_DIR))).toBe(false);
   });
 });

@@ -1,11 +1,14 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, posix } from "node:path";
 import { isMainModule } from "./lib/script-io.js";
+import { listDocMarkdown } from "./docs/files.js";
+import { DOCS_BLOB, REPO_BLOB_PATH } from "./docs/links.js";
 import { ASSET_FILES } from "./visuals/generate.js";
 import { LOCAL_ASSET_PREFIX, RAW_ASSET_PREFIX, REPO, assetPairs, type FigurePair } from "./visuals/readme-figures.js";
 
 export const README_PREVIEW_PATH = ".docs/visuals/readme-preview.html";
+export const PREVIEW_DIR = ".docs/visuals/preview";
 
 export const GH_ARGS = ["api", "--method", "POST", "markdown", "--input", "-"] as const;
 
@@ -54,8 +57,114 @@ export function renderReadme(markdown: string, gh: GhRunner): { html: string } |
   return { error: `${GH_MESSAGES.api}(${detail}). 잠시 후 다시 실행하거나 gh auth status 로 로그인 상태를 확인하세요.` };
 }
 
-export function localizeImages(html: string): string {
-  return html.split(RAW_ASSET_PREFIX).join(LOCAL_ASSET_PREFIX);
+export function previewPathFor(src: string): string {
+  return `${PREVIEW_DIR}/${src.replace(/\.md$/, ".html")}`;
+}
+
+export function localAssetPrefix(outPath: string): string {
+  return posix.relative(posix.dirname(outPath), "assets") + "/";
+}
+
+export function localizeImages(html: string, prefix: string = LOCAL_ASSET_PREFIX): string {
+  return html.split(RAW_ASSET_PREFIX).join(prefix);
+}
+
+function safeDecode(s: string): string {
+  try {
+    return decodeURI(s);
+  } catch {
+    return s;
+  }
+}
+
+function splitHash(v: string): { path: string; hash: string } {
+  const i = v.indexOf("#");
+  return i < 0 ? { path: v, hash: "" } : { path: v.slice(0, i), hash: v.slice(i) };
+}
+
+function hasScheme(v: string): boolean {
+  return /^[A-Za-z][A-Za-z0-9+.-]*:/.test(v);
+}
+
+function mapUrl(v: string, fromPath: string): string {
+  const outDir = posix.dirname(previewPathFor(fromPath));
+  const prefix = [DOCS_BLOB, REPO_BLOB_PATH].find((p) => v.startsWith(p));
+  if (prefix !== undefined) {
+    const { path, hash } = splitHash(v.slice(prefix.length));
+    if (!path.endsWith(".md")) return v;
+    return posix.relative(outDir, previewPathFor(path)) + hash;
+  }
+  if (v === "" || v.startsWith("#") || v.startsWith("//") || v.startsWith("/") || hasScheme(v)) return v;
+  const { path: rawPath, hash } = splitHash(v);
+  const path = (rawPath.split("?")[0] ?? "");
+  const target = posix.normalize(posix.join(posix.dirname(fromPath), safeDecode(path)));
+  if (target.startsWith("../") || target === "..") return v;
+  const dest = target.endsWith(".md") ? previewPathFor(target) : target;
+  return posix.relative(outDir, dest) + hash;
+}
+
+function mapSrcset(value: string, fromPath: string): string {
+  return value
+    .split(",")
+    .map((candidate) => {
+      const [url = "", ...descriptors] = candidate.trim().split(/\s+/);
+      const desc = descriptors.join(" ");
+      return mapUrl(url, fromPath) + (desc === "" ? "" : ` ${desc}`);
+    })
+    .join(", ");
+}
+
+export function localizeDocLinks(html: string, fromPath: string): string {
+  const out = previewPathFor(fromPath);
+  const canonical = html.replace(/<img\b[^>]*>/g, (tag) => {
+    const m = /\sdata-canonical-src="([^"]*)"/.exec(tag);
+    if (m === null) return tag;
+    const src = m[1] ?? "";
+    return tag.replace(m[0], "").replace(/\ssrc="[^"]*"/, () => ` src="${src}"`);
+  });
+  const withImages = localizeImages(canonical, localAssetPrefix(out));
+  return withImages.replace(/\b(href|src|srcset)="([^"]*)"/g, (_all, attr: string, value: string) => {
+    const mapped = attr === "srcset" ? mapSrcset(value, fromPath) : mapUrl(value, fromPath);
+    return `${attr}="${mapped}"`;
+  });
+}
+
+function urlValues(html: string): string[] {
+  const values: string[] = [];
+  for (const m of html.matchAll(/\b(href|src|srcset)="([^"]*)"/g)) {
+    const value = m[2] ?? "";
+    if (m[1] === "srcset") {
+      for (const candidate of value.split(",")) {
+        const first = candidate.trim().split(/\s+/)[0] ?? "";
+        if (first !== "") values.push(first);
+      }
+    } else {
+      values.push(value);
+    }
+  }
+  return values;
+}
+
+export function checkDocPreview(html: string, outPath: string, exists: (rel: string) => boolean): string[] {
+  const problems: string[] = [];
+  const add = (p: string): void => {
+    if (!problems.includes(p)) problems.push(p);
+  };
+  for (const v of urlValues(html)) {
+    if (v.includes(RAW_ASSET_PREFIX)) {
+      add(`원격 그림 주소가 남아 있습니다: ${v}`);
+    } else if (v.startsWith(DOCS_BLOB) && splitHash(v).path.endsWith(".md")) {
+      add(`원격 문서 링크가 남아 있습니다: ${v}`);
+    } else if (v.startsWith("/") && !v.startsWith("//")) {
+      add(`루트 기준 주소가 남아 있습니다: ${v}`);
+    } else if (v !== "" && !v.startsWith("#") && !v.startsWith("//") && !hasScheme(v)) {
+      const path = (splitHash(v).path.split("?")[0] ?? "");
+      const target = posix.normalize(posix.join(posix.dirname(outPath), safeDecode(path)));
+      if (target.startsWith("../")) add(`저장소 밖을 가리킵니다: ${v}`);
+      else if (!exists(target)) add(`없는 파일을 가리킵니다: ${target}`);
+    }
+  }
+  return problems;
 }
 
 export function checkPreview(html: string, pairs: readonly FigurePair[], exists: (rel: string) => boolean): string[] {
@@ -96,7 +205,8 @@ export function checkPreview(html: string, pairs: readonly FigurePair[], exists:
   return problems;
 }
 
-export function previewDocument(body: string): string {
+export function previewDocument(body: string, label: string = "README"): string {
+  const esc = (s: string): string => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const style = [
     "body{max-width:980px;margin:0 auto;padding:32px;font-family:-apple-system,BlinkMacSystemFont,\"Apple SD Gothic Neo\",\"Malgun Gothic\",system-ui,sans-serif;line-height:1.5;color:#1F2328;background:#FFFFFF}",
     "table{border-collapse:collapse}",
@@ -119,11 +229,11 @@ export function previewDocument(body: string): string {
 <head>
 <meta charset="utf-8">
 <meta name="color-scheme" content="light dark">
-<title>README 미리보기</title>
+<title>${esc(label)} 미리보기</title>
 <style>${style}</style>
 </head>
 <body>
-<aside class="notice" data-notice="readme-preview"><strong>README 미리보기(로컬)</strong><ul>${lis}</ul></aside>
+<aside class="notice" data-notice="readme-preview"><strong>${esc(label)} 미리보기(로컬)</strong><ul>${lis}</ul></aside>
 <article class="markdown-body">${body}</article>
 </body>
 </html>
@@ -152,9 +262,11 @@ export function main(
     return 1;
   }
   const out = join(root, README_PREVIEW_PATH);
+  const previewRoot = join(root, PREVIEW_DIR);
   const fail = (lines: string[]): number => {
     rmSync(out, { force: true });
     rmSync(out + ".tmp", { force: true });
+    rmSync(previewRoot, { recursive: true, force: true });
     io.stderr(lines.join("\n") + "\n");
     return 1;
   };
@@ -168,13 +280,42 @@ export function main(
     return fail(["README 미리보기 검사 실패:", ...built.problems.map((p) => `- ${p}`)]);
   }
 
+  const pages: { rel: string; html: string }[] = [{ rel: "README.md", html: rendered.html }];
+  for (const rel of listDocMarkdown(root)) {
+    const r = renderReadme(readFileSync(join(root, rel), "utf8"), gh);
+    if ("error" in r) return fail([`${rel}: ${r.error}`]);
+    pages.push({ rel, html: r.html });
+  }
+
+  const planned = new Set(pages.map((p) => previewPathFor(p.rel)));
+  const exists = (rel: string): boolean => planned.has(rel) || existsSync(join(root, rel));
+  const bodies = pages.map((p) => ({ rel: p.rel, body: localizeDocLinks(p.html, p.rel) }));
+  const docProblems: string[] = [];
+  for (const b of bodies) {
+    for (const problem of checkDocPreview(b.body, previewPathFor(b.rel), exists)) {
+      docProblems.push(`${b.rel}: ${problem}`);
+    }
+  }
+  if (docProblems.length > 0) {
+    return fail(["문서 미리보기 검사 실패:", ...docProblems.map((p) => `- ${p}`)]);
+  }
+
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out + ".tmp", built.html);
   renameSync(out + ".tmp", out);
 
+  rmSync(previewRoot, { recursive: true, force: true });
+  for (const b of bodies) {
+    const dest = join(root, previewPathFor(b.rel));
+    mkdirSync(dirname(dest), { recursive: true });
+    writeFileSync(dest + ".tmp", previewDocument(b.body, b.rel));
+    renameSync(dest + ".tmp", dest);
+  }
+
   for (const p of pairs) {
     io.stdout(`연결됨: ${p.name} (라이트 ${p.light} · 다크 ${p.dark})\n`);
   }
+  io.stdout(`문서 미리보기 ${pages.length}개: ${previewRoot}\n`);
   io.stdout(`${out}\n브라우저에서 열어 확인하세요. 다크 그림은 OS나 브라우저를 다크 모드로 바꿔 보세요.\n`);
   return 0;
 }
