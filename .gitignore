@@ -7,3 +7,5 @@ build-scripts/
 build-mcpb/
 *.mcpb
 .env
+
+.DS_Store
