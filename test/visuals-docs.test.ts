@@ -56,7 +56,7 @@ describe.skipIf(!existsSync(gifPath))("GIF scenario (M31)", () => {
       "개인정보",
       "설정 화면",
       "가상",
-      "녹화 시점",
+      "화면 기록 시점",
       "MCP 클라이언트",
     ]) {
       expect(text, phrase).toContain(phrase);

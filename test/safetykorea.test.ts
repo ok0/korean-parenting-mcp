@@ -1,4 +1,4 @@
-// fixture는 명세 예시 기반이며 실호출 녹화본이 아님. M14 실응답으로 교체 예정.
+// fixture는 명세 예시 기반이며 실호출 기록이 아님. M14 실응답으로 교체 예정.
 import { readFileSync } from "node:fs";
 import { z } from "zod";
 import { describe, expect, it } from "vitest";
