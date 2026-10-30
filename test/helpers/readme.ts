@@ -1,12 +1,14 @@
-import { DOC_PAGES, DOCS_BLOB, MCPB_URL, docUrl, type DocPage } from "../../scripts/docs/links.js";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { CLIENT_PAGES, DOC_PAGES, DOCS_BLOB, MCPB_URL, docUrl, type DocPage } from "../../scripts/docs/links.js";
 import { RAW_ASSET_PREFIX } from "../../scripts/visuals/readme-figures.js";
-import { indexListLines } from "./docs-checklist.js";
+import { CLIENT_LIST_LINE, indexListLines } from "./docs-checklist.js";
 import { extractLinks, headings } from "./markdown.js";
 import { CLIENT_BRANDS, LINK_BLOCK_HEADING } from "./visuals.js";
 import { OFFICIAL_CLAIM_OUTPUT, matchedPatterns } from "./wording.js";
 
 export const README_MAX_LINES = 80;
-export const LINK_BLOCK_LAST_LINE = 25;
+export const LINK_BLOCK_LAST_LINE = 33;
 export const ONE_LINER = "한국 임신·출산·육아 정보 MCP 서버";
 export const PAGES_URL = "https://ok0.github.io/korean-parenting-mcp/";
 export const MCPB_DOWNLOAD_LABEL = "설치 파일 바로 내려받기";
@@ -36,13 +38,31 @@ export function mcpbLinkLine(): string {
   return `  - [${m.title}](${docUrl(m.path)}) — ${m.summary}`;
 }
 
+const DOCS_INDEX = fileURLToPath(new URL("../../docs/README.md", import.meta.url));
+
+/** README 바로가기의 AI 앱별 하위 목록(M39b E1·E2): docs/README.md 클라이언트 줄을 절대 URL로 바꾼 것. */
+export function readmeClientLines(indexMd: string = readFileSync(DOCS_INDEX, "utf8")): string[] {
+  return splitLines(indexMd)
+    .filter((l) => CLIENT_LIST_LINE.test(l))
+    .map((l) => l.replace("](clients/", `](${docUrl("docs/clients/")}`));
+}
+
+/** CLIENT_PAGES 순서·이름·경로로 만든 하위 목록 줄 접두사. */
+export function clientLinePrefixes(): string[] {
+  return CLIENT_PAGES.map((p) => `    - [${p.name}](${docUrl(p.path)}) — `);
+}
+
 export function expectedLinkBlock(): string[] {
   const s = page("start");
   const out: string[] = [`처음이라면 → [${s.title}](${docUrl(s.path)})`];
   const allowed = mcpbLinkLine();
+  const c = page("clients");
+  const clientsLine = `  - [${c.title}](${docUrl(c.path)}) — ${c.summary}`;
+  const clients = readmeClientLines();
   for (const line of indexListLines(DOC_PAGES, (p) => docUrl(p.path))) {
     out.push(line);
     if (line === allowed) out.push(`    - [${MCPB_DOWNLOAD_LABEL}](${MCPB_URL})`);
+    if (line === clientsLine) out.push(...clients);
   }
   return out;
 }
@@ -152,12 +172,18 @@ export function readmeBrandProblems(md: string): string[] {
   const b = linkBlock(md);
   const problems: string[] = [];
   let used = false;
+  const clientAllowed = new Set(readmeClientLines());
+  const seen = new Set<string>();
   const lines = splitLines(md);
   for (let i = 0; i < lines.length; i++) {
     const t = lines[i] ?? "";
     if (!CLIENT_BRANDS.some((re) => re.test(t))) continue;
     if (!used && b && i + 1 > b.start && i + 1 <= b.end && t === allowed) {
       used = true;
+      continue;
+    }
+    if (b && i + 1 > b.start && i + 1 <= b.end && clientAllowed.has(t) && !seen.has(t)) {
+      seen.add(t);
       continue;
     }
     problems.push(`README:${i + 1} ${t}`);
