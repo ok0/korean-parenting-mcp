@@ -10,6 +10,24 @@ interface PackEntry {
   files: { path: string }[];
 }
 
+const FORBIDDEN_PREFIXES = [
+  "scripts/",
+  ".github/",
+  "test/",
+  "build-scripts/",
+  "build-mcpb/",
+  ".docs/",
+  ".ensemble/",
+  "assets/",
+  "site/",
+  "build-site/",
+  "docs/",
+] as const;
+
+function forbiddenPaths(paths: readonly string[]): string[] {
+  return paths.filter((p) => FORBIDDEN_PREFIXES.some((x) => p.startsWith(x)));
+}
+
 describe("npm package contents", () => {
   beforeAll(() =>
     vi.stubGlobal("fetch", () => {
@@ -26,20 +44,10 @@ describe("npm package contents", () => {
         encoding: "utf8",
       });
       const paths = (JSON.parse(out) as PackEntry[])[0]?.files.map((f) => f.path) ?? [];
-      const forbidden = [
-        "scripts/",
-        ".github/",
-        "test/",
-        "build-scripts/",
-        "build-mcpb/",
-        ".docs/",
-        ".ensemble/",
-        "assets/",
-        "site/",
-        "build-site/",
-      ];
+      expect(forbiddenPaths(paths)).toEqual([]);
+      expect(paths.filter((p) => p.startsWith("docs/"))).toEqual([]);
       for (const p of paths) {
-        for (const prefix of forbidden) {
+        for (const prefix of FORBIDDEN_PREFIXES) {
           expect(p.startsWith(prefix), p).toBe(false);
         }
         expect(p, p).not.toContain("fixtures");
@@ -74,4 +82,21 @@ describe("npm package contents", () => {
     },
     60000,
   );
+
+  it("forbiddenPaths flags docs/ in a synthetic pack list", () => {
+    expect(forbiddenPaths(["README.md", "build/index.js", "docs/install.md", "docs/clients/vscode.md"])).toEqual([
+      "docs/install.md",
+      "docs/clients/vscode.md",
+    ]);
+    expect(forbiddenPaths(["README.md", "build/index.js", "data/holidays.json"])).toEqual([]);
+  });
+
+  it("mcpb staging never copies docs/", () => {
+    const src = readFileSync(join(root, "scripts/build-mcpb.ts"), "utf8");
+    expect(src).not.toMatch(/join\(\s*root\s*,\s*["']docs/);
+    const copied = [...src.matchAll(/(?:cpSync|copyFileSync)\(\s*join\(\s*root\s*,\s*["']([^"']+)["']/g)].map((m) => m[1]);
+    for (const name of copied) {
+      expect(["data", ".mcpbignore"]).toContain(name);
+    }
+  });
 });

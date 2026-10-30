@@ -1,9 +1,10 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
-import { rootDocViolations, type RootEntry } from "./helpers/root-docs.js";
+import { afterEach, describe, expect, it } from "vitest";
+import { docsDirViolations, rootDocViolations, type RootEntry } from "./helpers/root-docs.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
@@ -27,7 +28,24 @@ function checkIgnored(p: string): number | null {
   return spawnSync("git", ["check-ignore", "-q", p], { cwd: root }).status;
 }
 
+const tempRoots: string[] = [];
+
+function tempRoot(files: Record<string, string>): string {
+  const dir = mkdtempSync(join(tmpdir(), "doc-location-"));
+  tempRoots.push(dir);
+  for (const [rel, body] of Object.entries(files)) {
+    const full = join(dir, rel);
+    mkdirSync(join(full, ".."), { recursive: true });
+    writeFileSync(full, body);
+  }
+  return dir;
+}
+
 describe("document placement (P12)", () => {
+  afterEach(() => {
+    for (const dir of tempRoots.splice(0)) rmSync(dir, { recursive: true, force: true });
+  });
+
   it("root documents are only README.md and LICENSE", () => {
     const entries: RootEntry[] = readdirSync(root, { withFileTypes: true }).map((e) => ({
       name: e.name,
@@ -44,9 +62,38 @@ describe("document placement (P12)", () => {
         name,
         isDir: false,
       })),
-      ...["docs", "src", ".docs"].map((name) => ({ name, isDir: true })),
+      ...["docs", "doc", "src", ".docs"].map((name) => ({ name, isDir: true })),
     ];
-    expect(rootDocViolations(entries)).toEqual(["CHANGELOG", "NOTES.md", "docs/", "todo.txt"]);
+    expect(rootDocViolations(entries)).toEqual(["CHANGELOG", "NOTES.md", "doc/", "todo.txt"]);
+  });
+
+  it("docs/ in the repository holds only .md files", () => {
+    expect(docsDirViolations(root)).toEqual([]);
+  });
+
+  it("docsDirViolations passes without docs/ and with only .md", () => {
+    expect(docsDirViolations(tempRoot({ "README.md": "# t\n" }))).toEqual([]);
+    expect(
+      docsDirViolations(
+        tempRoot({
+          "docs/a.md": "# a\n",
+          "docs/clients/b.md": "# b\n",
+          "docs/.DS_Store": "",
+        }),
+      ),
+    ).toEqual([]);
+  });
+
+  it("docsDirViolations flags non-.md files recursively", () => {
+    expect(
+      docsDirViolations(
+        tempRoot({
+          "docs/a.md": "# a\n",
+          "docs/img.png": "",
+          "docs/clients/x.json": "{}",
+        }),
+      ),
+    ).toEqual(["docs/clients/x.json", "docs/img.png"]);
   });
 
   it("config and build files are not documents", () => {
