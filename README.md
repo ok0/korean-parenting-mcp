@@ -17,6 +17,14 @@
     - [설치 파일 바로 내려받기](https://github.com/ok0/korean-parenting-mcp/releases/download/mcpb-latest/korean-parenting-mcp.mcpb)
   - [설정 마법사로 설치하기](https://github.com/ok0/korean-parenting-mcp/blob/main/docs/setup-wizard.md) — 명령 한 줄로 키 입력과 앱 등록을 한 번에 해요
   - [직접 설정하기(AI 앱별)](https://github.com/ok0/korean-parenting-mcp/blob/main/docs/clients/README.md) — 쓰는 AI 앱의 설정에 서버를 직접 추가해요
+    - [VS Code](https://github.com/ok0/korean-parenting-mcp/blob/main/docs/clients/vscode.md) — VS Code 설정 파일에 서버를 추가해요
+    - [Cursor](https://github.com/ok0/korean-parenting-mcp/blob/main/docs/clients/cursor.md) — Cursor 설정 파일에 서버를 추가해요
+    - [Gemini CLI·Gemini Code Assist](https://github.com/ok0/korean-parenting-mcp/blob/main/docs/clients/gemini.md) — 두 앱이 함께 쓰는 설정 파일에 서버를 추가해요
+    - [Antigravity](https://github.com/ok0/korean-parenting-mcp/blob/main/docs/clients/antigravity.md) — Antigravity 설정 파일에 서버를 추가해요
+    - [Codex](https://github.com/ok0/korean-parenting-mcp/blob/main/docs/clients/codex.md) — Codex 설정 파일(TOML)에 서버를 추가해요
+    - [Claude 데스크톱 앱](https://github.com/ok0/korean-parenting-mcp/blob/main/docs/clients/claude-desktop.md) — 설정 파일을 직접 고쳐서 서버를 추가해요
+    - [Claude Code](https://github.com/ok0/korean-parenting-mcp/blob/main/docs/clients/claude-code.md) — 명령 한 줄로 서버를 등록해요
+    - [그 밖의 AI 앱](https://github.com/ok0/korean-parenting-mcp/blob/main/docs/clients/others.md) — 다른 AI 앱 설정 방법을 모아 둔 안내예요(아직 직접 확인하지 못했어요)
 - [API 키로 기능 더하기(선택)](https://github.com/ok0/korean-parenting-mcp/blob/main/docs/advanced.md) — 야간 진료기관·리콜 조회처럼 키가 필요한 기능과 키 발급 방법
 
 정부·공공기관과 관계없는 **비공식** 개인 프로젝트이며, 공공 API와 공개 법령을 바탕으로 안내합니다.
