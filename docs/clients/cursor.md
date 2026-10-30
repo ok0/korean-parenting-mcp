@@ -7,6 +7,12 @@
 Cursor의 AI가 이 서버를 쓰도록 Cursor MCP 설정 파일에 추가하는 방법이에요.
 이미 다른 방법(설정 마법사, 파일 하나로 설치 등)으로 등록했다면 다시 추가하지 마세요. 같은 서버가 두 번 등록될 수 있어요. 한 방법만 쓰세요.
 
+Cursor를 쓰고 있다면 아래 링크로 바로 추가해 볼 수 있어요.
+
+[Cursor에 설치하기](https://cursor.com/en/install-mcp?name=korean-parenting&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImtvcmVhbi1wYXJlbnRpbmctbWNwIl19)
+
+버튼이 열리지 않으면 아래 설정을 복사해 붙여 넣으세요.
+
 ## 설정 위치
 
 모든 프로젝트에서 쓰려면 `~/.cursor/mcp.json` 파일을 고치세요.

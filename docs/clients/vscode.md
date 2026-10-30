@@ -7,6 +7,12 @@
 VS Code의 AI 채팅이 이 서버를 쓰도록 VS Code 설정 파일에 추가하는 방법이에요.
 이미 다른 방법(설정 마법사, 파일 하나로 설치 등)으로 등록했다면 다시 추가하지 마세요. 같은 서버가 두 번 등록될 수 있어요. 한 방법만 쓰세요.
 
+VS Code를 쓰고 있다면 아래 링크로 바로 추가해 볼 수 있어요.
+
+[VS Code에 설치하기](https://insiders.vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522korean-parenting%2522%252C%2522type%2522%253A%2522stdio%2522%252C%2522command%2522%253A%2522npx%2522%252C%2522args%2522%253A%255B%2522-y%2522%252C%2522korean-parenting-mcp%2522%255D%257D)
+
+버튼이 열리지 않으면 아래 설정을 복사해 붙여 넣으세요.
+
 ## 설정 위치
 
 명령 팔레트(Ctrl/Cmd+Shift+P)를 열고 "MCP: Open User Configuration"을 고르면 사용자 설정 파일이 열려요. 모든 작업 폴더에서 쓸 수 있어요.
