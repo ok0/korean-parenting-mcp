@@ -1,8 +1,9 @@
 import { spawnSync } from "node:child_process";
-import { copyFileSync, cpSync, existsSync, mkdirSync, rmSync } from "node:fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
+import { BUILD_INFO_FILE, makeBuildInfo, resolveBuildCommit } from "./lib/mcpb-release.js";
 import {
   ENTRY_REL,
   ESM_REQUIRE_BANNER,
@@ -21,6 +22,7 @@ function runMcpb(cli: string, args: string[], env: NodeJS.ProcessEnv): number | 
 }
 
 async function main(): Promise<void> {
+  const commit = resolveBuildCommit(process.env);
   const paths = resolveMcpbPaths(root, process.env);
   if (!existsSync(join(root, "build/index.js"))) {
     throw new Error("build/index.js 없음: npm run build 먼저 실행");
@@ -44,6 +46,15 @@ async function main(): Promise<void> {
 
   cpSync(join(root, "data"), join(paths.stage, "data"), { recursive: true });
   copyFileSync(paths.manifest, join(paths.stage, "manifest.json"));
+  const manifestVersion = (JSON.parse(readFileSync(paths.manifest, "utf8")) as { version?: unknown }).version;
+  writeFileSync(
+    join(paths.stage, BUILD_INFO_FILE),
+    JSON.stringify(
+      makeBuildInfo(typeof manifestVersion === "string" ? manifestVersion : "unknown", commit, new Date()),
+      null,
+      2,
+    ) + "\n",
+  );
   copyFileSync(join(root, ".mcpbignore"), join(paths.stage, ".mcpbignore"));
 
   const cli = mcpbCliPath(root);

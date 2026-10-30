@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { KEY_ENV } from "../src/core/config.js";
+import { BUILD_INFO_FILE, checkMcpbRelease, resolveBuildCommit } from "./lib/mcpb-release.js";
 import { OUTPUT_FILE } from "./lib/mcpb.js";
 import { runMcpSession, type SessionResult, type ToolCall } from "./lib/mcp-session.js";
 
@@ -51,6 +52,7 @@ async function main(): Promise<void> {
   if (unzipCheck.error || unzipCheck.status !== 0) {
     throw new Error("unzip 명령이 필요합니다");
   }
+  const expectedCommit = resolveBuildCommit(process.env);
 
   const work = mkdtempSync(join(tmpdir(), "kpm-mcpb-"));
   try {
@@ -68,6 +70,18 @@ async function main(): Promise<void> {
     });
     assert.notEqual(broken.status, 0, "깨진 manifest로 포장이 통과했습니다");
     assert.ok(!existsSync(join(work, "neg", OUTPUT_FILE)), "깨진 manifest로 .mcpb가 만들어졌습니다");
+
+    const badCommit = spawnSync(process.execPath, [packScript], {
+      cwd: root,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        KPM_BUILD_COMMIT: "not-a-sha",
+        KPM_MCPB_OUT_DIR: join(work, "badcommit"),
+      },
+    });
+    assert.notEqual(badCommit.status, 0, "잘못된 KPM_BUILD_COMMIT로 포장이 통과했습니다");
+    assert.ok(!existsSync(join(work, "badcommit", OUTPUT_FILE)), "잘못된 KPM_BUILD_COMMIT로 .mcpb가 만들어졌습니다");
 
     const packEnv: NodeJS.ProcessEnv = { ...process.env, KPM_MCPB_MANIFEST: "", KPM_MCPB_OUT_DIR: "", ...fakeEnv };
     const lists: string[][] = [];
@@ -97,12 +111,12 @@ async function main(): Promise<void> {
     );
 
     const allowed = (p: string): boolean =>
-      p === "manifest.json" || p === ".mcpbignore" || p === "server/index.mjs" || ALLOWED_DATA.test(p);
+      p === "manifest.json" || p === ".mcpbignore" || p === "server/index.mjs" || p === BUILD_INFO_FILE || ALLOWED_DATA.test(p);
     assert.deepEqual(entries.filter((p) => !allowed(p)), [], "허용되지 않은 항목이 있습니다");
     const sourceManifest = JSON.parse(readFileSync(join(root, "manifest.json"), "utf8")) as {
       server: { entry_point: string };
     };
-    const required = ["manifest.json", sourceManifest.server.entry_point, ...readdirSync(join(root, "data")).map((n) => `data/${n}`)];
+    const required = ["manifest.json", BUILD_INFO_FILE, sourceManifest.server.entry_point, ...readdirSync(join(root, "data")).map((n) => `data/${n}`)];
     for (const item of required) {
       assert.ok(entries.includes(item), `필수 항목이 없습니다: ${item}`);
     }
@@ -126,6 +140,12 @@ async function main(): Promise<void> {
     const extManifest = JSON.parse(readFileSync(join(ext, "manifest.json"), "utf8")) as {
       server: { mcp_config: { command: string; args: string[] } };
     };
+    const releaseIssues = checkMcpbRelease({
+      manifestJson: readFileSync(join(ext, "manifest.json"), "utf8"),
+      buildInfoJson: readFileSync(join(ext, BUILD_INFO_FILE), "utf8"),
+      expectedCommit,
+    });
+    assert.deepEqual(releaseIssues, [], "번들 build-info/manifest 검사 실패");
     const mcpConfig = extManifest.server.mcp_config;
     const bundleArgs = mcpConfig.args.map((arg) => arg.replaceAll("${__dirname}", ext));
     assert.ok(existsSync(bundleArgs[0] ?? ""), `번들 진입점이 없습니다: ${bundleArgs[0] ?? ""}`);
