@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1120" viewBox="0 0 1200 1120" role="img" aria-labelledby="title desc" font-family="Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif">
+<title id="title">한 장 준비 보고서 예시</title>
+<desc id="desc">예시 그림. AI 도우미에게 보낸 요청: 출산예정일 2027-03-15, 서울 성동구, 첫째, 직장인 — 한 장짜리 준비 보고서로 정리해 줘. 사용한 기능: get_timeline(키 없이 동작). 보고서 기준일 2026-11-02, 데이터 기준일 2026-10-28.</desc>
+<rect x="0" y="0" width="1200" height="1120" fill="#0F141A"/>
+<text x="24" y="470" font-size="15" fill="#7DB3FF" data-max-w="340" letter-spacing="-0.1" font-weight="700"><tspan x="24" y="470">AI 도우미에게 보낸 요청(예시)</tspan></text>
+<rect x="24" y="484" width="340" height="104" rx="12" fill="#1A222C" stroke="#3A4654"/>
+<text x="44" y="514" font-size="16" fill="#E8EDF2" data-max-w="300" letter-spacing="-0.2"><tspan x="44" y="514">출산예정일 2027-03-15, 서울 성동구,</tspan><tspan x="44" y="538">첫째, 직장인 — 한 장짜리 준비 보고서로</tspan><tspan x="44" y="562">정리해 줘</tspan></text>
+<line x1="372" y1="536" x2="432" y2="536" stroke="#A9B4C0" stroke-width="2"/>
+<polygon points="432,536 424,531 424,541" fill="#A9B4C0"/>
+<g data-tool="get_timeline">
+<rect x="440" y="51" width="720" height="1018" rx="6" fill="#1A222C" stroke="#3A4654"/>
+<text x="476" y="111" font-size="24" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.5" font-weight="700"><tspan x="476" y="111">한 장 준비 보고서</tspan></text>
+<text x="476" y="155" font-size="14" fill="#7DB3FF" data-max-w="648" letter-spacing="-0.1" font-weight="700"><tspan x="476" y="155">예시 · 개인 맞춤 아님 · 비공식 도구</tspan></text>
+<line x1="476" y1="189" x2="1124" y2="189" stroke="#3A4654" stroke-width="1"/>
+<text x="476" y="207" font-size="16" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.2" font-weight="700"><tspan x="476" y="207">이번 달 할 일</tspan></text>
+<text x="476" y="229" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="229">· 2026-06-08 ~ 2026-12-27 · 산전 정기 건강진단 (임신 28주 6일까지, 4주마다 1회)</tspan></text>
+<text x="476" y="249" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="249">· 2026-06-08 ~ 2027-03-15 · 임신·출산 진료비 지원 (100만원, 임신 확인 후~출산예정일)</tspan></text>
+<text x="476" y="269" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="269">· 2026-09-21 ~ 2027-03-15 · 인플루엔자 임신부 (2026-2027 절기)</tspan></text>
+<text x="476" y="307" font-size="16" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.2" font-weight="700"><tspan x="476" y="307">산전검진·예방접종 일정</tspan></text>
+<text x="476" y="329" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="329">· 2026-06-08 ~ 2026-12-27 · 산전 정기 건강진단 (임신 28주 6일까지, 4주마다 1회)</tspan></text>
+<text x="476" y="349" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="349">· 2026-09-21 ~ 2027-03-15 · 인플루엔자 임신부 (2026-2027 절기)</tspan></text>
+<text x="476" y="369" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="369">· 2026-12-28 ~ 2027-02-21 · 산전 정기 건강진단 (임신 29주~36주 6일, 2주마다 1회)</tspan></text>
+<text x="476" y="389" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="389">· 2027-02-22 ~ 2027-03-15 · 산전 정기 건강진단 (임신 37주~출산예정일, 매주 1회)</tspan></text>
+<text x="476" y="409" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="409">· 2027-03-15 · B형간염 1차 (출생 시)</tspan></text>
+<text x="476" y="429" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="429">· 2027-03-15 ~ 2027-04-11 · BCG(결핵) 1차 (생후 4주 이내)</tspan></text>
+<text x="476" y="449" font-size="14" fill="#A9B4C0" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="449">· 외 21건 더 있어요(전체 일정 응답에서 확인)</tspan></text>
+<text x="476" y="487" font-size="16" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.2" font-weight="700"><tspan x="476" y="487">받을 수 있는 지원금·신청 마감</tspan></text>
+<text x="476" y="509" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="509">· 2026-06-08 ~ 2027-03-15 · 임신·출산 진료비 지원 (100만원, 임신 확인 후~출산예정일)</tspan></text>
+<text x="476" y="529" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="529">· 2027-03-15 ~ 2027-05-14 · 아동수당 신청 기한(출생월 소급 기준)</tspan></text>
+<text x="476" y="549" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="549">· 2027-03-15 ~ 2027-05-14 · 부모급여 신청 기한(출생월 소급 기준)</tspan></text>
+<text x="476" y="569" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="569">· 2027-03-15 ~ 2028-03-14 · 부모급여 0세 구간 (월 100만원)</tspan></text>
+<text x="476" y="589" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="589">· 2027-03-15 ~ 2029-03-14 · 첫만남이용권 신청 기한 (첫째 200만원)</tspan></text>
+<text x="476" y="609" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="609">· 2027-03-15 ~ 2036-03-14 · 아동수당 지급 구간 (월 10만원, 만 9세 미만, 2026년 기준)</tspan></text>
+<text x="476" y="647" font-size="16" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.2" font-weight="700"><tspan x="476" y="647">출산·육아휴직 시점</tspan></text>
+<text x="476" y="669" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="669">· 2027-01-24 ~ 2027-07-13 · 배우자 출산휴가 (유급 20일, 최대 3회 분할)</tspan></text>
+<text x="476" y="689" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="689">· 2027-03-15 · 출산전후휴가 개요 (90일)</tspan></text>
+<text x="476" y="709" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="709">· 2027-03-15 ~ 2036-03-14 · 육아휴직 개요 (자녀 만 8세 이하)</tspan></text>
+<text x="476" y="735" font-size="13" fill="#A9B4C0" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="735">요청의 &apos;직장인&apos;은 일정 계산에 쓰이지 않아요. 휴가 항목은 누구에게나 같은 일반 안내예요.</tspan></text>
+<text x="476" y="771" font-size="16" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.2" font-weight="700"><tspan x="476" y="771">확인할 곳</tspan></text>
+<text x="476" y="793" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="793">· 보건소 산전검사: 서울 성동구 보건소에 확인</tspan></text>
+<text x="476" y="813" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="813">· 어린이집 입소대기 신청 시기: 서울 성동구 시·군·구청(보육 담당) 또는 아이사랑 포털에 확인</tspan></text>
+<text x="476" y="833" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="833">· 지자체 추가 지원(출산·양육): 서울 성동구 시·군·구청·주민센터에 확인</tspan></text>
+<line x1="476" y1="875" x2="1124" y2="875" stroke="#3A4654" stroke-width="1"/>
+<text x="476" y="889" font-size="13" fill="#A9B4C0" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="889">보고서 기준일 2026-11-02(이번 달 = 2026년 11월) · 데이터 기준일 2026-10-28 · 출처: 근거 문서</tspan><tspan x="476" y="908">법령 4건 · 기관 안내 10건(목록은 일정 응답의 근거 문서에 있음)</tspan></text>
+<text x="476" y="927" font-size="13" fill="#A9B4C0" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="927">의료·법률 판단이 아닌 일반 안내예요. 진료는 의료진, 제도·기한은 관할 기관에 꼭 확인하세요.</tspan></text>
+<text x="476" y="946" font-size="13" fill="#A9B4C0" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="946">사용한 기능: 출산·육아 일정 계산(키 없이 동작)</tspan></text>
+</g>
+</svg>

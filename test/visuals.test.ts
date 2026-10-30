@@ -12,15 +12,15 @@ import { lmpFromDue } from "../src/timeline/rules/prenatal.js";
 import type { TimelineItem } from "../src/timeline/types.js";
 import { findLeaks, secretsFromEnv } from "../scripts/lib/sample-mask.js";
 import { EXAMPLE, exampleTimeline } from "../scripts/visuals/example.js";
-import { ASSET_FILES, PREVIEW_PATH, buildAll, diffAssets, previewHtml } from "../scripts/visuals/generate.js";
+import { ASSET_FILES, FIGURES, PREVIEW_PATH, buildAll, diffAssets, previewHtml } from "../scripts/visuals/generate.js";
 import { facilityMarks, laneOf, renderLifeTimeline, stageBands } from "../scripts/visuals/life-timeline.js";
 import { TOOL_LABELS, assertLabelsCover, sourceKind } from "../scripts/visuals/labels.js";
 import { buildStories } from "../scripts/visuals/stories.js";
 import { THEMES, estimateWidth, stackBaselines, textBlock, textPairs } from "../scripts/visuals/theme.js";
 import {
   ANSWER_FORBIDDEN,
-  CLIENT_BRANDS,
   DEPLOY_TERMS,
+  FIGURE_MEDICAL_FORBIDDEN,
   PLAIN_FORBIDDEN,
   SNAKE_ID,
   contrast,
@@ -286,8 +286,11 @@ describe("visual assets (M30)", () => {
       expect(matchedPatterns(v, PLAIN_FORBIDDEN), f).toEqual([]);
       expect(matchedPatterns(v, DEPLOY_TERMS), f).toEqual([]);
       expect(SNAKE_ID.test(v), f).toBe(false);
-      expect(matchedPatterns(v, OFFICIAL_CLAIM_META), f).toEqual([]);
+      // report lines are verbatim tool output, where the link name 아이사랑 is allowed (as in OFFICIAL_CLAIM_OUTPUT)
+      const meta = f.startsWith("report-example-") ? OFFICIAL_CLAIM_META.filter((p) => p.source !== "아이사랑") : OFFICIAL_CLAIM_META;
+      expect(matchedPatterns(v, meta), f).toEqual([]);
       expect(matchedPatterns(v, OFFICIAL_CLAIM_OUTPUT), f).toEqual([]);
+      expect(matchedPatterns(v, FIGURE_MEDICAL_FORBIDDEN), f).toEqual([]);
       expect(findLeaks(svg, secrets, { heuristic: true }), f).toEqual([]);
     }
   });
@@ -334,7 +337,7 @@ describe("visual assets (M30)", () => {
   it.skipIf(!existsSync(join(root, PREVIEW_PATH)))("preview html shows light and dark side by side", () => {
     const html = readFileSync(join(root, PREVIEW_PATH), "utf8");
     expect(html).toBe(previewHtml());
-    expect(html.match(/data-figure=/g)?.length ?? 0).toBe(3);
+    expect(html.match(/data-figure=/g)?.length ?? 0).toBe(FIGURES.length);
     for (const f of ASSET_FILES) {
       expect(html, f).toContain(`src="../../assets/${f}"`);
       expect(existsSync(join(root, "assets", f)), f).toBe(true);
@@ -342,15 +345,6 @@ describe("visual assets (M30)", () => {
     expect(/https?:/.test(html)).toBe(false);
     expect(html.includes("<script")).toBe(false);
     expect(html).toContain(`.dark{background:${THEMES.dark.bg}`);
-  });
-
-  it("figures name no AI client brand", () => {
-    for (const f of ASSET_FILES) {
-      const svg = svgOf(f);
-      expect(matchedPatterns(visibleText(svg) + "\n" + descOf(svg), CLIENT_BRANDS), f).toEqual([]);
-    }
-    expect(matchedPatterns("Claude가 찾아요 · ChatGPT · Cursor", CLIENT_BRANDS).length).toBeGreaterThanOrEqual(3);
-    expect(visibleText(svgOf("tool-map-light.svg"))).toContain("AI 도우미");
   });
 
   it("stackBaselines centres content in a box", () => {

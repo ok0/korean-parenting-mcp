@@ -4,6 +4,7 @@ import { allTools } from "../../src/tools/registry.js";
 import { isMainModule } from "../lib/script-io.js";
 import { exampleTimeline } from "./example.js";
 import { renderLifeTimeline } from "./life-timeline.js";
+import { buildReportModel, renderReport, reportTimeline } from "./report.js";
 import { renderStories } from "./stories.js";
 import { FONT_STACK, THEMES } from "./theme.js";
 import { renderToolMap } from "./tool-map.js";
@@ -15,21 +16,26 @@ export const ASSET_FILES = [
   "life-timeline-dark.svg",
   "question-stories-light.svg",
   "question-stories-dark.svg",
+  "report-example-light.svg",
+  "report-example-dark.svg",
 ] as const;
 
 export const FIGURES = [
   { name: "tool-map", caption: "한 장 지도" },
   { name: "life-timeline", caption: "생애 타임라인" },
   { name: "question-stories", caption: "질문 따라가기" },
+  { name: "report-example", caption: "한 장 보고서 예시" },
 ] as const;
 
 export function buildAll(): Record<string, string> {
   const t = exampleTimeline();
+  const report = buildReportModel(reportTimeline());
   const rendered: Record<string, string> = {};
   for (const theme of [THEMES.light, THEMES.dark]) {
     rendered[`tool-map-${theme.name}.svg`] = renderToolMap(allTools, theme);
     rendered[`life-timeline-${theme.name}.svg`] = renderLifeTimeline(t, theme);
     rendered[`question-stories-${theme.name}.svg`] = renderStories(allTools, t, theme);
+    rendered[`report-example-${theme.name}.svg`] = renderReport(report, theme);
   }
   const out: Record<string, string> = {};
   for (const f of ASSET_FILES) {

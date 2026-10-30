@@ -147,3 +147,31 @@ export function contrast(a: string, b: string): number {
 export function isoDates(s: string): string[] {
   return s.match(/\d{4}-\d{2}-\d{2}/g) ?? [];
 }
+
+/** R8(M30b): 모든 그림 가시 글. '건강진단'은 도구 항목 제목이라 허용 */
+export const FIGURE_MEDICAL_FORBIDDEN: readonly RegExp[] = [
+  /(?<!건강)진단/,
+  /처방/,
+  /복용/,
+  /투약/,
+  /해열제/,
+  /\d+\s*(mg|ml|㎎|㎖)/i,
+  /먹이|드시|드세/,
+];
+
+export function flatText(svg: string): string {
+  return textElements(svg).map((e) => e.lines.join(" ")).join("\n");
+}
+
+export function descText(svg: string): string {
+  const m = /<desc id="desc">([\s\S]*?)<\/desc>/.exec(svg);
+  return m ? unescapeXml(m[1] ?? "") : "";
+}
+
+export function htmlText(html: string): string {
+  const stripped = html
+    .replace(/<script\b[\s\S]*?<\/script>/gi, "")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, "")
+    .replace(/<!--[\s\S]*?-->/gi, "");
+  return unescapeXml(stripped.replace(/<[^>]*>/g, " "));
+}
