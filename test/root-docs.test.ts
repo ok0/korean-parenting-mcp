@@ -2,53 +2,34 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { KEY_ENV } from "../src/core/config.js";
-import { allTools } from "../src/tools/registry.js";
 import { findLeaks } from "../scripts/lib/sample-mask.js";
 import { ASSET_FILES } from "../scripts/visuals/generate.js";
 import { RAW_ASSET_PREFIX, assetPairs } from "../scripts/visuals/readme-figures.js";
+import { DOC_PAGES, DOCS_BLOB, MCPB_URL, docUrl } from "../scripts/docs/links.js";
 import { readmeIntro } from "./helpers/visuals.js";
 import { OFFICIAL_CLAIM_OUTPUT, matchedPatterns } from "./helpers/wording.js";
+import {
+  LINK_BLOCK_LAST_LINE,
+  MCPB_DOWNLOAD_LABEL,
+  ONE_LINER,
+  PAGES_URL,
+  README_MAX_LINES,
+  expectedLinkBlock,
+  lineCount,
+  linkBlock,
+  readmeProblems,
+} from "./helpers/readme.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const readme = readFileSync(join(root, "README.md"), "utf8");
 const license = readFileSync(join(root, "LICENSE"), "utf8");
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as { description: string };
-const ONE_LINER = "한국 임신·출산·육아 정보 MCP 서버";
-const ADV = "## 선택·고급 기능";
-const row = (name: string): string =>
-  readme.split("\n").find((l) => l.startsWith("| `" + name + "` |")) ?? "";
-const rowIdx = (name: string): number => readme.indexOf("| `" + name + "` |");
 
 describe("root documents", () => {
   it("LICENSE is MIT with copyright", () => {
     expect(license.split("\n")[0]).toBe("MIT License");
     expect(license).toMatch(/Copyright \(c\) 2026 ok0/);
     expect(license).toContain("Permission is hereby granted");
-  });
-
-  it("README covers minimum content", () => {
-    for (const phrase of [
-      "비공식",
-      "의료",
-      "법률",
-      "npx -y korean-parenting-mcp",
-      "npx -y korean-parenting-mcp setup",
-      "get_timeline",
-      "Linux",
-      "0600",
-    ]) {
-      expect(readme, phrase).toContain(phrase);
-    }
-    for (const name of Object.values(KEY_ENV)) {
-      expect(readme, name).toContain(name);
-    }
-  });
-
-  it("README describes mcpb install", () => {
-    for (const phrase of ["npm run pack:mcpb", ".mcpb", "선택 사항", "민감 정보"]) {
-      expect(readme, phrase).toContain(phrase);
-    }
   });
 
   it("README is self-contained and not official-sounding", () => {
@@ -63,63 +44,68 @@ describe("root documents", () => {
     expect(pkg.description).toContain("비공식");
   });
 
-  it("keyless features come before the optional advanced section", () => {
-    const adv = readme.indexOf(ADV);
-    expect(adv).toBeGreaterThan(0);
-    expect(readme.indexOf("## 키 없이 쓰는 기능")).toBeGreaterThanOrEqual(0);
-    expect(readme.indexOf("## 키 없이 쓰는 기능")).toBeLessThan(adv);
-    expect(readme.indexOf("get_timeline")).toBeLessThan(adv);
-    for (const env of Object.values(KEY_ENV)) {
-      expect(readme.indexOf(env), env).toBeGreaterThan(adv);
-    }
-  });
-
-  it("tool table lists every tool, keyless first", () => {
-    const adv = readme.indexOf(ADV);
-    for (const t of allTools) {
-      expect(rowIdx(t.name), t.name).toBeGreaterThanOrEqual(0);
-      if (t.requiredKeys?.length) {
-        expect(rowIdx(t.name), t.name).toBeGreaterThan(adv);
-      } else {
-        expect(rowIdx(t.name), t.name).toBeLessThan(adv);
-      }
-    }
-    expect(row("check_recall")).toContain("(i) ");
-    expect(row("check_recall")).not.toContain("(ii)");
-    expect(row("find_daycare")).toContain("(iii)");
-    expect(row("find_vaccination_clinic")).toContain("(iii)");
-    expect(row("find_checkup_clinic")).toContain("(iii)");
-    expect(row("find_kindergarten")).toContain("(i)");
-    for (const legend of ["(i) ", "(ii) ", "(iii) "]) {
-      expect(readme, legend).toContain(legend);
-    }
-  });
-
-  it("advanced section is a self-contained key guide", () => {
-    const guide = readme.slice(readme.indexOf(ADV));
-    for (const phrase of [
-      "https://www.data.go.kr",
-      "Decoding",
-      "활용신청",
-      "15000736",
-      "15113968",
-      "15059486",
-      "15012690",
-      "https://e-childschoolinfo.moe.go.kr",
-      "https://open.law.go.kr",
-      "IP",
-      "https://www.safetykorea.kr",
-      "safetykorea@korea.kr",
-      "AuthKey",
-    ]) {
-      expect(guide, phrase).toContain(phrase);
-    }
-  });
-
   it("no remote mode and no key-like strings", () => {
     expect(readme).not.toMatch(/원격|remote|Streamable/i);
     expect(findLeaks(readme, [], { heuristic: true })).toEqual([]);
     expect(findLeaks(license, [], { heuristic: true })).toEqual([]);
+  });
+
+  it("README follows the lean layout (M39 R1–R13)", () => {
+    expect(readmeProblems(readme)).toEqual([]);
+    expect(lineCount(readme)).toBeLessThanOrEqual(README_MAX_LINES);
+  });
+
+  it("link block lines come from DOC_PAGES within the top 25 lines (ADR-51)", () => {
+    const b = linkBlock(readme);
+    expect(b).not.toBeNull();
+    expect(b?.end ?? 99).toBeLessThanOrEqual(LINK_BLOCK_LAST_LINE);
+    expect(b?.lines).toEqual(expectedLinkBlock());
+    expect(b?.lines[0]).toBe(`처음이라면 → [${DOC_PAGES[0]?.title}](${docUrl("docs/start.md")})`);
+    for (const p of DOC_PAGES) {
+      if (p.id === "index") continue;
+      expect(readme, p.id).toContain(`[${p.title}](${docUrl(p.path)}) — ${p.summary}`);
+    }
+    expect(readme).toContain(`    - [${MCPB_DOWNLOAD_LABEL}](${MCPB_URL})`);
+    expect(MCPB_DOWNLOAD_LABEL).not.toContain(".mcpb");
+    expect(readme).not.toContain(docUrl("docs/README.md"));
+  });
+
+  it("synthetic violations fail (R14)", () => {
+    const L = readme.split("\n");
+    const swap = (a: string, b: string): string => {
+      const ia = L.findIndex((l) => l.includes(docUrl(a)));
+      const ib = L.findIndex((l) => l.includes(docUrl(b)));
+      const out = [...L];
+      out[ia] = L[ib] ?? "";
+      out[ib] = L[ia] ?? "";
+      return out.join("\n");
+    };
+    const cases: [string, string, string][] = [
+      ["81행", readme + "추가 줄\n".repeat(README_MAX_LINES + 1 - lineCount(readme)), "행 이하여야 함"],
+      ["금지 제목", readme.replace("## 라이선스", "### 설치와 실행\n\n## 라이선스"), "금지 제목"],
+      [
+        "순서 위반",
+        readme.replace("## 그림으로 보기", "## @@").replace("## 라이선스", "## 그림으로 보기").replace("## @@", "## 라이선스"),
+        "제목 구성이 다름",
+      ],
+      ["상대 docs 링크", readme.replace(`](${docUrl("docs/keyless.md")})`, "](docs/keyless.md)"), "허용되지 않는 링크: docs/keyless.md"],
+      [".docs 링크", readme.replace(`](${docUrl("docs/advanced.md")})`, `](${DOCS_BLOB}.docs/notes.md)`), ".docs/ 링크"],
+      ["http 스킴", readme.replace(`](${PAGES_URL})`, "](http://ok0.github.io/korean-parenting-mcp/)"), "허용되지 않는 링크: http://"],
+      ["배지 이미지", readme.replace(`**${ONE_LINER}**`, `**${ONE_LINER}**\n\n![상태](https://img.shields.io/badge/a-b-blue)`), "마크다운 이미지"],
+      ["(ii) 표기", readme.replace("## 그림으로 보기", "- (ii) 모의 응답으로만 검증\n\n## 그림으로 보기"), "(i)/(ii)/(iii)"],
+      ["25행 밖", readme.replace(`**${ONE_LINER}**\n`, `**${ONE_LINER}**\n` + "소개 줄\n".repeat(10)), "행 밖에서 끝남"],
+      ["항목 누락", L.filter((l) => !l.includes(docUrl("docs/keyless.md"))).join("\n"), "DOC_PAGES와 다름"],
+      ["순서 변경", swap("docs/setup-wizard.md", "docs/clients/README.md"), "DOC_PAGES와 다름"],
+      ["라벨에 .mcpb", readme.replace(`[${MCPB_DOWNLOAD_LABEL}]`, "[korean-parenting-mcp.mcpb 내려받기]"), "DOC_PAGES와 다름"],
+      ["처음이라면 두 줄", readme.replace("## 그림으로 보기", "처음이라면 여기부터 읽으세요.\n\n## 그림으로 보기"), '"처음이라면"으로 시작하는 줄이 2개'],
+      ["고지 없음", L.filter((l) => !l.includes("**비공식**")).join("\n"), "비공식 고지 없음"],
+      ["공식 주장", readme.replace("## 라이선스", "정부 공식 서버입니다.\n\n## 라이선스"), "공식 주장 표현"],
+      ["MIT 없음", readme.replace("MIT — ", ""), "MIT 없음"],
+    ];
+    for (const [name, sample, sub] of cases) {
+      expect(sample, name).not.toBe(readme);
+      expect(readmeProblems(sample).some((p) => p.includes(sub)), name).toBe(true);
+    }
   });
 });
 
@@ -168,10 +154,19 @@ describe("README figures (M31)", () => {
     }
   });
 
-  it("README intro (top to install heading) mentions the AI helper and claims nothing official", () => {
+  it("README intro (top to the link block) mentions the AI helper and claims nothing official", () => {
     const intro = readmeIntro(readme);
     expect(intro).toContain("AI 도우미");
     expect(matchedPatterns(intro, OFFICIAL_CLAIM_OUTPUT)).toEqual([]);
+  });
+
+  it("figures sit under ## 그림으로 보기 before the license", () => {
+    const fig = readme.indexOf("## 그림으로 보기");
+    const lic = readme.indexOf("## 라이선스");
+    const pic = readme.indexOf("<picture>");
+    expect(fig).toBeGreaterThanOrEqual(0);
+    expect(pic).toBeGreaterThan(fig);
+    expect(readme.lastIndexOf("</picture>")).toBeLessThan(lic);
   });
 });
 

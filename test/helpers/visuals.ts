@@ -54,12 +54,12 @@ export const CLIENT_BRANDS: readonly RegExp[] = [
   /Windsurf/i,
 ];
 
-/** README 설치 안내 구획의 시작 제목(소개부 경계, R5·ADR-43 단일 기준). */
-export const INSTALL_HEADING = "## 설치와 실행";
+/** README 소개부 경계: 첫 줄부터 링크 블록 제목 직전까지(M39, ADR-49·ADR-51). */
+export const LINK_BLOCK_HEADING = "## 바로가기";
 
 export function readmeIntro(readme: string): string {
-  const i = readme.indexOf(INSTALL_HEADING);
-  if (i < 0) throw new Error(`README에 ${INSTALL_HEADING} 제목이 없습니다`);
+  const i = readme.indexOf(LINK_BLOCK_HEADING);
+  if (i < 0) throw new Error(`README에 ${LINK_BLOCK_HEADING} 제목이 없습니다`);
   return readme.slice(0, i);
 }
 

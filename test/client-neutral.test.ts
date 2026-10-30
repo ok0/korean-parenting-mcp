@@ -2,8 +2,10 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { DESKTOP_APP_NAME } from "../scripts/docs/links.js";
 import { ASSET_FILES, buildAll } from "../scripts/visuals/generate.js";
-import { CLIENT_BRANDS, descText, htmlText, readmeIntro, visibleText } from "./helpers/visuals.js";
+import { CLIENT_BRANDS, descText, htmlText, visibleText } from "./helpers/visuals.js";
+import { MCPB_DOWNLOAD_LABEL, mcpbLinkLine, readmeBrandProblems } from "./helpers/readme.js";
 import { matchedPatterns } from "./helpers/wording.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -11,8 +13,11 @@ const readme = readFileSync(join(root, "README.md"), "utf8");
 const built = buildAll();
 
 describe("client-neutral wording (M30b)", () => {
-  it("README intro names no AI product", () => {
-    expect(matchedPatterns(readmeIntro(readme), CLIENT_BRANDS)).toEqual([]);
+  it("README names no AI product except the one desktop-app link line (ADR-49, ADR-51)", () => {
+    expect(readmeBrandProblems(readme)).toEqual([]);
+    expect(mcpbLinkLine()).toContain(DESKTOP_APP_NAME);
+    expect(readme.split("\n").filter((l) => CLIENT_BRANDS.some((r) => r.test(l)))).toEqual([mcpbLinkLine()]);
+    expect(readme).not.toMatch(/\((?:i|ii|iii)\)/);
   });
 
   it("every figure names no AI product in visible text or description", () => {
@@ -31,7 +36,14 @@ describe("client-neutral wording (M30b)", () => {
   });
 
   it("the check catches a product name", () => {
-    expect(matchedPatterns(readmeIntro("# t\nChatGPT에서 써 보세요\n## 설치와 실행\nClaude Desktop"), CLIENT_BRANDS)).toHaveLength(1);
+    expect(readmeBrandProblems("# t\nChatGPT에서 써 보세요\n")).toEqual(["README:2 ChatGPT에서 써 보세요"]);
+    const second = readme.replace("# korean-parenting-mcp\n", `# korean-parenting-mcp\n${DESKTOP_APP_NAME}에서 써 보세요.\n`);
+    expect(readmeBrandProblems(second)).toEqual([`README:2 ${DESKTOP_APP_NAME}에서 써 보세요.`]);
+    const label = readme.replace(`[${MCPB_DOWNLOAD_LABEL}]`, `[${DESKTOP_APP_NAME} 설치 파일]`);
+    expect(readmeBrandProblems(label)).toHaveLength(1);
+    const dup = readme + "\n" + mcpbLinkLine() + "\n";
+    expect(readmeBrandProblems(dup)).toHaveLength(1);
+    expect(readme.replace("## 라이선스", "- (ii) 모의 응답\n\n## 라이선스")).toMatch(/\((?:i|ii|iii)\)/);
     expect(
       matchedPatterns(htmlText('<style>a{cursor:pointer}</style><p class="cursor">Claude가 찾아요</p>'), CLIENT_BRANDS),
     ).toEqual(["Claude"]);
