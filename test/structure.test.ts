@@ -3,6 +3,7 @@ import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { VERSION } from "../src/version.js";
+import { docsDirViolations } from "./helpers/root-docs.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
@@ -163,7 +164,7 @@ describe("project structure", () => {
         /^(LICEN[CS]E|COPYING|NOTICE|CHANGELOG|AUTHORS|CONTRIBUTING)(\.|$)/i.test(n),
     );
     expect(docs.sort()).toEqual(["LICENSE", "README.md"]);
-    expect(existsSync(join(root, "docs"))).toBe(false);
+    expect(docsDirViolations(root)).toEqual([]);
   });
 
   it("package metadata for publishing", () => {
