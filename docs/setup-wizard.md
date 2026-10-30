@@ -26,7 +26,7 @@ Claude 데스크톱 앱의 설정 파일 위치입니다.
   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
   - Linux: `~/.config/Claude/claude_desktop_config.json`
-  - Linux 경로는 미검증입니다.
+  - Linux 경로는 아직 직접 확인하지 못했어요.
 
 ## 네트워크
 

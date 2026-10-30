@@ -248,7 +248,7 @@ export function mcpbDocProblems(md: string): string[] {
   if (!["Pre-release", "시험판", "`main`"].every((t) => body.includes(t))) {
     problems.push("mcpb.md 첫 구획에 Pre-release/시험판/`main` 안내 없음");
   }
-  if (!body.includes("다시 받아") || !body.includes("미검증")) problems.push("mcpb.md 첫 구획에 재내려받기·미검증 안내 없음");
+  if (!body.includes("다시 받아") || !body.includes("확인하지 못했어요")) problems.push("mcpb.md 첫 구획에 재내려받기·재확인 안 된 부분 안내 없음");
   const dev = sections.find((s) => s.text.startsWith("개발자 빌드"));
   if (!dev || sections.indexOf(dev) === 0) problems.push("mcpb.md 개발자 빌드 구획 없음 또는 첫 구획");
   else {

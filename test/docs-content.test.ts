@@ -90,7 +90,7 @@ const MOVED_PHRASES: Record<string, readonly string[]> = {
     "앞 4자와 길이",
     "0600",
     "프로세스 목록",
-    "Linux 경로는 미검증",
+    "Linux 경로는 아직 직접 확인하지 못했어요",
     "네트워크 호출을 하지 않습니다",
   ],
   "docs/mcpb.md": ["모두 선택 사항", "민감 정보로 저장", "수동 점검 단계"],
