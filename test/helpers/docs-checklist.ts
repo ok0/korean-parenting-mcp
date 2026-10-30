@@ -208,6 +208,7 @@ export function startDocProblems(md: string): string[] {
     [/빌드\s*커밋/.test(md), "빌드 커밋"],
     [/\.mcpb/.test(md), ".mcpb"],
     [md.includes("Claude Desktop"), "Claude Desktop"],
+    [/준비\s*중/.test(md), "준비 중"],
   ];
   for (const [hit, label] of forbidden) if (hit) problems.push(`금지 표현: ${label}`);
   const targets = new Set(extractLinks(md).map((l) => l.url));
@@ -221,11 +222,41 @@ export function startDocProblems(md: string): string[] {
   const easy = sections.find((s) => s.text === "가장 쉬운 길: " + DESKTOP_APP_NAME);
   const easyLines = easy?.body.split("\n") ?? [];
   if (!easyLines.some((l) => /^\d+\.\s/.test(l))) problems.push("가장 쉬운 길: 번호 목록 없음");
-  if (!easyLines.some((l) => l.includes("준비 중이면") && l.includes("](mcpb.md)"))) {
-    problems.push("가장 쉬운 길: 준비 중 안내 링크 없음");
-  }
+  if (!easyLines.some((l) => /^\d+\.\s/.test(l) && l.includes("](mcpb.md)"))) problems.push("가장 쉬운 길: mcpb.md 안내 링크 없음");
   const stuck = sections.find((s) => s.text === "막히면");
   if (!stuck?.body.includes("두 번")) problems.push("막히면: '두 번' 경고 없음");
+  return problems;
+}
+
+export const MCPB_FIRST_SECTION = "내려받아 설치하기";
+
+export function mcpbDocProblems(md: string): string[] {
+  const problems: string[] = [];
+  const sections = level2Sections(md);
+  const first = sections[0];
+  if (first?.text !== MCPB_FIRST_SECTION) problems.push("mcpb.md 첫 ## 구획이 '내려받아 설치하기'가 아님");
+  const body = first?.body ?? "";
+  if (!body.includes("](" + MCPB_URL + ")")) problems.push("mcpb.md 첫 구획에 MCPB_URL 내려받기 링크 없음");
+  if (!["터미널", "Node.js", "필요 없어요"].every((t) => body.includes(t))) {
+    problems.push("mcpb.md 첫 구획에 '터미널/Node.js/필요 없어요' 안내 없음");
+  }
+  const numbered = body.split("\n").filter((l) => /^\d+\.\s/.test(l));
+  if (numbered.length < 3 || !numbered.some((l) => l.includes(DESKTOP_APP_NAME))) {
+    problems.push("mcpb.md 첫 구획 번호 목록(3개 이상, 앱 이름 포함) 없음");
+  }
+  if (!body.includes("모두 선택") || !body.includes("민감 정보")) problems.push("mcpb.md 첫 구획에 API 키 선택·민감 정보 안내 없음");
+  if (!["Pre-release", "시험판", "`main`"].every((t) => body.includes(t))) {
+    problems.push("mcpb.md 첫 구획에 Pre-release/시험판/`main` 안내 없음");
+  }
+  if (!body.includes("다시 받아") || !body.includes("미검증")) problems.push("mcpb.md 첫 구획에 재내려받기·미검증 안내 없음");
+  const dev = sections.find((s) => s.text.startsWith("개발자 빌드"));
+  if (!dev || sections.indexOf(dev) === 0) problems.push("mcpb.md 개발자 빌드 구획 없음 또는 첫 구획");
+  else {
+    if (!dev.text.includes("선택")) problems.push("mcpb.md 개발자 빌드 구획 제목에 '선택' 없음");
+    if (!dev.body.includes("npm run pack:mcpb")) problems.push("mcpb.md 개발자 빌드 구획에 npm run pack:mcpb 없음");
+  }
+  if (/준비\s*중|올릴\s*예정|게시\s*전/.test(md)) problems.push("mcpb.md에 준비 중/예정/게시 전 표현");
+  if (/토큰|수동으로\s*(올리|업로드)/.test(md)) problems.push("mcpb.md에 토큰/수동 업로드 표현");
   return problems;
 }
 

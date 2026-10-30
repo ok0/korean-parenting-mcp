@@ -18,6 +18,7 @@ import {
   firstLineAfterNotice,
   indexListLines,
   level2Sections,
+  mcpbDocProblems,
   missingTokens,
   proseText,
   startDocProblems,
@@ -189,6 +190,7 @@ describe("public docs content (M35)", () => {
     expect(startDocProblems(start)).toEqual([]);
     expect(startDocProblems(start + "\n```\nnpx -y x\n```\n" + MCPB_URL).length).toBeGreaterThanOrEqual(3);
     expect(startDocProblems(start.replace("## 막히면", "## 기타")).length).toBeGreaterThan(0);
+    expect(startDocProblems(start + "\n준비 중\n")).toContain("금지 표현: 준비 중");
   });
 
   it("install.md picks one (R7)", () => {
@@ -252,11 +254,18 @@ describe("public docs content (M35)", () => {
     expect(brandExclusiveProblems("docs/clients/x.md", "Cursor 설정 파일")).toEqual([]);
   });
 
-  it("mcpb.md links MCPB_URL without asserting unpublished behaviour (R10)", () => {
-    const mcpb = read("docs/mcpb.md");
-    expect(mcpb).toContain(MCPB_URL);
-    expect(mcpb).toContain("예정");
-    expect(mcpb).not.toMatch(/pre-?release/i);
+  it("mcpb.md download section is the single source (M38 R8–R11)", () => {
+    const md = read("docs/mcpb.md");
+    expect(mcpbDocProblems(md)).toEqual([]);
+    const samples = [
+      md.replace("## 내려받아 설치하기", "## 내려받기"),
+      md.replaceAll(MCPB_URL, "https://example.com/x"),
+      md.replaceAll("Pre-release", ""),
+      md + "\n준비 중입니다.\n",
+      md.replace("## 개발자 빌드로 설치(선택)", "## 개발자 빌드로 설치"),
+    ];
+    for (const s of samples) expect(mcpbDocProblems(s).length).toBeGreaterThan(0);
+    for (const f of docFiles) expect(read(f), f).not.toMatch(/준비\s*중/);
   });
 
   it("status badges and legend (R11)", () => {

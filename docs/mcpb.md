@@ -6,11 +6,23 @@
 
 Claude 데스크톱 앱에서는 파일 하나(`.mcpb` 확장 파일)로 설치할 수 있습니다.
 
-## 미리 만든 파일(준비 중)
+## 내려받아 설치하기
 
-미리 만든 설치 파일(`korean-parenting-mcp.mcpb`)은 [이 주소](https://github.com/ok0/korean-parenting-mcp/releases/download/mcpb-latest/korean-parenting-mcp.mcpb)에 올릴 예정입니다. 아직 게시 전이므로 지금은 아래 개발자 빌드로 만들어 설치하세요.
+터미널이나 Node.js는 필요 없어요. 파일 하나만 내려받아 열면 돼요.
 
-## 개발자 빌드로 설치
+1. [설치 파일 내려받기](https://github.com/ok0/korean-parenting-mcp/releases/download/mcpb-latest/korean-parenting-mcp.mcpb)를 눌러 파일 하나(`korean-parenting-mcp.mcpb`)를 받으세요.
+2. Claude 데스크톱 앱을 켜 둔 채로 받은 파일을 여세요. 파일을 두 번 누르면 돼요.
+3. Claude 데스크톱 앱에 설치 화면이 나오면 안내에 따라 설치를 마치세요.
+4. API 키 입력 칸 4개는 모두 선택이에요. 비워 둬도 키 없이 쓰는 기능은 바로 동작하고, 입력한 값은 민감 정보로 가려서 처리돼요.
+5. Claude 데스크톱 앱을 완전히 닫았다가 다시 여세요.
+
+내려받는 화면에 "Pre-release"라는 표시가 붙어 있을 수 있어요. 시험판이라는 딱지일 뿐이에요. 이 파일은 저장소의 최신 상태(`main`)가 바뀔 때마다 자동으로 새로 만들어 올라오는 것이고, 정식 버전 번호를 따로 발표한 것은 아니에요. 어떤 커밋으로 만들었는지는 그 화면의 설명에 적혀 있어요.
+
+새 파일로 바꾸고 싶으면 같은 주소에서 다시 받아 같은 방법으로 여세요. 이미 설치된 상태에서 Claude 데스크톱 앱이 새 파일을 어떻게 처리하는지는 아직 확인하지 못했어요(미검증).
+
+## 개발자 빌드로 설치(선택)
+
+직접 만들어 쓰려는 개발자만 보세요. 위에서 내려받아 설치했다면 건너뛰어도 돼요.
 
 1. 저장소를 내려받아 `npm ci` 후 `npm run pack:mcpb`를 실행하면 `build-mcpb/korean-parenting-mcp.mcpb`가 만들어집니다.
 2. Claude 데스크톱 앱에서 이 파일을 열어 설치합니다.
