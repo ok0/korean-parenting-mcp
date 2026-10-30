@@ -1,4 +1,4 @@
-import { ToolError } from "../core/errors.js";
+import { ToolError } from "../core/tool-error.js";
 import { compare, daysBetween, parseDate, type CivilDate } from "../date/civil-date.js";
 import type { TimelineMode } from "./types.js";
 
