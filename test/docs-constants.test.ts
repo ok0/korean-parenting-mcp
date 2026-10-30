@@ -134,6 +134,7 @@ describe("docs link constants (M34)", () => {
     expect(claudeCode?.format).toBe("cli");
     expect(claudeCode?.wrapper).toBeNull();
     expect(byId("claude-desktop")?.name).toBe(DESKTOP_APP_NAME);
-    for (const p of CLIENT_PAGES) expect(p.required, p.id).toBe(true);
+    for (const p of CLIENT_PAGES) expect(p.required, p.id).toBe(p.id !== "others");
+    expect(byId("others")).toEqual({ id: "others", path: "docs/clients/others.md", name: "그 밖의 AI 앱", format: "json", wrapper: null, typeField: "forbidden", required: false });
   });
 });

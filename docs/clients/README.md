@@ -21,5 +21,6 @@ Claude 데스크톱 앱이면 [파일 하나로 설치하는 편이 쉬워요](.
 | Codex | `~/.codex/config.toml` | TOML(`[mcp_servers.korean-parenting]`) | 공식 문서 근거 | [Codex 연결 안내](codex.md) |
 | Claude 데스크톱 앱 | `claude_desktop_config.json` | JSON(`mcpServers`) | 공식 문서 근거 | [Claude 데스크톱 앱 연결 안내](claude-desktop.md) |
 | Claude Code | `claude mcp add` 명령 | 명령 한 줄 | 공식 문서 근거 | [Claude Code 연결 안내](claude-code.md) |
+| 그 밖의 AI 앱 | Windsurf·Zed·JetBrains 각 앱 설정 | JSON(앱마다 다름) | 미검증 | [그 밖의 AI 앱 안내](others.md) |
 
 ChatGPT 등 원격 MCP만 받는 앱은 로컬 서버를 직접 추가할 수 없어요. 원격 모드를 제공한 뒤 안내할 예정이에요.

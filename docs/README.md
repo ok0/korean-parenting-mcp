@@ -17,4 +17,5 @@
     - [Codex](clients/codex.md) — Codex 설정 파일(TOML)에 서버를 추가해요
     - [Claude 데스크톱 앱](clients/claude-desktop.md) — 설정 파일을 직접 고쳐서 서버를 추가해요
     - [Claude Code](clients/claude-code.md) — 명령 한 줄로 서버를 등록해요
+    - [그 밖의 AI 앱](clients/others.md) — 공식 문서만 보고 정리한 안내예요(미검증)
 - [API 키로 기능 더하기(선택)](advanced.md) — 야간 진료기관·리콜 조회처럼 키가 필요한 기능과 키 발급 방법

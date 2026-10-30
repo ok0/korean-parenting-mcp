@@ -216,7 +216,7 @@ describe("public docs content (M35)", () => {
     const top = listed.filter((l) => !CLIENT_LIST_LINE.test(l));
     expect(top).toEqual(indexListLines(DOC_PAGES, (p) => posix.relative("docs", p.path)));
     const sub = listed.filter((l) => CLIENT_LIST_LINE.test(l));
-    const prefixes = CLIENT_PAGES.filter((p) => p.required).map(
+    const prefixes = CLIENT_PAGES.map(
       (p) => "    - [" + p.name + "](" + posix.relative("docs", p.path) + ") — ",
     );
     expect(sub.length).toBe(prefixes.length);

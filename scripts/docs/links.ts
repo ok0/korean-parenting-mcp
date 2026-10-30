@@ -40,4 +40,5 @@ export const CLIENT_PAGES: readonly ClientPage[] = [
   { id: "codex", path: "docs/clients/codex.md", name: "Codex", format: "toml", wrapper: "mcp_servers", typeField: "any", required: true },
   { id: "claude-desktop", path: "docs/clients/claude-desktop.md", name: DESKTOP_APP_NAME, format: "json", wrapper: "mcpServers", typeField: "any", required: true },
   { id: "claude-code", path: "docs/clients/claude-code.md", name: "Claude Code", format: "cli", wrapper: null, typeField: "any", required: true },
+  { id: "others", path: "docs/clients/others.md", name: "그 밖의 AI 앱", format: "json", wrapper: null, typeField: "forbidden", required: false },
 ];

@@ -292,7 +292,7 @@ function clientsIndexProblems(md: string, levels: Map<string, string>): string[]
 
   const rows = tableRows(md);
   if (!isDeepStrictEqual(rows[0], ["앱", "설정 위치", "형식", "확인 수준", "문서"])) out.push("표 머리글 불일치");
-  for (const p of CLIENT_PAGES.filter((c) => c.required)) {
+  for (const p of CLIENT_PAGES) {
     const rel = posix.relative("docs/clients", p.path);
     const row = rows.find((r) => extractLinks(r[4] ?? "").some((l) => l.url === rel));
     if (!row) {
@@ -305,6 +305,75 @@ function clientsIndexProblems(md: string, levels: Map<string, string>): string[]
 
   const last = lines.filter((l) => l.trim() !== "").at(-1) ?? "";
   if (!last.includes("ChatGPT") || !last.includes("원격")) out.push("마지막 줄 ChatGPT·원격 문구 없음");
+  return out;
+}
+
+const OTHERS: readonly { heading: string; wrapper: string | null }[] = [
+  { heading: "Windsurf", wrapper: "mcpServers" },
+  { heading: "Zed", wrapper: "context_servers" },
+  { heading: "JetBrains AI Assistant", wrapper: null },
+];
+const OTHERS_REASON = "미검증인 이유: ";
+
+function othersProblems(md: string): string[] {
+  const out: string[] = [];
+  const lines = md.split(/\r?\n/);
+  const title = lines[0] ?? "";
+  if (!title.startsWith("# ") || !title.includes(pageOf("others").name)) out.push("제목 불일치");
+  const first = firstLineAfterNotice(md) ?? "";
+  if (!first.includes("](../install.md)")) out.push("뒤로 링크 없음");
+  if (!lines.some((l) => /두 번 등록/.test(l))) out.push("중복 등록 안내 없음");
+
+  const sections = level2Sections(md);
+  if (!isDeepStrictEqual(sections.map((s) => s.text), [...OTHERS.map((o) => o.heading), "연결 확인"])) out.push("섹션 목록 불일치");
+  if (lines.filter((l) => LEVEL_LINE.test(l)).length !== OTHERS.length) out.push("확인 수준 줄 개수 불일치");
+
+  for (const o of OTHERS) {
+    const body = sections.find((s) => s.text === o.heading)?.body ?? "";
+    const bodyLines = body.split(/\r?\n/);
+    const levels = bodyLines.filter((l) => LEVEL_LINE.test(l));
+    if (levels.length !== 1 || levels[0] !== "확인 수준: 미검증") out.push(`${o.heading}: 확인 수준 줄 오류`);
+    const reasons = bodyLines.filter((l) => l.startsWith(OTHERS_REASON));
+    if (reasons.length !== 1 || (reasons[0] ?? "").slice(OTHERS_REASON.length).length < 10) out.push(`${o.heading}: 미검증인 이유 오류`);
+    if (!body.includes("https://")) out.push(`${o.heading}: 출처 링크 없음`);
+    const blocks = codeBlocks(body);
+    if (blocks.length !== 1 || blocks[0]?.lang !== "json") {
+      out.push(`${o.heading}: 코드 블록 오류`);
+      continue;
+    }
+    try {
+      const doc = JSON.parse(blocks[0]?.body ?? "") as Record<string, unknown>;
+      let entry: unknown = doc;
+      if (o.wrapper !== null) {
+        if (!isDeepStrictEqual(Object.keys(doc), [o.wrapper])) throw new Error("wrapper");
+        const servers = doc[o.wrapper];
+        if (typeof servers !== "object" || servers === null || Array.isArray(servers)) throw new Error("wrapper");
+        if (!isDeepStrictEqual(Object.keys(servers), [SERVER_NAME])) throw new Error("server key");
+        entry = (servers as Record<string, unknown>)[SERVER_NAME];
+      }
+      if (typeof entry !== "object" || entry === null) throw new Error("entry");
+      const e = entry as Record<string, unknown>;
+      if (!Object.keys(e).every((k) => k === "command" || k === "args")) out.push(`${o.heading}: 허용되지 않은 항목`);
+      if (e.command !== RUN.command) out.push(`${o.heading}: 실행 명령 불일치`);
+      if (!isDeepStrictEqual(e.args, [...RUN.args])) out.push(`${o.heading}: 실행 인자 불일치`);
+    } catch {
+      out.push(`${o.heading}: JSON 해석 오류`);
+    }
+  }
+
+  const connection = sections.find((s) => s.text === "연결 확인")?.body ?? "";
+  if (!connection.includes("get_timeline")) out.push("연결 확인 문구 없음");
+  lines.forEach((l, i) => {
+    if (/(직접|실제로)\s*(연결|설치)해\s*(확인했|봤|보았)/.test(l)) out.push(`${i + 1}행: 실제 연결 확인 주장`);
+  });
+
+  const bodyOf = (heading: string): string => sections.find((s) => s.text === heading)?.body ?? "";
+  const windsurf = bodyOf("Windsurf");
+  if (!windsurf.includes("~/.codeium/windsurf/mcp_config.json") || !windsurf.split(/\r?\n/).some((l) => l.includes("다른 사람이 쓴"))) {
+    out.push("Windsurf 출처 문구 없음");
+  }
+  if (!bodyOf("Zed").includes("context_servers")) out.push("Zed 설정 키 문구 없음");
+  if (!bodyOf("JetBrains AI Assistant").includes("Model Context Protocol (MCP)")) out.push("JetBrains 메뉴 문구 없음");
   return out;
 }
 
@@ -500,5 +569,24 @@ describe("client docs (M36)", () => {
       ),
     ).not.toEqual([]);
     expect(clientsIndexProblems(readme.replace(/^ChatGPT 등[^\n]*$/m, "ChatGPT에서도 돼요"), levels)).not.toEqual([]);
+  });
+
+  it("others page lists unverified apps (M37 AC3, AC4)", () => {
+    expect(othersProblems(read(pageOf("others").path))).toEqual([]);
+    expect(levelMap().get("others")).toBe("미검증");
+  });
+
+  it("others synthetic violations fail (M37)", () => {
+    const good = read(pageOf("others").path);
+    const cases: [string, string][] = [
+      ["확인 수준을 공식 문서 근거로", good.replace("확인 수준: 미검증", "확인 수준: 공식 문서 근거")],
+      ["밑줄 서버 키", good.replaceAll(`"${SERVER_NAME}"`, '"korean_parenting"')],
+      ["실행 명령 변경", good.replace('"command": "npx"', '"command": "node"')],
+      ["env 추가", good.replace('"command": "npx",', '"command": "npx", "env": { "LAW_OC": "x" },')],
+      ["미검증인 이유 제거", good.replace(/^미검증인 이유: .*\n/m, "")],
+    ];
+    for (const [name, doc] of cases) {
+      expect(othersProblems(doc), name).not.toEqual([]);
+    }
   });
 });
