@@ -36,6 +36,7 @@
     "verify": "npm run typecheck && npm run build && npm run build:scripts && npm run test",
     "visuals": "npm run build:scripts && node build-scripts/scripts/visuals/generate.js",
     "visuals:check": "npm run build:scripts && node build-scripts/scripts/visuals/generate.js --check",
+    "readme:preview": "npm run build:scripts && node build-scripts/scripts/readme-preview.js",
     "smoke:pack": "npm run build && npm run build:scripts && node build-scripts/scripts/pack-smoke.js",
     "pack:mcpb": "npm run build && npm run build:scripts && node build-scripts/scripts/build-mcpb.js",
     "smoke:mcpb": "npm run build && npm run build:scripts && node build-scripts/scripts/mcpb-smoke.js",
