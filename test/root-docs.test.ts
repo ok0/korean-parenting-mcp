@@ -1,10 +1,14 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { KEY_ENV } from "../src/core/config.js";
 import { allTools } from "../src/tools/registry.js";
 import { findLeaks } from "../scripts/lib/sample-mask.js";
+import { ASSET_FILES } from "../scripts/visuals/generate.js";
+import { RAW_ASSET_PREFIX, assetPairs } from "../scripts/visuals/readme-figures.js";
+import { CLIENT_BRANDS, readmeIntro } from "./helpers/visuals.js";
+import { OFFICIAL_CLAIM_OUTPUT, matchedPatterns } from "./helpers/wording.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const readme = readFileSync(join(root, "README.md"), "utf8");
@@ -115,5 +119,58 @@ describe("root documents", () => {
     expect(readme).not.toMatch(/원격|remote|Streamable/i);
     expect(findLeaks(readme, [], { heuristic: true })).toEqual([]);
     expect(findLeaks(license, [], { heuristic: true })).toEqual([]);
+  });
+});
+
+describe("README figures (M31)", () => {
+  it("every ASSET_FILES light/dark pair has one <picture> with absolute raw URLs", () => {
+    const pictures = [...readme.matchAll(/<picture>([\s\S]*?)<\/picture>/g)].map((m) => m[1] ?? "");
+    const pairs = assetPairs(ASSET_FILES);
+    expect(pictures.length, "ASSET_FILES의 그림 쌍마다 README <picture> 블록이 하나씩 필요합니다").toBe(pairs.length);
+    for (const p of pairs) {
+      expect(
+        pictures.some(
+          (pic) =>
+            pic.includes(`<source media="(prefers-color-scheme: dark)" srcset="${RAW_ASSET_PREFIX}${p.dark}">`) &&
+            pic.includes(`<img src="${RAW_ASSET_PREFIX}${p.light}"`),
+        ),
+        p.name,
+      ).toBe(true);
+    }
+    for (const f of ASSET_FILES) {
+      expect(readme).toContain(RAW_ASSET_PREFIX + f);
+    }
+  });
+
+  it("README has no relative assets path and every referenced asset exists", () => {
+    expect(readme).not.toMatch(/(?:src|srcset|href)="(?!https:\/\/)[^"]*assets\//);
+    expect(readme).not.toMatch(/\]\((?!https:\/\/)[^)]*assets\//);
+    for (const m of readme.matchAll(/raw\.githubusercontent\.com\/ok0\/korean-parenting-mcp\/main\/assets\/([^"\s)]+)/g)) {
+      const name = m[1] ?? "";
+      expect(existsSync(join(root, "assets", name)), name).toBe(true);
+    }
+    // MANUAL: GIF 녹화 후 README에 연결하면 이 demo- 검사를 지우세요(.docs/visuals/guide.md 참조).
+    expect(readme).not.toContain("demo-");
+    expect(readme).not.toMatch(/준비\s*중|coming soon|placeholder|TODO/i);
+  });
+
+  it("image alt texts are plain Korean sentences without digits or file names", () => {
+    const imgs = [...readme.matchAll(/<img\b[^>]*>/g)].map((m) => m[0]);
+    expect(imgs.length).toBe(assetPairs(ASSET_FILES).length);
+    for (const tag of imgs) {
+      const alt = /\balt="([^"]*)"/.exec(tag)?.[1] ?? "";
+      expect(alt.trim()).not.toBe("");
+      expect(alt).not.toMatch(/[0-9]/);
+      expect(alt).not.toMatch(/\.svg|\.gif/);
+      expect(alt).toMatch(/[가-힣]/);
+      expect(alt.trim().endsWith(".")).toBe(true);
+    }
+  });
+
+  it("README intro (top to install heading, alt included) names no AI product and claims nothing official", () => {
+    const intro = readmeIntro(readme);
+    expect(matchedPatterns(intro, CLIENT_BRANDS)).toEqual([]);
+    expect(intro).toContain("AI 도우미");
+    expect(matchedPatterns(intro, OFFICIAL_CLAIM_OUTPUT)).toEqual([]);
   });
 });

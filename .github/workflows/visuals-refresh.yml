@@ -1,0 +1,58 @@
+name: visuals-refresh
+on:
+  push:
+    branches: [main]
+    paths: ["data/**", "src/**", "scripts/visuals/**"]
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: visuals-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BRANCH: automation/visuals-refresh
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run visuals
+      - name: detect changed figures
+        id: diff
+        run: |
+          changed="$(git status --porcelain -- 'assets/*.svg')"
+          if [ -n "$changed" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: open or update pull request
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE: ${{ github.event.repository.default_branch }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$BRANCH"
+          git add -- 'assets/*.svg'
+          git commit -m "chore(visuals): regenerate figures from code and data"
+          git push --force origin "$BRANCH"
+          printf '%s\n' \
+            "자동 생성 PR입니다. 코드·데이터 변경에 맞춰 npm run visuals 로 다시 만든 그림(assets 폴더의 SVG)만 담았습니다." \
+            "" \
+            "이 PR에는 CI가 자동으로 실행되지 않습니다. 병합 전에 이 브랜치에서 npm run visuals:check 를 실행하거나 CI를 수동으로 다시 실행해 확인하세요." \
+            > "$RUNNER_TEMP/pr-body.md"
+          number="$(gh pr list --head "$BRANCH" --state open --limit 1 --json number --jq '.[0].number // empty')"
+          if [ -n "$number" ]; then
+            gh pr edit "$number" --body-file "$RUNNER_TEMP/pr-body.md"
+          else
+            gh pr create --base "$BASE" --head "$BRANCH" --title "chore(visuals): regenerate figures" --body-file "$RUNNER_TEMP/pr-body.md"
+          fi

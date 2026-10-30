@@ -10,6 +10,7 @@ const WORKFLOWS = [
   ".github/workflows/ci.yml",
   ".github/workflows/revision-check.yml",
   ".github/workflows/holidays-refresh.yml",
+  ".github/workflows/visuals-refresh.yml",
 ] as const;
 
 const USES =
@@ -46,6 +47,10 @@ function topPermissions(text: string): Record<string, string> {
     out[m[1] ?? ""] = m[2] ?? "";
   }
   return out;
+}
+
+function stepIndex(text: string, re: RegExp): number {
+  return steps(text).findIndex((s) => re.test(s));
 }
 
 const hasActionlint = spawnSync("actionlint", ["-version"]).status === 0;
@@ -141,6 +146,61 @@ describe("workflows", () => {
     expect(text).toContain("automation/holidays-refresh");
     expect(text).not.toMatch(/gh pr merge|--auto\b|auto-merge|automerge/i);
     expect(existsSync(join(root, "scripts/refresh-holidays.ts"))).toBe(true);
+  });
+
+  it("visuals-refresh.yml", () => {
+    const text = read(".github/workflows/visuals-refresh.yml");
+    expect(text).toMatch(/^  push:\n    branches: \[main\]\n    paths: \["data\/\*\*", "src\/\*\*", "scripts\/visuals\/\*\*"\]$/m);
+    expect(text).toMatch(/^  workflow_dispatch:$/m);
+    expect(text).not.toMatch(/^\s+(schedule|pull_request|pull_request_target):/m);
+
+    expect(secretNames(text)).toEqual([]);
+    expect(text).not.toContain("secrets.");
+    expect(topPermissions(text)).toEqual({ contents: "write", "pull-requests": "write" });
+
+    expect(text).toMatch(/^concurrency:\n  group: visuals-refresh\n  cancel-in-progress: false$/m);
+    expect(text).toContain("BRANCH: automation/visuals-refresh");
+    expect(text).toContain('node-version: "22"');
+
+    const ci = stepIndex(text, /^run: npm ci$/m);
+    const gen = stepIndex(text, /^\s*run: npm run visuals$/m);
+    const diff = stepIndex(text, /git status --porcelain -- 'assets\/\*\.svg'/);
+    const pr = stepIndex(text, /gh pr create/);
+    expect(ci >= 0 && ci < gen && gen < diff && diff < pr).toBe(true);
+
+    const diffStep = steps(text)[diff] ?? "";
+    expect(diffStep).toContain("id: diff");
+    expect(diffStep).toContain('echo "changed=true" >> "$GITHUB_OUTPUT"');
+
+    const prStep = steps(text)[pr] ?? "";
+    expect(prStep).toContain("if: steps.diff.outputs.changed == 'true'");
+    expect(prStep).toContain("GH_TOKEN: ${{ github.token }}");
+    expect(prStep).toContain("gh pr list");
+    expect(prStep).toContain("gh pr edit");
+    expect(prStep).toContain("npm run visuals:check");
+    expect(prStep).toContain("자동 생성 PR");
+
+    expect([...text.matchAll(/git add[^\n]*/g)].map((m) => m[0])).toEqual([
+      "git add -- 'assets/*.svg'",
+    ]);
+    expect(text).not.toMatch(/demo-|\.gif/);
+
+    expect(/git commit -m "([^"]+)"/.exec(text)?.[1]).toMatch(/^chore\(visuals\): [ -~]+$/);
+    expect(/--title "([^"]+)"/.exec(text)?.[1]).toMatch(/^chore\(visuals\): [ -~]+$/);
+
+    expect(text).not.toMatch(/gh pr merge|--auto\b|auto-merge|automerge/i);
+  });
+
+  it("holidays-refresh.yml regenerates figures into the same PR commit (M31)", () => {
+    const text = read(".github/workflows/holidays-refresh.yml");
+    const gen = stepIndex(text, /^\s*run: npm run visuals$/m);
+    const pr = stepIndex(text, /gh pr create/);
+    expect(gen > 0 && gen < pr).toBe(true);
+    expect(steps(text)[gen]).toContain("if: steps.refresh.outputs.code == '10'");
+    expect(text).not.toContain("continue-on-error");
+    expect([...text.matchAll(/git add[^\n]*/g)].map((m) => m[0])).toEqual([
+      "git add -- data/holidays.json 'assets/*.svg'",
+    ]);
   });
 
   it.runIf(hasActionlint)("actionlint passes", () => {

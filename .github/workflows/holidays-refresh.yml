@@ -35,6 +35,9 @@ jobs:
           { echo "### 공휴일 갱신"; echo '```'; cat "$RUNNER_TEMP/refresh.log"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
           echo "code=$code" >> "$GITHUB_OUTPUT"
           if [ "$code" -ne 0 ] && [ "$code" -ne 10 ]; then exit "$code"; fi
+      - name: regenerate figures
+        if: steps.refresh.outputs.code == '10'
+        run: npm run visuals
       - name: open or update pull request
         if: steps.refresh.outputs.code == '10'
         env:
@@ -44,7 +47,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -C "$BRANCH"
-          git add data/holidays.json
+          git add -- data/holidays.json 'assets/*.svg'
           git commit -m "chore(data): refresh holidays from KASI"
           git push --force origin "$BRANCH"
           number="$(gh pr list --head "$BRANCH" --state open --limit 1 --json number --jq '.[0].number // empty')"

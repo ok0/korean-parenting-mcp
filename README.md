@@ -30,6 +30,25 @@ API 키 없이 설치 즉시 동작합니다. 아래 기능은 키를 설정하�
 - "출산 예정일이 2027년 2월 10일이야. 지금 임신 중에 챙길 일정을 정리해줘."
 - "육아휴직 기간과 관련해 필요한 일정을 날짜 순서로 보여줘."
 
+## 그림으로 보기
+
+MCP를 지원하는 AI 도우미에 연결하면, AI 도우미가 질문에 맞는 도구를 골라 답을 만듭니다. 아래 그림은 예시이며 실제 답은 질문과 날짜에 따라 달라집니다.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ok0/korean-parenting-mcp/main/assets/tool-map-dark.svg">
+  <img src="https://raw.githubusercontent.com/ok0/korean-parenting-mcp/main/assets/tool-map-light.svg" alt="부모의 질문을 AI 도우미가 받아 알맞은 도구를 고르고, 도구가 미리 담아 둔 정보나 공공기관 자료로 답하는 흐름을 한 장에 그린 지도입니다." width="800">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ok0/korean-parenting-mcp/main/assets/life-timeline-dark.svg">
+  <img src="https://raw.githubusercontent.com/ok0/korean-parenting-mcp/main/assets/life-timeline-light.svg" alt="출산예정일 예시 하나로 계산한 임신부터 학령기 전까지의 검진·예방접종·신고와 신청 기한·지원금·휴가·어린이집과 유치원 안내 일정을 시간 순서로 보여 주는 그림입니다." width="800">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ok0/korean-parenting-mcp/main/assets/question-stories-dark.svg">
+  <img src="https://raw.githubusercontent.com/ok0/korean-parenting-mcp/main/assets/question-stories-light.svg" alt="새벽에 열이 나는 아이, 출산예정일 이후 할 일, 중고 카시트 리콜처럼 예시 질문이 어떤 도구와 출처를 거쳐 답이 되는지 따라가는 그림입니다." width="800">
+</picture>
+
 ## 설치와 실행
 
 ```bash
@@ -37,6 +56,8 @@ npx -y korean-parenting-mcp
 ```
 
 STDIO MCP 서버입니다. Node.js 20.19 이상이 필요합니다.
+
+MCP를 지원하는 AI 앱이면 이 명령을 STDIO 서버로 등록해 쓸 수 있습니다(예: Claude Desktop, Claude Code 등). 앱마다 등록 방법이 다르니 각 앱의 MCP 설정 안내를 따르세요.
 
 ## 설정 마법사
 
