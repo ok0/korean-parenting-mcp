@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+<title>한국 임신·출산·육아 정보 도구 체험 (비공식)</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<header id="notice">
+  <h1>한국 임신·출산·육아 정보 도구 체험</h1>
+  <p class="notice"><strong>비공식 도구입니다.</strong> 이 페이지와 도구는 정부·공공기관의 공식 서비스가 아닙니다. 최종 확인은 정부24, 복지로, 국민건강보험공단, 관할 주민센터·보건소 같은 공식 기관에서 하세요.</p>
+  <p class="notice"><strong>면책:</strong> 여기 나오는 내용은 일반 정보이며 의료 진단이나 법률 자문이 아닙니다. 검진·접종 시기는 의료진과, 신고·신청 기한과 요건은 관할 기관과 확인하세요.</p>
+</header>
+<main>
+  <section id="figures">
+    <h2>그림으로 보기</h2>
+    <p>MCP를 지원하는 AI 도우미에 이 도구를 연결하면, AI 도우미가 질문에 맞는 도구를 골라 답을 만듭니다. 그림은 고정된 기준일로 만든 예시이고, 아래 체험은 오늘 날짜를 기준으로 계산합니다.</p>
+    <figure>
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="assets/tool-map-dark.svg">
+        <img src="assets/tool-map-light.svg" alt="부모의 질문을 AI 도우미가 받아 알맞은 도구를 고르고, 도구가 미리 담아 둔 정보나 공공기관 자료로 답하는 흐름을 한 장에 그린 지도입니다." width="800">
+      </picture>
+    </figure>
+    <figure>
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="assets/life-timeline-dark.svg">
+        <img src="assets/life-timeline-light.svg" alt="출산예정일 예시 하나로 계산한 임신부터 학령기 전까지의 검진·예방접종·신고와 신청 기한·지원금·휴가·어린이집과 유치원 안내 일정을 시간 순서로 보여 주는 그림입니다." width="800">
+      </picture>
+    </figure>
+    <figure>
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="assets/question-stories-dark.svg">
+        <img src="assets/question-stories-light.svg" alt="새벽에 열이 나는 아이, 출산예정일 이후 할 일, 중고 카시트 리콜처럼 예시 질문이 어떤 도구와 출처를 거쳐 답이 되는지 따라가는 그림입니다." width="800">
+      </picture>
+    </figure>
+  </section>
+  <section id="report-example">
+    <h2>한 장 보고서 예시</h2>
+    <p>AI 도우미에게 이렇게 요청하면 이런 형식의 보고서를 받을 수 있다는 정적 예시예요. 기준일이 고정된 예시이며 개인 맞춤이 아니고 입력을 받지 않아요.</p>
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/report-example-dark.svg">
+      <img src="assets/report-example-light.svg" alt="AI 도우미에게 보낸 예시 요청(출산예정일, 서울 성동구, 첫째)과 그 요청으로 만든 한 장 준비 보고서 예시입니다." width="800">
+    </picture>
+  </section>
+  <section id="try">
+    <h2>출산예정일로 맞춤 일정 체험하기</h2>
+    <p class="privacy">입력값은 이 브라우저 안에서만 계산되고 어디에도 전송·저장되지 않습니다.</p>
+    <div class="fields">
+      <label for="due-date">출산예정일</label>
+      <input type="date" id="due-date">
+      <label for="birth-order">이번 아이는 몇째인가요</label>
+      <select id="birth-order">
+        <option value="" selected>선택 안 함</option>
+        <option value="1">첫째</option>
+        <option value="2">둘째</option>
+        <option value="3">셋째 이상</option>
+      </select>
+      <label for="months-ahead">보여 줄 기간</label>
+      <select id="months-ahead">
+        <option value="12" selected>앞으로 1년</option>
+        <option value="36">앞으로 3년</option>
+        <option value="84">앞으로 7년</option>
+      </select>
+      <button type="button" id="compute">일정 계산하기</button>
+    </div>
+    <p id="error" class="error" role="alert" hidden></p>
+    <div id="result" hidden>
+      <p class="caution">예시·참고용 결과이며 개인 맞춤이 아닙니다. 실제 일정과 기한은 관할 기관·의료진에게 확인하세요.</p>
+      <p id="as-of"></p>
+      <ol id="cards" class="cards"></ol>
+      <details>
+        <summary>원문 그대로 보기</summary>
+        <pre id="raw-text"></pre>
+      </details>
+    </div>
+  </section>
+</main>
+<footer>
+  <h2>출처·기준일·설치 안내</h2>
+  <p>출처: 일정마다 근거가 된 법령·공공기관 안내 이름이 카드의 "출처"와 원문에 함께 나옵니다.</p>
+  <p>기준일: 데이터 기준일은 원문 각 항목의 "기준일"에, 계산에 쓴 오늘 날짜(한국 시간)는 결과 위에 나옵니다. 이 체험은 키 없이 동작하므로 법령 개정 자동 확인은 생략되며, 그 사실도 원문 끝에 함께 나옵니다.</p>
+  <p>도구 설치: MCP를 지원하는 AI 도우미 앱에 연결하는 방법은 <a href="https://github.com/ok0/korean-parenting-mcp#readme">README의 설치 안내</a>를 보세요.</p>
+</footer>
+</body>
+</html>
