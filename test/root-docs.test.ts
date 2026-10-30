@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { findLeaks } from "../scripts/lib/sample-mask.js";
 import { ASSET_FILES } from "../scripts/visuals/generate.js";
-import { RAW_ASSET_PREFIX, assetPairs } from "../scripts/visuals/readme-figures.js";
+import { RAW_ASSET_PREFIX, REPORT_FIGURE_ALT, assetPairs } from "../scripts/visuals/readme-figures.js";
 import { CLIENT_PAGES, DOC_PAGES, DOCS_BLOB, MCPB_URL, docUrl } from "../scripts/docs/links.js";
 import { readmeIntro } from "./helpers/visuals.js";
 import { OFFICIAL_CLAIM_OUTPUT, matchedPatterns } from "./helpers/wording.js";
@@ -154,7 +154,7 @@ describe("README figures (M31)", () => {
       const name = m[1] ?? "";
       expect(existsSync(join(root, "assets", name)), name).toBe(true);
     }
-    // MANUAL: GIF 녹화 후 README에 연결하면 이 demo- 검사를 지우세요(.docs/visuals/guide.md 참조).
+    // MANUAL: GIF를 만든 뒤 README에 연결하면 이 demo- 검사를 지우세요(.docs/visuals/guide.md 참조).
     expect(readme).not.toContain("demo-");
     expect(readme).not.toMatch(/준비\s*중|coming soon|placeholder|TODO/i);
   });
@@ -170,6 +170,17 @@ describe("README figures (M31)", () => {
       expect(alt).toMatch(/[가-힣]/);
       expect(alt.trim().endsWith(".")).toBe(true);
     }
+  });
+
+  it("figure 4 alt comes from the shared constant and says it is a real answer (M30c)", () => {
+    const tag = [...readme.matchAll(/<img\b[^>]*>/g)].map((m) => m[0]).find((t) => t.includes("report-example-light.svg")) ?? "";
+    const alt = /\balt="([^"]*)"/.exec(tag)?.[1] ?? "";
+    expect(alt).toBe(REPORT_FIGURE_ALT);
+    expect(alt).toContain("실제 답변");
+    expect(alt).not.toContain(["녹", "화"].join(""));
+    expect(alt).not.toContain("ok0");
+    expect(alt).not.toMatch(/[0-9]/);
+    expect(alt.endsWith(".")).toBe(true);
   });
 
   it("README intro (top to the link block) mentions the AI helper and claims nothing official", () => {

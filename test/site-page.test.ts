@@ -7,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { buildSiteBundle } from "../scripts/build-site.js";
 import { findLeaks, secretsFromEnv } from "../scripts/lib/sample-mask.js";
 import { ASSET_FILES } from "../scripts/visuals/generate.js";
-import { assetPairs } from "../scripts/visuals/readme-figures.js";
+import { REPORT_FIGURE_ALT, assetPairs } from "../scripts/visuals/readme-figures.js";
 import type { PageResult } from "../site/src/app.js";
 import type { TimelineArgs } from "../src/timeline/input.js";
 import { fakeDocument, type FakeElement } from "./helpers/fake-dom.js";
@@ -176,6 +176,8 @@ describe("Pages page (M33)", () => {
     }
     expect(s).toContain("assets/report-example-light.svg");
     expect(s).toContain("assets/report-example-dark.svg");
+    expect(s).toContain(`alt="${REPORT_FIGURE_ALT}"`);
+    expect(sText).toContain("실제 답변");
     expect(/<(input|button|select|textarea)\b/i.test(s)).toBe(false);
   });
 

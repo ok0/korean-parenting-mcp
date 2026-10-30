@@ -52,7 +52,7 @@ MCP를 지원하는 AI 도우미에 연결하면, AI 도우미가 질문에 맞�
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ok0/korean-parenting-mcp/main/assets/report-example-dark.svg">
-  <img src="https://raw.githubusercontent.com/ok0/korean-parenting-mcp/main/assets/report-example-light.svg" alt="AI 도우미에게 보낸 예시 요청(출산예정일, 서울 성동구, 첫째)과 그 요청으로 만든 한 장 준비 보고서 예시입니다." width="800">
+  <img src="https://raw.githubusercontent.com/ok0/korean-parenting-mcp/main/assets/report-example-light.svg" alt="한 AI 앱에 실제로 보낸 출산 준비 질문과, 그 앱이 일정 계산과 지원금·휴일 소아 진료·유치원 정보를 찾아 준 실제 답변을 그림에 맞게 한 장으로 줄인 보고서입니다." width="800">
 </picture>
 
 ## 라이선스
