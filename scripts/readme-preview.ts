@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync 
 import { dirname, join, posix } from "node:path";
 import { isMainModule } from "./lib/script-io.js";
 import { listDocMarkdown } from "./docs/files.js";
-import { DOCS_BLOB, REPO_BLOB_PATH } from "./docs/links.js";
+import { DOCS_BLOB, DOC_PAGES, REPO_BLOB_PATH } from "./docs/links.js";
 import { ASSET_FILES } from "./visuals/generate.js";
 import { LOCAL_ASSET_PREFIX, RAW_ASSET_PREFIX, REPO, assetPairs, type FigurePair } from "./visuals/readme-figures.js";
 
@@ -288,7 +288,11 @@ export function main(
   }
 
   const planned = new Set(pages.map((p) => previewPathFor(p.rel)));
-  const exists = (rel: string): boolean => planned.has(rel) || existsSync(join(root, rel));
+  // A3: M36 전까지 clients 링크 허용
+  const pending = new Set(
+    DOC_PAGES.filter((p) => p.id === "clients" && !existsSync(join(root, p.path))).map((p) => previewPathFor(p.path)),
+  );
+  const exists = (rel: string): boolean => planned.has(rel) || pending.has(rel) || existsSync(join(root, rel));
   const bodies = pages.map((p) => ({ rel: p.rel, body: localizeDocLinks(p.html, p.rel) }));
   const docProblems: string[] = [];
   for (const b of bodies) {

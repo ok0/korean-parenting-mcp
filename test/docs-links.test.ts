@@ -5,10 +5,11 @@ import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { checkDocLinks, formatProblem, type RepoView } from "./helpers/docs-links.js";
 import { listDocMarkdown } from "../scripts/docs/files.js";
-import { DOCS_BLOB, MCPB_URL } from "../scripts/docs/links.js";
+import { DOCS_BLOB, DOC_PAGES, MCPB_URL } from "../scripts/docs/links.js";
 import { RAW_ASSET_PREFIX } from "../scripts/visuals/readme-figures.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
+const PENDING_TARGETS = DOC_PAGES.filter((p) => p.id === "clients" && !existsSync(join(root, p.path))).map((p) => p.path); // A3: clients 문서는 M36에서 생김 — M36에서 제거
 
 const realView: RepoView = {
   exists: (r) => existsSync(join(root, r)),
@@ -35,7 +36,15 @@ describe("docs link checks (M34)", () => {
 
   it("README and docs/**/*.md links pass (R5, R7)", () => {
     const files = ["README.md", ...listDocMarkdown(root)];
-    expect(checkDocLinks(files, realView).map(formatProblem)).toEqual([]);
+    expect(checkDocLinks(files, realView, PENDING_TARGETS).map(formatProblem)).toEqual([]);
+  });
+
+  it("allowMissing skips only the listed path (A3)", () => {
+    const view = memView({ "docs/a.md": "[c](clients/README.md)\n[d](clients/README.md#x)\n[m](missing.md)" });
+    const allowed = checkDocLinks(["docs/a.md"], view, ["docs/clients/README.md"]);
+    expect(allowed.map((p) => p.reason)).toEqual(["없는 앵커", "대상 파일 없음"]);
+    expect(allowed.map((p) => p.line)).toEqual([2, 3]);
+    expect(checkDocLinks(["docs/a.md"], view)).toHaveLength(3);
   });
 
   it("listDocMarkdown lists nested .md only and tolerates no docs/", () => {

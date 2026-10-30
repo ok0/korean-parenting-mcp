@@ -402,4 +402,26 @@ describe("docs preview (M34)", () => {
     expect(existsSync(join(dir, README_PREVIEW_PATH))).toBe(false);
     expect(existsSync(join(dir, PREVIEW_DIR))).toBe(false);
   });
+
+  it("pending clients link passes, other missing docs fail (A3)", () => {
+    const dir = docsRoot();
+    writeFileSync(join(dir, "docs", "index-a3.md"), "# a\n");
+    const texts = fixtureDocs();
+    const pendingOk = ghByText(
+      { "# t\n": texts.README, "# install\n": texts.install, "# vscode\n": texts.vscode, "# a\n": `<a href="clients/README.md">c</a>` },
+      [],
+    );
+    const c = collector();
+    expect(main([], c.io, dir, pendingOk)).toBe(0);
+
+    const other = docsRoot();
+    writeFileSync(join(other, "docs", "index-a3.md"), "# a\n");
+    const broken = ghByText(
+      { "# t\n": texts.README, "# install\n": texts.install, "# vscode\n": texts.vscode, "# a\n": `<a href="nope.md">n</a>` },
+      [],
+    );
+    const c2 = collector();
+    expect(main([], c2.io, other, broken)).toBe(1);
+    expect(c2.err.join("")).toContain("없는 파일을 가리킵니다");
+  });
 });

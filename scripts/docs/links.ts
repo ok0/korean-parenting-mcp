@@ -14,16 +14,20 @@ export const MCPB_TAG = "mcpb-latest";
 export const MCPB_ASSET = "korean-parenting-mcp.mcpb";
 export const MCPB_URL = `${REPO_URL}/releases/download/${MCPB_TAG}/${MCPB_ASSET}`;
 export const DOC_NOTICE = "이 문서는 정부·공공기관과 관계없는 비공식 개인 프로젝트의 안내입니다. 의료·법률 자문이 아니며, 건강 상태는 의료진에게, 제도·신청 기한은 관할 기관에 확인하세요.";
-export interface DocPage { readonly id: string; readonly path: string; readonly title: string; readonly required: boolean; }
+export interface DocPage { readonly id: string; readonly path: string; readonly title: string; readonly summary: string; readonly parent?: string; readonly required: boolean; }
 export const DOC_PAGES: readonly DocPage[] = [
-  { id: "keyless", path: "docs/keyless.md", title: "키 없이 쓰는 기능", required: true },
-  { id: "install", path: "docs/install.md", title: "설치와 실행", required: true },
-  { id: "clients", path: "docs/clients/README.md", title: "AI 앱별 연결 방법", required: false },
-  { id: "mcpb", path: "docs/mcpb.md", title: "데스크톱 앱 확장(.mcpb)", required: true },
-  { id: "setup-wizard", path: "docs/setup-wizard.md", title: "설정 마법사", required: true },
-  { id: "advanced", path: "docs/advanced.md", title: "선택·고급 기능(API 키)", required: true },
-  { id: "index", path: "docs/README.md", title: "전체 문서 목차", required: false },
+  { id: "start", path: "docs/start.md", title: "처음이라면: 쉬운 시작 안내", summary: "무엇을 하는 도구인지, 어떻게 설치하는지 차근차근 알려 드려요", required: true },
+  { id: "keyless", path: "docs/keyless.md", title: "키 없이 바로 쓰는 기능", summary: "출산 예정일이나 아이 생일만 말하면 접종·검진·휴가 일정을 정리해 줘요", required: true },
+  { id: "install", path: "docs/install.md", title: "설치 방법 고르기", summary: "내 상황에 맞는 설치 방법 하나만 골라요", required: true },
+  { id: "mcpb", path: "docs/mcpb.md", title: "Claude 데스크톱 앱에 설치하기(파일 하나로)", summary: "터미널 없이 파일 하나를 내려받아 열면 돼요", parent: "install", required: true },
+  { id: "setup-wizard", path: "docs/setup-wizard.md", title: "설정 마법사로 설치하기", summary: "명령 한 줄로 키 입력과 앱 등록을 한 번에 해요", parent: "install", required: true },
+  { id: "clients", path: "docs/clients/README.md", title: "직접 설정하기(AI 앱별)", summary: "쓰는 AI 앱의 설정에 서버를 직접 추가해요", parent: "install", required: false },
+  { id: "advanced", path: "docs/advanced.md", title: "API 키로 기능 더하기(선택)", summary: "야간 진료기관·리콜 조회처럼 키가 필요한 기능과 키 발급 방법", required: true },
+  { id: "index", path: "docs/README.md", title: "전체 문서 목차", summary: "모든 안내 문서 목록", required: false },
 ];
+export const DESKTOP_APP_NAME = "Claude 데스크톱 앱";
+export const STATUS_BADGE = { verified: "✅ 확인됨", pending: "⏳ 키 승인 대기", link: "🔗 링크 안내" } as const;
+export const STATUS_LEGEND = "✅ 확인됨: 실제 API 호출로 동작 확인 · ⏳ 키 승인 대기: 키 승인 전이라 실제 호출 미확인 · 🔗 링크 안내: 데이터를 조회하지 않고 공식 페이지 링크를 알려 줌";
 export type ClientFormat = "json" | "toml" | "cli";
 export type ClientWrapper = "servers" | "mcpServers" | "mcp_servers" | null;
 export type ClientTypeField = "stdio" | "forbidden" | "any";

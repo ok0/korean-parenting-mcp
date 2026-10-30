@@ -29,19 +29,19 @@ export function formatProblem(p: LinkProblem): string {
   return `${p.file}:${p.line} ${p.url} — ${p.reason}`;
 }
 
-export function checkDocLinks(files: readonly string[], view: RepoView): LinkProblem[] {
+export function checkDocLinks(files: readonly string[], view: RepoView, allowMissing: readonly string[] = []): LinkProblem[] {
   const problems: LinkProblem[] = [];
   for (const file of files) {
     const md = view.read(file) ?? "";
     for (const { url, line } of extractLinks(md)) {
-      const reason = checkOne(file, md, url, view);
+      const reason = checkOne(file, md, url, view, allowMissing);
       if (reason !== null) problems.push({ file, line, url, reason });
     }
   }
   return problems;
 }
 
-function checkOne(file: string, md: string, url: string, view: RepoView): string | null {
+function checkOne(file: string, md: string, url: string, view: RepoView, allowMissing: readonly string[]): string | null {
   if (/(^|\/)\.docs(\/|#|$)/.test(url) || url.includes("/.docs/")) {
     return ".docs/ 링크 금지";
   }
@@ -101,6 +101,7 @@ function checkOne(file: string, md: string, url: string, view: RepoView): string
     return "README의 docs/ 링크는 절대 URL이어야 함";
   }
   if (target.startsWith("../")) return "저장소 밖 경로";
+  if (!view.exists(target) && allowMissing.includes(target)) return anchor ? "없는 앵커" : null;
   if (!view.exists(target)) return "대상 파일 없음";
   if (anchor && target.endsWith(".md") && !headingAnchors(view.read(target) ?? "").has(anchor)) {
     return "없는 앵커";

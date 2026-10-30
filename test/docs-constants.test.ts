@@ -5,6 +5,7 @@ import {
   CLIENT_PAGES,
   DOCS_BLOB,
   DOC_NOTICE,
+  DESKTOP_APP_NAME,
   DOC_PAGES,
   MCPB_ASSET,
   MCPB_TAG,
@@ -13,6 +14,8 @@ import {
   REPO_URL,
   RUN,
   SERVER_NAME,
+  STATUS_BADGE,
+  STATUS_LEGEND,
   docUrl,
 } from "../scripts/docs/links.js";
 import { BRANCH, RAW_ASSET_PREFIX, REPO } from "../scripts/visuals/readme-figures.js";
@@ -60,28 +63,46 @@ describe("docs link constants (M34)", () => {
     expect(src).not.toContain("/blob/main");
   });
 
-  it("DOC_PAGES order, paths and required set", () => {
-    expect(DOC_PAGES.map((p) => p.title)).toEqual([
-      "키 없이 쓰는 기능",
-      "설치와 실행",
-      "AI 앱별 연결 방법",
-      "데스크톱 앱 확장(.mcpb)",
-      "설정 마법사",
-      "선택·고급 기능(API 키)",
-      "전체 문서 목차",
+  it("DOC_PAGES order, titles, summaries, parents (ADR-51)", () => {
+    expect(DOC_PAGES.map((p) => [p.id, p.path, p.title, p.summary, p.parent ?? null, p.required])).toEqual([
+      ["start", "docs/start.md", "처음이라면: 쉬운 시작 안내", "무엇을 하는 도구인지, 어떻게 설치하는지 차근차근 알려 드려요", null, true],
+      ["keyless", "docs/keyless.md", "키 없이 바로 쓰는 기능", "출산 예정일이나 아이 생일만 말하면 접종·검진·휴가 일정을 정리해 줘요", null, true],
+      ["install", "docs/install.md", "설치 방법 고르기", "내 상황에 맞는 설치 방법 하나만 골라요", null, true],
+      ["mcpb", "docs/mcpb.md", "Claude 데스크톱 앱에 설치하기(파일 하나로)", "터미널 없이 파일 하나를 내려받아 열면 돼요", "install", true],
+      ["setup-wizard", "docs/setup-wizard.md", "설정 마법사로 설치하기", "명령 한 줄로 키 입력과 앱 등록을 한 번에 해요", "install", true],
+      ["clients", "docs/clients/README.md", "직접 설정하기(AI 앱별)", "쓰는 AI 앱의 설정에 서버를 직접 추가해요", "install", false],
+      ["advanced", "docs/advanced.md", "API 키로 기능 더하기(선택)", "야간 진료기관·리콜 조회처럼 키가 필요한 기능과 키 발급 방법", null, true],
+      ["index", "docs/README.md", "전체 문서 목차", "모든 안내 문서 목록", null, false],
     ]);
-    for (const p of DOC_PAGES) {
-      expect(p.path).toMatch(/^docs\/.+\.md$/);
-    }
     const ids = DOC_PAGES.map((p) => p.id);
     expect(new Set(ids).size).toBe(ids.length);
+    for (const p of DOC_PAGES) {
+      expect(p.path).toMatch(/^docs\/.+\.md$/);
+      if (p.parent !== undefined) {
+        expect(ids).toContain(p.parent);
+      }
+      expect(/mcpb/i.test(p.title + p.summary)).toBe(false);
+    }
     expect(DOC_PAGES.filter((p) => p.required).map((p) => p.id).sort()).toEqual([
       "advanced",
       "install",
       "keyless",
       "mcpb",
       "setup-wizard",
+      "start",
     ]);
+  });
+
+  it("desktop app name and status badges (ADR-51)", () => {
+    expect(DESKTOP_APP_NAME).toBe("Claude 데스크톱 앱");
+    expect(STATUS_BADGE).toEqual({ verified: "✅ 확인됨", pending: "⏳ 키 승인 대기", link: "🔗 링크 안내" });
+    expect(STATUS_LEGEND).toBe(
+      "✅ 확인됨: 실제 API 호출로 동작 확인 · ⏳ 키 승인 대기: 키 승인 전이라 실제 호출 미확인 · 🔗 링크 안내: 데이터를 조회하지 않고 공식 페이지 링크를 알려 줌",
+    );
+    for (const badge of Object.values(STATUS_BADGE)) {
+      expect(STATUS_LEGEND).toContain(badge);
+    }
+    expect(STATUS_LEGEND).not.toContain("\n");
   });
 
   it("DOC_NOTICE wording", () => {
