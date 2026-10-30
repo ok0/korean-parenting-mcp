@@ -38,6 +38,7 @@
     "visuals": "npm run build:scripts && node build-scripts/scripts/visuals/generate.js",
     "visuals:check": "npm run build:scripts && node build-scripts/scripts/visuals/generate.js --check",
     "readme:preview": "npm run build:scripts && node build-scripts/scripts/readme-preview.js",
+    "compat:clients": "npm run build:scripts && node build-scripts/scripts/docs/client-compat.js",
     "smoke:pack": "npm run build && npm run build:scripts && node build-scripts/scripts/pack-smoke.js",
     "pack:mcpb": "npm run build && npm run build:scripts && node build-scripts/scripts/build-mcpb.js",
     "smoke:mcpb": "npm run build && npm run build:scripts && node build-scripts/scripts/mcpb-smoke.js",
