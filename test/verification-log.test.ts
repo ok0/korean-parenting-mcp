@@ -42,7 +42,8 @@ function walkFull(value: unknown, file: string, out: Set<string>): void {
 }
 
 describe.skipIf(!existsSync(LOG))("verification log vs data (M17)", () => {
-  const text = existsSync(LOG) ? readFileSync(LOG, "utf8") : "";
+  if (!existsSync(LOG)) return;
+  const text = readFileSync(LOG, "utf8");
   const sections = parseSections(text);
   const section = (title: string): Section => {
     const s = sections.find((x) => x.title === title);
