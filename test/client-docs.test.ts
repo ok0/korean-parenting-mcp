@@ -23,6 +23,7 @@ import {
   tableRows,
 } from "./helpers/docs-checklist.js";
 import { parseMiniToml, type TomlTable } from "./helpers/mini-toml.js";
+import { CHATGPT_ALLOWED, CHATGPT_UNSUPPORTED_LINE } from "./helpers/remote-wording.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const read = (rel: string): string => readFileSync(join(root, rel), "utf8");
@@ -253,7 +254,7 @@ function pageProblems(page: ClientPage, md: string): string[] {
   if (!connection.includes("get_timeline") && !connection.includes("도구 목록")) problems.push("연결 확인 문구 없음");
 
   for (const { line, text } of proseLines(md)) {
-    if (text.includes("ChatGPT") && !text.includes("원격")) problems.push(`${line}행: ChatGPT 줄에 원격 문구 없음`);
+    if (text.includes("ChatGPT") && (!CHATGPT_ALLOWED.test(text) || text.includes("원격"))) problems.push(`${line}행: ChatGPT 줄은 미지원 문구만 허용`);
   }
   for (const b of codeBlocks(md)) {
     if (b.body.includes("ChatGPT")) problems.push(`코드 블록 ${b.line}행에 ChatGPT`);
@@ -299,7 +300,9 @@ function clientsIndexProblems(md: string): string[] {
   }
 
   const last = lines.filter((l) => l.trim() !== "").at(-1) ?? "";
-  if (!last.includes("ChatGPT") || !last.includes("원격")) out.push("마지막 줄 ChatGPT·원격 문구 없음");
+  if (!last.includes("ChatGPT") || !CHATGPT_ALLOWED.test(last) || last.includes("원격")) out.push("마지막 줄 ChatGPT 미지원 문구 없음");
+  if (last.trim() !== CHATGPT_UNSUPPORTED_LINE) out.push("마지막 줄 문장 불일치");
+  if (lines.filter((l) => l.includes("ChatGPT")).length !== 1) out.push("ChatGPT 언급은 마지막 줄 하나만");
   if (md.includes("확인 수준")) out.push("확인 수준 표기 금지");
   return out;
 }
@@ -480,10 +483,17 @@ describe("client docs (M36)", () => {
     expect(clientsIndexProblems(read(clientsPath))).toEqual([]);
   });
 
-  it("ChatGPT lines mention 원격 across docs (R9)", () => {
+  it("clients README last line is the exact ChatGPT sentence (M40 AC1)", () => {
+    const clientsPath = DOC_PAGES.find((p) => p.id === "clients")?.path ?? "";
+    const lines = read(clientsPath).split(/\r?\n/).filter((l) => l.trim() !== "");
+    expect(lines.at(-1)).toBe(CHATGPT_UNSUPPORTED_LINE);
+    expect(lines.filter((l) => l.includes("ChatGPT"))).toEqual([CHATGPT_UNSUPPORTED_LINE]);
+  });
+
+  it("ChatGPT lines say unsupported and never 원격 across docs (R9, M40 R2)", () => {
     for (const f of listDocMarkdown(root)) {
       const bad = proseLines(read(f))
-        .filter((l) => l.text.includes("ChatGPT") && !l.text.includes("원격"))
+        .filter((l) => l.text.includes("ChatGPT") && (!CHATGPT_ALLOWED.test(l.text) || l.text.includes("원격")))
         .map((l) => `${f}:${l.line}`);
       expect(bad, f).toEqual([]);
     }
@@ -511,6 +521,7 @@ describe("client docs (M36)", () => {
       ["vscode에서 type 제거", vs, goodDoc(vs).replaceAll(/\n\s*"type": "stdio",/g, "")],
       ["claude-code 줄 끝 npx 단독", cc, goodDoc(cc).replaceAll(`-y ${RUN.args[1]}`, RUN.args[1])],
       ["ChatGPT 줄 추가", vs, goodDoc(vs) + "\nChatGPT에서도 써요.\n"],
+      ["ChatGPT 원격 예고 줄", vs, goodDoc(vs) + "\nChatGPT는 현재 지원하지 않아요. 원격 모드를 제공한 뒤 안내할 예정이에요.\n"],
       ["섹션 순서 뒤바꿈", vs, swapSections(goodDoc(vs))],
       ["확인 수준 줄 추가", vs, goodDoc(vs) + "\n확인 수준: 공식 문서 근거\n"],
       ["데스크톱 Linux 주의 문장 없음", dk, goodDoc(dk).replace("Linux에서는 경로를 아직 직접 확인하지 못했어요.", "")],
@@ -557,7 +568,9 @@ describe("client docs (M36)", () => {
     expect(
       clientsIndexProblems(readme.replace("| 앱 | 설정 위치 | 형식 | 문서 |", "| 앱 | 설정 위치 | 형식 | 확인 수준 | 문서 |")),
     ).not.toEqual([]);
-    expect(clientsIndexProblems(readme.replace(/^ChatGPT 등[^\n]*$/m, "ChatGPT에서도 돼요"))).not.toEqual([]);
+    expect(clientsIndexProblems(readme.replace(/^ChatGPT는[^\n]*$/m, "ChatGPT에서도 돼요"))).not.toEqual([]);
+    expect(clientsIndexProblems(readme.replace(CHATGPT_UNSUPPORTED_LINE, CHATGPT_UNSUPPORTED_LINE + " 원격 모드를 제공한 뒤 안내할 예정이에요."))).not.toEqual([]);
+    expect(clientsIndexProblems(readme.replace("| 앱 | 설정 위치", "ChatGPT는 현재 지원하지 않아요.\n\n| 앱 | 설정 위치"))).not.toEqual([]);
   });
 
   it("others page lists unverified apps (M37 AC3, AC4)", () => {
