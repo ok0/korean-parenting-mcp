@@ -212,11 +212,13 @@ describe("record-sample", () => {
     expect(url.searchParams.get("siGunGuCd")).toBe("590");
   });
 
-  it("checkupClinic without --base/--op is a usage error", async () => {
+  it("checkupClinic without --base/--op uses spec defaults", async () => {
     const root = newRoot();
     const h = harness(ENV, xmlItems(1));
-    expect(await main(["checkupClinic", "--name", "x"], h.io, { root })).toBe(1);
-    expect(h.fetch).not.toHaveBeenCalled();
+    expect(await main(["checkupClinic", "--name", "x"], h.io, { root })).toBe(0);
+    expect(existsSync(join(root, "test/fixtures/data-go-kr/checkupClinic/x.xml"))).toBe(true);
+    const url = new URL(String(h.fetch.mock.calls[0]?.[0]));
+    expect(url.pathname.endsWith("/B550928/HmcSearchService/getRegnHmcList")).toBe(true);
   });
 
   it("writes masked untrimmed raw copy outside root", async () => {

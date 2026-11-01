@@ -21,6 +21,8 @@ const CONFIRMED: ReadonlyArray<readonly [SpecId, UpstreamBucket]> = [
   ["kasiHoliday", "kasi"],
 ];
 
+const LOCAL_ONLY: readonly string[] = ["checkupClinic"]; // ADR-58: no remote exposure until M26 restart
+
 describe("confirmed specs classify by URL and key", () => {
   it.each(CONFIRMED)("%s → %s", (specId, bucket) => {
     const spec = SPECS[specId];
@@ -38,6 +40,10 @@ describe("spec coverage", () => {
     for (const spec of Object.values(SPECS)) {
       if (spec.baseUrl !== "") {
         expect(spec.confirmed).toBe(true);
+        if (LOCAL_ONLY.includes(spec.id)) {
+          expect(bucketOfUrl(new URL(`${spec.baseUrl}/${spec.operation}`))).toBeUndefined();
+          continue;
+        }
         const pair = CONFIRMED.find(([id]) => SPECS[id].id === spec.id);
         expect(pair).toBeDefined();
         expect(bucketOfUrl(new URL(`${spec.baseUrl}/${spec.operation}`))).toBe(pair?.[1]);
