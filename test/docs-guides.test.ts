@@ -36,7 +36,8 @@ describe.skipIf(!existsSync(docs))("local release guides (.docs)", () => {
     expect(daycare).toContain("(iii)");
     expect(daycare).toContain("D1");
     const checkup = row(status, "find_checkup_clinic");
-    expect(checkup).toContain("(iii)");
+    expect(checkup).toContain("(i)");
+    expect(checkup).not.toContain("(iii)");
     expect(checkup).toContain("15154419");
     expect(row(status, "find_vaccination_clinic")).toContain("(iii)");
   });
