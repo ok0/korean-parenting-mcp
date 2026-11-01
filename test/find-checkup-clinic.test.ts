@@ -252,6 +252,13 @@ describe("find_checkup_clinic", () => {
     for (const input of scenarios) {
       const text = textOf(await run(input));
       expect(text).toContain("데이터를 조회하지 않으며");
+      expect(text).not.toContain("확인하지 못해");
+      expect(text).not.toContain("호출 명세");
+      expect(text).toContain("공공데이터포털(data.go.kr) 서비스 키가 설정된 환경에서는 지역별 검진기관 목록을 조회할 수 있고");
+      expect(text).toContain("키가 없으면 조회 대신 찾는 절차를 안내합니다");
+      expect(text).toContain("1577-1000");
+      expect(text).not.toContain("녹화");
+      expect(text).not.toMatch(/원격|remote/i);
       expect(text).toContain("비공식 도구");
       expect(text).toContain("최종 확인");
       expect(text).toContain("의료 면책");

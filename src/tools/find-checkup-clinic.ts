@@ -43,7 +43,7 @@ import { NOTICE_UNOFFICIAL, composeFooter } from "./shared/format.js";
 import { dateField, regionField } from "./shared/schema.js";
 
 const NOTICE_NO_LOOKUP =
-  "이 도구는 의료기관 데이터를 조회하지 않으며 안내와 링크만 제공하는 비공식 도구입니다. 검진기관 조회 API의 호출 명세를 아직 확인하지 못해 조회 대신 찾는 절차를 안내합니다. 영유아 검진기관 목록은 아래 메뉴 경로나 국민건강보험공단 고객센터(1577-1000)·보건소 전화로 확인하세요.";
+  "이 도구는 이번 요청에서 의료기관 데이터를 조회하지 않으며 안내와 링크만 제공하는 비공식 도구입니다. 공공데이터포털(data.go.kr) 서비스 키가 설정된 환경에서는 지역별 검진기관 목록을 조회할 수 있고, 키가 없으면 조회 대신 찾는 절차를 안내합니다. 영유아 검진기관 목록은 아래 메뉴 경로나 국민건강보험공단 고객센터(1577-1000)·보건소 전화로 확인하세요.";
 const NOTICE_RELATED = [
   "전체 검진·접종 일정은 get_timeline에서 아이 생년월일 기준으로 확인할 수 있습니다.",
   "지자체의 검진 관련 추가 지원이 궁금하면 find_benefits(예: keyword \"검진\")로 찾아보세요.",
