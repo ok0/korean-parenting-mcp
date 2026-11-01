@@ -17,7 +17,7 @@ import {
 } from "./lib/sample-mask.js";
 
 const USAGE =
-  "사용법: node build-scripts/scripts/record-sample.js <target> [name=value ...] [--name <id>] [--base <url>] [--op <operation>] [--max-items <n>] [--items-key <key>] [--key-env <NAME>] [--key-param <name>] [--note <path>] [--out-file <abs path>] [--timeout-ms <n>] [--bad-key] [--service] [--force] [--no-save]";
+  "사용법: node build-scripts/scripts/record-sample.js <target> [name=value ...] [--name <id>] [--base <url>] [--op <operation>] [--max-items <n>] [--items-key <key>] [--key-env <NAME>] [--key-param <name>] [--note <path>] [--out-file <abs path>] [--raw-out <abs path>] [--timeout-ms <n>] [--bad-key] [--service] [--force] [--no-save]";
 
 const VALUE_FLAGS = [
   "--name",
@@ -29,6 +29,7 @@ const VALUE_FLAGS = [
   "--key-param",
   "--note",
   "--out-file",
+  "--raw-out",
   "--timeout-ms",
 ] as const;
 const BOOL_FLAGS = ["--bad-key", "--service", "--force", "--no-save"] as const;
@@ -123,6 +124,7 @@ export async function main(
   const noSave = bools.has("--no-save");
   const force = bools.has("--force");
   const outFileRaw = values["--out-file"];
+  const rawOutRaw = values["--raw-out"];
   const noteRaw = values["--note"];
 
   let req: Request;
@@ -147,7 +149,7 @@ export async function main(
     params.push(["target", lawTarget]);
   } else {
     const specId = target;
-    if (!Object.hasOwn(SPECS, specId) || specId === "vaccClinic" || specId === "checkupClinic") {
+    if (!Object.hasOwn(SPECS, specId) || specId === "vaccClinic") {
       return usage(`알 수 없는 target: ${specId}`);
     }
     const spec = SPECS[specId as keyof typeof SPECS];
@@ -186,6 +188,10 @@ export async function main(
     outFile = outFileRaw;
   }
 
+  if (rawOutRaw !== undefined && (!isAbsolute(rawOutRaw) || !isOutsideRoot(root, rawOutRaw))) {
+    return usage("--raw-out은 저장소(root) 밖의 절대 경로여야 합니다");
+  }
+
   let notePath: string | undefined;
   if (noteRaw !== undefined) {
     const abs = resolve(root, noteRaw);
@@ -221,6 +227,10 @@ export async function main(
     complain(`이미 존재하는 파일이어서 호출하지 않습니다(--force로 덮어쓰기): ${outFile}\n`);
     return EXIT.USAGE;
   }
+  if (rawOutRaw !== undefined && existsSync(rawOutRaw) && !force) {
+    complain(`이미 존재하는 파일이어서 호출하지 않습니다(--force로 덮어쓰기): ${rawOutRaw}\n`);
+    return EXIT.USAGE;
+  }
 
   url.searchParams.set(req.keyParam, key);
   for (const [n, v] of params) url.searchParams.set(n, v);
@@ -246,6 +256,15 @@ export async function main(
 
   const summary = summarize(body, status, contentType);
   const masked = mask(body, secrets);
+  if (status !== null && rawOutRaw !== undefined) {
+    const rawLeaks = findLeaks(masked, secrets);
+    if (rawLeaks.length > 0) {
+      complain(`저장 거부: 마스킹 누락(${rawLeaks.join(", ")})\n`);
+      return EXIT.UNAVAILABLE;
+    }
+    mkdirSync(dirname(rawOutRaw), { recursive: true });
+    writeFileSync(rawOutRaw, masked, "utf8");
+  }
   const trimmed = trimItems(masked, summary.format, maxItems, itemsKey);
 
   let savedPath: string | undefined;
@@ -273,6 +292,7 @@ export async function main(
     `항목 수: ${trimmed.before < 0 ? "-" : `${trimmed.before}→${trimmed.after}`}`,
     `분류: ${summary.classification}`,
     `저장: ${savedPath !== undefined ? relative(root, savedPath) : "저장 안 함"}`,
+    `원본 사본: ${rawOutRaw !== undefined && status !== null ? rawOutRaw : "없음"}`,
   ];
   const block = lines.join("\n") + "\n";
   say(block);

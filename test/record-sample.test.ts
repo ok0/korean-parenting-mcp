@@ -155,6 +155,8 @@ describe("record-sample", () => {
       ),
     ).toBe(1);
     expect(await main(["nemcList", "--name", "x", "--base", "http://evil.example"], h.io, { root })).toBe(1);
+    expect(await main(["nemcList", "--name", "x", "--raw-out", join(root, "in.xml")], h.io, { root })).toBe(1);
+    expect(await main(["nemcList", "--name", "x", "--raw-out", "rel.xml"], h.io, { root })).toBe(1);
     expect(h.fetch).not.toHaveBeenCalled();
     expect(noKey.fetch).not.toHaveBeenCalled();
   });
@@ -181,5 +183,53 @@ describe("record-sample", () => {
     expect(code).toBe(0);
     const saved = readFileSync(join(root, "test/fixtures/data-go-kr/kasiHoliday/trim.xml"), "utf8");
     expect(saved.split("<item>").length - 1).toBe(3);
+  });
+
+  it("accepts checkupClinic with --base and --op and saves under its folder", async () => {
+    const root = newRoot();
+    const h = harness(ENV, xmlItems(5));
+    const code = await main(
+      [
+        "checkupClinic",
+        "siDoCd=11",
+        "siGunGuCd=590",
+        "--name",
+        "dongjak",
+        "--base",
+        "https://apis.data.go.kr/B550928/HmcSearchService",
+        "--op",
+        "getRegnHmcList",
+        "--max-items",
+        "5",
+      ],
+      h.io,
+      { root },
+    );
+    expect(code).toBe(0);
+    expect(existsSync(join(root, "test/fixtures/data-go-kr/checkupClinic/dongjak.xml"))).toBe(true);
+    const url = new URL(String(h.fetch.mock.calls[0]?.[0]));
+    expect(url.pathname.endsWith("/B550928/HmcSearchService/getRegnHmcList")).toBe(true);
+    expect(url.searchParams.get("siGunGuCd")).toBe("590");
+  });
+
+  it("checkupClinic without --base/--op is a usage error", async () => {
+    const root = newRoot();
+    const h = harness(ENV, xmlItems(1));
+    expect(await main(["checkupClinic", "--name", "x"], h.io, { root })).toBe(1);
+    expect(h.fetch).not.toHaveBeenCalled();
+  });
+
+  it("writes masked untrimmed raw copy outside root", async () => {
+    const root = newRoot();
+    const raw = join(newRoot(), "raw.xml");
+    const body = `${xmlItems(5)}<!-- ${KEY} -->`;
+    const h = harness(ENV, body);
+    const code = await main(["kasiHoliday", "solYear=2026", "--name", "r", "--raw-out", raw], h.io, { root });
+    expect(code).toBe(0);
+    const rawText = readFileSync(raw, "utf8");
+    expect(rawText.split("<item>").length - 1).toBe(5);
+    expect(findLeaks(rawText, [KEY])).toEqual([]);
+    const fixture = readFileSync(join(root, "test/fixtures/data-go-kr/kasiHoliday/r.xml"), "utf8");
+    expect(fixture.split("<item>").length - 1).toBe(3);
   });
 });
