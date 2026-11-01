@@ -165,7 +165,7 @@ export async function runSetup(opts: RunSetupOptions = {}): Promise<number> {
     const { home: h, overridden } = resolveHome(env, home);
     const desktopPath = desktopConfigPath(h, platform, env, overridden);
 
-    say("korean-parenting-mcp 설정 마법사 (비공식 도구)");
+    say("korean-parenting-mcp 설정 마법사");
     say(
       "API 키는 모두 선택 사항입니다. Enter로 건너뛸 수 있고, 키 없이도 get_timeline은 동작합니다. 입력한 키는 화면에 표시되지 않습니다.",
     );

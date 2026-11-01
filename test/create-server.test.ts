@@ -2,6 +2,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { describe, expect, it } from "vitest";
 import { createServer, type CreateServerOptions } from "../src/server/create-server.js";
+import { SOURCE_NOTICE } from "../src/core/notice.js";
 import { SERVER_INSTRUCTIONS } from "../src/server/instructions.js";
 import { allTools, type ToolDef } from "../src/tools/registry.js";
 import { createTestContext } from "./helpers/context.js";
@@ -26,9 +27,12 @@ describe("createServer", () => {
     expect(server.transport).toBeUndefined();
   });
 
-  it("instructions include unofficial notice", async () => {
+  it("instructions include source notice", async () => {
     const { client } = await connect();
-    expect(client.getInstructions()).toContain("비공식");
+    const lines = client.getInstructions()!.split("\n");
+    expect(lines[0]).toBe("korean-parenting-mcp는 한국 임신·출산·육아 일정과 공공 정보를 안내하는 MCP 서버입니다.");
+    expect(lines[1]).toBe(`${SOURCE_NOTICE} 신청 기한·지원 금액은 정부24·복지로·국민건강보험공단·관할 주민센터·보건소에서, 건강 문제는 의료진과 상의해 주세요.`);
+    expect(client.getInstructions()).not.toContain("비공식");
     expect(client.getInstructions()).toContain("due_date");
     expect(client.getInstructions()).toContain("birth_date");
     expect(client.getInstructions()).toContain("get_leave_article");

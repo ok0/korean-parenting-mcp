@@ -6,6 +6,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport, getDefaultEnvironment } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { LATEST_PROTOCOL_VERSION } from "@modelcontextprotocol/sdk/types.js";
 import { KEY_ENV } from "../../src/core/config.js";
+import { SOURCE_NOTICE } from "../../src/core/notice.js";
 
 const entry = fileURLToPath(new URL("../../build/index.js", import.meta.url));
 
@@ -37,7 +38,7 @@ describe("stdio e2e", () => {
     await client.connect(transport);
 
     expect(client.getServerVersion()?.name).toBe("korean-parenting-mcp");
-    expect(client.getInstructions()).toContain("비공식");
+    expect(client.getInstructions()!.split("\n")[1]).toBe(`${SOURCE_NOTICE} 신청 기한·지원 금액은 정부24·복지로·국민건강보험공단·관할 주민센터·보건소에서, 건강 문제는 의료진과 상의해 주세요.`);
     expect(client.getInstructions()).toContain("get_timeline");
     expect(client.getInstructions()).toContain("get_leave_article");
 

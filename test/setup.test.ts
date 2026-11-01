@@ -60,6 +60,7 @@ describe("setup wizard", () => {
     const code = await runSetup(setupOpts(home, io, createRecordingFs(home)));
 
     expect(code).toBe(0);
+    expect(io.outLines[0]).toBe("korean-parenting-mcp 설정 마법사");
     const servers = await readServers(desktopFile(home));
     expect(servers[ENTRY_NAME]).toEqual({
       command: "npx",
