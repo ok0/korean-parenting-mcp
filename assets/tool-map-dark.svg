@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="749" viewBox="0 0 1200 749" role="img" aria-labelledby="title desc" font-family="Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="766" viewBox="0 0 1200 766" role="img" aria-labelledby="title desc" font-family="Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif">
 <title id="title">육아 도우미 한 장 지도 (도구 10개)</title>
 <desc id="desc">부모의 질문을 AI 도우미가 받아 도구 10개 중 알맞은 것을 고르고, 도구는 미리 담아 둔 정보나 공공기관 자료로 답합니다. 도구: get_timeline, get_leave_article, find_night_pediatric, find_benefits, check_pregnancy_drug, check_recall, find_daycare, find_vaccination_clinic, find_checkup_clinic, find_kindergarten</desc>
-<rect x="0" y="0" width="1200" height="749" fill="#0F141A"/>
+<rect x="0" y="0" width="1200" height="766" fill="#0F141A"/>
 <text x="30" y="44" font-size="22" fill="#E8EDF2" data-max-w="1140" letter-spacing="-0.4" font-weight="700"><tspan x="30" y="44">질문 하나가 답이 되기까지 · 도구 10개</tspan></text>
 <text x="30" y="70" font-size="13" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="70">부모가 평소 말로 물으면, AI 도우미가 알맞은 도구를 골라 정보를 찾아 답해요.</tspan></text>
 <rect x="30" y="124" width="180" height="150" rx="8" fill="#1A222C" stroke="#3A4654"/>
@@ -102,6 +102,6 @@
 <rect x="466" y="656" width="66.7" height="16" rx="8" fill="#3A2A0A"/>
 <text x="474" y="668" font-size="11" fill="#FFD27A" data-max-w="50.7" letter-spacing="-0.1" font-weight="700"><tspan x="474" y="668">신청 필요</tspan></text>
 <text x="540.7" y="668" font-size="13" fill="#E8EDF2" data-max-w="629.3" letter-spacing="-0.1"><tspan x="540.7" y="668">공공기관에 따로 사용 신청을 해야 쓸 수 있어요</tspan></text>
-<text x="30" y="700" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="700">※ 출산·육아 일정 계산 도구는 미리 담아 둔 정보로 계산하고, 따로 신청해 두면 공휴일과 법령 변경 여부도 공공기관에서 확인해요.</tspan></text>
-<text x="30" y="721" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="721">비공식 도구예요. 공공기관 자료를 쓰지만 공공기관이 만든 서비스는 아니에요.</tspan></text>
+<text x="30" y="700" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="700">※ 출산·육아 일정 계산 도구는 미리 담아 둔 정보로 계산하고, 따로 신청해 두면 공휴일과 법령 변경 여부도 공공기관에서 확인해요. 영유아 검진 병원 찾기 안내 도구는 미리 담아 둔 안내를 보여 주고, 따로</tspan><tspan x="30" y="717">신청해 두면 사는 지역의 검진기관 목록도 공공기관에서 확인해요.</tspan></text>
+<text x="30" y="738" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="738">비공식 도구예요. 공공기관 자료를 쓰지만 공공기관이 만든 서비스는 아니에요.</tspan></text>
 </svg>
