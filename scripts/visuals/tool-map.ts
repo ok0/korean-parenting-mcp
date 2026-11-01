@@ -5,7 +5,7 @@ import {
   SOURCE_KIND_TEXT,
   TOOL_LABELS,
   assertLabelsCover,
-  optionalLive,
+  optionalLiveNote,
   sourceKind,
   type SourceKind,
   type ToolGroup,
@@ -239,13 +239,13 @@ export function renderToolMap(tools: readonly ToolDef[], theme: Theme): string {
   );
 
   let footerY = Ly + 32;
-  const optionalLabels = tools.filter(optionalLive).map((t) => labelOf(t.name).plain);
-  if (optionalLabels.length > 0) {
+  const optionalNote = optionalLiveNote(tools);
+  if (optionalNote !== undefined) {
     const y = Ly + 32;
     const note = textBlock({
       x: 30,
       y,
-      text: `※ ${optionalLabels.join(", ")} 도구는 미리 담아 둔 정보로 계산하고, 따로 신청해 두면 공휴일과 법령 변경 여부도 공공기관에서 확인해요.`,
+      text: optionalNote,
       maxWidth: 1140,
       fontSize: 12,
       fill: theme.muted,

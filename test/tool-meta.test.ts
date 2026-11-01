@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
+import { KEY_GUIDE } from "../src/core/errors.js";
+import { SERVER_INSTRUCTIONS } from "../src/server/instructions.js";
 import { allTools, defineTool } from "../src/tools/registry.js";
 import { boolField, dateField, intField, keywordField } from "../src/tools/shared/schema.js";
 import { checkToolMeta } from "./helpers/meta-check.js";
 import { badMetaTool, validFixtureTools } from "./helpers/fixture-tools.js";
+import { REMOTE_PROMISE_PATTERNS } from "./helpers/remote-wording.js";
+import { OFFICIAL_CLAIM_META, matchedPatterns } from "./helpers/wording.js";
 
 const doc = { purpose: "테스트 값", format: "형식", example: "예시값" };
 
@@ -60,16 +64,30 @@ describe("tool meta", () => {
     const daycare = allTools.find((t) => t.name === "find_daycare")!;
     expect(daycare.annotations.openWorldHint).toBe(false);
     expect(daycare.requiredKeys).toBeUndefined();
-    for (const name of ["find_vaccination_clinic", "find_checkup_clinic"]) {
-      const clinic = allTools.find((t) => t.name === name)!;
-      expect(clinic.annotations.openWorldHint).toBe(false);
-      expect(clinic.annotations.idempotentHint).toBe(true);
-      expect(clinic.requiredKeys).toBeUndefined();
-    }
+    const vaccination = allTools.find((t) => t.name === "find_vaccination_clinic")!;
+    expect(vaccination.annotations.openWorldHint).toBe(false);
+    expect(vaccination.annotations.idempotentHint).toBe(true);
+    expect(vaccination.requiredKeys).toBeUndefined();
+    const checkup = allTools.find((t) => t.name === "find_checkup_clinic")!;
+    expect(checkup.annotations.openWorldHint).toBe(true);
+    expect(checkup.annotations.idempotentHint).toBe(true);
+    expect(checkup.requiredKeys).toBeUndefined();
     const kindergarten = allTools.find((t) => t.name === "find_kindergarten")!;
     expect(kindergarten.annotations.openWorldHint).toBe(true);
     expect(kindergarten.annotations.idempotentHint).toBe(true);
     expect(kindergarten.requiredKeys).toEqual(["KINDERGARTEN"]);
+  });
+
+  it("checkup description and instructions explain key behavior", () => {
+    const checkup = allTools.find((t) => t.name === "find_checkup_clinic")!;
+    expect(checkup.description).toContain("DATA_GO_KR_SERVICE_KEY");
+    expect(checkup.description).toContain("키가 없거나");
+    expect(SERVER_INSTRUCTIONS).toContain("find_checkup_clinic(키 없으면 링크 안내");
+    expect(SERVER_INSTRUCTIONS).toContain("find_checkup_clinic이 지역 검진기관을 조회");
+    expect(matchedPatterns(checkup.description, REMOTE_PROMISE_PATTERNS)).toEqual([]);
+    expect(matchedPatterns(SERVER_INSTRUCTIONS, REMOTE_PROMISE_PATTERNS)).toEqual([]);
+    expect(matchedPatterns(checkup.description, OFFICIAL_CLAIM_META)).toEqual([]);
+    expect(KEY_GUIDE.DATA_GO_KR.tools).toEqual(["find_night_pediatric", "find_benefits", "check_pregnancy_drug"]);
   });
 
   it("checker rejects kindergarten portal claims", () => {

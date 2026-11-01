@@ -14,7 +14,7 @@ import { findLeaks, secretsFromEnv } from "../scripts/lib/sample-mask.js";
 import { EXAMPLE, exampleTimeline } from "../scripts/visuals/example.js";
 import { ASSET_FILES, FIGURES, PREVIEW_PATH, buildAll, diffAssets, previewHtml } from "../scripts/visuals/generate.js";
 import { facilityMarks, laneOf, renderLifeTimeline, stageBands } from "../scripts/visuals/life-timeline.js";
-import { TOOL_LABELS, assertLabelsCover, sourceKind } from "../scripts/visuals/labels.js";
+import { TOOL_LABELS, assertLabelsCover, optionalLiveNote, sourceKind } from "../scripts/visuals/labels.js";
 import { buildStories } from "../scripts/visuals/stories.js";
 import { THEMES, estimateWidth, stackBaselines, textBlock, textPairs } from "../scripts/visuals/theme.js";
 import {
@@ -165,6 +165,22 @@ describe("visual assets (M30)", () => {
         expect(body.includes("신청 필요"), t.name).toBe(Boolean(t.requiredKeys?.length));
       }
       expect(svg.match(/<g data-tool=/g)?.length ?? 0, f).toBe(allTools.length);
+    }
+  });
+
+  it("optional-live note has accurate per-tool wording", () => {
+    expect(optionalLiveNote(allTools)).toBe(
+      "※ 출산·육아 일정 계산 도구는 미리 담아 둔 정보로 계산하고, 따로 신청해 두면 공휴일과 법령 변경 여부도 공공기관에서 확인해요. 영유아 검진 병원 찾기 안내 도구는 미리 담아 둔 안내를 보여 주고, 따로 신청해 두면 사는 지역의 검진기관 목록도 공공기관에서 확인해요.",
+    );
+    expect(() =>
+      optionalLiveNote(
+        allTools.map((t) => (t.name === "find_daycare" ? { ...t, annotations: { ...t.annotations, openWorldHint: true } } : t)),
+      ),
+    ).toThrow(/find_daycare/);
+    for (const f of ["tool-map-light.svg", "tool-map-dark.svg"]) {
+      const v = visibleText(svgOf(f)).replace(/\s+/g, " ");
+      expect(v, f).toContain("사는 지역의 검진기관 목록도");
+      expect(v, f).toContain("공휴일과 법령 변경 여부도");
     }
   });
 

@@ -1,5 +1,5 @@
 {
-  "instructions": "korean-parenting-mcp는 한국 임신·출산·육아 일정과 공공 정보를 안내하는 비공식 MCP 서버입니다.\n비공식 도구 고지: 이 서버는 정부·공공기관의 공식 서비스가 아니며 결과는 참고용입니다. 신청 기한·지원 금액·의료 판단은 공식 기관(정부24, 복지로, 국민건강보험공단, 관할 주민센터·보건소)과 의료진에게 확인하세요.\n사용 순서: 임신 중이면 출산예정일(due_date), 출산 후면 아기 생년월일(birth_date) 중 하나로 먼저 get_timeline을 호출해 일정·기한을 확인한 뒤, 필요한 경우 다른 도구를 고르세요. 배우자 출산휴가·출산전후휴가·육아휴직의 근거 법 조문 원문이 필요하면 get_leave_article(LAW_OC 필요)을 사용하세요. 지역의 야간·휴일 소아 진료기관(달빛어린이병원·소아청소년과)과 지금 진료 여부가 필요하면 find_night_pediatric(DATA_GO_KR_SERVICE_KEY 필요)을 사용하세요. 임신·출산·영유아 지원 서비스(보조금24 목록)를 지역·키워드로 찾으려면 find_benefits(DATA_GO_KR_SERVICE_KEY 필요)를, 약의 임부금기 정보(식약처 DUR)를 확인하려면 check_pregnancy_drug(DATA_GO_KR_SERVICE_KEY 필요, 복용 판단은 의료진·약사와 상담)를 사용하세요. 어린이제품의 리콜·안전성조사 이력을 제품명으로 확인하려면 check_recall(SAFETYKOREA_AUTH_KEY 필요)을, 어린이집 검색·입소대기 신청 링크와 확인 항목 안내가 필요하면 find_daycare(키 불필요, 외부 조회 없이 링크 안내)를 사용하세요. 예방접종 위탁의료기관을 찾는 절차와 아이 월령에 맞는 접종 차수 안내가 필요하면 find_vaccination_clinic(키 불필요, 외부 조회 없이 링크 안내)을, 영유아 건강검진 기관을 찾는 절차와 검진 회차 안내가 필요하면 find_checkup_clinic(키 불필요, 외부 조회 없이 링크 안내)을 사용하세요. 지역(시군구) 유치원의 연령반 정원·현원과 공시 기준 여석 추정이 필요하면 find_kindergarten(KINDERGARTEN_API_KEY 필요, 여석은 실시간 현황이 아닌 추정치)을 사용하세요. 사용 가능한 도구는 tools/list 결과를 기준으로 하세요.\nAPI 키: LAW_OC(법제처)는 get_leave_article에 필요하고, 있으면 get_timeline이 근거 문서 개정 여부를 확인합니다(없으면 확인 생략). DATA_GO_KR_SERVICE_KEY(공공데이터포털)는 find_night_pediatric, find_benefits, check_pregnancy_drug에 필요하고, 있으면 get_timeline이 공휴일을 실시간으로 확인합니다. SAFETYKOREA_AUTH_KEY(제품안전정보센터 서비스 ID)는 check_recall에 필요합니다. KINDERGARTEN_API_KEY(유치원알리미)는 find_kindergarten에 필요합니다. find_daycare, find_vaccination_clinic, find_checkup_clinic은 키가 필요 없습니다. 키가 없으면 해당 도구가 설정 방법을 안내합니다.",
+  "instructions": "korean-parenting-mcp는 한국 임신·출산·육아 일정과 공공 정보를 안내하는 비공식 MCP 서버입니다.\n비공식 도구 고지: 이 서버는 정부·공공기관의 공식 서비스가 아니며 결과는 참고용입니다. 신청 기한·지원 금액·의료 판단은 공식 기관(정부24, 복지로, 국민건강보험공단, 관할 주민센터·보건소)과 의료진에게 확인하세요.\n사용 순서: 임신 중이면 출산예정일(due_date), 출산 후면 아기 생년월일(birth_date) 중 하나로 먼저 get_timeline을 호출해 일정·기한을 확인한 뒤, 필요한 경우 다른 도구를 고르세요. 배우자 출산휴가·출산전후휴가·육아휴직의 근거 법 조문 원문이 필요하면 get_leave_article(LAW_OC 필요)을 사용하세요. 지역의 야간·휴일 소아 진료기관(달빛어린이병원·소아청소년과)과 지금 진료 여부가 필요하면 find_night_pediatric(DATA_GO_KR_SERVICE_KEY 필요)을 사용하세요. 임신·출산·영유아 지원 서비스(보조금24 목록)를 지역·키워드로 찾으려면 find_benefits(DATA_GO_KR_SERVICE_KEY 필요)를, 약의 임부금기 정보(식약처 DUR)를 확인하려면 check_pregnancy_drug(DATA_GO_KR_SERVICE_KEY 필요, 복용 판단은 의료진·약사와 상담)를 사용하세요. 어린이제품의 리콜·안전성조사 이력을 제품명으로 확인하려면 check_recall(SAFETYKOREA_AUTH_KEY 필요)을, 어린이집 검색·입소대기 신청 링크와 확인 항목 안내가 필요하면 find_daycare(키 불필요, 외부 조회 없이 링크 안내)를 사용하세요. 예방접종 위탁의료기관을 찾는 절차와 아이 월령에 맞는 접종 차수 안내가 필요하면 find_vaccination_clinic(키 불필요, 외부 조회 없이 링크 안내)을, 영유아 건강검진 기관을 찾는 절차와 검진 회차 안내가 필요하면 find_checkup_clinic(키 없으면 링크 안내, DATA_GO_KR_SERVICE_KEY를 직접 설정해 실행하면 지역 검진기관 조회도 함께)을 사용하세요. 지역(시군구) 유치원의 연령반 정원·현원과 공시 기준 여석 추정이 필요하면 find_kindergarten(KINDERGARTEN_API_KEY 필요, 여석은 실시간 현황이 아닌 추정치)을 사용하세요. 사용 가능한 도구는 tools/list 결과를 기준으로 하세요.\nAPI 키: LAW_OC(법제처)는 get_leave_article에 필요하고, 있으면 get_timeline이 근거 문서 개정 여부를 확인합니다(없으면 확인 생략). DATA_GO_KR_SERVICE_KEY(공공데이터포털)는 find_night_pediatric, find_benefits, check_pregnancy_drug에 필요하고, 있으면 get_timeline이 공휴일을 실시간으로 확인하고 find_checkup_clinic이 지역 검진기관을 조회합니다. SAFETYKOREA_AUTH_KEY(제품안전정보센터 서비스 ID)는 check_recall에 필요합니다. KINDERGARTEN_API_KEY(유치원알리미)는 find_kindergarten에 필요합니다. find_daycare, find_vaccination_clinic, find_checkup_clinic은 키 없이 쓸 수 있습니다. 키가 없으면 해당 도구가 설정 방법을 안내합니다.",
   "tools": [
     {
       "name": "get_timeline",
@@ -372,8 +372,8 @@
     },
     {
       "name": "find_checkup_clinic",
-      "title": "영유아 건강검진 기관 찾기 안내(조회 없음)",
-      "description": "지역과 아이 생년월일(또는 출산예정일)에 맞춰 영유아 건강검진 기관을 찾는 메뉴 경로와 시도·시군구 선택 절차, 국민건강보험공단 고객센터·보건소 문의처, 방문 전 전화 확인 사항과 준비물, 표준 시기 데이터로 계산한 현재·다음 검진 회차(건강검진 8회·구강검진 4회)를 안내합니다. 검진기관 데이터를 조회하지 않아 기관 목록·예약 가능 여부나 검진 결과는 알려주지 않으며 일반 안내만 담은 비공식 참고 도구입니다. API 키가 필요 없습니다.",
+      "title": "영유아 건강검진 기관 찾기 안내·조회",
+      "description": "지역과 아이 생년월일(또는 출산예정일)에 맞춰 영유아 건강검진 기관 찾기를 돕습니다. 공공데이터포털 키(DATA_GO_KR_SERVICE_KEY)를 직접 설정해 실행하면 시군구의 국민건강보험공단 검진기관 찾기 조회 결과에서 영유아 건강검진·구강검진 담당으로 표시된 기관의 이름·종별·주소·전화를 함께 보여 줍니다. 키가 없거나 조회하지 못하면 기관 목록 없이 안내만 합니다. 조회 여부와 관계없이 메뉴 경로와 시도·시군구 선택 절차, 국민건강보험공단 고객센터·보건소 문의처, 방문 전 전화 확인 사항과 준비물, 표준 시기 데이터로 계산한 현재·다음 검진 회차(건강검진 8회·구강검진 4회)를 안내합니다. 예약 가능 여부나 검진 결과는 알려주지 않으며 일반 안내만 담은 비공식 참고 도구입니다. 키 없이도 쓸 수 있습니다.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -400,7 +400,7 @@
       "annotations": {
         "readOnlyHint": true,
         "idempotentHint": true,
-        "openWorldHint": false
+        "openWorldHint": true
       }
     },
     {

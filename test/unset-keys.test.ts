@@ -77,6 +77,8 @@ describe("unset keys", () => {
 
     const checkup = await runTool(findCheckupClinicTool, { region: "성동구" }, ctx);
     expect(checkup.isError).toBeFalsy();
+    expect(findCheckupClinicTool.requiredKeys).toBeUndefined();
+    expect((checkup.content[0] as { text: string }).text).toContain("데이터를 조회하지 않으며");
 
     expect(fetchSpy).not.toHaveBeenCalled();
   });

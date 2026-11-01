@@ -40,6 +40,22 @@ export function optionalLive(t: ToolDef): boolean {
   return !(t.requiredKeys?.length) && t.annotations.openWorldHint;
 }
 
+/** 키 없이 쓰되 신청해 두면 공공기관에서 더 확인하는 도구별 문구(그림 주석용). */
+export const OPTIONAL_LIVE_TEXT: Readonly<Record<string, { base: string; live: string }>> = {
+  get_timeline: { base: "미리 담아 둔 정보로 계산하고", live: "공휴일과 법령 변경 여부도" },
+  find_checkup_clinic: { base: "미리 담아 둔 안내를 보여 주고", live: "사는 지역의 검진기관 목록도" },
+};
+
+export function optionalLiveNote(tools: readonly ToolDef[]): string | undefined {
+  const parts = tools.filter(optionalLive).map((t) => {
+    const label = TOOL_LABELS[t.name];
+    const text = OPTIONAL_LIVE_TEXT[t.name];
+    if (!label || !text) throw new Error(`선택 조회 문구 없음: ${t.name}`);
+    return `${label.plain} 도구는 ${text.base}, 따로 신청해 두면 ${text.live} 공공기관에서 확인해요.`;
+  });
+  return parts.length > 0 ? `※ ${parts.join(" ")}` : undefined;
+}
+
 export function assertLabelsCover(tools: readonly ToolDef[]): void {
   const names = new Set(tools.map((t) => t.name));
   const labelKeys = new Set(Object.keys(TOOL_LABELS));

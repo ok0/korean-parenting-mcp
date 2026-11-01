@@ -27,7 +27,7 @@ export interface CheckupClinic {
 export interface CheckupLookup {
   items: CheckupClinic[];
   total: number;
-  fetched: number;
+  received: number;
 }
 
 export function checkupRegionParams(region: Region): CheckupRegionCheck {
@@ -72,5 +72,5 @@ export async function lookupCheckupClinics(
   const items = r.items
     .map(toCheckupClinic)
     .filter((c): c is CheckupClinic => c !== undefined);
-  return { items, total: r.totalCount ?? r.items.length, fetched: r.items.length };
+  return { items, total: r.totalCount ?? r.items.length, received: r.items.length };
 }

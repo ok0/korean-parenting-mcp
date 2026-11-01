@@ -118,7 +118,7 @@ describe("lookupCheckupClinics", () => {
     expect(url.searchParams.get("numOfRows")).toBe(String(CHECKUP_PAGE_ROWS));
     expect(url.searchParams.get("serviceKey")).toBe(TEST_KEY);
     expect(r.total).toBe(225);
-    expect(r.fetched).toBe(5);
+    expect(r.received).toBe(5);
     expect(r.items).toHaveLength(5);
   });
 
