@@ -197,7 +197,7 @@ describe("find_checkup_clinic keyed lookup", () => {
     expect(t.length).toBeLessThanOrEqual(8000);
     expect(t).toContain("최종 확인");
     expect(t).toContain("의료 면책");
-    expect(t).toContain("비공식 도구 고지");
+    expect(t).toContain("공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.");
   });
 
   it("AC3 total above the fetched rows shows the partial-check notice", async () => {
@@ -220,7 +220,7 @@ describe("find_checkup_clinic keyed lookup", () => {
     expect(t.length).toBeLessThanOrEqual(1000);
     expect(t).toContain("최종 확인");
     expect(t).toContain("의료 면책");
-    expect(t).toContain("비공식 도구 고지");
+    expect(t).toContain("공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.");
   });
 
   it("AC4 keyed without region makes no call and matches keyless output", async () => {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { KEY_GUIDE } from "../../src/core/errors.js";
 import { allTools } from "../../src/tools/registry.js";
-import { NOTICE_UNOFFICIAL } from "../../src/tools/shared/format.js";
+import { NOTICE_SOURCE } from "../../src/tools/shared/format.js";
 import { SERVER_INSTRUCTIONS } from "../../src/server/instructions.js";
 import { resolveBasis } from "../../src/data-store/load.js";
 import {
@@ -84,7 +84,7 @@ describe("remote allowlist policy", () => {
     expect(fb).not.toHaveProperty("isError");
     const text = fb!.content[0]!.text;
     expect(text).toContain("https://www.safetykorea.kr");
-    expect(text).toContain(NOTICE_UNOFFICIAL);
+    expect(text).toContain(NOTICE_SOURCE);
     expect(text).toContain(KEY_GUIDE.SAFETYKOREA.url);
     expect(excludedFallback("get_timeline")).toBeUndefined();
     expect(excludedFallback("nope")).toBeUndefined();

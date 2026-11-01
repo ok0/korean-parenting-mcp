@@ -7,7 +7,7 @@ import type { TimelineInput, TimelineItem, TimelineResult } from "../src/timelin
 import {
   DISCLAIMER_MEDICAL_LEGAL,
   ESTIMATED_NOTE,
-  NOTICE_UNOFFICIAL,
+  NOTICE_SOURCE,
   NOTICE_VACCINATION_SCOPE,
 } from "../src/tools/shared/format.js";
 
@@ -103,7 +103,7 @@ describe("timeline render", () => {
     expect(footer).not.toContain("자동 확인은 아직 제공하지 않");
     expect(footer).toContain("공휴일: 번들(생성일 2026-10-28)");
     expect(footer).toContain(DISCLAIMER_MEDICAL_LEGAL);
-    expect(footer).toContain(NOTICE_UNOFFICIAL);
+    expect(footer).toContain(NOTICE_SOURCE);
     expect(footer).toContain("2026년 국가예방접종 지침");
     expect(footer).toContain("KDCA 게시물 309683");
     expect(footer).toContain("개정 2026-10-02");

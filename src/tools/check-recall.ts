@@ -15,7 +15,7 @@ import {
 import type { ToolDef, ToolOutput } from "./registry.js";
 import {
   composeFooter,
-  NOTICE_UNOFFICIAL,
+  NOTICE_SOURCE,
   partialNotice,
   type SourceRef,
   sourceFooter,
@@ -204,7 +204,7 @@ async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise
       formatKstMinute(ctx.clock.now()),
     ),
     DISCLAIMER_RECALL,
-    NOTICE_UNOFFICIAL,
+    NOTICE_SOURCE,
   ]);
 
   return { body: body.join("\n"), footer };

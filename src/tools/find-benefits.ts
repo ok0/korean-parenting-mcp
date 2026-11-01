@@ -22,7 +22,7 @@ import { settleWithin } from "../core/deadline.js";
 import { ToolError } from "../core/errors.js";
 import { normalizeRegion, type Region } from "../region/normalize.js";
 import type { ToolDef, ToolOutput } from "./registry.js";
-import { NOTICE_UNOFFICIAL, composeFooter, sourceFooter, summarizeList, zeroResultHint } from "./shared/format.js";
+import { NOTICE_SOURCE, composeFooter, sourceFooter, summarizeList, zeroResultHint } from "./shared/format.js";
 import { enumField, intField, keywordField, regionField } from "./shared/schema.js";
 
 const DEFAULT_LIMIT = 5;
@@ -86,7 +86,7 @@ function regionGuidance(message: string, candidates: { sido: string; sigungu?: s
       candidates.map((c) => `- ${c.sido} ${c.sigungu ?? ""}`.trim()).join("\n") +
       "\n후보 중 하나를 region으로 다시 조회하세요.";
   }
-  return { body, footer: composeFooter([NOTICE_UNOFFICIAL]) };
+  return { body, footer: composeFooter([NOTICE_SOURCE]) };
 }
 
 function toToolError(e: unknown): ToolError {
@@ -274,7 +274,7 @@ async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise
     NOTICE_MATCH,
     region ? NOTICE_REGION : undefined,
     NOTICE_NO_APPLY,
-    NOTICE_UNOFFICIAL,
+    NOTICE_SOURCE,
   ]);
 
   return { body: body.join("\n"), footer };

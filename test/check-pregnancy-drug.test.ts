@@ -207,7 +207,7 @@ describe("check_pregnancy_drug cache and errors", () => {
     const text = textOf(res);
     expect(text).toContain("식품의약품안전처");
     expect(text).toContain("조회 시각");
-    expect(text).toContain("비공식 도구 고지");
+    expect(text).toContain("공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.");
   });
 
   it("never leaks key", async () => {

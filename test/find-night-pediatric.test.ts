@@ -85,7 +85,7 @@ describe("find_night_pediatric summary", () => {
     expect(text).toContain("119");
     expect(text).toContain("전화로 확인");
     expect(text).toContain("의료 면책");
-    expect(text).toContain("비공식");
+    expect(text).toContain("공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.");
 
     const moonUrl = mock.last("moon")!;
     expect(new Set(moonUrl.searchParams.keys())).toEqual(new Set(["serviceKey", "Q0", "Q1", "numOfRows"]));
@@ -298,7 +298,7 @@ describe("find_night_pediatric fetch and caching", () => {
     const res = await run({ region: "성동구", limit: 10 }, nemcCtx(mock, { env: { KPM_MAX_RESPONSE_CHARS: "1000" } }));
     const text = textOf(res);
     expect(text.length).toBeLessThanOrEqual(1000);
-    expect(text).toContain("비공식 도구 고지");
+    expect(text).toContain("공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.");
     expect(text).toContain("119");
   });
 

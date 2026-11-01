@@ -4,7 +4,7 @@ import type { ToolContext } from "../core/context.js";
 import { ToolError } from "../core/errors.js";
 import { loadData, resolveBasis } from "../data-store/load.js";
 import type { ToolDef, ToolOutput } from "./registry.js";
-import { NOTICE_UNOFFICIAL, composeFooter, verifiedText } from "./shared/format.js";
+import { NOTICE_SOURCE, composeFooter, verifiedText } from "./shared/format.js";
 import { enumField } from "./shared/schema.js";
 
 const ARTICLE_TEXT_MAX = 4000;
@@ -41,7 +41,7 @@ function footerOf(ctx: ToolContext, url: string): string {
   return composeFooter([
     `출처: ${SOURCE_NAME} (조회 시각 ${kst(ctx.clock.now())} KST) · 원문 ${url}`,
     NOTICE_LEGAL_ARTICLE,
-    NOTICE_UNOFFICIAL,
+    NOTICE_SOURCE,
   ]);
 }
 

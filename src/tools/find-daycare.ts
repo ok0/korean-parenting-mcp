@@ -11,7 +11,7 @@ import {
 } from "../daycare/guide.js";
 import { normalizeRegion, type Region } from "../region/normalize.js";
 import type { ToolDef, ToolOutput } from "./registry.js";
-import { NOTICE_UNOFFICIAL, composeFooter, verifiedText } from "./shared/format.js";
+import { NOTICE_SOURCE, composeFooter, verifiedText } from "./shared/format.js";
 import { dateField, regionField } from "./shared/schema.js";
 
 const NOTICE_NO_LOOKUP =
@@ -141,7 +141,7 @@ async function findDaycare(args: Args, ctx: ToolContext, provider: DaycareLinkPr
   const footer = composeFooter([
     NOTICE_FINAL,
     `안내 데이터 기준일 ${g.as_of} · 조회 없음(외부 호출 0회)`,
-    NOTICE_UNOFFICIAL,
+    NOTICE_SOURCE,
   ]);
 
   return { body: body.join("\n"), footer };

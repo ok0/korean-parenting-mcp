@@ -5,7 +5,7 @@ import { resolveBasis } from "../src/data-store/load.js";
 import type { BasisDoc } from "../src/data-store/schema.js";
 import { checkRevisions, REVISION_TEXT, storedFields } from "../src/provenance/revision-check.js";
 import { getTimelineTool } from "../src/tools/get-timeline.js";
-import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_UNOFFICIAL, NOTICE_VACCINATION_SCOPE } from "../src/tools/shared/format.js";
+import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_SOURCE, NOTICE_VACCINATION_SCOPE } from "../src/tools/shared/format.js";
 import { createTestContext } from "./helpers/context.js";
 import { createLawMock, htmlRes, jsonRes, sameAsStored, type LawMock, type LawRoute } from "./helpers/law-mock.js";
 
@@ -197,7 +197,7 @@ describe("get_timeline revision status integration (mocked law.go.kr)", () => {
       expect(r.isError, name).toBeFalsy();
       const t = text(r);
       expect(t, name).toContain(DISCLAIMER_MEDICAL_LEGAL);
-      expect(t, name).toContain(NOTICE_UNOFFICIAL);
+      expect(t, name).toContain(NOTICE_SOURCE);
       expect(body(t), name).toBe(body(plain));
       const docs = footerDocs(t);
       for (const doc of targets) {
@@ -307,7 +307,7 @@ describe("get_timeline revision status integration (mocked law.go.kr)", () => {
     expect(lt).toContain(" 원문: https://www.law.go.kr/");
     expect(lt).toContain("개정 확인 요약:");
     expect(lt).toContain(DISCLAIMER_MEDICAL_LEGAL);
-    expect(lt).toContain(NOTICE_UNOFFICIAL);
+    expect(lt).toContain(NOTICE_SOURCE);
     expect(lt).toContain("공휴일: 번들(생성일");
     expect(countOf(lt, NOTICE_VACCINATION_SCOPE)).toBe(1);
     expect(lt).not.toContain("자동 확인은 아직 제공하지 않");

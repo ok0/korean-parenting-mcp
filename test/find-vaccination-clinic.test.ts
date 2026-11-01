@@ -277,7 +277,7 @@ describe("find_vaccination_clinic", () => {
     expect(text.length).toBeLessThanOrEqual(1000);
     expect(text).toContain("최종 확인");
     expect(text).toContain("의료 면책");
-    expect(text).toContain("비공식 도구 고지");
+    expect(text).toContain("공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.");
 
     const normal = createTestContext();
     const full = textOf(await runTool(findVaccinationClinicTool, {}, normal));

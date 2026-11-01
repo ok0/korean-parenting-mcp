@@ -5,7 +5,7 @@ import type { ToolOutput } from "../tools/registry.js";
 import {
   DISCLAIMER_MEDICAL_LEGAL,
   ESTIMATED_NOTE,
-  NOTICE_UNOFFICIAL,
+  NOTICE_SOURCE,
   NOTICE_VACCINATION_SCOPE,
   basisFooter,
   composeFooter,
@@ -92,7 +92,7 @@ export function renderTimeline(
     result.warnings.length > 0 ? ["주의:", ...result.warnings.map((w) => `- ${w}`)].join("\n") : undefined,
     result.items.some((it) => it.category === "접종") ? NOTICE_VACCINATION_SCOPE : undefined,
     DISCLAIMER_MEDICAL_LEGAL,
-    NOTICE_UNOFFICIAL,
+    NOTICE_SOURCE,
   ]);
   const footer = local ? `${renderLocalSection(local)}\n\n${footerCore}` : footerCore;
 

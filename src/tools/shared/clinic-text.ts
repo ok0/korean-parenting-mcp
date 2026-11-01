@@ -6,7 +6,7 @@ import { formatDate, parseDate, todayKst, type CivilDate } from "../../date/civi
 import { resolveBasis } from "../../data-store/load.js";
 import type { Provenance } from "../../data-store/schema.js";
 import { normalizeRegion, type Region } from "../../region/normalize.js";
-import { NOTICE_UNOFFICIAL, composeFooter, verifiedText } from "./format.js";
+import { NOTICE_SOURCE, composeFooter, verifiedText } from "./format.js";
 
 export const NOTICE_LINK_CHANGE_CLINIC =
   "링크 변경 가능: 누리집 개편에 따라 주소나 메뉴가 바뀔 수 있습니다. 링크가 열리지 않으면 첫 화면(대체 링크)에서 메뉴를 찾아가세요. 바로가기 주소를 확인하지 못한 항목은 메뉴 경로로만 적었습니다(확인 필요).";
@@ -153,6 +153,6 @@ export function clinicFooter(asOf: string): string {
     NOTICE_FINAL_CLINIC,
     NOTICE_MEDICAL_CLINIC,
     `안내 데이터 기준일 ${asOf} · 조회 없음(외부 호출 0회)`,
-    NOTICE_UNOFFICIAL,
+    NOTICE_SOURCE,
   ]);
 }

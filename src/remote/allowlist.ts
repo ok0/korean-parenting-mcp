@@ -2,7 +2,7 @@ import type { ToolResult } from "../core/errors.js";
 import { KEY_GUIDE } from "../core/errors.js";
 import { loadData, resolveBasis } from "../data-store/load.js";
 import type { ToolDef } from "../tools/registry.js";
-import { NOTICE_UNOFFICIAL } from "../tools/shared/format.js";
+import { NOTICE_SOURCE } from "../tools/shared/format.js";
 import { SERVER_INSTRUCTIONS } from "../server/instructions.js";
 import { REMOTE_INPUT_NOTICE, REMOTE_LAW_NOTICE } from "./privacy.js";
 
@@ -219,7 +219,7 @@ export function excludedFallback(name: string, policy: readonly RemotePolicy[] =
     r.summary,
     ...r.links.map((l) => `- ${l.title}: ${l.url}`),
     "",
-    NOTICE_UNOFFICIAL,
+    NOTICE_SOURCE,
   ].join("\n");
   return { content: [{ type: "text", text }] };
 }

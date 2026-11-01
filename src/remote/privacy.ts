@@ -1,4 +1,4 @@
-import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_UNOFFICIAL } from "../tools/shared/format.js";
+import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_SOURCE } from "../tools/shared/format.js";
 
 export interface HostingDisclosure {
   provider: string;
@@ -66,7 +66,7 @@ export function isKoreaCountry(country: string): boolean {
 }
 
 function skeleton(title: string, body: string): string {
-  const footer = `<footer><p>${escapeHtml(NOTICE_UNOFFICIAL)}</p><p>${escapeHtml(DISCLAIMER_MEDICAL_LEGAL)}</p></footer>`;
+  const footer = `<footer><p>${escapeHtml(NOTICE_SOURCE)}</p><p>${escapeHtml(DISCLAIMER_MEDICAL_LEGAL)}</p></footer>`;
   return `<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>${title}</title>\n<style>body{font-family:sans-serif;max-width:46rem;margin:2rem auto;padding:0 1rem;line-height:1.6}</style>\n</head>\n<body>${body}${footer}</body>\n</html>\n`;
 }
 
@@ -113,6 +113,6 @@ export function renderPrivacyPage(opts: { contact: string; host: string; hosting
 }
 
 export function renderLandingPage(opts: { host: string }): string {
-  const body = `<h1>korean-parenting-mcp 원격 서버</h1><p>한국 임신·출산·육아 일정과 공공 정보를 안내하는 비공식 MCP 서버의 원격 접속 주소입니다.</p><p>커넥터 URL: <code>https://${escapeHtml(opts.host)}/mcp</code></p><p><a href="/privacy">개인정보 처리방침</a></p><p>${escapeHtml(REMOTE_LAW_NOTICE)}</p><p>${escapeHtml(REMOTE_INPUT_NOTICE)}</p><p>건강 정보 입력이 신경 쓰이면 npm 패키지나 .mcpb 번들로 설치하는 로컬 모드를 사용하세요.</p>`;
+  const body = `<h1>korean-parenting-mcp 원격 서버</h1><p>한국 임신·출산·육아 일정과 공공 정보를 안내하는 MCP 서버의 원격 접속 주소입니다.</p><p>커넥터 URL: <code>https://${escapeHtml(opts.host)}/mcp</code></p><p><a href="/privacy">개인정보 처리방침</a></p><p>${escapeHtml(REMOTE_LAW_NOTICE)}</p><p>${escapeHtml(REMOTE_INPUT_NOTICE)}</p><p>건강 정보 입력이 신경 쓰이면 npm 패키지나 .mcpb 번들로 설치하는 로컬 모드를 사용하세요.</p>`;
   return skeleton("korean-parenting-mcp 원격 서버", body);
 }

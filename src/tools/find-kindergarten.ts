@@ -19,7 +19,7 @@ import {
 } from "../kindergarten/summarize.js";
 import { kindergartenQuery, normalizeRegion, type Region } from "../region/normalize.js";
 import type { ToolDef, ToolOutput } from "./registry.js";
-import { NOTICE_UNOFFICIAL, composeFooter, sourceFooter, summarizeList } from "./shared/format.js";
+import { NOTICE_SOURCE, composeFooter, sourceFooter, summarizeList } from "./shared/format.js";
 import { intField, keywordField, regionField } from "./shared/schema.js";
 
 const DEFAULT_LIMIT = 10;
@@ -81,7 +81,7 @@ function guidance(message: string, candidates: readonly Region[]): ToolOutput {
       candidates.map((c) => `- ${c.sido} ${c.sigungu ?? ""}`.trim()).join("\n") +
       "\n후보 중 하나를 region으로 다시 조회하세요.";
   }
-  return { body, footer: composeFooter([NOTICE_UNOFFICIAL]) };
+  return { body, footer: composeFooter([NOTICE_SOURCE]) };
 }
 
 function line(latest: string | undefined, age?: KgAge): (row: KgRow, i: number) => string {
@@ -184,7 +184,7 @@ async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise
     rounds.length > 0 ? `공시 차수: ${rounds.map((x) => roundLabel(x)).join(", ")}` : "공시 차수: 조회된 항목 없음",
     NOTICE_ESTIMATE,
     NOTICE_CONFIRM,
-    NOTICE_UNOFFICIAL,
+    NOTICE_SOURCE,
   ]);
   return { body: lines.join("\n"), footer };
 }

@@ -23,7 +23,7 @@ import {
 } from "../clinic/night-hours.js";
 import { normalizeRegion, nemcQuery } from "../region/normalize.js";
 import type { ToolDef, ToolOutput } from "./registry.js";
-import { NOTICE_UNOFFICIAL, composeFooter, partialNotice, sourceFooter, summarizeList, zeroResultHint } from "./shared/format.js";
+import { NOTICE_SOURCE, composeFooter, partialNotice, sourceFooter, summarizeList, zeroResultHint } from "./shared/format.js";
 import { describeField, intField, regionField } from "./shared/schema.js";
 
 const MOON_ROWS = 50;
@@ -94,7 +94,7 @@ function regionGuidance(message: string, candidates: { sido: string; sigungu?: s
       candidates.map((c) => `- ${c.sido} ${c.sigungu ?? ""}`.trim()).join("\n") +
       "\n후보 중 하나를 region으로 다시 조회하세요.";
   }
-  return { body, footer: composeFooter([NOTICE_UNOFFICIAL]) };
+  return { body, footer: composeFooter([NOTICE_SOURCE]) };
 }
 
 function slotOf(cal: HolidayCalendar, date: CivilDate): { slot: DaySlot; missingYear: boolean } {
@@ -237,7 +237,7 @@ async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise
     NOTICE_CALL_AHEAD,
     NOTICE_EMERGENCY,
     DISCLAIMER_CLINIC,
-    NOTICE_UNOFFICIAL,
+    NOTICE_SOURCE,
   ]);
 
   return { body: body.join("\n"), footer };

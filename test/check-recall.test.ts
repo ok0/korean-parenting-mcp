@@ -217,7 +217,7 @@ describe("check_recall summary", () => {
     const text = textOf(res);
     expect(text.length).toBeLessThanOrEqual(1500);
     expect(text).not.toContain("가".repeat(200));
-    for (const w of ["출처:", "조회 시각", "비공식 도구 고지", "최종 확인"]) expect(text).toContain(w);
+    for (const w of ["출처:", "조회 시각", "공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.", "최종 확인"]) expect(text).toContain(w);
   });
 
   it("wording: success, zero, partial and capped outputs avoid assertive safety and official claims", async () => {
@@ -294,7 +294,7 @@ describe("check_recall summary", () => {
     }
   });
 
-  it("footer lists sources, the recall disclaimer and the unofficial notice", async () => {
+  it("footer lists sources, the recall disclaimer and the source notice", async () => {
     const text = await runText({ product_name: "유모차" }, skCtx(createSkMock()));
     for (const w of [
       "제품안전정보센터(SafetyKorea) Open API",
@@ -302,7 +302,7 @@ describe("check_recall summary", () => {
       "조회 시각",
       "KST",
       "리콜 여부 판단",
-      "비공식 도구 고지",
+      "공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.",
     ]) {
       expect(text).toContain(w);
     }

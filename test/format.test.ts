@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { BasisDoc } from "../src/data-store/schema.js";
 import { SPECS } from "../src/clients/data-go-kr-specs.js";
+import { SOURCE_NOTICE } from "../src/core/notice.js";
 import {
   DISCLAIMER_MEDICAL_LEGAL,
-  NOTICE_UNOFFICIAL,
+  NOTICE_SOURCE,
   basisFooter,
   basisLine,
   composeFooter,
@@ -31,8 +32,7 @@ const doc = {
 describe("format", () => {
   it("exports notices with required wording", () => {
     expect(DISCLAIMER_MEDICAL_LEGAL).toContain("면책");
-    expect(NOTICE_UNOFFICIAL).toContain("비공식");
-    expect(NOTICE_UNOFFICIAL).toContain("공식 기관");
+    expect(NOTICE_SOURCE).toBe(`${SOURCE_NOTICE} 정부24·복지로·국민건강보험공단·관할 주민센터·보건소에서 확인할 수 있어요.`);
   });
 
   it("basisLine renders id, title, doc_no, dates, as_of and verification", () => {

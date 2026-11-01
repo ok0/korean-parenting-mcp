@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { runTool } from "../src/core/pipeline.js";
 import { getTimelineTool } from "../src/tools/get-timeline.js";
-import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_UNOFFICIAL, NOTICE_VACCINATION_SCOPE } from "../src/tools/shared/format.js";
+import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_SOURCE, NOTICE_VACCINATION_SCOPE } from "../src/tools/shared/format.js";
 import { createTestContext } from "./helpers/context.js";
 
 const A = { reference_date: "2026-10-28", due_date: "2027-02-10", birth_order: 1, fetus_count: 1, region: "성동구" };
@@ -71,7 +71,7 @@ describe("fixed timeline scenarios", () => {
 
       const footer = footerOf(t);
       expect(footer).toContain(DISCLAIMER_MEDICAL_LEGAL);
-      expect(footer).toContain(NOTICE_UNOFFICIAL);
+      expect(footer).toContain(NOTICE_SOURCE);
       expect(footer).toContain("근거 문서:");
       expect(footer).not.toContain("자동 확인은 아직 제공하지 않");
       expect(footer).toContain("개정 확인 요약:");

@@ -39,7 +39,7 @@ import {
   timelineSourceLine,
   uniq,
 } from "./shared/clinic-text.js";
-import { NOTICE_UNOFFICIAL, composeFooter } from "./shared/format.js";
+import { NOTICE_SOURCE, composeFooter } from "./shared/format.js";
 import { dateField, regionField } from "./shared/schema.js";
 
 const NOTICE_NO_LOOKUP =
@@ -184,7 +184,7 @@ function lookupFooter(asOf: string, status: string): string {
     NOTICE_FINAL_CLINIC,
     NOTICE_MEDICAL_CLINIC,
     `안내 데이터 기준일 ${asOf} · ${status}`,
-    NOTICE_UNOFFICIAL,
+    NOTICE_SOURCE,
   ]);
 }
 

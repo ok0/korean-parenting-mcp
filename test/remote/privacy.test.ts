@@ -2,7 +2,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { afterEach, describe, expect, it } from "vitest";
 import { allTools } from "../../src/tools/registry.js";
-import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_UNOFFICIAL } from "../../src/tools/shared/format.js";
+import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_SOURCE } from "../../src/tools/shared/format.js";
 import {
   buildRemoteInstructions,
   REMOTE_EXCLUDED_HEADING,
@@ -130,7 +130,7 @@ describe("privacy pages", () => {
     const changes = section(html, "changes");
     expect(changes).toContain(PRIVACY_POLICY_EFFECTIVE);
     expect(PRIVACY_POLICY_EFFECTIVE).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-    expect(html).toContain(escapeHtml(NOTICE_UNOFFICIAL));
+    expect(html).toContain(escapeHtml(NOTICE_SOURCE));
     expect(html).toContain(escapeHtml(DISCLAIMER_MEDICAL_LEGAL));
   });
 
@@ -202,8 +202,10 @@ describe("privacy pages", () => {
     expect(r.body).toContain('href="/privacy"');
     expect(r.body).toContain("로컬 모드");
     expect(r.body).toContain(".mcpb");
-    expect(r.body).toContain(escapeHtml(NOTICE_UNOFFICIAL));
+    expect(r.body).toContain(escapeHtml(NOTICE_SOURCE));
     expect(r.body).toContain(escapeHtml(DISCLAIMER_MEDICAL_LEGAL));
+    expect(r.body).toContain("안내하는 MCP 서버의 원격 접속 주소입니다.");
+    expect(r.body).not.toContain("비공식");
   });
 
   it("remote tools/list and instructions carry the notice (AC6)", async () => {
@@ -247,7 +249,7 @@ describe("privacy pages", () => {
     const privacy = renderPrivacyPage({ contact: "c", host: "h", hosting });
     const landing = renderLandingPage({ host: "h" });
     for (const page of [privacy, landing]) {
-      const stripped = page.split(escapeHtml(NOTICE_UNOFFICIAL)).join("");
+      const stripped = page.split(escapeHtml(NOTICE_SOURCE)).join("");
       expect(matchedPatterns(stripped, OFFICIAL_CLAIM_META)).toEqual([]);
       expect(matchedPatterns(page, OFFICIAL_CLAIM_OUTPUT)).toEqual([]);
     }

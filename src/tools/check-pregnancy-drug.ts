@@ -4,7 +4,7 @@ import { DUR_NUM_OF_ROWS, SPECS } from "../clients/data-go-kr-specs.js";
 import { formatKstMinute } from "../clients/holiday-resolve.js";
 import type { ToolContext } from "../core/context.js";
 import type { ToolDef, ToolOutput } from "./registry.js";
-import { DISCLAIMER_DRUG, NOTICE_UNOFFICIAL, composeFooter, sourceFooter, summarizeList, zeroResultHint } from "./shared/format.js";
+import { DISCLAIMER_DRUG, NOTICE_SOURCE, composeFooter, sourceFooter, summarizeList, zeroResultHint } from "./shared/format.js";
 import { intField, keywordField } from "./shared/schema.js";
 
 const DEFAULT_LIMIT = 5;
@@ -142,7 +142,7 @@ async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise
     sourceFooter([SPECS.durPregnancy], formatKstMinute(ctx.clock.now())),
     NOTICE_SCOPE,
     DISCLAIMER_DRUG,
-    NOTICE_UNOFFICIAL,
+    NOTICE_SOURCE,
   ]);
 
   return { body: body.join("\n"), footer };

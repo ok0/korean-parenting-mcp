@@ -29,7 +29,7 @@ const SUCCESS_NOTICES = [
   "실시간 모집·대기 현황이 아닙니다",
   "출처: 유치원알리미",
   "조회 시각 2026-10-28 21:30 KST",
-  "비공식 도구 고지",
+  "공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.",
   "유치원·교육청·유치원알리미에서 확인",
 ];
 
@@ -223,7 +223,7 @@ describe("find_kindergarten", () => {
       kgCtx(createKgMock(() => kgRes(kgBody(kgMany(28)))), { config: { maxResponseChars: 1000 } }),
     );
     expect(capped.text.length).toBeLessThanOrEqual(1000);
-    for (const s of ["생략", "출처: 유치원알리미", "공시 차수:", "조회 시각", "비공식 도구 고지", "유치원·교육청·유치원알리미에서 확인"]) {
+    for (const s of ["생략", "출처: 유치원알리미", "공시 차수:", "조회 시각", "공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.", "유치원·교육청·유치원알리미에서 확인"]) {
       expect(capped.text).toContain(s);
     }
   });

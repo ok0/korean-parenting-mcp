@@ -1,11 +1,12 @@
 import type { BasisDoc } from "../../data-store/schema.js";
 import type { RevisionStatus } from "../../provenance/revision-text.js";
+import { SOURCE_NOTICE } from "../../core/notice.js";
 
 export const DISCLAIMER_MEDICAL_LEGAL = "의료·법률 면책: 이 결과는 일반 정보이며 의학적 진단이나 법률 자문이 아닙니다. 검진·접종 시기는 의료진과, 신고·신청 기한과 요건은 관할 기관과 확인하세요.";
 
 export const DISCLAIMER_DRUG = "의약품 면책: 식약처 DUR 임부금기 공개 정보를 옮긴 참고 정보이며 진단·처방이나 복용 판단이 아닙니다. 복용 중이거나 복용을 고려 중이면 의료진·약사와 상담하고, 임의로 판단하거나 중단하지 마세요. 목록에 없다는 것이 안전하다는 뜻은 아닙니다.";
 
-export const NOTICE_UNOFFICIAL ="비공식 도구 고지: 이 서버는 정부·공공기관의 공식 서비스가 아닙니다. 최종 확인은 공식 기관(정부24, 복지로, 국민건강보험공단, 관할 주민센터·보건소)에서 하세요.";
+export const NOTICE_SOURCE = `${SOURCE_NOTICE} 정부24·복지로·국민건강보험공단·관할 주민센터·보건소에서 확인할 수 있어요.`;
 
 export const NOTICE_VACCINATION_SCOPE = "예방접종 안내 범위: 최소 접종 간격·지연접종(따라잡기)·제품별 세부는 반영하지 않았습니다. 국가예방접종 지침 또는 보건소·의료기관에서 확인하세요.";
 

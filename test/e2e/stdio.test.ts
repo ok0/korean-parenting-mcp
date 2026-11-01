@@ -64,7 +64,7 @@ describe("stdio e2e", () => {
     expect(tl.isError).toBeFalsy();
     const tlText = (tl.content as { type: string; text: string }[])[0]!.text;
     expect(tlText).toContain("출생신고 기한");
-    expect(tlText).toContain("비공식");
+    expect(tlText).toContain("공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.");
 
     const pregnantCall = await client.callTool({ name: "get_timeline", arguments: SCENARIO_A });
     expect(pregnantCall.isError).toBeFalsy();
