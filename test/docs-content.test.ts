@@ -131,6 +131,10 @@ const statusCell = (md: string, tool: string): string => {
   const col = rows.find((r) => r.includes("상태"))?.indexOf("상태") ?? -1;
   return rows.find((r) => r[0] === "`" + tool + "`")?.[col] ?? "";
 };
+const CHECKUP_STATUS = STATUS_BADGE.verified + "(키 없으면 링크 안내, 공공데이터포털 키가 있으면 기관 조회)";
+const CHECKUP_DATASET_ROW = "| 15154419 국민건강보험공단 검진기관 찾기 조회 (검진기관 조회, 선택) | `find_checkup_clinic` | https://www.data.go.kr/data/15154419/openapi.do |";
+const CHECKUP_PARAGRAPH_PHRASES = ["키가 없으면 검진기관을 찾는 절차와 문의처를 링크로 안내", "이름·종별·주소·전화번호", "방문 전에 기관에 전화로 확인", "링크 안내로 대신합니다"];
+const checkupStatusOk = (md: string): boolean => statusCell(md, "find_checkup_clinic") === CHECKUP_STATUS;
 
 describe("public docs content (M35)", () => {
   it("DOC_PAGES and CLIENT_PAGES docs exist, docs/ holds .md only (R1, M36)", () => {
@@ -276,9 +280,15 @@ describe("public docs content (M35)", () => {
     expect(statusTables(advanced).length).toBeGreaterThanOrEqual(1);
     expect(statusCell(advanced, "check_recall").startsWith(STATUS_BADGE.verified)).toBe(true);
     expect(statusCell(keyless, "get_timeline").startsWith(STATUS_BADGE.verified)).toBe(true);
-    for (const t of ["find_daycare", "find_vaccination_clinic", "find_checkup_clinic"]) {
+    for (const t of ["find_daycare", "find_vaccination_clinic"]) {
       expect(statusCell(keyless, t).startsWith(STATUS_BADGE.link), t).toBe(true);
     }
+    expect(checkupStatusOk(keyless)).toBe(true);
+    expect(checkupStatusOk(keyless.replace(CHECKUP_STATUS, STATUS_BADGE.link))).toBe(false);
+    for (const p of CHECKUP_PARAGRAPH_PHRASES) expect(keyless, p).toContain(p);
+    expect(advanced.split(/\r?\n/)).toContain(CHECKUP_DATASET_ROW);
+    expect(advanced).not.toContain("15154423");
+    expect(advanced).not.toContain("15154392");
     for (const f of docFiles) {
       for (const line of read(f).split(/\r?\n/)) {
         if (!line.includes(STATUS_BADGE.pending)) continue;

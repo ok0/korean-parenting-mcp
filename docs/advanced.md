@@ -34,6 +34,7 @@
 | 15113968 대한민국 공공서비스(혜택) 정보 | `find_benefits` | https://www.data.go.kr/data/15113968/openapi.do |
 | 15059486 DUR 품목정보 | `check_pregnancy_drug` | https://www.data.go.kr/data/15059486/openapi.do |
 | 15012690 한국천문연구원 특일 정보 (공휴일 확인, 선택) | `get_timeline` | https://www.data.go.kr/data/15012690/openapi.do |
+| 15154419 국민건강보험공단 검진기관 찾기 조회 (검진기관 조회, 선택) | `find_checkup_clinic` | https://www.data.go.kr/data/15154419/openapi.do |
 
 ### 유치원알리미 — `KINDERGARTEN_API_KEY`
 
