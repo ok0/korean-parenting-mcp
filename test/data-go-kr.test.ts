@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { z } from "zod";
 import { describe, expect, it } from "vitest";
 import { callDataGoKr, type ApiSpec } from "../src/clients/data-go-kr.js";
@@ -6,6 +6,7 @@ import { SPECS } from "../src/clients/data-go-kr-specs.js";
 import { ToolError } from "../src/core/errors.js";
 import { runTool } from "../src/core/pipeline.js";
 import { defineTool } from "../src/tools/registry.js";
+import { findLeaks } from "../scripts/lib/sample-mask.js";
 import { createTestContext } from "./helpers/context.js";
 
 const fx = (name: string): string => readFileSync(new URL(`./fixtures/data-go-kr/${name}`, import.meta.url), "utf8");
@@ -390,5 +391,58 @@ describe("live fixtures (M11)", () => {
     const e = await errOf(callDataGoKr(SPECS.benefitsList, { page: 1, perPage: 5 }, ctx));
     expect(e.kind).toBe("KEY_INVALID");
     expect(e.detail?.code).toBe("-4");
+  });
+});
+
+describe("live fixtures (M41 checkupClinic)", () => {
+  const SPEC = { ...SPECS.checkupClinic, baseUrl: "https://apis.data.go.kr/B550928/HmcSearchService", operation: "getRegnHmcList" };
+
+  it("dongjak.xml parses items and totalCount", async () => {
+    const { ctx } = makeCtx(mockFetch(() => xml(fx("checkupClinic/dongjak.xml"))).fetch);
+    const r = await callDataGoKr(SPEC, { siDoCd: "11", siGunGuCd: "590" }, ctx);
+    expect(r.items).toHaveLength(5);
+    expect(r.totalCount).toBe(225);
+    for (const item of r.items) {
+      expect(typeof item.hmcNm).toBe("string");
+      expect(String(item.hmcNm).trim()).not.toBe("");
+      expect(typeof item.ykindnm).toBe("string");
+      expect(String(item.locAddr)).toContain("동작구");
+      expect(typeof item.hmcNo).toBe("string");
+    }
+    expect(r.items[0]?.hmcNo).toBe("11100052");
+    expect(Object.keys(r.items[0] ?? {})).toContain("ichkChrgTypeCd");
+    expect(Object.keys(r.items[0] ?? {})).toContain("mchkChrgTypeCd");
+  });
+
+  it("yeongtong.xml addresses are 영통구", async () => {
+    const { ctx } = makeCtx(mockFetch(() => xml(fx("checkupClinic/yeongtong.xml"))).fetch);
+    const r = await callDataGoKr(SPEC, { siDoCd: "41", siGunGuCd: "117" }, ctx);
+    expect(r.items).toHaveLength(5);
+    expect(r.totalCount).toBe(148);
+    for (const item of r.items) expect(String(item.locAddr)).toContain("영통구");
+  });
+
+  it("empty.xml is an empty list", async () => {
+    const { ctx } = makeCtx(mockFetch(() => xml(fx("checkupClinic/empty.xml"))).fetch);
+    const r = await callDataGoKr(SPEC, { siDoCd: "11", siGunGuCd: "590", hmcNm: "없는기관명테스트" }, ctx);
+    expect(r.items).toEqual([]);
+    expect(r.totalCount).toBe(0);
+  });
+
+  it("error-bad-key.xml maps to KEY_INVALID", async () => {
+    const { ctx } = makeCtx(mockFetch(() => xml(fx("checkupClinic/error-bad-key.xml"), 403)).fetch);
+    const e = await errOf(callDataGoKr(SPEC, { siDoCd: "11", siGunGuCd: "590" }, ctx));
+    expect(e.kind).toBe("KEY_INVALID");
+    expect(e.detail?.code).toBe("30");
+  });
+
+  it("checkupClinic fixtures hold no key-like values", () => {
+    const files = readdirSync(new URL("./fixtures/data-go-kr/checkupClinic/", import.meta.url));
+    expect(files.length).toBeGreaterThan(0);
+    for (const f of files) {
+      const text = fx(`checkupClinic/${f}`);
+      expect(findLeaks(text, [], { heuristic: true })).toEqual([]);
+      expect(text).not.toMatch(/serviceKey=(?!\*\*\*)/i);
+    }
   });
 });
