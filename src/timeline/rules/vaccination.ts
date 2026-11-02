@@ -14,7 +14,7 @@ export function fluTwoDoseNote(years: number): string {
 }
 
 export function pregnantFluNote(doses: number): string {
-  return `임신부는 임신 주수 무관 ${doses}회 접종 대상입니다.`;
+  return `임신부는 임신 주수와 상관없이 ${doses}회 접종 대상입니다.`;
 }
 
 export function afterSeasonNotice(s: InfluenzaSeason): string {

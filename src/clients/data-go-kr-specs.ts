@@ -18,7 +18,7 @@ const NEMC_DATASET_URL = "https://www.data.go.kr/data/15000736/openapi.do";
 const NEMC_ATTRIBUTION = "국립중앙의료원(공공데이터포털)";
 const NEMC_BASE_URL = "https://apis.data.go.kr/B552657/HsptlAsembySearchService";
 
-/** NEMC 진료과목 코드 D002: 진료과목에 소아청소년과를 등록한 병·의원(전문과 무관). M12 실호출: 성동구 110곳 중 소아 계열 이름 19곳, 나머지는 다른 전문과. 한 곳에만 둔다. */
+/** NEMC 진료과목 코드 D002: 진료과목에 소아청소년과를 등록한 병·의원(전문과 구분 없음). M12 실호출: 성동구 110곳 중 소아 계열 이름 19곳, 나머지는 다른 전문과. 한 곳에만 둔다. */
 export const NEMC_DEPT_PEDIATRICS = "D002";
 /** 병·의원 목록(nemcList)에만 QT 전송(M12: QT=8에서 110→13곳, 공휴일 시간 유효 기관은 모두 유지). 달빛 목록에는 보내지 않는다(효과 미측정). 판정은 항상 클라이언트. */
 export const NEMC_SEND_QT: boolean = true;

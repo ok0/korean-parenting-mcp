@@ -209,7 +209,7 @@ describe("vaccination rules", () => {
     expect(a).toHaveLength(1);
     expect(rng(a[0]!)).toBe("2026-09-21~2027-04-30");
     expect(a[0]!.estimated).toBe(true);
-    expect(a[0]!.notes.some((n) => n.includes("임신 주수 무관 1회"))).toBe(true);
+    expect(a[0]!.notes.some((n) => n.includes("임신 주수와 상관없이 1회"))).toBe(true);
 
     const b = pregnancyInfluenzaItems(parseDate("2026-12-20"));
     expect(rng(b[0]!)).toBe("2026-09-21~2026-12-20");
