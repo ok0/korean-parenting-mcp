@@ -250,7 +250,8 @@ describe("find_vaccination_clinic", () => {
     for (const input of scenarios) {
       const text = textOf(await run(input));
       expect(text).toContain("데이터를 조회하지 않으며");
-      expect(text).toContain("비공식 도구");
+      expect(text).toContain("안내와 링크만 제공하는 도구입니다");
+      expect(text).not.toContain("비공식");
       expect(text).toContain("최종 확인");
       expect(text).toContain("의료 면책");
       expect(text).toContain("해당 의료기관");

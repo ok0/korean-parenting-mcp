@@ -359,6 +359,8 @@ describe("find_benefits large result, zero results, footer", () => {
     expect(text).toContain("최종 확인");
     expect(text).toContain("신청을 대행하지 않습니다");
     expect(text).toContain("공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.");
+    expect(text).toContain("관련이 적은 서비스가 섞일 수 있습니다");
+    expect(text).not.toContain("무관");
   });
 });
 

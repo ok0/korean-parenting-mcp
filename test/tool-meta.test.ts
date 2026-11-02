@@ -24,6 +24,15 @@ describe("tool meta", () => {
     for (const t of allTools) expect(checkToolMeta(t, names)).toEqual([]);
   });
 
+  it("registered tool descriptions carry no unofficial or negative affiliation wording", () => {
+    for (const t of allTools) {
+      expect(t.description, t.name).not.toMatch(/비공식|unofficial|무관/i);
+      expect(t.description, t.name).not.toMatch(/관계없는|비제휴|만든 서비스는 아니|제휴\s*아님|개인 프로젝트|(공식|공공기관|정부)[^.\n]{0,20}(아니에요|아닙니다|아니며|아니고|아님)/);
+      expect(t.description, t.name).not.toContain("공공기관이 제공하는 공개 API");
+      expect(matchedPatterns(t.description, OFFICIAL_CLAIM_META), t.name).toEqual([]);
+    }
+  });
+
   it("valid fixture tools pass", () => {
     const names = validFixtureTools.map((t) => t.name);
     for (const t of validFixtureTools) expect(checkToolMeta(t, names)).toEqual([]);

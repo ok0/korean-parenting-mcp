@@ -15,7 +15,7 @@ import { NOTICE_SOURCE, composeFooter, verifiedText } from "./shared/format.js";
 import { dateField, regionField } from "./shared/schema.js";
 
 const NOTICE_NO_LOOKUP =
-  "이 도구는 데이터를 조회하지 않으며 링크와 일반 안내만 제공하는 비공식 도구입니다. 어린이집 정원·현원·대기 순번·비용 정보는 알 수 없으니 아래 링크와 시·군·구청, 해당 어린이집에서 확인하세요.";
+  "이 도구는 데이터를 조회하지 않으며 링크와 일반 안내만 제공하는 도구입니다. 어린이집 정원·현원·대기 순번·비용 정보는 알 수 없으니 아래 링크와 시·군·구청, 해당 어린이집에서 확인하세요.";
 const NOTICE_LINK_CHANGE =
   "링크 변경 가능: 어린이집·유치원 통합(유보통합) 포털 이관에 따라 주소나 메뉴가 바뀔 수 있습니다. 링크가 열리지 않으면 대체 링크(첫 화면)에서 메뉴를 찾아가세요.";
 const NOTICE_FINAL =
@@ -152,7 +152,7 @@ export function createFindDaycareTool(provider: DaycareLinkProvider = staticLink
     name: "find_daycare",
     title: "어린이집 찾기·입소대기 링크 안내(조회 없음)",
     description:
-      "지역과 아이 생년월일(또는 출산예정일)에 맞춰 어린이집 검색·입소대기(등록대기) 신청 페이지 링크, 지역 선택 절차, 어린이집 유형별 확인 항목, 입소대기 절차와 시기를 안내합니다. 외부 데이터를 조회하지 않아 정원·현원·대기 순번·비용 정보는 알려주지 않으며 링크와 일반 안내만 담은 비공식 참고 도구입니다. API 키가 필요 없습니다.",
+      "지역과 아이 생년월일(또는 출산예정일)에 맞춰 어린이집 검색·입소대기(등록대기) 신청 페이지 링크, 지역 선택 절차, 어린이집 유형별 확인 항목, 입소대기 절차와 시기를 안내합니다. 외부 데이터를 조회하지 않아 정원·현원·대기 순번·비용 정보는 알려주지 않으며 링크와 일반 안내만 담은 참고 도구입니다. API 키가 필요 없습니다.",
     schema,
     annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     handler: (args, ctx) => findDaycare(args, ctx, provider),

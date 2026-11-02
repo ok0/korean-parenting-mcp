@@ -31,7 +31,7 @@ import {
 import { dateField, regionField } from "./shared/schema.js";
 
 const NOTICE_NO_LOOKUP =
-  "이 도구는 의료기관 데이터를 조회하지 않으며 안내와 링크만 제공하는 비공식 도구입니다. 전국 위탁의료기관 공개 API를 확인하지 못해 조회 대신 찾는 절차를 안내합니다. 기관 목록과 접종 가능 백신은 아래 위탁의료기관 찾기 화면과 보건소·의료기관 전화로 확인하세요.";
+  "이 도구는 의료기관 데이터를 조회하지 않으며 안내와 링크만 제공하는 도구입니다. 전국 위탁의료기관 공개 API를 확인하지 못해 조회 대신 찾는 절차를 안내합니다. 기관 목록과 접종 가능 백신은 아래 위탁의료기관 찾기 화면과 보건소·의료기관 전화로 확인하세요.";
 const NOTICE_RELATED = [
   "전체 접종·검진 일정은 get_timeline에서 아이 생년월일 기준으로 확인할 수 있습니다.",
   "지자체의 접종 관련 추가 지원이 궁금하면 find_benefits(예: keyword \"예방접종\")로 찾아보세요.",
@@ -121,7 +121,7 @@ export function createFindVaccinationClinicTool(provider: ClinicLinkProvider = s
     name: "find_vaccination_clinic",
     title: "예방접종 위탁의료기관 찾기 링크 안내(조회 없음)",
     description:
-      "지역과 아이 생년월일(또는 출산예정일)에 맞춰 국가예방접종 위탁의료기관을 찾는 화면 링크와 시도·시군구 선택 절차, 보건소·콜센터 문의처, 방문 전 전화 확인 사항과 준비물, 표준 일정 데이터로 계산한 현재·다음 접종 차수를 안내합니다. 의료기관 데이터를 조회하지 않아 기관 목록·재고·예약 가능 여부는 알려주지 않으며 접종 시기 판단이 아닌 일반 안내만 담은 비공식 참고 도구입니다. API 키가 필요 없습니다.",
+      "지역과 아이 생년월일(또는 출산예정일)에 맞춰 국가예방접종 위탁의료기관을 찾는 화면 링크와 시도·시군구 선택 절차, 보건소·콜센터 문의처, 방문 전 전화 확인 사항과 준비물, 표준 일정 데이터로 계산한 현재·다음 접종 차수를 안내합니다. 의료기관 데이터를 조회하지 않아 기관 목록·재고·예약 가능 여부는 알려주지 않으며 접종 시기 판단이 아닌 일반 안내만 담은 참고 도구입니다. API 키가 필요 없습니다.",
     schema,
     annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     handler: (args, ctx) => findVaccinationClinic(args, ctx, provider),

@@ -152,7 +152,7 @@ const def: ToolDef<typeof schema> = {
   name: "check_pregnancy_drug",
   title: "임부금기 의약품 정보 조회(식약처 DUR 공공데이터)",
   description:
-    "약 이름(성분명 권장)으로 식품의약품안전처 DUR 임부금기 품목 정보를 조회해 품목명·업체·금기 성분·제형·금기 내용·비고·고시일을 요약합니다. 상품명은 조회되지 않을 수 있어 성분명 검색을 권장합니다. 복용 여부나 위험도를 판단하지 않으며 목록에 없다고 안전하다는 뜻이 아닙니다. 복용 전 의료진·약사와 상담하세요. 공공데이터포털 인증키(DATA_GO_KR_SERVICE_KEY)가 필요한 비공식 참고 도구입니다.",
+    "약 이름(성분명 권장)으로 식품의약품안전처 DUR 임부금기 품목 정보를 조회해 품목명·업체·금기 성분·제형·금기 내용·비고·고시일을 요약합니다. 상품명은 조회되지 않을 수 있어 성분명 검색을 권장합니다. 복용 여부나 위험도를 판단하지 않으며 목록에 없다고 안전하다는 뜻이 아닙니다. 복용 전 의료진·약사와 상담하세요. 공공데이터포털 인증키(DATA_GO_KR_SERVICE_KEY)가 필요한 참고 도구입니다.",
   schema,
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
   requiredKeys: ["DATA_GO_KR"],

@@ -259,7 +259,8 @@ describe("find_checkup_clinic", () => {
       expect(text).toContain("1577-1000");
       expect(text).not.toContain("녹화");
       expect(text).not.toMatch(/원격|remote/i);
-      expect(text).toContain("비공식 도구");
+      expect(text).toContain("안내와 링크만 제공하는 도구입니다");
+      expect(text).not.toContain("비공식");
       expect(text).toContain("최종 확인");
       expect(text).toContain("의료 면책");
       expect(text).toContain("해당 의료기관");

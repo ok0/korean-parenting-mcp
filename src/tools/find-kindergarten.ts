@@ -193,7 +193,7 @@ const def: ToolDef<typeof schema> = {
   name: "find_kindergarten",
   title: "유치원 정원·현원·여석 추정 조회(유치원알리미 공시 정보)",
   description:
-    "유치원알리미 일반현황 공시 정보(OpenAPI)를 시군구 단위로 실시간 조회해 유치원별 설립유형·주소·전화·공시 차수와 만3·4·5세 연령반 정원·현원·학급수, 정원에서 현원을 뺀 여석 추정치를 요약합니다. 여석은 공시 기준 추정치이며 실시간 모집·대기 현황이 아니므로 입학·추가모집은 해당 유치원에 확인하세요. 입학 신청을 대행하지 않는 비공식 참고 도구이며 유치원알리미 인증키(KINDERGARTEN_API_KEY)가 필요합니다.",
+    "유치원알리미 일반현황 공시 정보(OpenAPI)를 시군구 단위로 실시간 조회해 유치원별 설립유형·주소·전화·공시 차수와 만3·4·5세 연령반 정원·현원·학급수, 정원에서 현원을 뺀 여석 추정치를 요약합니다. 여석은 공시 기준 추정치이며 실시간 모집·대기 현황이 아니므로 입학·추가모집은 해당 유치원에 확인하세요. 입학 신청을 대행하지 않는 참고 도구이며 유치원알리미 인증키(KINDERGARTEN_API_KEY)가 필요합니다.",
   schema,
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
   requiredKeys: ["KINDERGARTEN"],

@@ -214,7 +214,7 @@ const def: ToolDef<typeof schema> = {
   name: "check_recall",
   title: "어린이제품 리콜 이력 조회(제품안전정보센터 Open API)",
   description:
-    "제품명 일부로 제품안전정보센터(SafetyKorea) Open API의 국내 리콜·국외 리콜·해외직구 안전성조사(선택 시 KC 인증) 기록을 조회해 출처 구분·제품명·업체·공표일·사유·조치를 공표일 최신순으로 요약하고, 어린이 관련 키워드로 어린이제품 가능성을 표시합니다. 리콜 여부나 구매 가부를 판단하지 않으며 이력이 없다고 안전하다는 뜻이 아닙니다. 제품안전정보센터 서비스 ID(SAFETYKOREA_AUTH_KEY)가 필요한 비공식 참고 도구입니다.",
+    "제품명 일부로 제품안전정보센터(SafetyKorea) Open API의 국내 리콜·국외 리콜·해외직구 안전성조사(선택 시 KC 인증) 기록을 조회해 출처 구분·제품명·업체·공표일·사유·조치를 공표일 최신순으로 요약하고, 어린이 관련 키워드로 어린이제품 가능성을 표시합니다. 리콜 여부나 구매 가부를 판단하지 않으며 이력이 없다고 안전하다는 뜻이 아닙니다. 제품안전정보센터 서비스 ID(SAFETYKOREA_AUTH_KEY)가 필요한 참고 도구입니다.",
   schema,
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
   requiredKeys: ["SAFETYKOREA"],
