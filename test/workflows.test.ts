@@ -241,6 +241,8 @@ describe("workflows", () => {
       text.replace("GH_TOKEN: ${{ github.token }}", "GH_TOKEN: ${{ secrets.PAT }}"),
       text.replace("run: npm run verify", "run: npm run verify || true"),
       text.replace("::warning", "::notice"),
+      text.replace("자료를 이용해 정리해 드려요. 최종 확인은 해당 기관에서 해 주세요.", "자료를 이용해 정리해 드려요."),
+      text.replace('            echo "공공기관이', '            echo "개인 프로젝트입니다."\n            echo "공공기관이'),
     ];
     for (const sample of samples) {
       expect(mcpbReleaseProblems(sample).length).toBeGreaterThan(0);

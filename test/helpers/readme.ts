@@ -6,6 +6,7 @@ import { CLIENT_LIST_LINE, indexListLines } from "./docs-checklist.js";
 import { extractLinks, headings } from "./markdown.js";
 import { CLIENT_BRANDS, LINK_BLOCK_HEADING } from "./visuals.js";
 import { OFFICIAL_CLAIM_OUTPUT, matchedPatterns } from "./wording.js";
+import { SOURCE_NOTICE } from "../../src/core/notice.js";
 
 export const README_MAX_LINES = 80;
 export const LINK_BLOCK_LAST_LINE = 33;
@@ -146,9 +147,9 @@ export function readmeProblems(md: string): string[] {
   if (b !== null && fig >= 0) {
     const region = lines.slice(b.end, fig).filter((l) => l.trim() !== "");
     const sentences = (l: string): number => (l.match(/[.?!](?=\s|$)/g) ?? []).length;
-    const notice = region.find((l) => l.includes("비공식"));
+    const notice = region.find((l) => l.includes("공공기관이 제공하는"));
     const med = region.find((l) => l.includes("의료진"));
-    if (!notice || !notice.includes("정부·공공기관과 관계없는")) problems.push("비공식 고지 없음");
+    if (notice !== SOURCE_NOTICE) problems.push("출처 고지 없음");
     if (!med || !med.includes("관할 기관")) problems.push("의료·법률 면책 없음");
     for (const line of [notice, med]) {
       if (line === undefined) continue;
@@ -157,6 +158,8 @@ export function readmeProblems(md: string): string[] {
     }
     if (region.length !== 2) problems.push("바로가기와 그림 사이에는 고지·면책 두 문단만");
   }
+
+  if (/비공식|unofficial|관계없는|개인 프로젝트/i.test(md)) problems.push("부정형 소속 고지 금지");
 
   const claims = matchedPatterns(md, OFFICIAL_CLAIM_OUTPUT);
   if (claims.length > 0) problems.push(`공식 주장 표현: ${claims.join(", ")}`);

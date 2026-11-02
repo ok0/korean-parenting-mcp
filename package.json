@@ -1,7 +1,7 @@
 {
   "name": "korean-parenting-mcp",
   "version": "0.1.0",
-  "description": "한국 임신·출산·육아 정보 MCP 서버 (비공식)",
+  "description": "한국 임신·출산·육아 정보 MCP 서버",
   "type": "module",
   "license": "MIT",
   "bin": {

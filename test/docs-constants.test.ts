@@ -21,6 +21,7 @@ import {
 import { BRANCH, RAW_ASSET_PREFIX, REPO } from "../scripts/visuals/readme-figures.js";
 import { OFFICIAL_CLAIM_META, OFFICIAL_CLAIM_OUTPUT, matchedPatterns } from "./helpers/wording.js";
 import { SERVER_NAME as SETUP_SERVER_KEY } from "../src/setup/targets.js";
+import { SOURCE_NOTICE } from "../src/core/notice.js";
 
 const LINKS_SOURCE = fileURLToPath(new URL("../scripts/docs/links.ts", import.meta.url));
 
@@ -53,11 +54,11 @@ describe("docs link constants (M34)", () => {
     expect(BRANCH).toBe("main");
   });
 
-  it("links.ts is pure and defines no duplicate repo literals", () => {
+  it("links.ts imports only readme-figures and SOURCE_NOTICE and defines no duplicate repo literals", () => {
     const src = readFileSync(LINKS_SOURCE, "utf8");
-    expect(src).not.toMatch(/\bfrom\s+["'](node:|[^"']*\/src\/)/);
+    expect(src).not.toMatch(/\bfrom\s+["']node:/);
     const specifiers = [...src.matchAll(/\bfrom\s+["']([^"']+)["']/g)].map((m) => m[1]);
-    expect(specifiers).toEqual(["../visuals/readme-figures.js"]);
+    expect(specifiers).toEqual(["../visuals/readme-figures.js", "../../src/core/notice.js"]);
     expect(src).not.toContain("ok0");
     expect(src).not.toContain("raw.githubusercontent");
     expect(src).not.toContain("/blob/main");
@@ -106,9 +107,12 @@ describe("docs link constants (M34)", () => {
   });
 
   it("DOC_NOTICE wording", () => {
-    for (const word of ["비공식", "의료", "법률", "관할 기관"]) {
+    expect(DOC_NOTICE).toBe(SOURCE_NOTICE + " 의료·법률 자문이 아니며, 건강 상태는 의료진에게, 제도·신청 기한은 관할 기관에 확인하세요.");
+    expect(DOC_NOTICE.startsWith(SOURCE_NOTICE)).toBe(true);
+    for (const word of ["의료", "법률", "관할 기관"]) {
       expect(DOC_NOTICE).toContain(word);
     }
+    expect(DOC_NOTICE).not.toMatch(/비공식|unofficial|관계없는|개인 프로젝트|(공식|공공기관|정부)[^.\n]{0,20}(아니에요|아닙니다|아니며|아니고|아님)/i);
     expect(matchedPatterns(DOC_NOTICE, OFFICIAL_CLAIM_OUTPUT)).toEqual([]);
     expect(matchedPatterns(DOC_NOTICE, OFFICIAL_CLAIM_META)).toEqual([]);
   });

@@ -45,7 +45,7 @@ jobs:
             echo "- 버전: $version"
             echo "- 빌드 시각(UTC): $built_at"
             echo ""
-            echo "정부·공공기관과 관계없는 비공식 개인 프로젝트입니다."
+            echo "공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요. 최종 확인은 해당 기관에서 해 주세요."
           } > "$RUNNER_TEMP/notes.md"
           git tag -f "$TAG" "$GITHUB_SHA"
           git push -f origin "refs/tags/$TAG"

@@ -1,4 +1,5 @@
 import { BRANCH, REPO } from "../visuals/readme-figures.js";
+import { SOURCE_NOTICE } from "../../src/core/notice.js";
 
 /** 저장소 주소. */
 export const REPO_URL = `https://github.com/${REPO}`;
@@ -13,7 +14,7 @@ export const RUN = { command: "npx", args: ["-y", "korean-parenting-mcp"] } as c
 export const MCPB_TAG = "mcpb-latest";
 export const MCPB_ASSET = "korean-parenting-mcp.mcpb";
 export const MCPB_URL = `${REPO_URL}/releases/download/${MCPB_TAG}/${MCPB_ASSET}`;
-export const DOC_NOTICE = "이 문서는 정부·공공기관과 관계없는 비공식 개인 프로젝트의 안내입니다. 의료·법률 자문이 아니며, 건강 상태는 의료진에게, 제도·신청 기한은 관할 기관에 확인하세요.";
+export const DOC_NOTICE = `${SOURCE_NOTICE} 의료·법률 자문이 아니며, 건강 상태는 의료진에게, 제도·신청 기한은 관할 기관에 확인하세요.`;
 export interface DocPage { readonly id: string; readonly path: string; readonly title: string; readonly summary: string; readonly parent?: string; readonly required: boolean; }
 export const DOC_PAGES: readonly DocPage[] = [
   { id: "start", path: "docs/start.md", title: "처음이라면: 쉬운 시작 안내", summary: "무엇을 하는 도구인지, 어떻게 설치하는지 차근차근 알려 드려요", required: true },

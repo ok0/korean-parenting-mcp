@@ -1,4 +1,5 @@
 import { MCPB_ASSET, MCPB_TAG } from "../../scripts/docs/links.js";
+import { SOURCE_NOTICE } from "../../src/core/notice.js";
 
 export const USES =
   /^(actions\/[a-z-]+(\/[a-z-]+)?@v\d+\.\d+\.\d+|docker:\/\/rhysd\/actionlint:\d+\.\d+\.\d+|[\w.-]+\/[\w.-]+@[0-9a-f]{40})$/;
@@ -114,10 +115,12 @@ export function mcpbReleaseProblems(text: string): string[] {
       'gh release create "$TAG" "$FILE" --prerelease',
       'gh release edit "$TAG" --prerelease',
       "- 커밋: $GITHUB_SHA",
+      `echo "${SOURCE_NOTICE}"`,
     ];
     for (const s of required) {
       if (!pub.includes(s)) problems.push(`publish 단계에 없는 내용: ${s}`);
     }
+    if (/비공식|unofficial|관계없는|개인 프로젝트/i.test(pub)) problems.push("릴리스 본문에 부정형 소속 고지가 있습니다.");
     const pushAt = pub.indexOf("git push -f");
     const uploadAt = pub.indexOf("gh release upload");
     if (pushAt < 0 || uploadAt < 0 || pushAt >= uploadAt) {

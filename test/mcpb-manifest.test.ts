@@ -5,8 +5,11 @@ import { describe, expect, it } from "vitest";
 import { KEY_ENV, type KeyName } from "../src/core/config.js";
 import { KEY_GUIDE } from "../src/core/errors.js";
 import { VERSION } from "../src/version.js";
+import { SOURCE_NOTICE } from "../src/core/notice.js";
 import { allTools } from "../src/tools/registry.js";
 import { DEFAULT_OUT_DIR, ENTRY_REL, resolveMcpbPaths, withoutKeyEnv } from "../scripts/lib/mcpb.js";
+
+const NEG = /비공식|unofficial|관계없는|개인 프로젝트|(공식|공공기관|정부)[^.\n]{0,20}(아니에요|아닙니다|아니며|아니고|아님)/i;
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const read = (rel: string): string => readFileSync(join(root, rel), "utf8");
@@ -128,10 +131,14 @@ describe("mcpb manifest", () => {
   });
 
   it("not presented as official", () => {
+    expect(manifest.display_name).toBe("한국 육아 일정 도우미");
+    expect(manifest.description).toBe("한국 임신·출산·육아 일정과 공공 정보를 안내하는 MCP 서버입니다. 공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요. 최종 확인은 해당 기관에서 해 주세요. 의료·법률 자문이 아닙니다.");
+    expect(manifest.description).toContain(SOURCE_NOTICE);
+    expect(manifest.description).toContain("의료·법률 자문이 아닙니다.");
     const texts = [manifest.display_name, manifest.description];
     if (manifest.long_description !== undefined) texts.push(manifest.long_description);
     for (const s of texts) {
-      expect(s).toContain("비공식");
+      expect(s).not.toMatch(NEG);
       expect(s).not.toMatch(/(?<!비)공식\s*(서비스|앱|도구|서버|MCP)/);
       expect(s).not.toMatch(/정부\s*(제공|공식)/);
     }
@@ -163,6 +170,7 @@ describe("mcpb manifest", () => {
     expect("name" in brokenFixture).toBe(false);
     expect("server" in brokenFixture).toBe(false);
     expect(brokenFixture.manifest_version).toBe("0.3");
+    expect(JSON.stringify(brokenFixture)).not.toMatch(NEG);
   });
 
   it("bundle entry matches build script", () => {

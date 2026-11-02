@@ -9,6 +9,7 @@ import { findLeaks, secretsFromEnv } from "../scripts/lib/sample-mask.js";
 import { ASSET_FILES } from "../scripts/visuals/generate.js";
 import { REPORT_FIGURE_ALT, assetPairs } from "../scripts/visuals/readme-figures.js";
 import type { PageResult } from "../site/src/app.js";
+import { SOURCE_NOTICE } from "../src/core/notice.js";
 import type { TimelineArgs } from "../src/timeline/input.js";
 import { fakeDocument, type FakeElement } from "./helpers/fake-dom.js";
 import { DEPLOY_TERMS, htmlText } from "./helpers/visuals.js";
@@ -132,7 +133,6 @@ describe("Pages page (M33)", () => {
 
   it("required notices", () => {
     for (const phrase of [
-      "비공식",
       "출처",
       "기준일",
       "면책",
@@ -143,11 +143,16 @@ describe("Pages page (M33)", () => {
     ]) {
       expect(text, phrase).toContain(phrase);
     }
+    const flat = text.replace(/\s+/g, " ");
+    expect(flat).toContain(SOURCE_NOTICE);
+    expect(text).not.toMatch(/비공식|unofficial|관계없는|개인 프로젝트|(공식|공공기관|정부)[^.\n]{0,20}(아니에요|아닙니다|아니며|아니고|아님)/i);
+    expect(html).toContain("<title>한국 임신·출산·육아 정보 도구 체험</title>");
     const header = html.slice(html.indexOf('<header id="notice"'), html.indexOf("</header>"));
     const headerText = htmlText(header);
-    for (const phrase of ["비공식", "의료", "법률"]) {
+    for (const phrase of ["의료", "법률"]) {
       expect(headerText, phrase).toContain(phrase);
     }
+    expect(headerText.replace(/\s+/g, " ")).toContain(SOURCE_NOTICE);
     expect(html.indexOf('<header id="notice"')).toBeLessThan(html.indexOf("<picture"));
     expect(/\d{4}-\d{2}-\d{2}/.test(text)).toBe(false);
     expect(/\d[\d,]*\s*만?원/.test(text)).toBe(false);

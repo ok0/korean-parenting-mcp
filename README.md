@@ -27,7 +27,7 @@
     - [그 밖의 AI 앱](https://github.com/ok0/korean-parenting-mcp/blob/main/docs/clients/others.md) — 다른 AI 앱 설정 방법을 모아 둔 안내예요(아직 직접 확인하지 못했어요)
 - [API 키로 기능 더하기(선택)](https://github.com/ok0/korean-parenting-mcp/blob/main/docs/advanced.md) — 야간 진료기관·리콜 조회처럼 키가 필요한 기능과 키 발급 방법
 
-정부·공공기관과 관계없는 **비공식** 개인 프로젝트이며, 공공 API와 공개 법령을 바탕으로 안내합니다.
+공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요. 최종 확인은 해당 기관에서 해 주세요.
 
 의료 정보는 진료를 대체하지 않으니 건강 상태나 치료는 반드시 의료진과 상담하세요. 법률·제도 정보는 법률 자문이 아니므로 적용 여부, 신청 방법, 기한은 관할 기관에 확인하세요.
 

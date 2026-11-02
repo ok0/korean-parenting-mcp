@@ -172,7 +172,7 @@ describe("project structure", () => {
     expect(pkg.license).toBe("MIT");
     expect(pkg.engines?.node).toMatch(/^>=\d+/);
     expect(pkg.keywords?.length ?? 0).toBeGreaterThan(0);
-    expect(pkg.description ?? "").toContain("비공식");
+    expect(pkg.description ?? "").toBe("한국 임신·출산·육아 정보 MCP 서버");
   });
 
   it("child_process only in setup", () => {
