@@ -17,9 +17,10 @@ import {
   decodeCsvBytes,
   HeaderError,
   parseCsv,
+  readSourceTable,
   type RegionLookup,
+  type SourceProfileId,
   type SourceRow,
-  toSourceRows,
 } from "./lib/health-centers-csv.js";
 import { EXIT, isMainModule, parseFlags, processIO, type ScriptIO } from "./lib/script-io.js";
 
@@ -64,6 +65,8 @@ export async function main(argv: readonly string[], io: ScriptIO, deps?: { looku
     const isDir = statSync(input, { throwIfNoEntry: false })?.isDirectory() === true;
     let rows: SourceRow[];
     let fileName: string;
+    let profile: SourceProfileId = "15107750";
+    let excludedKinds: Record<string, number> = {};
     try {
       if (isDir) {
         let manifestText: string;
@@ -95,7 +98,10 @@ export async function main(argv: readonly string[], io: ScriptIO, deps?: { looku
           io.stderr(`원본 파일을 읽지 못했어요: ${input} (${err.code ?? err.message})\n`);
           return EXIT.UNAVAILABLE;
         }
-        rows = toSourceRows(parseCsv(decodeCsvBytes(bytes)));
+        const read = readSourceTable(parseCsv(decodeCsvBytes(bytes)));
+        rows = read.rows;
+        profile = read.profile;
+        excludedKinds = read.excludedKinds;
         fileName = basename(input);
       }
     } catch (e) {
@@ -126,11 +132,19 @@ export async function main(argv: readonly string[], io: ScriptIO, deps?: { looku
       asOf,
       generatedAt: io.now().toISOString().slice(0, 10),
       fileName,
+      profile,
+      excludedKinds,
     });
 
     const range = report.dataDateRange;
+    const excludedEntries = Object.entries(report.excludedKinds)
+      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+      .map(([k, n]) => `${k} ${n}`)
+      .join(", ");
     const lines = [
+      `원본 형식: ${report.profile}`,
       `원본 행: ${data.counts.source_rows}`,
+      `제외 유형: ${excludedEntries === "" ? "없음" : excludedEntries}`,
       `유지: ${data.counts.kept}`,
       `미일치: ${report.unmatched.length}`,
       `복수 주 기관: ${report.multiplePrimary.length}`,

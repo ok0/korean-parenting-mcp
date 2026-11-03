@@ -11,10 +11,13 @@ import {
   buildHealthCenters,
   coverageNote,
   decodeCsvBytes,
+  detectProfile,
   HeaderError,
   matchRegion,
   parseCsv,
+  readSourceTable,
   type RegionLookup,
+  SOURCE_PROFILES,
   type SourceRow,
   toSourceRows,
   WORDING_PATTERNS,
@@ -324,5 +327,150 @@ describe("M58 wording and note", () => {
     expect(full.note).toBeUndefined();
 
     expect(WORDING_PATTERNS.every((p) => !p.test(coverageNote(1, 2) as string))).toBe(true);
+  });
+});
+
+describe("3072692 profile", () => {
+  const bytes3 = readFixture("sample-3072692-cp949.csv");
+  const table3 = parseCsv(decodeCsvBytes(bytes3));
+  const read3 = readSourceTable(table3);
+  const opts3 = { ...opts, sourceModified: "2025-12-31", asOf: "2025-12-31", fileName: "sample-3072692-cp949.csv" };
+  const built3 = buildHealthCenters(read3.rows, undefined, {
+    lookup,
+    ...opts3,
+    profile: read3.profile,
+    excludedKinds: read3.excludedKinds,
+  });
+  const rowNamed = (name: string): SourceRow => {
+    const found = read3.rows.find((r) => r.name === name);
+    if (found === undefined) throw new Error(`행 없음: ${name}`);
+    return found;
+  };
+  const caughtHeaderError = (header: string[]): HeaderError => {
+    try {
+      detectProfile(header);
+    } catch (e) {
+      if (e instanceof HeaderError) return e;
+      throw e;
+    }
+    throw new Error("HeaderError가 나지 않았어요");
+  };
+
+  it("fixture is CP949 with CRLF", () => {
+    expect(() => new TextDecoder("utf-8", { fatal: true }).decode(bytes3)).toThrow();
+    expect(bytes3.includes(0x0d)).toBe(true);
+    expect(decodeCsvBytes(bytes3).startsWith("시도,시군구,보건기관명")).toBe(true);
+  });
+
+  it("detects each profile", () => {
+    expect(detectProfile(table[0] ?? [])).toBe("15107750");
+    expect(detectProfile(table3[0] ?? [])).toBe("3072692");
+
+    const neither = caughtHeaderError(["보건기관명", "시도"]);
+    expect(neither).toBeInstanceOf(HeaderError);
+    expect(neither.byProfile?.["15107750"]).toContain("시군구명");
+    expect(neither.byProfile?.["3072692"]).toContain("대표 전화번호");
+    expect(neither.message).toContain("15107750");
+    expect(neither.message).toContain("3072692");
+    expect(neither.message).toContain("시군구명");
+    expect(neither.message).toContain("대표 전화번호");
+
+    expect(() => detectProfile([...(table[0] ?? []), ...(table3[0] ?? [])])).toThrow(HeaderError);
+  });
+
+  it("maps kinds and counts excluded kinds", () => {
+    expect(read3.profile).toBe("3072692");
+    expect(read3.excludedKinds).toEqual({ 건강생활지원센터: 1 });
+    expect(read3.rows).toHaveLength(14);
+    expect(read3.rows.some((r) => r.row === 2)).toBe(false);
+    expect(rowNamed("가상성주통합보건지소").kind).toBe("보건지소");
+    expect(rowNamed("가상성주일반보건지소").kind).toBe("보건지소");
+    expect(rowNamed("가상성주보건진료소").kind).toBe("보건진료소");
+    expect(built3.report.unmatched.some((u) => u.includes("건강생활지원센터"))).toBe(false);
+  });
+
+  it("trims cells and matches region variants", () => {
+    expect(rowNamed("가상부산진구보건소").sigungu).toBe("부산진구");
+    expect(matchRegion(rowNamed("가상광주북구보건소"), lookup)).toEqual({ code: code("전남광주통합특별시 북구") });
+    expect(matchRegion(rowNamed("가상순천시보건소"), lookup)).toEqual({ code: code("전남광주통합특별시 순천시") });
+    expect(matchRegion(rowNamed("가상세종보건소"), lookup)).toEqual({ code: "36110" });
+    expect(matchRegion(rowNamed("가상세종보건지소"), lookup)).toEqual({ code: "36110" });
+    expect(matchRegion(rowNamed("가상장안구보건소"), lookup)).toEqual({ code: code("경기도 수원시 장안구") });
+    expect(matchRegion(rowNamed("가상부산진구보건소"), lookup)).toEqual({ code: code("부산광역시 부산진구") });
+    expect(matchRegion(rowNamed("가상군위군보건소"), lookup)).toEqual({ code: "27720" });
+  });
+
+  it("reports abolished districts without moving them", () => {
+    expect(built3.report.unmatched).toHaveLength(2);
+    expect(
+      built3.report.unmatched.some(
+        (u) => u.includes("가상인천중구보건소") && u.includes("폐지된 지역") && u.includes("2026-07-01"),
+      ),
+    ).toBe(true);
+    expect(
+      built3.report.unmatched.some(
+        (u) => u.includes("가상경북군위보건지소") && u.includes("폐지된 지역") && u.includes("2023-07-01"),
+      ),
+    ).toBe(true);
+    expect(built3.data.centers.some((c) => c.name === "가상인천중구보건소")).toBe(false);
+  });
+
+  it("keeps the first of duplicate keys", () => {
+    const seongdong = built3.data.centers.filter((c) => c.name === "가상성동구보건소");
+    expect(seongdong).toHaveLength(1);
+    expect(seongdong[0]?.phone).toBe("02-000-3001");
+    expect(built3.report.fieldIssues).toHaveLength(1);
+    expect(built3.report.fieldIssues[0]).toContain("15번째 행");
+    expect(built3.report.fieldIssues[0]).toContain("같은 이름·유형");
+    expect(built3.report.multiplePrimary).toEqual([]);
+  });
+
+  it("builds the 3072692 file", () => {
+    expect(built3.report.profile).toBe("3072692");
+    expect(built3.report.excludedKinds).toEqual({ 건강생활지원센터: 1 });
+    expect(built3.data.counts).toEqual({ source_rows: 15, kept: 10, unmatched: 2 });
+    expect(built3.data.centers.filter((c) => c.code === "47840").map((c) => c.name)).toEqual([
+      "가상성주일반보건지소",
+      "가상성주통합보건지소",
+      "가상성주보건진료소",
+    ]);
+    expect(built3.data.centers.some((c) => c.name === "가상세종보건지소")).toBe(false);
+    expect(built3.data.source).toEqual({
+      ...SOURCE_PROFILES["3072692"].source,
+      license: null,
+      source_modified: "2025-12-31",
+      file_name: "sample-3072692-cp949.csv",
+    });
+    expect(built3.data.centers.every((c) => c.source_date === undefined)).toBe(true);
+    expect(HealthCentersSchema.safeParse(built3.data).success).toBe(true);
+  });
+
+  it("15107750 build reports its profile", () => {
+    const report = build(table).report;
+    expect(report.profile).toBe("15107750");
+    expect(report.excludedKinds).toEqual({});
+  });
+
+  it("CLI reads the 3072692 fixture", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "hc3-"));
+    dirs.push(dir);
+    const out = join(dir, "hc3.json");
+    const input = fileURLToPath(new URL("./fixtures/health-centers/sample-3072692-cp949.csv", import.meta.url));
+    const args = ["--input", input, "--source-modified", "2025-12-31", "--out", out];
+
+    const first = makeIo();
+    expect(await main(args, first.io)).toBe(0);
+    const firstText = first.out.join("");
+    expect(firstText).toContain("원본 형식: 3072692");
+    expect(firstText).toContain("제외 유형: 건강생활지원센터 1");
+    expect(firstText).toContain("원본 행: 15");
+    expect(firstText).toContain("미일치: 2");
+
+    const saved = JSON.parse(readFileSync(out, "utf8")) as HealthCentersFile;
+    expect(saved.as_of).toBe("2025-12-31");
+    expect(saved.source.dataset_id).toBe("3072692");
+
+    const second = makeIo();
+    expect(await main([...args, "--check"], second.io)).toBe(0);
   });
 });

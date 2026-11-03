@@ -4,6 +4,7 @@ import {
   HEALTH_CENTER_BASIS_ID,
   HEALTH_CENTER_KINDS,
   HEALTH_CENTER_PRIMARY_KINDS,
+  HEALTH_CENTER_SOURCES,
   type HealthCenterEntry,
   type HealthCenterKind,
   type HealthCentersFile,
@@ -96,6 +97,36 @@ export const HEADER_MAP = {
 export const OPTIONAL_HEADER_MAP = { dataDate: "데이터기준일자" } as const;
 // 진료검진내용 열은 사업 제공 여부를 단정하지 않기 위해 읽지 않는다(R87).
 
+export const SOURCE_PROFILE_IDS = ["15107750", "3072692"] as const;
+export type SourceProfileId = (typeof SOURCE_PROFILE_IDS)[number];
+export interface SourceProfile<K extends SourceProfileId = SourceProfileId> {
+  headers: Readonly<Partial<Record<keyof typeof HEADER_MAP, string>>>;
+  optional: Readonly<Partial<Record<"lotAddress" | "dataDate", string>>>;
+  kindMap: Readonly<Record<string, HealthCenterKind | null>>;
+  source: (typeof HEALTH_CENTER_SOURCES)[K];
+}
+export const SOURCE_PROFILES: { readonly [K in SourceProfileId]: SourceProfile<K> } = {
+  "15107750": {
+    headers: HEADER_MAP,
+    optional: OPTIONAL_HEADER_MAP,
+    kindMap: { 보건소: "보건소", 보건의료원: "보건의료원", 보건지소: "보건지소", 보건진료소: "보건진료소" },
+    source: HEALTH_CENTER_SOURCES["15107750"],
+  },
+  "3072692": {
+    headers: { name: "보건기관명", sido: "시도", sigungu: "시군구", kind: "기관유형", roadAddress: "주소", homepage: "홈페이지 주소", phone: "대표 전화번호" },
+    optional: {},
+    kindMap: {
+      보건소: "보건소",
+      보건의료원: "보건의료원",
+      일반보건지소: "보건지소",
+      통합보건지소: "보건지소",
+      보건진료소: "보건진료소",
+      건강생활지원센터: null,
+    },
+    source: HEALTH_CENTER_SOURCES["3072692"],
+  },
+};
+
 export interface SourceRow {
   row: number;
   name: string;
@@ -113,8 +144,13 @@ export class HeaderError extends Error {
   constructor(
     readonly missing: string[],
     readonly found: string[],
+    readonly byProfile?: Readonly<Record<SourceProfileId, string[]>>,
   ) {
-    super(`필수 열을 찾지 못했어요: ${missing.join(", ")}. 찾은 열: ${found.join(", ")}`);
+    super(
+      byProfile === undefined
+        ? `필수 열을 찾지 못했어요: ${missing.join(", ")}. 찾은 열: ${found.join(", ")}`
+        : `필수 열을 찾지 못했어요(원본 형식을 하나로 정하지 못했어요). ${SOURCE_PROFILE_IDS.map((id) => `${id} 빠진 열: ${byProfile[id].length > 0 ? byProfile[id].join(", ") : "없음"}`).join(" · ")}. 찾은 열: ${found.join(", ")}`,
+    );
   }
 }
 
@@ -122,28 +158,60 @@ function cleanHeader(cell: string): string {
   return cell.replace(/﻿/g, "").trim();
 }
 
-export function toSourceRows(table: string[][]): SourceRow[] {
-  const header = (table[0] ?? []).map(cleanHeader);
-  const missing = Object.values(HEADER_MAP).filter((name) => !header.includes(name));
-  if (missing.length > 0) throw new HeaderError(missing, header);
+export function detectProfile(header: readonly string[]): SourceProfileId {
+  const cleaned = header.map(cleanHeader);
+  const byProfile = Object.fromEntries(
+    SOURCE_PROFILE_IDS.map((id) => [id, Object.values(SOURCE_PROFILES[id].headers).filter((h) => !cleaned.includes(h))]),
+  ) as Record<SourceProfileId, string[]>;
+  const complete = SOURCE_PROFILE_IDS.filter((id) => byProfile[id].length === 0);
+  const [only] = complete;
+  if (complete.length === 1 && only !== undefined) return only;
+  const closest = SOURCE_PROFILE_IDS.reduce((best, id) => (byProfile[id].length < byProfile[best].length ? id : best));
+  throw new HeaderError(byProfile[closest], cleaned, byProfile);
+}
 
-  const cell = (record: string[], name: string): string => {
+export function readSourceTable(table: string[][]): {
+  profile: SourceProfileId;
+  rows: SourceRow[];
+  excludedKinds: Record<string, number>;
+} {
+  const header = (table[0] ?? []).map(cleanHeader);
+  const profile = detectProfile(header);
+  const p: SourceProfile = SOURCE_PROFILES[profile];
+
+  const cell = (record: string[], name: string | undefined): string => {
+    if (name === undefined) return "";
     const index = header.indexOf(name);
     return (index < 0 ? "" : (record[index] ?? "")).normalize("NFKC").trim();
   };
 
-  return table.slice(1).map((record, i) => ({
-    row: i + 1,
-    name: cell(record, HEADER_MAP.name),
-    sido: cell(record, HEADER_MAP.sido),
-    sigungu: cell(record, HEADER_MAP.sigungu),
-    kind: cell(record, HEADER_MAP.kind),
-    roadAddress: cell(record, HEADER_MAP.roadAddress),
-    lotAddress: cell(record, HEADER_MAP.lotAddress),
-    homepage: cell(record, HEADER_MAP.homepage),
-    phone: cell(record, HEADER_MAP.phone),
-    dataDate: cell(record, OPTIONAL_HEADER_MAP.dataDate),
-  }));
+  const rows: SourceRow[] = [];
+  const excludedKinds: Record<string, number> = {};
+  table.slice(1).forEach((record, i) => {
+    const rawKind = cell(record, p.headers.kind);
+    const mapped = Object.hasOwn(p.kindMap, rawKind) ? (p.kindMap[rawKind] as HealthCenterKind | null) : rawKind;
+    if (mapped === null) {
+      excludedKinds[rawKind] = (excludedKinds[rawKind] ?? 0) + 1;
+      return;
+    }
+    rows.push({
+      row: i + 1,
+      name: cell(record, p.headers.name),
+      sido: cell(record, p.headers.sido),
+      sigungu: cell(record, p.headers.sigungu),
+      kind: mapped,
+      roadAddress: cell(record, p.headers.roadAddress),
+      lotAddress: cell(record, p.headers.lotAddress ?? p.optional.lotAddress),
+      homepage: cell(record, p.headers.homepage),
+      phone: cell(record, p.headers.phone),
+      dataDate: cell(record, p.optional.dataDate),
+    });
+  });
+  return { profile, rows, excludedKinds };
+}
+
+export function toSourceRows(table: string[][]): SourceRow[] {
+  return readSourceTable(table).rows;
 }
 
 export interface RegionLookup {
@@ -169,15 +237,20 @@ function rowLabel(row: SourceRow): string {
 
 export function matchRegion(row: SourceRow, lookup: RegionLookup): { code: string } | { unmatched: string } {
   const label = rowLabel(row);
-  if (NO_SIGUNGU.has(row.sigungu)) {
-    const sidoResult = lookup.normalize(row.sido);
-    if (sidoResult.ok && sidoResult.region.code === undefined) {
-      const sidoName = sidoResult.region.sido;
-      const sido = lookup.sido.find((s) => s.name === sidoName);
-      const kids = sido ? lookup.sigungu.filter((g) => g.sido_code === sido.code) : [];
+  const sidoResult = lookup.normalize(row.sido);
+  const sidoEntry =
+    sidoResult.ok && sidoResult.region.code === undefined
+      ? lookup.sido.find((s) => s.name === sidoResult.region.sido)
+      : undefined;
+  const sameAsSido =
+    sidoEntry !== undefined && [sidoEntry.name, ...sidoEntry.aliases].some((n) => compact(n) === compact(row.sigungu));
+  if (NO_SIGUNGU.has(row.sigungu) || sameAsSido) {
+    if (sidoEntry !== undefined) {
+      const kids = lookup.sigungu.filter((g) => g.sido_code === sidoEntry.code);
       const [only] = kids;
       if (kids.length === 1 && only) return { code: only.code };
     }
+    if (sameAsSido) return { unmatched: `${label}: 시군구 값이 시도 이름과 같아요(시군구가 여럿인 시도)` };
     return {
       unmatched:
         row.sigungu === ""
@@ -187,6 +260,7 @@ export function matchRegion(row: SourceRow, lookup: RegionLookup): { code: strin
   }
 
   const r = lookup.normalize(`${row.sido} ${row.sigungu}`);
+  if (!r.ok && r.abolished !== undefined) return { unmatched: `${label}: 폐지된 지역이에요(${r.abolished.on})` };
   const code = r.ok ? r.region.code : undefined;
   if (code === undefined) {
     return { unmatched: `${label}: 지역을 찾지 못했어요(${r.ok ? "시도만 일치" : r.message})` };
@@ -209,6 +283,8 @@ export interface BuildOptions {
   asOf: string;
   generatedAt: string;
   fileName: string;
+  profile?: SourceProfileId;
+  excludedKinds?: Readonly<Record<string, number>>;
 }
 
 export interface BuildReport {
@@ -220,6 +296,8 @@ export interface BuildReport {
   changed: number;
   dataDateRange: { min: string; max: string } | null;
   coverage: { units: number; covered: number; missing: string[] };
+  profile: SourceProfileId;
+  excludedKinds: Record<string, number>;
 }
 
 const PHONE_RE = /^[0-9-]{7,15}$/;
@@ -331,6 +409,11 @@ export function buildHealthCenters(
   const lastDate = dates.at(-1);
   const dataDateRange = firstDate !== undefined && lastDate !== undefined ? { min: firstDate, max: lastDate } : null;
 
+  const profile: SourceProfileId = opts.profile ?? "15107750";
+  const excludedKinds: Record<string, number> = { ...(opts.excludedKinds ?? {}) };
+  const excludedTotal = Object.values(excludedKinds).reduce((sum, n) => sum + n, 0);
+
+  const seen = new Set<string>();
   const matched: HealthCenterEntry[] = [];
   for (const row of rows) {
     const label = rowLabel(row);
@@ -343,6 +426,12 @@ export function buildHealthCenters(
       unmatched.push(m.unmatched);
       continue;
     }
+    const key = `${m.code}|${row.kind}|${row.name}`;
+    if (seen.has(key)) {
+      fieldIssues.push(`${label}: 같은 이름·유형 항목이 여러 개예요(앞 행만 남겼어요)`);
+      continue;
+    }
+    seen.add(key);
     const entry = toEntry(row, m.code, label, fieldIssues);
     const field = wordingField(entry);
     if (field !== undefined) {
@@ -378,20 +467,11 @@ export function buildHealthCenters(
   }
 
   kept.sort(compareCenters);
-  const deduped: HealthCenterEntry[] = [];
-  for (const entry of kept) {
-    const last = deduped.at(-1);
-    if (last !== undefined && compareCenters(last, entry) === 0) {
-      fieldIssues.push(`${entry.code} ${entry.name}: 같은 이름·유형 항목이 여러 개예요`);
-      continue;
-    }
-    deduped.push(entry);
-  }
 
   const prevByKey = new Map<string, HealthCenterEntry>();
   for (const old of prev?.centers ?? []) prevByKey.set(keyOf(old), old);
 
-  const centers: HealthCenterEntry[] = deduped.map((entry) => {
+  const centers: HealthCenterEntry[] = kept.map((entry) => {
     const old = prevByKey.get(keyOf(entry));
     if (old === undefined || old.phone !== entry.phone || old.homepage !== entry.homepage) return entry;
     return {
@@ -448,10 +528,7 @@ export function buildHealthCenters(
 
   const data: HealthCentersFile = {
     source: {
-      dataset_id: "15107750",
-      title: "전국보건기관표준데이터",
-      url: "https://www.data.go.kr/data/15107750/standard.do",
-      provider: "지방자치단체",
+      ...SOURCE_PROFILES[profile].source,
       license: prev?.source.license ?? null,
       source_modified: opts.sourceModified,
       file_name: opts.fileName,
@@ -463,12 +540,12 @@ export function buildHealthCenters(
     ...(carried?.verified_by !== undefined ? { verified_by: carried.verified_by } : {}),
     ...(carried?.verified_on !== undefined ? { verified_on: carried.verified_on } : {}),
     ...(note !== undefined ? { note } : {}),
-    counts: { source_rows: rows.length, kept: centers.length, unmatched: unmatched.length },
+    counts: { source_rows: rows.length + excludedTotal, kept: centers.length, unmatched: unmatched.length },
     centers,
   };
 
   return {
     data,
-    report: { unmatched, multiplePrimary, fieldIssues, added, removed, changed, dataDateRange, coverage },
+    report: { unmatched, multiplePrimary, fieldIssues, added, removed, changed, dataDateRange, coverage, profile, excludedKinds },
   };
 }
