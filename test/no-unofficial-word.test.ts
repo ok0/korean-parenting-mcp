@@ -12,7 +12,10 @@ import type { ToolContext } from "../src/core/context.js";
 import {
   CLINIC_REFERENCE_NOTICE,
   DRUG_REFERENCE_NOTICE,
+  healthCenterNotice,
   LEGAL_REFERENCE_NOTICE,
+  LOCAL_SUPPORT_NOTICE,
+  LOCAL_SUPPORT_POINTER,
   POSITIVE_DISCLAIMER_MARKERS,
   REFERENCE_NOTICE,
   SOURCE_NOTICE,
@@ -20,6 +23,7 @@ import {
 import { runTool } from "../src/core/pipeline.js";
 import { createUpstreamGuard, defaultQuotaConfig, UPSTREAM_BUCKETS, type UpstreamBucket } from "../src/core/upstream-guard.js";
 import { loadData, resolveBasis } from "../src/data-store/load.js";
+import { healthCenterLine, lookupHealthCenter } from "../src/region/health-centers.js";
 import { createServer } from "../src/server/create-server.js";
 import { allTools, type ToolDef } from "../src/tools/registry.js";
 import { checkPregnancyDrugTool } from "../src/tools/check-pregnancy-drug.js";
@@ -28,6 +32,7 @@ import { findBenefitsTool } from "../src/tools/find-benefits.js";
 import { findCheckupClinicTool } from "../src/tools/find-checkup-clinic.js";
 import { findDaycareTool } from "../src/tools/find-daycare.js";
 import { findKindergartenTool } from "../src/tools/find-kindergarten.js";
+import { findLocalSupportTool } from "../src/tools/find-local-support.js";
 import { findNightPediatricTool } from "../src/tools/find-night-pediatric.js";
 import { findVaccinationClinicTool } from "../src/tools/find-vaccination-clinic.js";
 import { getLeaveArticleTool } from "../src/tools/get-leave-article.js";
@@ -59,8 +64,13 @@ import { createSkMock, skCtx, skFx, skJson } from "./helpers/sk-mock.js";
 import { createKgMock, kgCtx, kgFx, kgRes } from "./helpers/kg-mock.js";
 import { createLawMock, jsonRes as lawJson } from "./helpers/law-mock.js";
 import { createFakeIO, createRecordingFs, setupOpts } from "./helpers/setup-io.js";
+import { pickRegion } from "./helpers/health-center-picks.js";
+import { createLcgvMock, lcgvCtx, lcgvError, lcgvItems, lcgvRes, sequence } from "./helpers/lcgv-mock.js";
+import { lcgvDetailItemsOf, lcgvVerbatims } from "./helpers/lcgv-verbatim.js";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
+const HOUR = 3_600_000;
+const MAPO = "서울 마포구";
 const totals: number[] = NEGATIVE_STEM_ALLOWLIST.map(() => 0);
 
 function assertClean(items: { label: string; text: string; verbatim?: readonly string[] }[]): void {
@@ -451,6 +461,7 @@ describe("runtime layer", () => {
     }
     const unknown = (await client.callTool({ name: "no_such_tool", arguments: {} })) as { content: { type: string; text?: string }[] };
     items.push({ label: "unknown tool", text: textOf(unknown) });
+    expect(items.some((i) => i.label === "tools/list:find_local_support")).toBe(true);
     assertClean(items);
   });
 
@@ -530,6 +541,78 @@ describe("runtime layer", () => {
       .filter((d) => d.isFile())
       .map((d) => ({ label: `test/__snapshots__/${d.name}`, text: readFileSync(join(dir, d.name), "utf8") }));
     expect(items.length).toBeGreaterThan(0);
+    assertClean(items);
+  });
+});
+
+describe("runtime layer: find_local_support and get_timeline region (M62)", () => {
+  it("find_local_support outputs: no key, ok, zero, 22, 30, stale", async () => {
+    const items: { label: string; text: string; verbatim?: readonly string[] }[] = [];
+
+    const nokey = await runTool(findLocalSupportTool, { region: MAPO }, lcgvCtx(createLcgvMock(), { noKey: true }));
+    expect(nokey.isError).toBe(true);
+    items.push({ label: "lcgv-nokey", text: textOf(nokey), verbatim: [] });
+
+    const okMock = createLcgvMock({ list: () => lcgvRes("lcgvList/mapo.xml") });
+    const ok = await runTool(findLocalSupportTool, { region: MAPO }, lcgvCtx(okMock, { sink: () => undefined }));
+    expect(ok.isError).toBeFalsy();
+    const okText = textOf(ok);
+    expect(okText).toContain(LOCAL_SUPPORT_NOTICE);
+    items.push({ label: "lcgv-ok", text: okText, verbatim: lcgvVerbatims(lcgvItems("lcgvList/mapo.xml"), lcgvDetailItemsOf(okMock)) });
+
+    const zero = await runTool(findLocalSupportTool, { region: MAPO }, lcgvCtx(createLcgvMock({ list: () => lcgvError("40") }), { sink: () => undefined }));
+    expect(zero.isError).toBeFalsy();
+    const zeroText = textOf(zero);
+    expect(zeroText).toContain(LOCAL_SUPPORT_NOTICE);
+    items.push({ label: "lcgv-zero", text: zeroText, verbatim: [] });
+
+    const limit = await runTool(findLocalSupportTool, { region: MAPO }, lcgvCtx(createLcgvMock({ list: () => lcgvError("22") }), { sink: () => undefined }));
+    items.push({ label: "lcgv-limit22", text: textOf(limit), verbatim: [] });
+
+    const badkey = await runTool(findLocalSupportTool, { region: MAPO }, lcgvCtx(createLcgvMock({ list: () => lcgvError("30") }), { sink: () => undefined }));
+    items.push({ label: "lcgv-badkey30", text: textOf(badkey), verbatim: [] });
+
+    const staleMock = createLcgvMock({ list: sequence(() => lcgvRes("lcgvList/mapo.xml"), () => lcgvError("22")) });
+    const staleCtx = lcgvCtx(staleMock, { sink: () => undefined });
+    await runTool(findLocalSupportTool, { region: MAPO }, staleCtx);
+    staleCtx.advance(12 * HOUR + 1);
+    const stale = await runTool(findLocalSupportTool, { region: MAPO }, staleCtx);
+    expect(stale.isError).toBeFalsy();
+    const staleText = textOf(stale);
+    expect(staleText).toContain("저장해 둔 응답");
+    items.push({ label: "lcgv-stale", text: staleText, verbatim: lcgvVerbatims(lcgvItems("lcgvList/mapo.xml"), lcgvDetailItemsOf(staleMock)) });
+
+    for (const item of items) expect(item.text.length, item.label).toBeGreaterThan(0);
+    assertClean(items);
+  });
+
+  it("get_timeline region outputs: found, sido only, unresolved", async () => {
+    const base = { due_date: "2027-02-10", reference_date: "2026-10-28" };
+    const items: { label: string; text: string; verbatim?: readonly string[] }[] = [];
+
+    const found = pickRegion((l) => l.kind === "found");
+    expect(found).toBeDefined();
+    const l = found!.lookup;
+    if (l.kind !== "found") throw new Error("expected found lookup");
+    const foundRes = await runTool(getTimelineTool, { ...base, region: found!.text }, createTestContext({ env: {} }));
+    expect(foundRes.isError).toBeFalsy();
+    const foundText = textOf(foundRes);
+    expect(foundText).toContain(healthCenterNotice(l.asOf));
+    expect(foundText).toContain(LOCAL_SUPPORT_POINTER);
+    items.push({ label: "timeline-region-found", text: foundText, verbatim: l.centers.map((c) => healthCenterLine(c)) });
+
+    const sido = await runTool(getTimelineTool, { ...base, region: "경기도" }, createTestContext({ env: {} }));
+    expect(sido.isError).toBeFalsy();
+    const sidoText = textOf(sido);
+    expect(sidoText).toContain(LOCAL_SUPPORT_POINTER);
+    items.push({ label: "timeline-region-sido", text: sidoText, verbatim: [] });
+
+    const unresolved = await runTool(getTimelineTool, { ...base, region: "가나다라마" }, createTestContext({ env: {} }));
+    expect(unresolved.isError).toBeFalsy();
+    const unresolvedText = textOf(unresolved);
+    expect(unresolvedText).toContain(LOCAL_SUPPORT_POINTER);
+    items.push({ label: "timeline-region-unresolved", text: unresolvedText, verbatim: [] });
+
     assertClean(items);
   });
 });
