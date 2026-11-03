@@ -1,8 +1,17 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { basename, dirname, isAbsolute, resolve } from "node:path";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { basename, dirname, isAbsolute, join, resolve } from "node:path";
 import { loadData } from "../src/data-store/load.js";
 import { type HealthCentersFile, HealthCentersSchema, IsoDate } from "../src/data-store/schema.js";
 import { normalizeRegion } from "../src/region/normalize.js";
+import {
+  API_FILE_NAME,
+  ApiPageError,
+  apiItemsToSourceRows,
+  MANIFEST_FILE,
+  PAGE_FILE_RE,
+  parseApiManifest,
+  parseApiPage,
+} from "./lib/health-centers-api.js";
 import {
   buildHealthCenters,
   decodeCsvBytes,
@@ -14,7 +23,7 @@ import {
 } from "./lib/health-centers-csv.js";
 import { EXIT, isMainModule, parseFlags, processIO, type ScriptIO } from "./lib/script-io.js";
 
-const USAGE = "사용법: node build-scripts/scripts/build-health-centers.js --input <내려받은 파일 절대 경로> --source-modified YYYY-MM-DD [--as-of YYYY-MM-DD] [--out data/health-centers.json] [--check]";
+const USAGE = "사용법: node build-scripts/scripts/build-health-centers.js --input <원본 CSV 파일 또는 API 쪽 폴더의 절대 경로> --source-modified YYYY-MM-DD [--as-of YYYY-MM-DD] [--out data/health-centers.json] [--check]";
 
 function bulletsOrNone(items: readonly string[]): string[] {
   return items.length === 0 ? ["- 없음"] : items.map((item) => `- ${item}`);
@@ -33,7 +42,7 @@ export async function main(argv: readonly string[], io: ScriptIO, deps?: { looku
 
     const input = flags["--input"];
     if (input === undefined) {
-      io.stderr(`${USAGE}\n--input이 필요해요(내려받은 원본 파일의 절대 경로).\n`);
+      io.stderr(`${USAGE}\n--input이 필요해요(원본 CSV 파일 또는 API 쪽 폴더의 절대 경로).\n`);
       return EXIT.USAGE;
     }
     if (!isAbsolute(input)) {
@@ -52,20 +61,45 @@ export async function main(argv: readonly string[], io: ScriptIO, deps?: { looku
     }
     const out = resolve(flags["--out"] ?? "data/health-centers.json");
 
-    let bytes: Uint8Array;
-    try {
-      bytes = readFileSync(input);
-    } catch (e) {
-      const err = e as NodeJS.ErrnoException;
-      io.stderr(`원본 파일을 읽지 못했어요: ${input} (${err.code ?? err.message})\n`);
-      return EXIT.UNAVAILABLE;
-    }
-
+    const isDir = statSync(input, { throwIfNoEntry: false })?.isDirectory() === true;
     let rows: SourceRow[];
+    let fileName: string;
     try {
-      rows = toSourceRows(parseCsv(decodeCsvBytes(bytes)));
+      if (isDir) {
+        let manifestText: string;
+        try {
+          manifestText = readFileSync(join(input, MANIFEST_FILE), "utf8");
+        } catch {
+          io.stderr(`원본 폴더에서 manifest.json을 찾지 못했어요: ${input}\n`);
+          return EXIT.UNAVAILABLE;
+        }
+        const m = parseApiManifest(manifestText);
+        if (!m.complete) {
+          io.stderr(`받기가 끝나지 않은 폴더예요(complete=false): ${input}. 받기 스크립트를 다시 실행하세요\n`);
+          return EXIT.UNAVAILABLE;
+        }
+        const files = readdirSync(input).filter((f) => PAGE_FILE_RE.test(f)).sort();
+        const items = files.flatMap((f) => parseApiPage(readFileSync(join(input, f), "utf8")).items);
+        if (items.length !== m.total_count) {
+          io.stderr(`받은 항목 수(${items.length})가 총 건수(${m.total_count})와 달라요: ${input}\n`);
+          return EXIT.UNAVAILABLE;
+        }
+        rows = apiItemsToSourceRows(items);
+        fileName = API_FILE_NAME;
+      } else {
+        let bytes: Uint8Array;
+        try {
+          bytes = readFileSync(input);
+        } catch (e) {
+          const err = e as NodeJS.ErrnoException;
+          io.stderr(`원본 파일을 읽지 못했어요: ${input} (${err.code ?? err.message})\n`);
+          return EXIT.UNAVAILABLE;
+        }
+        rows = toSourceRows(parseCsv(decodeCsvBytes(bytes)));
+        fileName = basename(input);
+      }
     } catch (e) {
-      if (e instanceof HeaderError) {
+      if (e instanceof ApiPageError || e instanceof HeaderError) {
         io.stderr(`${e.message}\n`);
         return EXIT.UNAVAILABLE;
       }
@@ -84,20 +118,23 @@ export async function main(argv: readonly string[], io: ScriptIO, deps?: { looku
       prev = checked.data;
     }
 
-    const lookup: RegionLookup = deps?.lookup ?? { normalize: normalizeRegion, sigungu: loadData("regions").sigungu };
+    const regions = loadData("regions");
+    const lookup: RegionLookup = deps?.lookup ?? { normalize: normalizeRegion, sido: regions.sido, sigungu: regions.sigungu };
     const { data, report } = buildHealthCenters(rows, prev, {
       lookup,
       sourceModified,
       asOf,
       generatedAt: io.now().toISOString().slice(0, 10),
-      fileName: basename(input),
+      fileName,
     });
 
+    const range = report.dataDateRange;
     const lines = [
       `원본 행: ${data.counts.source_rows}`,
       `유지: ${data.counts.kept}`,
       `미일치: ${report.unmatched.length}`,
       `복수 주 기관: ${report.multiplePrimary.length}`,
+      range === null ? "데이터기준일자: 없음" : `데이터기준일자: ${range.min} ~ ${range.max}`,
       `추가 ${report.added} · 삭제 ${report.removed} · 변경 ${report.changed}`,
       "미일치 행:",
       ...bulletsOrNone(report.unmatched),
