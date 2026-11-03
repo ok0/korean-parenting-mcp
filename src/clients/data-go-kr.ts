@@ -81,7 +81,12 @@ function interpret(
   return out;
 }
 
-export async function callDataGoKr(spec: ApiSpec, params: DataGoKrParams, ctx: ToolContext): Promise<DataGoKrResult> {
+export async function callDataGoKr(
+  spec: ApiSpec,
+  params: DataGoKrParams,
+  ctx: ToolContext,
+  opts: { retries?: number } = {},
+): Promise<DataGoKrResult> {
   const key = ctx.config.keys.DATA_GO_KR;
   if (!key) throw missingKeyError(["DATA_GO_KR"]);
   if (spec.baseUrl === "" || spec.operation === "") {
@@ -95,7 +100,7 @@ export async function callDataGoKr(spec: ApiSpec, params: DataGoKrParams, ctx: T
     for (const [k, v] of Object.entries(params)) {
       if (v !== undefined) url.searchParams.set(k, String(v));
     }
-    const res = await httpGet(url, ctx, { allowErrorStatus: true });
+    const res = await httpGet(url, ctx, { allowErrorStatus: true, ...(opts.retries === undefined ? {} : { retries: opts.retries }) });
     return interpret(res, spec, ctx);
   };
 
