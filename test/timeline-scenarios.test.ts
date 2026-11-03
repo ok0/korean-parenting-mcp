@@ -81,7 +81,8 @@ describe("fixed timeline scenarios", () => {
       const head = t.slice(0, t.indexOf("\n\n---\n"));
       const ids = [...footer.matchAll(/^- \[([a-z0-9-]+)\]/gm)].map((m) => m[1]!);
       expect(ids.length).toBeGreaterThan(0);
-      for (const id of ids) expect(head).toContain(id);
+      // block basis is footer-only per M59 R6
+      for (const id of ids.filter((i) => i !== "health-center-standard-data")) expect(head).toContain(id);
 
       expect(t).not.toContain("자 생략");
     }
