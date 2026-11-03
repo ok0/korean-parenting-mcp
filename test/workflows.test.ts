@@ -218,6 +218,8 @@ describe("workflows", () => {
   it("mcpb-release.yml (M38 R1–R3, R7)", () => {
     const text = read(".github/workflows/mcpb-release.yml");
     expect(mcpbReleaseProblems(text)).toEqual([]);
+    expect(text).toContain('echo "main 브랜치의 최신 상태로 자동으로 만든 시험판(Pre-release)입니다. 정식 버전 번호 없이 main 변경마다 새로 만들어져요."');
+    expect(text).not.toMatch(/아니|아닌|아님|아닙/);
     expect(OUTPUT_FILE).toBe(MCPB_ASSET);
 
     const swappedSteps = steps(text);
