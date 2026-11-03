@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   compareCenters,
+  HEALTH_CENTER_SOURCES,
   PeriodRuleSchema,
   ProvenanceSchema,
   VACCINE_CODES,
@@ -939,5 +940,39 @@ describe("health-centers data", () => {
     const x = structuredClone(loadData("health-centers"));
     x.counts.kept += 1;
     expect(() => validateDataset("health-centers", x, loadData("basis-documents"))).toThrow();
+  });
+
+  it("accepts a 3072692 source and entries without source_date", () => {
+    const x = structuredClone(loadData("health-centers"));
+    (x as unknown as { source: Record<string, unknown> }).source = { ...x.source, ...HEALTH_CENTER_SOURCES["3072692"] };
+    for (const c of x.centers) delete c.source_date;
+    expect(() => validateDataset("health-centers", x, loadData("basis-documents"))).not.toThrow();
+  });
+
+  it("rejects a source that mixes the two datasets", () => {
+    const a = structuredClone(loadData("health-centers"));
+    (a as unknown as { source: Record<string, unknown> }).source = {
+      ...a.source,
+      ...HEALTH_CENTER_SOURCES["3072692"],
+      url: HEALTH_CENTER_SOURCES["15107750"].url,
+    };
+    expect(() => validateDataset("health-centers", a, loadData("basis-documents"))).toThrow(DataValidationError);
+
+    const b = structuredClone(loadData("health-centers"));
+    (b as unknown as { source: Record<string, unknown> }).source = {
+      ...b.source,
+      ...HEALTH_CENTER_SOURCES["15107750"],
+      title: HEALTH_CENTER_SOURCES["3072692"].title,
+    };
+    expect(() => validateDataset("health-centers", b, loadData("basis-documents"))).toThrow(DataValidationError);
+  });
+
+  it("basis document points to 3072692 with the same id and kind", () => {
+    const doc = resolveBasis(["health-center-standard-data"])[0];
+    expect(doc?.id).toBe("health-center-standard-data");
+    expect(doc?.kind).toBe("web");
+    expect(doc?.law_api).toBeNull();
+    expect(doc?.url).toBe(HEALTH_CENTER_SOURCES["3072692"].url);
+    expect(doc?.effective).toBe("2025-12-31");
   });
 });
