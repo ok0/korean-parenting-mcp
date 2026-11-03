@@ -5,6 +5,7 @@ import {
   CLINIC_REFERENCE_NOTICE,
   DRUG_REFERENCE_NOTICE,
   LEGAL_REFERENCE_NOTICE,
+  LOCAL_SUPPORT_POINTER,
   POSITIVE_DISCLAIMER_MARKERS,
   RECALL_REFERENCE_NOTICE,
   REFERENCE_NOTICE,
@@ -42,5 +43,13 @@ describe("source notice", () => {
     for (const notice of [REFERENCE_NOTICE, CLINIC_REFERENCE_NOTICE, DRUG_REFERENCE_NOTICE, LEGAL_REFERENCE_NOTICE]) {
       expect(notice).toContain("상의");
     }
+  });
+
+  it("local support pointer is fixed positive wording", () => {
+    expect(LOCAL_SUPPORT_POINTER).toBe("선택 기능: 공공데이터포털 서비스 키를 설정하면 find_local_support 도구로 이 지역의 지원 서비스를 참고용으로 찾아볼 수 있어요.");
+    expect(LOCAL_SUPPORT_POINTER).not.toMatch(/아니|아닌|아님|아닙|비공식/);
+    expect(LOCAL_SUPPORT_POINTER).toContain("선택 기능");
+    expect(LOCAL_SUPPORT_POINTER).toContain("find_local_support");
+    expect(LOCAL_SUPPORT_POINTER).not.toContain("DATA_GO_KR_SERVICE_KEY");
   });
 });
