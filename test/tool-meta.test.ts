@@ -228,4 +228,17 @@ describe("tool meta", () => {
   it("helpers throw on empty FieldDoc", () => {
     expect(() => dateField({ purpose: "", format: "x", example: "y" })).toThrow();
   });
+
+  it("keyed safety and clinic tools use positive wording in descriptions and fields", () => {
+    const stem = /아니|아닌|아님|아닙/;
+    for (const name of ["check_pregnancy_drug", "check_recall", "find_kindergarten", "find_night_pediatric"]) {
+      const t = allTools.find((x) => x.name === name);
+      expect(t, name).toBeDefined();
+      expect(t!.description, name).not.toMatch(stem);
+      expect(JSON.stringify(z.toJSONSchema(t!.schema, { io: "input" })), name).not.toMatch(stem);
+    }
+    const night = allTools.find((x) => x.name === "find_night_pediatric")!;
+    expect(night.description).toContain("진료 시간 외");
+    expect(night.description).not.toContain("진료 시간 아님");
+  });
 });
