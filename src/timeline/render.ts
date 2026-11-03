@@ -1,5 +1,7 @@
 import { addMonthsClamp, compare, formatDate, type CivilDate } from "../date/civil-date.js";
 import { resolveBasis } from "../data-store/load.js";
+import { HEALTH_CENTER_UNRESOLVED_LINKS, LOCAL_SUPPORT_POINTER, healthCenterNotice } from "../core/notice.js";
+import { healthCenterLine, type HealthCenterLookup } from "../region/health-centers.js";
 import type { RevisionStatus } from "../provenance/revision-text.js";
 import type { ToolOutput } from "../tools/registry.js";
 import {
@@ -12,6 +14,8 @@ import {
   verifiedText,
 } from "../tools/shared/format.js";
 import type { LocalGuidanceSection, TimelineItem, TimelineMode, TimelineResult } from "./types.js";
+
+export const HEALTH_CENTER_BRANCH_NOTE = "보건소가 따로 없는 지역이라 가까운 보건지소·보건진료소를 함께 보여 드려요.";
 
 export interface TimelineView {
   birthDate: CivilDate;
@@ -36,6 +40,26 @@ export function renderItemLine(item: TimelineItem): string {
   return [head, ...notes.map((note) => `\n  · ${note}`)].join("");
 }
 
+export function healthCenterBlock(h: HealthCenterLookup): string[] {
+  if (h.kind === "found") {
+    const out: string[] = [];
+    for (const c of h.centers) {
+      out.push(
+        `보건소 연락처(${h.scope === "parent-city" ? "시 보건소, " : ""}목록 기준일 ${h.asOf}, ${verifiedText(c.verified)}): ${healthCenterLine(c)}`,
+      );
+    }
+    if (h.scope === "branch") out.push(HEALTH_CENTER_BRANCH_NOTE);
+    out.push(healthCenterNotice(h.asOf));
+    out.push(LOCAL_SUPPORT_POINTER);
+    return out;
+  }
+  const out: string[] = [`보건소 연락처: ${h.message}`];
+  if (h.candidates.length > 0) out.push(`후보: ${h.candidates.join(", ")}`);
+  out.push(HEALTH_CENTER_UNRESOLVED_LINKS);
+  out.push(LOCAL_SUPPORT_POINTER);
+  return out;
+}
+
 export function renderLocalSection(s: LocalGuidanceSection): string {
   const head =
     s.region !== undefined
@@ -48,6 +72,7 @@ export function renderLocalSection(s: LocalGuidanceSection): string {
       `- ${l.title}: ${l.text} 확인처: ${l.contact}${l.url !== undefined ? ` (${l.url})` : ""} | 출처 ${l.provenance.basis_ids.join(", ")} | 기준일 ${l.provenance.as_of} | ${verifiedText(l.provenance.verified)}`,
     );
   }
+  if (s.healthCenter !== undefined) out.push(...healthCenterBlock(s.healthCenter));
   return out.join("\n");
 }
 

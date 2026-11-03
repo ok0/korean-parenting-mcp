@@ -10,3 +10,4 @@ export const HEALTH_CENTER_PREPARING = "이 지역 보건소 연락처는 아직
 export function healthCenterNotice(asOf: string): string {
   return `보건소 연락처는 공공데이터 목록(기준일 ${asOf})에서 옮긴 참고용 정보예요. 전화번호와 운영시간은 바뀔 수 있으니 방문 전에 보건소 홈페이지에서 확인하세요. 산전검사 같은 사업 여부와 조건은 보건소에 문의하세요.`;
 }
+export const LOCAL_SUPPORT_POINTER = "선택 기능: 공공데이터포털 서비스 키를 설정하면 find_local_support 도구로 이 지역의 지원 서비스를 참고용으로 찾아볼 수 있어요.";

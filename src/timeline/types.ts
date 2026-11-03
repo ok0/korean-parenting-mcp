@@ -1,6 +1,7 @@
 import type { CivilDate } from "../date/civil-date.js";
 import type { HolidayCalendar } from "../date/holiday-calendar.js";
 import type { Provenance } from "../data-store/schema.js";
+import type { HealthCenterLookup } from "../region/health-centers.js";
 
 export type Category = "신고" | "신청" | "접종" | "검진" | "휴가" | "시설" | "지원";
 export type Nature = "법정 의무" | "권장" | "지원 신청" | "안내";
@@ -61,4 +62,5 @@ export interface LocalGuidanceSection {
   missingNote?: string;
   lines: LocalGuidanceLine[];
   basisIds: string[];
+  healthCenter?: HealthCenterLookup;
 }
