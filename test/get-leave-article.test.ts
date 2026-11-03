@@ -6,6 +6,7 @@ import { KEY_GUIDE } from "../src/core/errors.js";
 import { runTool } from "../src/core/pipeline.js";
 import { loadData, resolveBasis } from "../src/data-store/load.js";
 import { toJo } from "../src/clients/law.js";
+import { LEGAL_REFERENCE_NOTICE } from "../src/core/notice.js";
 import { getLeaveArticleTool } from "../src/tools/get-leave-article.js";
 import { createTestContext } from "./helpers/context.js";
 import { createLawMock, htmlRes, jsonRes, type LawRoute } from "./helpers/law-mock.js";
@@ -95,11 +96,12 @@ describe("get_leave_article", () => {
         `조문시행일자 ${articleEffective}`,
         "법제처 국가법령정보센터",
         "조회 시각 2026-01-01 00:00",
-        "법적 효력이 없고",
+        `법률 면책: ${LEGAL_REFERENCE_NOTICE}`,
         "공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.",
       ]) {
         expect(t, `${topic}: ${s}`).toContain(s);
       }
+      expect(t, topic).not.toMatch(/법적 효력이 없고|법률 자문이 아닙니다/);
       const lawjosubUrl = mock.urls.map((u) => new URL(u)).find((u) => u.searchParams.get("target") === "lawjosub");
       expect(lawjosubUrl?.searchParams.get("JO")).toBe(jo);
       expect(jo).toBe(toJo(loadData("leave").articles[topic].article, loadData("leave").articles[topic].branch));

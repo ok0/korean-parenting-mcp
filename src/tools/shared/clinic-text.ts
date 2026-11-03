@@ -5,6 +5,7 @@ import { ToolError } from "../../core/errors.js";
 import { formatDate, parseDate, todayKst, type CivilDate } from "../../date/civil-date.js";
 import { resolveBasis } from "../../data-store/load.js";
 import type { Provenance } from "../../data-store/schema.js";
+import { CLINIC_REFERENCE_NOTICE } from "../../core/notice.js";
 import { normalizeRegion, type Region } from "../../region/normalize.js";
 import { NOTICE_SOURCE, composeFooter, verifiedText } from "./format.js";
 
@@ -12,8 +13,7 @@ export const NOTICE_LINK_CHANGE_CLINIC =
   "링크 변경 가능: 누리집 개편에 따라 주소나 메뉴가 바뀔 수 있습니다. 링크가 열리지 않으면 첫 화면(대체 링크)에서 메뉴를 찾아가세요. 바로가기 주소를 확인하지 못한 항목은 메뉴 경로로만 적었습니다(확인 필요).";
 export const NOTICE_FINAL_CLINIC =
   "최종 확인: 접종·검진 일정, 기관 지정 여부, 준비물은 공식 사이트(질병관리청 예방접종도우미, 국민건강보험공단), 해당 의료기관, 관할 보건소에서 확인하세요.";
-export const NOTICE_MEDICAL_CLINIC =
-  "의료 면책: 이 안내는 일반 정보이며 진단·처방이나 접종·검진 시기 판단이 아닙니다. 아이의 상태와 접종·검진 여부는 의료진과 상담하세요.";
+export const NOTICE_MEDICAL_CLINIC = `의료 면책: ${CLINIC_REFERENCE_NOTICE}`;
 
 export interface SourceLike {
   source: string;

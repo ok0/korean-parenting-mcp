@@ -2,14 +2,14 @@ import { z } from "zod";
 import { createLawClient, normName, toJo } from "../clients/law.js";
 import type { ToolContext } from "../core/context.js";
 import { ToolError } from "../core/errors.js";
+import { LEGAL_REFERENCE_NOTICE } from "../core/notice.js";
 import { loadData, resolveBasis } from "../data-store/load.js";
 import type { ToolDef, ToolOutput } from "./registry.js";
 import { NOTICE_SOURCE, composeFooter, verifiedText } from "./shared/format.js";
 import { enumField } from "./shared/schema.js";
 
 const ARTICLE_TEXT_MAX = 4000;
-const NOTICE_LEGAL_ARTICLE =
-  "법률 면책: 조문 원문을 옮긴 참고 정보로 법적 효력이 없고 법률 자문이 아닙니다. 적용 여부와 세부 요건은 법령 원문·사업장·고용센터(고용노동부)에 확인하세요.";
+const NOTICE_LEGAL_ARTICLE = `법률 면책: ${LEGAL_REFERENCE_NOTICE}`;
 const SOURCE_NAME = "법제처 국가법령정보센터";
 
 const schema = z.object({
