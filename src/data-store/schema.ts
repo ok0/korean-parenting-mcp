@@ -986,6 +986,20 @@ export const HEALTH_CENTER_KINDS = ["보건소", "보건의료원", "보건지�
 export const HEALTH_CENTER_PRIMARY_KINDS = ["보건소", "보건의료원"] as const;
 export const HEALTH_CENTER_BASIS_ID = "health-center-standard-data";
 export const HEALTH_CENTERS_MAX_BYTES = 150_000;
+export const HEALTH_CENTER_SOURCES = {
+  "15107750": { dataset_id: "15107750", title: "전국보건기관표준데이터", url: "https://www.data.go.kr/data/15107750/standard.do", provider: "지방자치단체" },
+  "3072692": { dataset_id: "3072692", title: "보건복지부_전국 지역보건의료기관 현황", url: "https://www.data.go.kr/data/3072692/fileData.do", provider: "보건복지부" },
+} as const;
+const healthCenterSourceRest = {
+  provider: z.string().min(1),
+  license: z.string().min(1).nullable(),
+  source_modified: IsoDate,
+  file_name: z.string().min(1),
+};
+export const HealthCenterSourceSchema = z.discriminatedUnion("dataset_id", [
+  z.strictObject({ dataset_id: z.literal("15107750"), title: z.literal(HEALTH_CENTER_SOURCES["15107750"].title), url: z.literal(HEALTH_CENTER_SOURCES["15107750"].url), ...healthCenterSourceRest }),
+  z.strictObject({ dataset_id: z.literal("3072692"), title: z.literal(HEALTH_CENTER_SOURCES["3072692"].title), url: z.literal(HEALTH_CENTER_SOURCES["3072692"].url), ...healthCenterSourceRest }),
+]);
 
 export const HealthCenterEntrySchema = z
   .strictObject({
@@ -1004,15 +1018,7 @@ export const HealthCenterEntrySchema = z
 
 export const HealthCentersSchema = z
   .strictObject({
-    source: z.strictObject({
-      dataset_id: z.literal("15107750"),
-      title: z.literal("전국보건기관표준데이터"),
-      url: z.literal("https://www.data.go.kr/data/15107750/standard.do"),
-      provider: z.string().min(1),
-      license: z.string().min(1).nullable(),
-      source_modified: IsoDate,
-      file_name: z.string().min(1),
-    }),
+    source: HealthCenterSourceSchema,
     generated_at: IsoDate,
     as_of: IsoDate,
     basis_ids: z.tuple([z.literal(HEALTH_CENTER_BASIS_ID)]),

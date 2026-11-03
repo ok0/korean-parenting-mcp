@@ -320,15 +320,15 @@
     },
     {
       "id": "health-center-standard-data",
-      "title": "전국보건기관표준데이터",
-      "doc_no": "data.go.kr 15107750",
+      "title": "보건복지부_전국 지역보건의료기관 현황",
+      "doc_no": "data.go.kr 3072692",
       "kind": "web",
-      "effective": "2026-11-02",
-      "url": "https://www.data.go.kr/data/15107750/standard.do",
+      "effective": "2025-12-31",
+      "url": "https://www.data.go.kr/data/3072692/fileData.do",
       "law_api": null,
       "as_of": "2026-11-03",
       "verified": "partial",
-      "note": "지방자치단체가 등록한 표준데이터(파일·OpenAPI). 연락처 목록 data/health-centers.json의 원본. 이용허락 문구는 M64에서 기록"
+      "note": "보건복지부가 공개한 전국 지역보건의료기관 현황 파일데이터(CSV, 기준일 2025-12-31). 연락처 목록 data/health-centers.json의 원본이고, 전국보건기관표준데이터(15107750)는 비교 원본으로 써요. 이용허락 문구는 M64에서 기록"
     }
   ]
 }
