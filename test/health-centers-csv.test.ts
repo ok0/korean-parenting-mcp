@@ -33,7 +33,8 @@ const code = (name: string): string => {
   return r.region.code;
 };
 
-const lookup: RegionLookup = { normalize: normalizeRegion, sigungu: loadData("regions").sigungu };
+const regions = loadData("regions");
+const lookup: RegionLookup = { normalize: normalizeRegion, sido: regions.sido, sigungu: regions.sigungu };
 
 const opts = {
   sourceModified: "2026-11-02",
@@ -250,7 +251,7 @@ describe("health center CSV conversion", () => {
   });
 
   it("sources have no network or key access", () => {
-    const sources = ["scripts/lib/health-centers-csv.ts", "scripts/build-health-centers.ts"].map((p) =>
+    const sources = ["scripts/lib/health-centers-csv.ts", "scripts/lib/health-centers-api.ts", "scripts/build-health-centers.ts"].map((p) =>
       readFileSync(join(root, p), "utf8"),
     );
     const forbidden = [
