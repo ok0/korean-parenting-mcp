@@ -105,6 +105,18 @@ describe("health center API page conversion", () => {
     expect(parseApiPage(wrap({ items: { item: [item] }, totalCount: "1" })).items).toHaveLength(1);
     expect(parseApiPage(wrap({ items: { item }, totalCount: "1" })).items).toHaveLength(1);
     expect(parseApiPage(wrap({ items: "", totalCount: "0" })).items).toHaveLength(0);
+    const bare = parseApiPage(JSON.stringify({ header: { resultCode: "00", resultMsg: "OK" }, body: { items: { item: [item] }, numOfRows: 10, pageNo: 1, totalCount: 1 } }));
+    expect(bare.items).toHaveLength(1);
+    expect(bare.totalCount).toBe(1);
+    let shape: unknown;
+    try {
+      parseApiPage("{}");
+    } catch (e) {
+      shape = e;
+    }
+    expect(shape).toBeInstanceOf(ApiPageError);
+    expect((shape as ApiPageError).code).toBe("SHAPE");
+    expect((shape as ApiPageError).message).toContain("header");
   });
 
   it("maps result codes", () => {
@@ -209,6 +221,11 @@ describe("health center API page conversion", () => {
     expect(report.fieldIssues).toHaveLength(1);
     expect(report.fieldIssues[0]).toContain("홈페이지 주소 형식");
     expect(report.dataDateRange).toEqual({ min: "2026-09-30", max: "2026-10-15" });
+    expect(report.coverage.units).toBe(lookup.sigungu.length);
+    expect(report.coverage.covered).toBe(3);
+    expect(report.coverage.missing).toHaveLength(lookup.sigungu.length - 3);
+    expect(report.coverage.missing).toContain(`경기도 수원시 장안구(${code("경기도 수원시 장안구")})`);
+    expect(report.coverage.missing.some((m) => m.endsWith(`(${code("경기도 수원시 영통구")})`))).toBe(false);
     expect(HealthCentersSchema.safeParse(data).success).toBe(true);
   });
 
@@ -224,6 +241,8 @@ describe("health center API page conversion", () => {
     expect(text).toContain("원본 행: 3");
     expect(text).toContain("미일치: 0");
     expect(text).toContain("데이터기준일자: 2026-09-30 ~ 2026-10-15");
+    expect(text).toContain(`주 기관 지역: 3/${lookup.sigungu.length}`);
+    expect(text).toContain("주 기관을 찾지 못한 지역:");
 
     const saveRun = makeIo();
     expect(await main(["--input", apiDir, "--source-modified", "2026-11-02", "--out", out], saveRun.io)).toBe(0);
