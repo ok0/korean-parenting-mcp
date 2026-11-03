@@ -30,7 +30,26 @@ describe("remote allowlist policy", () => {
     const exposed = remoteTools(allTools).map((t) => t.name);
     expect(exposed).not.toContain("check_recall");
     expect(exposed).toHaveLength(8);
-    expect(exposed).toEqual(names.filter((n) => n !== "check_recall" && n !== "get_leave_article"));
+    expect(exposed).toEqual(names.filter((n) => n !== "check_recall" && n !== "get_leave_article" && n !== "find_local_support"));
+  });
+
+  it("find_local_support excluded, local only (M62)", () => {
+    const row = REMOTE_POLICY.find((p) => p.tool === "find_local_support");
+    expect(row?.expose).toBe(false);
+    expect(row?.providers).toEqual([]);
+    expect(remoteTools(allTools).map((t) => t.name)).not.toContain("find_local_support");
+    const fb = excludedFallback("find_local_support");
+    expect(fb).toBeDefined();
+    expect(fb).not.toHaveProperty("isError");
+    const text = fb!.content[0]!.text;
+    expect(text).toContain("https://www.bokjiro.go.kr");
+    expect(text).toContain("로컬 모드");
+    expect(text).toContain(NOTICE_SOURCE);
+    const summary = row!.replacement!.summary;
+    expect(summary).not.toMatch(/원격|곧 제공|제공할 예정|안내할 예정/);
+    expect(summary).not.toMatch(/아니|아닌|아님|아닙|비공식|무관/);
+    expect(buildRemoteInstructions()).toContain("find_local_support");
+    expect(REMOTE_SERVER_INSTRUCTIONS).not.toContain("find_local_support");
   });
 
   const clone = (): RemotePolicy[] => structuredClone([...REMOTE_POLICY]);
