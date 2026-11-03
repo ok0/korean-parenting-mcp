@@ -57,6 +57,7 @@ describe("SAFETYKOREA key wiring", () => {
     for (const s of ["SAFETYKOREA_AUTH_KEY", "신청", "승인", "발급", "AuthKey", "https://www.safetykorea.kr"]) {
       expect(text).toContain(s);
     }
+    expect(text).toContain("승인 검토 후 발급까지 시간이 걸리며");
   });
 
   it("masks the SafetyKorea key in body, footer, thrown errors, ToolErrors and logs", async () => {

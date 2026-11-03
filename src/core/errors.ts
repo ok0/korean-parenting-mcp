@@ -54,7 +54,7 @@ export const KEY_GUIDE: Record<
     url: "https://www.safetykorea.kr",
     steps: [
       "SafetyKorea Open API 안내 페이지(https://www.safetykorea.kr/release/openapi)에서 사용신청서를 내려받아 작성한 뒤 safetykorea@korea.kr로 이메일 신청합니다.",
-      "승인되면 서비스 ID가 이메일로 발급됩니다(즉시 발급이 아니며, 타인·타기관에 양도할 수 없습니다).",
+      "승인되면 서비스 ID가 이메일로 발급됩니다(승인 검토 후 발급까지 시간이 걸리며, 타인·타기관에 양도할 수 없습니다).",
       "발급된 서비스 ID를 SAFETYKOREA_AUTH_KEY에 설정합니다. 서버는 이 값을 HTTP 헤더 AuthKey로만 전송하고 URL에는 넣지 않습니다.",
       "MCP 클라이언트를 재시작합니다.",
     ],
