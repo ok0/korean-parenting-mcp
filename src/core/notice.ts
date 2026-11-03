@@ -11,3 +11,6 @@ export function healthCenterNotice(asOf: string): string {
   return `보건소 연락처는 공공데이터 목록(기준일 ${asOf})에서 옮긴 참고용 정보예요. 전화번호와 운영시간은 바뀔 수 있으니 방문 전에 보건소 홈페이지에서 확인하세요. 산전검사 같은 사업 여부와 조건은 보건소에 문의하세요.`;
 }
 export const LOCAL_SUPPORT_POINTER = "선택 기능: 공공데이터포털 서비스 키를 설정하면 find_local_support 도구로 이 지역의 지원 서비스를 참고용으로 찾아볼 수 있어요.";
+export const LOCAL_SUPPORT_NOTICE = "공공기관이 제공하는 기능(공개 API)을 이용해 정리한 참고용 정보예요. 신청 조건과 금액은 해당 지자체에 확인하세요.";
+export const LOCAL_SUPPORT_FRESHNESS = "지자체 지원은 자주 바뀌어요. 지금 신청할 수 있는지와 금액·조건은 복지로 상세와 해당 지자체 공고에서 확인하세요.";
+export const LOCAL_SUPPORT_STALE_MARK = "수정일이 1년 넘게 지났어요. 지금 내용은 해당 지자체에 확인하세요.";
