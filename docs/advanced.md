@@ -11,6 +11,7 @@
 | `find_night_pediatric` | 야간·휴일 소아 진료기관 찾기 | `DATA_GO_KR_SERVICE_KEY` | ✅ 확인됨 |
 | `find_benefits` | 임신·출산·영유아 지원 서비스 찾기 | `DATA_GO_KR_SERVICE_KEY` | ✅ 확인됨(목록 조회만, 상세 조회 미확인) |
 | `check_pregnancy_drug` | 임부금기 의약품 정보 조회 | `DATA_GO_KR_SERVICE_KEY` | ✅ 확인됨 |
+| `find_local_support` | 시군구별 임신·출산·영유아 지원 서비스 찾기(참고용) | `DATA_GO_KR_SERVICE_KEY` | ✅ 확인됨 |
 | `find_kindergarten` | 유치원 정원·현원·여석 추정 조회 | `KINDERGARTEN_API_KEY` | ✅ 확인됨 |
 | `get_leave_article` | 출산·육아 휴가 근거 법 조문 조회 | `LAW_OC` | ✅ 확인됨 |
 | `check_recall` | 어린이제품 리콜 이력 조회 | `SAFETYKOREA_AUTH_KEY` | ✅ 확인됨 |

@@ -47,6 +47,8 @@ describe("createServer", () => {
     expect(client.getInstructions()).toContain("find_vaccination_clinic");
     expect(client.getInstructions()).toContain("find_checkup_clinic");
     expect(client.getInstructions()).toContain("find_kindergarten");
+    expect(client.getInstructions()).toContain("find_local_support(DATA_GO_KR_SERVICE_KEY 필요)");
+    expect(client.getInstructions()).toContain("15108347");
     expect(client.getInstructions()).toContain("SAFETYKOREA_AUTH_KEY");
     expect(client.getInstructions()).toContain("KINDERGARTEN_API_KEY");
   });
