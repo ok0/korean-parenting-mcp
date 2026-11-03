@@ -5,8 +5,9 @@ import { describe, expect, it } from "vitest";
 import { KEY_ENV } from "../src/core/config.js";
 import { allTools } from "../src/tools/registry.js";
 import { listDocMarkdown } from "../scripts/docs/files.js";
-import { CLIENT_PAGES, DESKTOP_APP_NAME, DOC_NOTICE, DOC_PAGES, MCPB_URL, RUN, SERVER_NAME, STATUS_BADGE, STATUS_LEGEND } from "../scripts/docs/links.js";
+import { CLIENT_PAGES, DESKTOP_APP_NAME, DOC_NOTICE, DOC_PAGES, HEALTH_CENTER_DATASET_URL, LCGV_DATASET_URL, MCPB_URL, RUN, SERVER_NAME, STATUS_BADGE, STATUS_LEGEND } from "../scripts/docs/links.js";
 import { findLeaks } from "../scripts/lib/sample-mask.js";
+import { LOCAL_SUPPORT_NOTICE } from "../src/core/notice.js";
 import { codeBlocks, extractLinks, headings } from "./helpers/markdown.js";
 import {
   CLIENT_LIST_LINE,
@@ -133,7 +134,10 @@ const statusCell = (md: string, tool: string): string => {
 };
 const CHECKUP_STATUS = STATUS_BADGE.verified + "(키 없으면 링크 안내, 공공데이터포털 키가 있으면 기관 조회)";
 const CHECKUP_DATASET_ROW = "| 15154419 국민건강보험공단 검진기관 찾기 조회 (검진기관 조회, 선택) | `find_checkup_clinic` | https://www.data.go.kr/data/15154419/openapi.do |";
-const CHECKUP_PARAGRAPH_PHRASES = ["키가 없으면 검진기관을 찾는 절차와 문의처를 링크로 안내", "이름·종별·주소·전화번호", "방문 전에 기관에 전화로 확인", "링크 안내로 대신합니다"];
+const LCGV_DATASET_ROW = "| 15108347 한국사회보장정보원 지자체복지서비스 (자동승인) | `find_local_support` | " + LCGV_DATASET_URL + " |";
+const LOCAL_SUPPORT_HEADING = "## 우리 지역 육아 지원 찾기(`find_local_support`)";
+const healthCentersAsOf = (JSON.parse(read("data/health-centers.json")) as { as_of: string }).as_of;
+const CHECKUP_PARAGRAPH_PHRASES =["키가 없으면 검진기관을 찾는 절차와 문의처를 링크로 안내", "이름·종별·주소·전화번호", "방문 전에 기관에 전화로 확인", "링크 안내로 대신합니다"];
 const checkupStatusOk = (md: string): boolean => statusCell(md, "find_checkup_clinic") === CHECKUP_STATUS;
 
 describe("public docs content (M35)", () => {
@@ -301,6 +305,17 @@ describe("public docs content (M35)", () => {
     expect(joined).not.toMatch(/승인\s*대기|모킹|모의\s*응답|fixture/i);
     expect(statusProblems("| 도구 | 상태 |\n| --- | --- |\n| x | (ii) y |\n")).not.toEqual([]);
     expect(statusProblems(`| 도구 | 상태 |\n| --- | --- |\n| x | ${STATUS_BADGE.verified} |\n`)).not.toEqual([]);
+  });
+
+  it("find_local_support section and health center paragraph (M63, PAC45)", () => {
+    const advanced = read("docs/advanced.md");
+    const lines = advanced.split(/\r?\n/);
+    expect(lines).toContain(LOCAL_SUPPORT_HEADING);
+    expect(lines).toContain(LCGV_DATASET_ROW);
+    expect(lines).toContain("> " + LOCAL_SUPPORT_NOTICE);
+    for (const p of [LCGV_DATASET_URL, "DATA_GO_KR_SERVICE_KEY", "자동승인", "하루 1,000회", "저장해 둔 응답"]) expect(advanced, p).toContain(p);
+    const keyless = read("docs/keyless.md");
+    for (const p of [HEALTH_CENTER_DATASET_URL, "3072692", "목록 기준일 " + healthCentersAsOf, "`region`", "https://www.bokjiro.go.kr", "https://www.gov.kr", "보건소 홈페이지에서 한 번 더 확인"]) expect(keyless, p).toContain(p);
   });
 
   it("advanced/keyless tables equal registry (R12)", () => {
