@@ -25,9 +25,9 @@ import { intField, keywordField, regionField } from "./shared/schema.js";
 const DEFAULT_LIMIT = 10;
 const SOURCE = { title: "유치원 일반현황(basicInfo2)", attribution: "유치원알리미", datasetUrl: KG_SITE_URL };
 const NOTICE_ESTIMATE =
-  "빈자리 추정 안내: 여석은 공시 기준 추정치(정원 − 현원)이며 실시간 모집·대기 현황이 아닙니다. 입학·추가모집은 해당 유치원에 확인하세요.";
+  "빈자리 추정 안내: 여석은 공시 기준 추정치(정원 − 현원)예요. 실시간 모집·대기 현황과 입학·추가모집은 해당 유치원에 확인하세요.";
 const NOTICE_CONFIRM = "공시 기준이며 최신 정원·모집 현황은 유치원·교육청·유치원알리미에서 확인하세요.";
-const ZERO_TEXT = "해당 시군구에 조회된 유치원 없음 또는 공시 차수 부재(오류 아님).";
+const ZERO_TEXT = "해당 시군구에 조회된 유치원 없음 또는 공시 차수 부재(정상 조회).";
 
 const schema = z.object({
   region: regionField({
@@ -161,7 +161,7 @@ async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise
         (older > 0 ? ` · 일부 유치원은 이전 차수 기준 포함(${older}곳, 각 항목에 차수 표시)` : ""),
     );
     lines.push(
-      `정렬: ${age !== undefined ? `만${age}세 여석 추정` : "연령반 합계 여석 추정"} 많은 순(산출 불가는 마지막, 같으면 이름순). 여석은 공시 기준 추정치이며 실시간 현황이 아닙니다(아래 고지 참고).`,
+      `정렬: ${age !== undefined ? `만${age}세 여석 추정` : "연령반 합계 여석 추정"} 많은 순(산출 불가는 마지막, 같으면 이름순). 여석은 공시 기준 추정치예요(실시간 현황은 아래 고지 참고).`,
     );
     if (res.suspectCapped) {
       lines.push(
@@ -172,7 +172,7 @@ async function handler(args: z.output<typeof schema>, ctx: ToolContext): Promise
     lines.push("");
     if (shown.length === 0) {
       lines.push(
-        `설립유형 "${args.establish}"에 맞는 유치원이 없습니다(오류 아님). establish를 빼거나 공립·사립으로 바꿔 다시 조회하세요.`,
+        `설립유형 "${args.establish}"에 맞는 유치원이 없습니다(정상 조회). establish를 빼거나 공립·사립으로 바꿔 다시 조회하세요.`,
       );
     } else {
       lines.push(summarizeList(shown, { limit: args.limit ?? DEFAULT_LIMIT, unit: "곳", line: line(latest, age) }));
@@ -193,7 +193,7 @@ const def: ToolDef<typeof schema> = {
   name: "find_kindergarten",
   title: "유치원 정원·현원·여석 추정 조회(유치원알리미 공시 정보)",
   description:
-    "유치원알리미 일반현황 공시 정보(OpenAPI)를 시군구 단위로 실시간 조회해 유치원별 설립유형·주소·전화·공시 차수와 만3·4·5세 연령반 정원·현원·학급수, 정원에서 현원을 뺀 여석 추정치를 요약합니다. 여석은 공시 기준 추정치이며 실시간 모집·대기 현황이 아니므로 입학·추가모집은 해당 유치원에 확인하세요. 입학 신청을 대행하지 않는 참고 도구이며 유치원알리미 인증키(KINDERGARTEN_API_KEY)가 필요합니다.",
+    "유치원알리미 일반현황 공시 정보(OpenAPI)를 시군구 단위로 실시간 조회해 유치원별 설립유형·주소·전화·공시 차수와 만3·4·5세 연령반 정원·현원·학급수, 정원에서 현원을 뺀 여석 추정치를 요약합니다. 여석은 공시 기준 추정치이므로 실시간 모집·대기 현황과 입학·추가모집은 해당 유치원에 확인하세요. 입학 신청을 대행하지 않는 참고 도구이며 유치원알리미 인증키(KINDERGARTEN_API_KEY)가 필요합니다.",
   schema,
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
   requiredKeys: ["KINDERGARTEN"],

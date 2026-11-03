@@ -23,10 +23,10 @@ const MAJANG = "서울마장초등학교병설유치원";
 const BASE_ORDER = [DONGMYEONG, GYEONGIL, ROSA, GEUMHO, MAJANG];
 const AGE3_ORDER = [DONGMYEONG, GEUMHO, ROSA, MAJANG, GYEONGIL];
 
-const ZERO_TEXT = "해당 시군구에 조회된 유치원 없음 또는 공시 차수 부재(오류 아님).";
+const ZERO_TEXT = "해당 시군구에 조회된 유치원 없음 또는 공시 차수 부재(정상 조회).";
 const SUCCESS_NOTICES = [
   "공시 기준 추정치",
-  "실시간 모집·대기 현황이 아닙니다",
+  "실시간 모집·대기 현황과 입학·추가모집은 해당 유치원에 확인하세요",
   "출처: 유치원알리미",
   "조회 시각 2026-10-28 21:30 KST",
   "공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.",
@@ -158,7 +158,8 @@ describe("find_kindergarten", () => {
 
     const none = await run({ region: "성동구", establish: "사립(사인)" }, kgCtx(routed("basicInfo2.json")));
     expect(none.isError).toBeFalsy();
-    expect(none.text).toContain('설립유형 "사립(사인)"에 맞는 유치원이 없습니다(오류 아님)');
+    expect(none.text).toContain('설립유형 "사립(사인)"에 맞는 유치원이 없습니다(정상 조회)');
+    expect(none.text).not.toContain("(오류 아님)");
   });
 
   it("mixed rounds use the newest round per kindergarten", async () => {
@@ -201,6 +202,7 @@ describe("find_kindergarten", () => {
     const { text, isError } = await run({ region: "성동구" }, kgCtx(routed("empty.json")));
     expect(isError).toBeFalsy();
     expect(text).toContain(ZERO_TEXT);
+    expect(text).not.toContain("(오류 아님)");
     expect(text).toContain("유치원알리미 사이트(https://e-childschoolinfo.moe.go.kr)");
     expect(text).toContain("공시 차수: 조회된 항목 없음");
   });
