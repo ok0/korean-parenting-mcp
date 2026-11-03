@@ -317,6 +317,18 @@
       "as_of": "2026-10-28",
       "verified": "false",
       "note": "게시·수정일 미확인으로 조회일(2026-10-28)을 날짜 칸에 기록. 로그인 필요 가능, 유보통합포털 이관 시 주소 변경 가능. 임신 중 신청 가능 여부 미확인"
+    },
+    {
+      "id": "health-center-standard-data",
+      "title": "전국보건기관표준데이터",
+      "doc_no": "data.go.kr 15107750",
+      "kind": "web",
+      "effective": "2026-11-02",
+      "url": "https://www.data.go.kr/data/15107750/standard.do",
+      "law_api": null,
+      "as_of": "2026-11-03",
+      "verified": "partial",
+      "note": "지방자치단체가 등록한 표준데이터(파일·OpenAPI). 연락처 목록 data/health-centers.json의 원본. 이용허락 문구는 M64에서 기록"
     }
   ]
 }

@@ -10,6 +10,7 @@ import localGuidance from "../../data/local-guidance.json" with { type: "json" }
 import regions from "../../data/regions.json" with { type: "json" };
 import daycareGuide from "../../data/daycare-guide.json" with { type: "json" };
 import clinicGuide from "../../data/clinic-guide.json" with { type: "json" };
+import healthCenters from "../../data/health-centers.json" with { type: "json" };
 import { makeDataStore, type DatasetMap, type DatasetName } from "../../src/data-store/validate.js";
 import type { BasisDoc } from "../../src/data-store/schema.js";
 
@@ -26,6 +27,7 @@ const RAW: Record<DatasetName, unknown> = {
   regions,
   "daycare-guide": daycareGuide,
   "clinic-guide": clinicGuide,
+  "health-centers": healthCenters,
 };
 
 const store = makeDataStore((name) => RAW[name]);
