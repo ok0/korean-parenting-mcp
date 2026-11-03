@@ -87,8 +87,8 @@ describe("one-click install links", () => {
     expect(cursorProblemsOf("korean_parenting", { ...CURSOR_BASE })).not.toEqual([]);
     expect(cursorProblemsOf(SERVER_NAME, { ...CURSOR_BASE, args: ["-y", "other-pkg"] })).not.toEqual([]);
     expect(cursorProblemsOf(SERVER_NAME, { ...CURSOR_BASE, env: { LAW_OC: "abc" } })).not.toEqual([]);
-    expect(() => decodeVscodeInstall("https://example.com/?url=x")).toThrow();
-    expect(() => decodeCursorInstall("https://example.com/?name=x&config=e30=")).toThrow();
+    expect(() => decodeVscodeInstall("https://example.com/?url=x")).toThrow("VS Code 설치 링크 형식이어야 해요");
+    expect(() => decodeCursorInstall("https://example.com/?name=x&config=e30=")).toThrow("Cursor 설치 링크 형식이어야 해요");
   });
 
   it("buttons only in vscode.md and cursor.md, matching the generator (AC2)", () => {

@@ -26,7 +26,7 @@ function validBaseUrl(raw: string): string | undefined {
   try {
     url = new URL(raw);
   } catch {
-    return "URL 형식이 아닙니다";
+    return "값은 URL 형식으로 입력해 주세요";
   }
   if (url.protocol === "https:") return undefined;
   if (url.protocol === "http:" && LOOPBACK_HOSTS.has(url.hostname)) return undefined;

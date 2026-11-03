@@ -142,7 +142,7 @@ async function main(): Promise<void> {
     const run = await mcpSession(bin, appDir, env);
     const messages = run.lines.map((line) => JSON.parse(line) as RpcMessage);
     for (const msg of messages) {
-      assert.equal(msg.jsonrpc, "2.0", `stdout에 JSON-RPC가 아닌 줄이 있습니다: ${JSON.stringify(msg)}`);
+      assert.equal(msg.jsonrpc, "2.0", `stdout의 모든 줄은 JSON-RPC 2.0 메시지여야 합니다: ${JSON.stringify(msg)}`);
     }
     const byId = (id: number): RpcMessage | undefined => messages.find((msg) => msg.id === id);
     const tools = byId(2)?.result?.tools ?? [];

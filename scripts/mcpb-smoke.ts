@@ -97,8 +97,8 @@ async function main(): Promise<void> {
 
     const ignored = (rel: string): boolean =>
       spawnSync("git", ["check-ignore", "-q", rel], { cwd: root }).status === 0;
-    assert.ok(ignored("build-mcpb/korean-parenting-mcp.mcpb"), "build-mcpb/korean-parenting-mcp.mcpb가 git 무시 대상이 아닙니다");
-    assert.ok(ignored("build-mcpb/stage/server/index.mjs"), "build-mcpb/stage/server/index.mjs가 git 무시 대상이 아닙니다");
+    assert.ok(ignored("build-mcpb/korean-parenting-mcp.mcpb"), "build-mcpb/korean-parenting-mcp.mcpb는 git 무시 대상이어야 합니다");
+    assert.ok(ignored("build-mcpb/stage/server/index.mjs"), "build-mcpb/stage/server/index.mjs는 git 무시 대상이어야 합니다");
     const gitStatus = execFileSync("git", ["status", "--porcelain", "--untracked-files=all"], { cwd: root, encoding: "utf8" });
     assert.ok(!gitStatus.includes("build-mcpb") && !gitStatus.includes(".mcpb"), "git status에 build-mcpb 산출물이 보입니다");
     const dryRun = JSON.parse(
@@ -174,9 +174,9 @@ async function main(): Promise<void> {
         env: { PATH: process.env.PATH ?? "", HOME: work, ...extra },
         calls,
       });
-      assert.deepEqual(session.nonJsonLines, [], `${label}: stdout에 JSON-RPC가 아닌 줄이 있습니다`);
+      assert.deepEqual(session.nonJsonLines, [], `${label}: stdout의 모든 줄은 JSON-RPC 메시지여야 합니다`);
       for (const msg of session.messages) {
-        assert.equal(msg.jsonrpc, "2.0", `${label}: JSON-RPC 2.0이 아닌 메시지가 있습니다`);
+        assert.equal(msg.jsonrpc, "2.0", `${label}: 모든 메시지는 JSON-RPC 2.0이어야 합니다`);
       }
       assert.ok(session.byId(1)?.result, `${label}: initialize 응답이 없습니다`);
       assert.deepEqual(toolNames(session), refTools, `${label}: tools 목록이 기준과 다릅니다`);

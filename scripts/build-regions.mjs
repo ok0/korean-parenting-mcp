@@ -128,7 +128,7 @@ function parseBjd(buf) {
     }
     if (line.includes('"')) fail(`법정동 파일 ${row}행: 따옴표(")가 포함되어 있습니다`);
     const fields = line.split(",");
-    if (fields.length !== 7) fail(`법정동 파일 ${row}행: 필드 수가 7이 아닙니다(${fields.length})`);
+    if (fields.length !== 7) fail(`법정동 파일 ${row}행: 필드 수는 7이어야 합니다(현재 ${fields.length})`);
     const [code, sidoName, sggName, dong, ri, , created] = fields;
     if (!/^\d{10}$/.test(code)) fail(`법정동 파일 ${row}행: 법정동코드 형식 오류`);
     if (!DATE_RE.test(created)) fail(`법정동 파일 ${row}행: 생성일자 형식 오류`);
@@ -194,7 +194,7 @@ function parseKg(buf) {
   const cells = [];
   for (const m of text.matchAll(/<td[^>]*>([^<]*)<\/td>/g)) cells.push(m[1].trim());
   if (cells.length === 0 || cells.length % 4 !== 0) {
-    fail(`유치원알리미 HTML: 셀 수(${cells.length})가 4의 배수가 아닙니다`);
+    fail(`유치원알리미 HTML: 셀 수(${cells.length})는 4의 배수여야 합니다`);
   }
   const rows = [];
   for (let i = 0; i < cells.length; i += 4) {

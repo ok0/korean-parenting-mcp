@@ -29,18 +29,18 @@ export function cursorInstallUrl(): string {
 /** VS Code 설치 링크를 풀어서 설정 객체를 돌려준다. */
 export function decodeVscodeInstall(url: string): unknown {
   const u = new URL(url);
-  if (u.origin + u.pathname !== "https://insiders.vscode.dev/redirect") throw new Error("VS Code 설치 링크가 아니에요");
+  if (u.origin + u.pathname !== "https://insiders.vscode.dev/redirect") throw new Error("VS Code 설치 링크 형식이어야 해요");
   const inner = u.searchParams.get("url");
   if (inner === null) throw new Error("url 값이 없어요");
   const prefix = "vscode:mcp/install?";
-  if (!inner.startsWith(prefix)) throw new Error("VS Code 설치 내용이 아니에요");
+  if (!inner.startsWith(prefix)) throw new Error("VS Code 설치 내용 형식이어야 해요");
   return JSON.parse(decodeURIComponent(inner.slice(prefix.length)));
 }
 
 /** Cursor 설치 링크를 풀어서 이름과 설정을 돌려준다. */
 export function decodeCursorInstall(url: string): { name: string | null; config: unknown } {
   const u = new URL(url);
-  if (u.origin + u.pathname !== CURSOR_INSTALL) throw new Error("Cursor 설치 링크가 아니에요");
+  if (u.origin + u.pathname !== CURSOR_INSTALL) throw new Error("Cursor 설치 링크 형식이어야 해요");
   const cfg = u.searchParams.get("config");
   if (cfg === null) throw new Error("config 값이 없어요");
   return { name: u.searchParams.get("name"), config: JSON.parse(Buffer.from(cfg, "base64").toString("utf8")) };
