@@ -23,6 +23,7 @@ export const TOOL_LABELS: Readonly<Record<string, { plain: string; group: ToolGr
   find_vaccination_clinic: { plain: "예방접종 병원 찾기 안내", group: "병원·약" },
   find_checkup_clinic: { plain: "영유아 검진 병원 찾기 안내", group: "병원·약" },
   find_kindergarten: { plain: "유치원 자리 알아보기", group: "시설" },
+  find_local_support: { plain: "우리 지역 육아 지원 찾기", group: "지원·제도" },
 };
 
 export type SourceKind = "builtin" | "live-key";
