@@ -103,7 +103,7 @@ describe("health-centers", () => {
   describe("bundled list provenance", () => {
     it("file and every entry carry source, date, as_of and partial status", () => {
       expect(hc.source.url).toBe(SOURCE_PROFILES[hc.source.dataset_id].source.url);
-      expect(hc.source.license).toBeNull();
+      expect(hc.source.license).toMatch(/공공데이터포털 3072692 페이지 확인 \d{4}-\d{2}-\d{2}\)$/);
       expect(hc.verified).toBe("partial");
       expect(hc.basis_ids).toEqual([HEALTH_CENTER_BASIS_ID]);
       expect(hc.centers.length).toBeGreaterThan(0);
