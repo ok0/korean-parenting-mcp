@@ -103,5 +103,5 @@
 <text x="474" y="668" font-size="11" fill="#FFD27A" data-max-w="50.7" letter-spacing="-0.1" font-weight="700"><tspan x="474" y="668">신청 필요</tspan></text>
 <text x="540.7" y="668" font-size="13" fill="#E8EDF2" data-max-w="629.3" letter-spacing="-0.1"><tspan x="540.7" y="668">공공기관에 따로 사용 신청을 해야 쓸 수 있어요</tspan></text>
 <text x="30" y="700" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="700">※ 출산·육아 일정 계산 도구는 미리 담아 둔 정보로 계산하고, 따로 신청해 두면 공휴일과 법령 변경 여부도 공공기관에서 확인해요. 영유아 검진 병원 찾기 안내 도구는 미리 담아 둔 안내를 보여 주고, 따로</tspan><tspan x="30" y="717">신청해 두면 사는 지역의 검진기관 목록도 공공기관에서 확인해요.</tspan></text>
-<text x="30" y="738" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="738">비공식 도구예요. 공공기관 자료를 쓰지만 공공기관이 만든 서비스는 아니에요.</tspan></text>
+<text x="30" y="738" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="738">공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요. 최종 확인은 해당 기관에서 해 주세요.</tspan></text>
 </svg>

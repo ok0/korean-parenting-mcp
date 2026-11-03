@@ -63,5 +63,5 @@
 <line x1="900" y1="460" x2="918" y2="460" stroke="#A9B4C0" stroke-width="2"/>
 <polygon points="918,460 910,455 910,465" fill="#A9B4C0"/>
 </g>
-<text x="30" y="552" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="552">모두 예시예요. 실제 답은 그때 공개된 정보에 따라 달라지고, 건강 문제는 의료진과 상의하세요. 비공식 도구예요.</tspan></text>
+<text x="30" y="552" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="552">모두 예시예요. 실제 답은 그때 공개된 정보에 따라 달라지고, 건강 문제는 의료진과 상의하세요. 공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요. 최종 확인은 해당 기관에서 해 주세요.</tspan></text>
 </svg>

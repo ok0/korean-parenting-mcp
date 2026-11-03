@@ -1,16 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1762" viewBox="0 0 1200 1762" role="img" aria-labelledby="title desc" font-family="Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1781" viewBox="0 0 1200 1781" role="img" aria-labelledby="title desc" font-family="Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif">
 <title id="title">실제 질문과 답변으로 만든 한 장 준비 보고서</title>
 <desc id="desc">실제 답변 예시 그림. 2026-10-31에 한 AI 앱에 보낸 질문: 출산예정일 2027-03-15, 서울 성동구, 첫째 아이, 남편과 아내 모두 직장인. 근처 휴일 소아 진료 기관과 유치원도 넣어서 한 장짜리 준비 보고서로 정리해 줘. 그 앱에서 받은 실제 답변을 그림에 맞게 한 장으로 줄인 보고서. 사용한 기능: get_timeline, find_benefits, find_night_pediatric, find_kindergarten.</desc>
-<rect x="0" y="0" width="1200" height="1762" fill="#FFFFFF"/>
+<rect x="0" y="0" width="1200" height="1781" fill="#FFFFFF"/>
 <text x="24" y="96" font-size="15" fill="#1F5FBF" data-max-w="340" letter-spacing="-0.1" font-weight="700"><tspan x="24" y="96">AI 도우미에게 실제로 보낸 질문</tspan></text>
 <rect x="24" y="110" width="340" height="152" rx="12" fill="#F3F5F8" stroke="#C9D1DB"/>
 <text x="44" y="140" font-size="16" fill="#1A1F26" data-max-w="300" letter-spacing="-0.2"><tspan x="44" y="140">출산예정일 2027-03-15, 서울 성동구,</tspan><tspan x="44" y="164">첫째 아이, 남편과 아내 모두 직장인.</tspan><tspan x="44" y="188">근처 휴일 소아 진료 기관과 유치원도</tspan><tspan x="44" y="212">넣어서 한 장짜리 준비 보고서로 정리해</tspan><tspan x="44" y="236">줘.</tspan></text>
 <line x1="372" y1="186" x2="432" y2="186" stroke="#4A5563" stroke-width="2"/>
 <polygon points="432,186 424,181 424,191" fill="#4A5563"/>
 <g data-source="sha256-57c006f88a3a7601">
-<rect x="440" y="51" width="720" height="1660" rx="6" fill="#F3F5F8" stroke="#C9D1DB"/>
+<rect x="440" y="51" width="720" height="1679" rx="6" fill="#F3F5F8" stroke="#C9D1DB"/>
 <text x="476" y="111" font-size="20" fill="#1A1F26" data-max-w="648" letter-spacing="-0.4" font-weight="700"><tspan x="476" y="111">첫째 출산 준비 보고서 (예정일 2027-03-15 · 서울 성동구)</tspan></text>
-<text x="476" y="149" font-size="14" fill="#1F5FBF" data-max-w="648" letter-spacing="-0.1" font-weight="700"><tspan x="476" y="149">실제 답변 예시 · 개인 맞춤 아님 · 비공식 도구</tspan></text>
+<text x="476" y="149" font-size="14" fill="#1F5FBF" data-max-w="648" letter-spacing="-0.1" font-weight="700"><tspan x="476" y="149">실제 답변 예시 · 한 가정의 질문에 맞춘 답변</tspan></text>
 <text x="476" y="175" font-size="13" fill="#4A5563" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="175">2026-10-31에 한 AI 앱에서 실제로 받은 답변을 그림에 맞게 줄여서 한 장으로 구성했어요.</tspan><tspan x="476" y="194">앱·질문·날짜에 따라 답변이 달라질 수 있어요.</tspan></text>
 <line x1="476" y1="227" x2="1124" y2="227" stroke="#C9D1DB" stroke-width="1"/>
 <text x="476" y="245" font-size="16" fill="#1A1F26" data-max-w="648" letter-spacing="-0.2" font-weight="700"><tspan x="476" y="245">요약·할 일</tspan></text>
@@ -66,6 +66,7 @@
 <text x="476" y="1537" font-size="13" fill="#4A5563" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="1537">출처: 2026-10-31 기준 유치원알리미 2026년 2차 공시(성동구 28곳 중 6곳)와 아이사랑 등록대기</tspan><tspan x="476" y="1556">안내이며 입학 시점엔 달라집니다.</tspan></text>
 <line x1="476" y1="1597" x2="1124" y2="1597" stroke="#C9D1DB" stroke-width="1"/>
 <text x="476" y="1611" font-size="13" fill="#4A5563" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="1611">사용한 기능: 출산·육아 일정 계산, 임신·육아 지원금 찾기, 밤·휴일 소아 진료 찾기, 유치원 자리 알아보기</tspan><tspan x="476" y="1630">· 뒤의 세 가지는 키가 필요한 기능이에요</tspan></text>
-<text x="476" y="1649" font-size="13" fill="#4A5563" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="1649">의료·법률 판단이 아닌 일반 안내예요. 응급 상황은 119 또는 응급실, 금액·자격·기한은 담당 기관에서 최종</tspan><tspan x="476" y="1668">확인하세요.</tspan></text>
+<text x="476" y="1649" font-size="13" fill="#4A5563" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="1649">공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요. 최종 확인은 해당 기관에서 해 주세요.</tspan></text>
+<text x="476" y="1668" font-size="13" fill="#4A5563" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="1668">의료·법률 판단이 아닌 일반 안내예요. 응급 상황은 119 또는 응급실, 금액·자격·기한은 담당 기관에서 최종</tspan><tspan x="476" y="1687">확인하세요.</tspan></text>
 </g>
 </svg>

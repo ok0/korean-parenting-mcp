@@ -3,7 +3,7 @@
 <desc id="desc">출산예정일 2027-03-15 예시로 계산한 산전검진·예방접종·영유아검진·신고와 신청 기한·지원금·휴가·어린이집과 유치원 안내 단계 그림입니다.</desc>
 <rect x="0" y="0" width="1200" height="759" fill="#0F141A"/>
 <text x="30" y="44" font-size="22" fill="#E8EDF2" data-max-w="1140" letter-spacing="-0.4" font-weight="700"><tspan x="30" y="44">임신부터 만 6세까지 한눈에 (예시)</tspan></text>
-<text x="30" y="70" font-size="13" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="70">출산예정일 2027-03-15 예시로 계산한 일정이에요 (개인 맞춤 아님)</tspan></text>
+<text x="30" y="70" font-size="13" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="70">출산예정일 2027-03-15로 계산한 일반 일정 예시예요</tspan></text>
 <rect x="200" y="100" width="109.9" height="36" fill="#3A2028"/>
 <text x="254.9" y="123" font-size="13" fill="#E8EDF2" data-max-w="101.9" letter-spacing="-0.1" font-weight="700" text-anchor="middle"><tspan x="254.9" y="123">임신</tspan></text>
 <rect x="309.9" y="100" width="430.1" height="36" fill="#1C2C40"/>
@@ -129,8 +129,8 @@
 <text x="854.5" y="638" font-size="11" fill="#A9B4C0" data-max-w="60" letter-spacing="-0.1" text-anchor="middle"><tspan x="854.5" y="638">2031년</tspan></text>
 <text x="997.7" y="638" font-size="11" fill="#A9B4C0" data-max-w="60" letter-spacing="-0.1" text-anchor="middle"><tspan x="997.7" y="638">2032년</tspan></text>
 <text x="1141.4" y="638" font-size="11" fill="#A9B4C0" data-max-w="60" letter-spacing="-0.1" text-anchor="middle"><tspan x="1141.4" y="638">2033년</tspan></text>
-<text x="30" y="668" font-size="12" fill="#E8EDF2" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="668">예시 그림: 출산예정일 2027-03-15 · 기준일 2026-06-08로 계산 · 개인 맞춤 아님</tspan></text>
-<text x="30" y="689" font-size="12" fill="#E8EDF2" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="689">비공식 도구예요. 실제 일정과 기한은 관할 기관과 의료진에게 꼭 확인하세요 · 데이터 기준일 2026-10-28</tspan></text>
+<text x="30" y="668" font-size="12" fill="#E8EDF2" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="668">예시 그림: 출산예정일 2027-03-15 · 기준일 2026-06-08로 계산한 일반 일정</tspan></text>
+<text x="30" y="689" font-size="12" fill="#E8EDF2" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="689">공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요. 최종 확인은 해당 기관에서 해 주세요. 건강 문제는 의료진과 상의해 주세요 · 데이터 기준일 2026-10-28</tspan></text>
 <text x="30" y="710" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="710">※ 2029년 공휴일 정보가 아직 없어, 그 해에 끝나는 기한은 휴일로 늦춰지는 경우를 넣지 않고 원래 날짜로 그렸어요.</tspan></text>
 <text x="30" y="731" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="731">※ 만 6세 이후 일정 4개는 그림에서 뺐어요.</tspan></text>
 </svg>
