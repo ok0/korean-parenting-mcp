@@ -135,6 +135,7 @@ export async function main(argv: readonly string[], io: ScriptIO, deps?: { looku
       `미일치: ${report.unmatched.length}`,
       `복수 주 기관: ${report.multiplePrimary.length}`,
       range === null ? "데이터기준일자: 없음" : `데이터기준일자: ${range.min} ~ ${range.max}`,
+      `주 기관 지역: ${report.coverage.covered}/${report.coverage.units}`,
       `추가 ${report.added} · 삭제 ${report.removed} · 변경 ${report.changed}`,
       "미일치 행:",
       ...bulletsOrNone(report.unmatched),
@@ -142,6 +143,8 @@ export async function main(argv: readonly string[], io: ScriptIO, deps?: { looku
       ...bulletsOrNone(report.multiplePrimary),
       "필드 확인:",
       ...bulletsOrNone(report.fieldIssues),
+      "주 기관을 찾지 못한 지역:",
+      ...bulletsOrNone(report.coverage.missing),
     ];
     io.stdout(`${lines.join("\n")}\n`);
 
