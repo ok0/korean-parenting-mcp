@@ -39,7 +39,7 @@ export const STORY_SPECS: readonly StorySpec[] = [
     sourceName: "제품안전정보센터",
     question: () => "중고로 받은 아기 카시트, 리콜된 적 있나요?",
     answer: () =>
-      "예시: 같은 이름으로 공개된 리콜 기록이 있으면 날짜와 사유를 보여 줘요. 기록이 없다고 안전하다는 뜻은 아니에요.",
+      "예시: 같은 이름으로 공개된 리콜 기록이 있으면 날짜와 사유를 보여 줘요. 기록을 찾지 못한 제품도 사용 전에 제조사·판매처 안내를 함께 확인해요.",
   },
 ];
 
@@ -209,7 +209,7 @@ export function renderStories(tools: readonly ToolDef[], t: OfflineTimeline, the
   const footer = textBlock({
     x: 30,
     y: rowY + 16,
-    text: `모두 예시예요. 실제 답은 그때 공개된 정보에 따라 달라지고, 건강 문제는 의료진과 상의하세요. ${SOURCE_NOTICE}`,
+    text: `모두 참고용 예시예요. 실제 답은 그때 공개된 정보에 따라 달라지고, 건강 문제는 의료진과 상의하세요. ${SOURCE_NOTICE}`,
     maxWidth: 1140,
     fontSize: 12,
     fill: theme.muted,

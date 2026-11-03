@@ -337,7 +337,7 @@ export function renderLifeTimeline(t: OfflineTimeline, theme: Theme): string {
       fill: theme.text,
     },
     {
-      text: `${SOURCE_NOTICE} 건강 문제는 의료진과 상의해 주세요 · 데이터 기준일 ${maxAsOf}`,
+      text: `${SOURCE_NOTICE} 참고용 일반 일정이에요. 건강 문제는 의료진과 상의해 주세요 · 데이터 기준일 ${maxAsOf}`,
       fill: theme.text,
     },
   ];

@@ -17,7 +17,7 @@ import { facilityMarks, laneOf, renderLifeTimeline, stageBands } from "../script
 import { TOOL_LABELS, assertLabelsCover, optionalLiveNote, sourceKind } from "../scripts/visuals/labels.js";
 import { buildStories } from "../scripts/visuals/stories.js";
 import { THEMES, estimateWidth, stackBaselines, textBlock, textPairs } from "../scripts/visuals/theme.js";
-import { SOURCE_NOTICE } from "../src/core/notice.js";
+import { POSITIVE_DISCLAIMER_MARKERS, SOURCE_NOTICE } from "../src/core/notice.js";
 import {
   ANSWER_FORBIDDEN,
   DEPLOY_TERMS,
@@ -215,7 +215,7 @@ describe("visual assets (M30)", () => {
         expect(v, `${f} ${word}`).toContain(word);
       }
       expect(v, f).toContain(`데이터 기준일 ${maxAsOf}`);
-      expect(flatText(svg), f).toContain(`${SOURCE_NOTICE} 건강 문제는 의료진과 상의해 주세요 · 데이터 기준일 ${maxAsOf}`);
+      expect(flatText(svg), f).toContain(`${SOURCE_NOTICE} 참고용 일반 일정이에요. 건강 문제는 의료진과 상의해 주세요 · 데이터 기준일 ${maxAsOf}`);
       for (const item of t.result.items) {
         if (compare(item.start, limit) <= 0) {
           expect(svg, `${f} ${item.id}`).toContain(`data-item="${item.id}"`);
@@ -397,15 +397,20 @@ const MEDICAL_SAFETY_NOTICES: readonly (readonly [string, readonly string[]])[] 
   [
     "report-example-",
     [
-      "의료·법률 판단이 아닌 일반 안내예요. 응급 상황은 119 또는 응급실, 금액·자격·기한은 담당 기관에서 최종 확인하세요.",
-      "법률 해석이 아닌 참고 정보",
+      "참고용 일반 안내예요. 응급 상황은 119 또는 응급실, 건강 문제는 의료진과 상의하고, 금액·자격·기한은 담당 기관에서 최종 확인하세요.",
+      "분할 횟수와 신청 절차는 회사 인사팀·고용센터에서 확인하세요.",
     ],
   ],
   [
     "question-stories-",
-    ["기록이 없다고 안전하다는 뜻은 아니에요.", "위급하면 119에 연락하세요.", "건강 문제는 의료진과 상의하세요."],
+    [
+      "기록을 찾지 못한 제품도 사용 전에 제조사·판매처 안내를 함께 확인해요.",
+      "위급하면 119에 연락하세요.",
+      "모두 참고용 예시예요.",
+      "건강 문제는 의료진과 상의하세요.",
+    ],
   ],
-  ["life-timeline-", ["로 계산한 일반 일정 예시예요", "로 계산한 일반 일정"]],
+  ["life-timeline-", ["로 계산한 일반 일정 예시예요", "로 계산한 일반 일정", "참고용 일반 일정이에요."]],
 ];
 
 describe("figure source notice (M48)", () => {
@@ -421,7 +426,9 @@ describe("figure source notice (M48)", () => {
       expect(src, rel).not.toContain("공공기관이 제공하는 공개 API");
       expect(matchedPatterns(src, FIGURE_NEGATIVE_NOTICE), rel).toEqual([]);
     }
-    expect(readFileSync(join(root, "scripts/visuals/life-timeline.ts"), "utf8")).not.toContain("아님");
+    for (const rel of ["scripts/visuals/tool-map.ts", "scripts/visuals/life-timeline.ts", "scripts/visuals/stories.ts", "scripts/visuals/report.ts"]) {
+      expect(readFileSync(join(root, rel), "utf8"), rel).not.toMatch(/아니|아닌|아님|아닙/);
+    }
     for (const rel of ["scripts/visuals/labels.ts", "scripts/visuals/readme-figures.ts"]) {
       expect(matchedPatterns(readFileSync(join(root, rel), "utf8"), FIGURE_NEGATIVE_NOTICE), rel).toEqual([]);
     }
@@ -433,7 +440,16 @@ describe("figure source notice (M48)", () => {
       expect(flatText(svg), f).toContain(SOURCE_NOTICE);
       expect(matchedPatterns(`${visibleText(svg)}\n${descOf(svg)}`, FIGURE_NEGATIVE_NOTICE), f).toEqual([]);
       expect(svg, f).not.toContain("비공식");
-      expect(visibleText(svg) + "\n" + descOf(svg), f).not.toMatch(/아님/);
+      expect(visibleText(svg) + "\n" + descOf(svg), f).not.toMatch(/아니|아닌|아님|아닙/);
+    }
+  });
+
+  it("timeline, stories and report figures carry the positive disclaimer markers (M54)", () => {
+    const targets = ASSET_FILES.filter((f) => !f.startsWith("tool-map-"));
+    expect(targets).toHaveLength(6);
+    for (const f of targets) {
+      const flat = flatText(svgOf(f)).replace(/\s+/g, "");
+      for (const m of POSITIVE_DISCLAIMER_MARKERS) expect(flat, `${f} ${m}`).toContain(m);
     }
   });
 
