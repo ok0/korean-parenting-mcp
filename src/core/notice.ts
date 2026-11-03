@@ -5,3 +5,8 @@ export const DRUG_REFERENCE_NOTICE = "식약처 DUR 임부금기 공개 정보�
 export const RECALL_REFERENCE_NOTICE = "제품안전정보센터 공개 정보를 옮긴 참고용 정보예요. 리콜 여부와 구매·사용은 제품안전정보센터 사이트(https://www.safetykorea.kr)와 제조사·판매처에서 최종 확인해 주세요. 리콜 기록을 찾지 못한 제품도 사용 전에 제조사·판매처 안내를 함께 확인해 주세요.";
 export const LEGAL_REFERENCE_NOTICE = "조문 원문을 옮긴 참고용 정보예요. 법적 효력은 법령 원문에 있고, 적용 여부와 세부 요건은 사업장·고용센터(고용노동부)와 상의해 확인해 주세요.";
 export const POSITIVE_DISCLAIMER_MARKERS = ["참고용", "상의"] as const;
+export const HEALTH_CENTER_UNRESOLVED_LINKS = "복지로(https://www.bokjiro.go.kr)와 정부24(https://www.gov.kr)에서도 확인할 수 있어요.";
+export const HEALTH_CENTER_PREPARING = "이 지역 보건소 연락처는 아직 준비 중이에요. 시군구청 누리집에서 확인하세요.";
+export function healthCenterNotice(asOf: string): string {
+  return `보건소 연락처는 공공데이터 목록(기준일 ${asOf})에서 옮긴 참고용 정보예요. 전화번호와 운영시간은 바뀔 수 있으니 방문 전에 보건소 홈페이지에서 확인하세요. 산전검사 같은 사업 여부와 조건은 보건소에 문의하세요.`;
+}

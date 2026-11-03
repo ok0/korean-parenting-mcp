@@ -985,6 +985,7 @@ export const ClinicGuideSchema = z
 export const HEALTH_CENTER_KINDS = ["보건소", "보건의료원", "보건지소", "보건진료소"] as const;
 export const HEALTH_CENTER_PRIMARY_KINDS = ["보건소", "보건의료원"] as const;
 export const HEALTH_CENTER_BASIS_ID = "health-center-standard-data";
+export const HEALTH_CENTERS_MAX_BYTES = 150_000;
 
 export const HealthCenterEntrySchema = z
   .strictObject({
