@@ -25,6 +25,7 @@ export interface ToolDef<S extends z.ZodObject = z.ZodObject> {
   schema: S;
   annotations: { readOnlyHint: true; idempotentHint: boolean; openWorldHint: boolean };
   requiredKeys?: KeyName[];
+  keyActions?: readonly string[]; // (M61) MISSING_KEY 조치 끝에 덧붙이는 도구별 안내
   maxChars?: number;
   handler(args: z.output<S>, ctx: ToolContext): Promise<ToolOutput>;
 }
