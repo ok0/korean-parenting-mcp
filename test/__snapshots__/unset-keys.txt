@@ -33,3 +33,10 @@
 조치:
 - KINDERGARTEN_API_KEY — 유치원알리미 OpenAPI 인증키: 유치원알리미 사이트(https://e-childschoolinfo.moe.go.kr)에 SNS 계정으로 로그인한 뒤 OpenAPI 메뉴에서 개발자 인증키를 신청합니다. 인증키는 담당자 승인 후 발급되므로 승인까지 기다려야 할 수 있습니다. 발급된 인증키를 KINDERGARTEN_API_KEY에 앞뒤 공백 없이 설정하고 MCP 클라이언트를 재시작합니다. (발급: https://e-childschoolinfo.moe.go.kr)
 - MCP 클라이언트 설정의 env에 필요한 환경변수를 추가하고 클라이언트를 재시작하세요.
+
+=== find_local_support ===
+[find_local_support] MISSING_KEY: 필요한 API 키가 설정되지 않았습니다: DATA_GO_KR_SERVICE_KEY
+조치:
+- DATA_GO_KR_SERVICE_KEY — 공공데이터포털 일반 인증키(Decoding): 공공데이터포털에 회원가입 후 로그인합니다. 필요한 API마다 '활용신청'을 하고 승인을 기다립니다(승인 전 호출은 오류 코드 20). 마이페이지 > 개발계정에서 일반 인증키(Decoding)를 복사해 그대로 설정합니다(Encoding 키를 넣으면 이중 인코딩으로 키 오류가 납니다). 개발계정은 API별 일일 호출 한도(약 1,000~10,000회)가 있습니다. 부족하면 마이페이지에서 운영계정을 신청합니다. (발급: https://www.data.go.kr)
+- MCP 클라이언트 설정의 env에 필요한 환경변수를 추가하고 클라이언트를 재시작하세요.
+- 공공데이터포털에서 '한국사회보장정보원_지자체복지서비스'(https://www.data.go.kr/data/15108347/openapi.do) 활용신청을 하면 자동승인돼요. 승인 후 같은 DATA_GO_KR_SERVICE_KEY로 쓸 수 있어요.
