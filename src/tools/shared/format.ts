@@ -1,10 +1,10 @@
 import type { BasisDoc } from "../../data-store/schema.js";
 import type { RevisionStatus } from "../../provenance/revision-text.js";
-import { SOURCE_NOTICE } from "../../core/notice.js";
+import { DRUG_REFERENCE_NOTICE, REFERENCE_NOTICE, SOURCE_NOTICE } from "../../core/notice.js";
 
-export const DISCLAIMER_MEDICAL_LEGAL = "의료·법률 면책: 이 결과는 일반 정보이며 의학적 진단이나 법률 자문이 아닙니다. 검진·접종 시기는 의료진과, 신고·신청 기한과 요건은 관할 기관과 확인하세요.";
+export const DISCLAIMER_MEDICAL_LEGAL = `의료·법률 면책: ${REFERENCE_NOTICE}`;
 
-export const DISCLAIMER_DRUG = "의약품 면책: 식약처 DUR 임부금기 공개 정보를 옮긴 참고 정보이며 진단·처방이나 복용 판단이 아닙니다. 복용 중이거나 복용을 고려 중이면 의료진·약사와 상담하고, 임의로 판단하거나 중단하지 마세요. 목록에 없다는 것이 안전하다는 뜻은 아닙니다.";
+export const DISCLAIMER_DRUG = `의약품 면책: ${DRUG_REFERENCE_NOTICE}`;
 
 export const NOTICE_SOURCE = `${SOURCE_NOTICE} 정부24·복지로·국민건강보험공단·관할 주민센터·보건소에서 확인할 수 있어요.`;
 
@@ -89,7 +89,7 @@ export function summarizeList<T>(
 }
 
 export function zeroResultHint(what: string, suggestions: readonly string[]): string {
-  return `${what} 조회 결과가 없습니다(오류 아님). 다음을 시도해 보세요:\n` + suggestions.map((s) => `- ${s}`).join("\n");
+  return `${what} 조회 결과가 없습니다(정상 조회). 다음을 시도해 보세요:\n` + suggestions.map((s) => `- ${s}`).join("\n");
 }
 
 export function partialNotice(failed: readonly { label: string; reason: string; action?: string }[]): string {

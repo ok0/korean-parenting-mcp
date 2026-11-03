@@ -318,7 +318,7 @@ describe("find_night_pediatric zero results and guidance", () => {
     const res = await run({ region: "성동구" }, nemcCtx(mock));
     const text = textOf(res);
     expect(res.isError).toBeFalsy();
-    expect(text).toContain("오류 아님");
+    expect(text).toContain("(정상 조회)");
     expect(text).toContain("응급의료포털");
     expect(text).toContain("인근");
   });

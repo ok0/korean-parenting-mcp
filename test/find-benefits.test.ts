@@ -346,7 +346,7 @@ describe("find_benefits large result, zero results, footer", () => {
     const res = await run({ keyword: "없는검색어" }, dgkCtx(createDgkMock()));
     const text = textOf(res);
     expect(res.isError).toBeFalsy();
-    expect(text).toContain("오류 아님");
+    expect(text).toContain("(정상 조회)");
     expect(text).toContain("stage");
     expect(text).toContain("정부24");
     expect(text).toContain("복지로");

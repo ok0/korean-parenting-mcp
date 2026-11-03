@@ -148,8 +148,8 @@ describe("check_pregnancy_drug disclaimer and zero results", () => {
       const res = await run({ drug_name: "아세트아미노펜" }, dgkCtx(mock));
       const text = textOf(res);
       expect(text).toContain(DISCLAIMER_DRUG);
-      expect(text).toContain("의료진·약사");
-      expect(text).toContain("목록에 없다는 것이 안전하다는 뜻은 아닙니다");
+      expect(text).toContain("의사·약사");
+      expect(text).toContain("목록에서 찾지 못한 약도 복용 전에 의사·약사와 상의해 주세요");
       expect(text).not.toMatch(FORBIDDEN);
     }
     expect(DISCLAIMER_DRUG).not.toMatch(FORBIDDEN);
@@ -161,7 +161,7 @@ describe("check_pregnancy_drug disclaimer and zero results", () => {
       const res = await run({ drug_name: "아세트아미노펜" }, dgkCtx(mock));
       const text = textOf(res);
       expect(res.isError).toBeFalsy();
-      expect(text).toContain("오류 아님");
+      expect(text).toContain("(정상 조회)");
       expect(text).toContain("성분명");
       expect(text).toContain("약사");
       expect(text).toContain(NOTICE_NOT_FOUND);

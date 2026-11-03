@@ -190,7 +190,7 @@ describe("check_recall summary", () => {
     const res = await run({ product_name: "유모차" }, skCtx(mock));
     const text = textOf(res);
     expect(res.isError).toBeFalsy();
-    for (const w of ["오류 아님", "안전하다는 뜻은 아닙니다", "제품명을 줄이거나", "https://www.safetykorea.kr"]) {
+    for (const w of ["(정상 조회)","안전하다는 뜻은 아닙니다", "제품명을 줄이거나", "https://www.safetykorea.kr"]) {
       expect(text).toContain(w);
     }
   });

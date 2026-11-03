@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { BasisDoc } from "../src/data-store/schema.js";
 import { SPECS } from "../src/clients/data-go-kr-specs.js";
-import { SOURCE_NOTICE } from "../src/core/notice.js";
+import { DRUG_REFERENCE_NOTICE, REFERENCE_NOTICE, SOURCE_NOTICE } from "../src/core/notice.js";
 import {
+  DISCLAIMER_DRUG,
   DISCLAIMER_MEDICAL_LEGAL,
   NOTICE_SOURCE,
   basisFooter,
@@ -32,6 +33,8 @@ const doc = {
 describe("format", () => {
   it("exports notices with required wording", () => {
     expect(DISCLAIMER_MEDICAL_LEGAL).toContain("면책");
+    expect(DISCLAIMER_MEDICAL_LEGAL).toBe(`의료·법률 면책: ${REFERENCE_NOTICE}`);
+    expect(DISCLAIMER_DRUG).toBe(`의약품 면책: ${DRUG_REFERENCE_NOTICE}`);
     expect(NOTICE_SOURCE).toBe(`${SOURCE_NOTICE} 정부24·복지로·국민건강보험공단·관할 주민센터·보건소에서 확인할 수 있어요.`);
   });
 
@@ -113,9 +116,10 @@ describe("format list helpers", () => {
     expect(summarizeList([1, 2, 3], { limit: 5, total: 10, unit: "곳", line: (r) => `row ${r}` })).toContain("전체 후보 10곳 중 상위 3곳");
   });
 
-  it("zeroResultHint is not an error and lists suggestions", () => {
+  it("zeroResultHint is a normal lookup and lists suggestions", () => {
     const hint = zeroResultHint("야간 진료", ["시간을 바꿔 보세요", "지역을 넓혀 보세요"]);
-    expect(hint).toContain("오류 아님");
+    expect(hint).toContain("(정상 조회)");
+    expect(hint).not.toMatch(/아니|아닌|아님|아닙/);
     expect(hint).toContain("- 시간을 바꿔 보세요");
     expect(hint).toContain("- 지역을 넓혀 보세요");
   });
