@@ -15,6 +15,7 @@ export interface ApiSpec {
   readonly itemsPath: readonly string[];
   readonly totalCountPath?: readonly string[];
   readonly resultCodePath: readonly string[];
+  readonly emptyCodes?: readonly string[]; // 이 결과 코드는 오류 대신 0건(HTTP 2xx일 때만, M56)
   readonly cacheTtlMs: number;
   readonly confirmed: boolean;
   readonly knownParams?: readonly string[];
@@ -64,6 +65,7 @@ function interpret(
     throw err;
   }
   const code = codeAt(body, GATEWAY_CODE_PATH) ?? codeAt(body, spec.resultCodePath);
+  if (code !== undefined && ok2xx && spec.emptyCodes?.includes(code)) return { items: [], totalCount: 0 };
   if (code !== undefined && !DATA_GO_KR_OK_CODES.has(code)) {
     ctx.log.info("data.go.kr error", { spec: spec.id, code });
     throw dataGoKrError(code);

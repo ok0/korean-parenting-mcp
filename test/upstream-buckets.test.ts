@@ -21,7 +21,7 @@ const CONFIRMED: ReadonlyArray<readonly [SpecId, UpstreamBucket]> = [
   ["kasiHoliday", "kasi"],
 ];
 
-const LOCAL_ONLY: readonly string[] = ["checkupClinic"]; // ADR-58: no remote lookup until M26 restart (find_checkup_clinic skips lookup when ctx.upstream is set)
+const LOCAL_ONLY: readonly string[] = ["checkupClinic", "lcgvList", "lcgvDetail"]; // ADR-58: no remote lookup until M26 restart (find_checkup_clinic skips lookup when ctx.upstream is set); ADR-62: find_local_support is local-only (REMOTE_POLICY M62)
 
 describe("confirmed specs classify by URL and key", () => {
   it.each(CONFIRMED)("%s → %s", (specId, bucket) => {
