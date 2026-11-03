@@ -78,10 +78,11 @@ export function parseApiPage(text: string): ApiPage {
     );
   }
 
-  const response = isObject(obj) ? obj.response : undefined;
-  const header = isObject(response) ? response.header : undefined;
+  const env: unknown = isObject(obj) && isObject(obj.response) ? obj.response : obj;
+  // 실제 서비스는 {header, body}를 바로 보내고, response 래퍼가 있는 응답도 받는다.
+  const header = isObject(env) ? env.header : undefined;
   if (!isObject(header)) {
-    throw new ApiPageError("SHAPE", "응답에서 response.header를 찾지 못했어요");
+    throw new ApiPageError("SHAPE", "응답에서 header를 찾지 못했어요");
   }
   const resultCode = String(header.resultCode ?? "");
   const resultMsg = String(header.resultMsg ?? "");
@@ -106,9 +107,9 @@ export function parseApiPage(text: string): ApiPage {
     );
   }
 
-  const body = isObject(response) ? response.body : undefined;
+  const body = isObject(env) ? env.body : undefined;
   if (!isObject(body)) {
-    throw new ApiPageError("SHAPE", "응답에서 response.body를 찾지 못했어요");
+    throw new ApiPageError("SHAPE", "응답에서 body를 찾지 못했어요");
   }
 
   const itemsValue = body.items;
