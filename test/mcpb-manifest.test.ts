@@ -5,11 +5,19 @@ import { describe, expect, it } from "vitest";
 import { KEY_ENV, type KeyName } from "../src/core/config.js";
 import { KEY_GUIDE } from "../src/core/errors.js";
 import { VERSION } from "../src/version.js";
-import { SOURCE_NOTICE } from "../src/core/notice.js";
+import { REFERENCE_NOTICE, SOURCE_NOTICE } from "../src/core/notice.js";
 import { allTools } from "../src/tools/registry.js";
 import { DEFAULT_OUT_DIR, ENTRY_REL, resolveMcpbPaths, withoutKeyEnv } from "../scripts/lib/mcpb.js";
+import { McpbManifestSchema } from "@anthropic-ai/mcpb/schemas/0.3";
 
 const NEG = /비공식|unofficial|관계없는|개인 프로젝트|(공식|공공기관|정부)[^.\n]{0,20}(아니에요|아닙니다|아니며|아니고|아님)/i;
+const DESCRIPTION_PREFIX = "한국 임신·출산·육아 일정과 공공 정보를 안내하는 MCP 서버입니다.";
+const EXPECTED_DESCRIPTION = `${DESCRIPTION_PREFIX} ${SOURCE_NOTICE} ${REFERENCE_NOTICE}`;
+// Length limit source (M53 R4): @anthropic-ai/mcpb 2.1.2 sets none for `description`
+// (dist/schemas/0.3.js:91 `z.string()`, dist/mcpb-manifest-v0.3.schema.json `{"type":"string"}`).
+// DESCRIPTION_MAX_CHARS is a project guard, not an external limit.
+const DESCRIPTION_MAX_CHARS = 200;
+const NEGATIVE_STEM = /아니|아닌|아님|아닙/;
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const read = (rel: string): string => readFileSync(join(root, rel), "utf8");
@@ -132,16 +140,25 @@ describe("mcpb manifest", () => {
 
   it("not presented as official", () => {
     expect(manifest.display_name).toBe("한국 육아 일정 도우미");
-    expect(manifest.description).toBe("한국 임신·출산·육아 일정과 공공 정보를 안내하는 MCP 서버입니다. 공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요. 최종 확인은 해당 기관에서 해 주세요. 의료·법률 자문이 아닙니다.");
+    expect(manifest.description).toBe(EXPECTED_DESCRIPTION);
     expect(manifest.description).toContain(SOURCE_NOTICE);
-    expect(manifest.description).toContain("의료·법률 자문이 아닙니다.");
+    expect(manifest.description).toContain(REFERENCE_NOTICE);
     const texts = [manifest.display_name, manifest.description];
     if (manifest.long_description !== undefined) texts.push(manifest.long_description);
     for (const s of texts) {
       expect(s).not.toMatch(NEG);
+      expect(s).not.toMatch(NEGATIVE_STEM);
       expect(s).not.toMatch(/(?<!비)공식\s*(서비스|앱|도구|서버|MCP)/);
       expect(s).not.toMatch(/정부\s*(제공|공식)/);
     }
+  });
+
+  it("description length accepted by mcpb (M53 R4)", () => {
+    const schema = JSON.parse(read("node_modules/@anthropic-ai/mcpb/dist/mcpb-manifest-v0.3.schema.json")) as { properties: { description: Record<string, unknown> } };
+    expect(schema.properties.description).toEqual({ type: "string" });
+    expect(McpbManifestSchema.safeParse(manifest).success).toBe(true);
+    expect(manifest.description.length).toBe(167);
+    expect(manifest.description.length).toBeLessThanOrEqual(DESCRIPTION_MAX_CHARS);
   });
 
   it("no key-like values", () => {
@@ -171,6 +188,9 @@ describe("mcpb manifest", () => {
     expect("server" in brokenFixture).toBe(false);
     expect(brokenFixture.manifest_version).toBe("0.3");
     expect(JSON.stringify(brokenFixture)).not.toMatch(NEG);
+    expect(brokenFixture.description).toBe(EXPECTED_DESCRIPTION);
+    expect(JSON.stringify(brokenFixture)).not.toMatch(NEGATIVE_STEM);
+    expect(McpbManifestSchema.safeParse(brokenFixture).success).toBe(false);
   });
 
   it("bundle entry matches build script", () => {
