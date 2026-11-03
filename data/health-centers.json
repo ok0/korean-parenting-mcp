@@ -1,34 +1,353 @@
 {
   "source": {
-    "dataset_id": "15107750",
-    "title": "전국보건기관표준데이터",
-    "url": "https://www.data.go.kr/data/15107750/standard.do",
-    "provider": "지방자치단체",
+    "dataset_id": "3072692",
+    "title": "보건복지부_전국 지역보건의료기관 현황",
+    "url": "https://www.data.go.kr/data/3072692/fileData.do",
+    "provider": "보건복지부",
     "license": null,
-    "source_modified": "2026-11-02",
-    "file_name": "tn_pubr_public_ht_inst_api"
+    "source_modified": "2025-12-31",
+    "file_name": "보건복지부_전국 지역보건의료기관 현황_20251231.csv"
   },
   "generated_at": "2026-11-03",
-  "as_of": "2026-11-03",
+  "as_of": "2025-12-31",
   "basis_ids": [
     "health-center-standard-data"
   ],
   "verified": "partial",
-  "note": "주 기관 확인 지역 28/269곳. 목록에 없는 지역은 안내 링크로 대신해요",
+  "note": "주 기관 확인 지역 265/269곳. 목록에 없는 지역은 안내 링크로 대신해요",
   "counts": {
-    "source_rows": 358,
-    "kept": 28,
-    "unmatched": 0
+    "source_rows": 3607,
+    "kept": 260,
+    "unmatched": 6
   },
   "centers": [
+    {
+      "code": "11110",
+      "name": "종로구보건소",
+      "kind": "보건소",
+      "phone": "02-2148-3514",
+      "homepage": "https://www.jongno.go.kr/healthMain.do",
+      "address": "서울특별시 종로구 자하문로19길 36 (옥인동, 종로구보건소, 청운효자동자치회관) 1~4층",
+      "verified": "partial"
+    },
+    {
+      "code": "11140",
+      "name": "서울중구보건소",
+      "kind": "보건소",
+      "phone": "02-3396-6302",
+      "homepage": "http://www.junggu.seoul.kr/health/",
+      "address": "서울특별시 중구 다산로39길 16 (무학동, 중구보건소) 중구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11170",
+      "name": "용산구보건소",
+      "kind": "보건소",
+      "phone": "02-2199-8350",
+      "homepage": "https://www.yongsan.go.kr/health/main/main.do",
+      "address": "서울특별시 용산구 녹사평대로 150 (이태원동, 용산구종합행정타운) 1층 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11200",
+      "name": "성동구보건소",
+      "kind": "보건소",
+      "phone": "02-2286-7115",
+      "homepage": "https://www.sd.go.kr/health/index.do",
+      "address": "서울특별시 성동구 마장로23길 10 (홍익동, 성동구보건소) 성동구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11215",
+      "name": "광진구보건소",
+      "kind": "보건소",
+      "phone": "02-450-1422",
+      "homepage": "https://www.gwangjin.go.kr/health/main/main.do",
+      "address": "서울특별시 광진구 아차산로 400 (자양동, 광진구청) 광진구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11230",
+      "name": "동대문구보건소",
+      "kind": "보건소",
+      "phone": "02-2127-5404",
+      "homepage": "https://www.ddm.go.kr/health",
+      "address": "서울특별시 동대문구 천호대로 145 (용두동, 동대문구청) 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11260",
+      "name": "중랑구보건소",
+      "kind": "보건소",
+      "phone": "02-2094-0114",
+      "homepage": "https://www.jungnang.go.kr/health/main.do#",
+      "address": "서울특별시 중랑구 봉화산로 179 (신내동, 중랑구청) 중랑구 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11290",
+      "name": "성북구보건소",
+      "kind": "보건소",
+      "phone": "02-2241-1749",
+      "homepage": "https://www.sb.go.kr/bogunso/mainPage.do",
+      "address": "서울특별시 성북구 화랑로 63 (하월곡동, 성북구보건소) 성북구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11305",
+      "name": "강북구보건소",
+      "kind": "보건소",
+      "phone": "02-901-7600",
+      "homepage": "https://www.gangbuk.go.kr/health/main/main.do",
+      "address": "서울특별시 강북구 한천로 897 (번동, 강북보건소,번2동 주민센터) 강북구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11320",
+      "name": "도봉구보건소",
+      "kind": "보건소",
+      "phone": "02-2091-4600",
+      "homepage": "https://health.dobong.go.kr/",
+      "address": "서울특별시 도봉구 방학로3길 117 (쌍문동, 도봉보건소) 도봉보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11350",
+      "name": "노원구보건소",
+      "kind": "보건소",
+      "phone": "02-2116-3115",
+      "homepage": "https://www.nowon.kr/health",
+      "address": "서울특별시 노원구 노해로 437 (상계동, 노원구청), 보건소 노원구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11380",
+      "name": "은평구보건소",
+      "kind": "보건소",
+      "phone": "02-351-8114",
+      "homepage": "https://www.ep.go.kr/health/index.do",
+      "address": "서울특별시 은평구 은평로 195 (녹번동, 은평구청), 은평구보건소 은평구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11410",
+      "name": "서대문구보건소",
+      "kind": "보건소",
+      "phone": "02-330-1899",
+      "homepage": "https://www.sdm.go.kr/health/",
+      "address": "서울특별시 서대문구 연희로 242 (연희동, 서대문구보건소), 서대문구청별관 서대문구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11440",
+      "name": "마포구보건소",
+      "kind": "보건소",
+      "phone": "02-3153-9114",
+      "homepage": "https://www.mapo.go.kr/site/health/home",
+      "address": "서울특별시 마포구 월드컵로 212 (성산동, 마포구청), 마포구보건소 마포구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11470",
+      "name": "양천구보건소",
+      "kind": "보건소",
+      "phone": "02-2620-4340",
+      "homepage": "https://www.yangcheon.go.kr/health/health/main.do",
+      "address": "서울특별시 양천구 목동서로 339 (신정동, 양천보건소) 양천구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11500",
+      "name": "강서구보건소",
+      "kind": "보건소",
+      "phone": "02-2600-5800",
+      "homepage": "https://www.gangseo.seoul.kr/health/index",
+      "address": "서울특별시 강서구 공항대로 561 (염창동, 강서보건소) 강서구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11530",
+      "name": "구로구보건소",
+      "kind": "보건소",
+      "phone": "02-860-2600",
+      "homepage": "https://www.guro.go.kr/health",
+      "address": "서울특별시 구로구 구로중앙로28길 66 (구로동, 구로5동 주민센터, 구로구보건소) 구로보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11545",
+      "name": "금천구보건소",
+      "kind": "보건소",
+      "phone": "02-2627-2421",
+      "homepage": "https://www.geumcheon.go.kr/health/index.do",
+      "address": "서울특별시 금천구 시흥대로73길 70 (시흥동, 금천구청종합청사), 금천구보건소 금천구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11560",
+      "name": "영등포구보건소",
+      "kind": "보건소",
+      "phone": "02-2670-3114",
+      "homepage": "https://www.ydp.go.kr/health",
+      "address": "서울특별시 영등포구 당산로 123 (당산동3가, 영등포구청) 영등포구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11590",
+      "name": "동작구보건소",
+      "kind": "보건소",
+      "phone": "02-820-1423",
+      "homepage": "https://www.dongjak.go.kr/healthcare/main/main.do",
+      "address": "서울특별시 동작구 만양로3길 80 (노량진동) 1~9층",
+      "verified": "partial"
+    },
+    {
+      "code": "11620",
+      "name": "관악구보건소",
+      "kind": "보건소",
+      "phone": "02-879-7114",
+      "homepage": "https://www.gwanak.go.kr/site/health/main.do",
+      "address": "서울특별시 관악구 관악로 145 (봉천동, 관악구청), 2동 관악구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11650",
+      "name": "서초구보건소",
+      "kind": "보건소",
+      "phone": "02-2155-8114",
+      "homepage": "https://www.seocho.go.kr/site/sh/main.do",
+      "address": "서울특별시 서초구 남부순환로 2584 (서초동, 서초구청, 서초구의회), 보건소 서초구 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11680",
+      "name": "강남구보건소",
+      "kind": "보건소",
+      "phone": "02-3423-7200",
+      "homepage": "https://health.gangnam.go.kr/",
+      "address": "서울특별시 강남구 선릉로 668 (삼성동, 강남구 보건소) 강남구 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11710",
+      "name": "송파구보건소",
+      "kind": "보건소",
+      "phone": "02-2147-2356",
+      "homepage": "https://www.songpa.go.kr/ehealth",
+      "address": "서울특별시 송파구 올림픽로 326 (신천동, 송파구청), 보건소 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "11740",
+      "name": "강동구보건소",
+      "kind": "보건소",
+      "phone": "02-3425-6600",
+      "homepage": "https://health.gangdong.go.kr/health",
+      "address": "서울특별시 강동구 성내로 45 (성내동, 강동구보건소) .",
+      "verified": "partial"
+    },
+    {
+      "code": "12110",
+      "name": "목포시보건소",
+      "kind": "보건소",
+      "phone": "061-270-4000",
+      "homepage": "https://health.mokpo.go.kr/health/",
+      "address": "전라남도 목포시 원산로47번길 5 (산정동) 목포시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12130",
+      "name": "여수시보건소",
+      "kind": "보건소",
+      "phone": "061-682-4000",
+      "homepage": "https://www.yeosu.go.kr/health",
+      "address": "전라남도 여수시 시청서4길 47 (학동), 여수시 보건소 여수시보건소",
+      "verified": "partial"
+    },
     {
       "code": "12150",
       "name": "순천시보건소",
       "kind": "보건소",
-      "phone": "061-749-6905",
+      "phone": "061-749-6862",
       "homepage": "https://www.schc.go.kr/health/main.do",
-      "address": "전남광주통합특별시 순천시 중앙로 232",
-      "source_date": "2026-07-31",
+      "address": "전라남도 순천시 중앙로 232 (석현동, 순천시문화건강센터) 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12170",
+      "name": "나주시보건소",
+      "kind": "보건소",
+      "phone": "061-339-2120",
+      "address": "전라남도 나주시 풍물시장2길 57-32 (이창동, 나주시보건소) 나주시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12190",
+      "name": "광양시보건소",
+      "kind": "보건소",
+      "phone": "061-797-4005",
+      "address": "전라남도 광양시 광양읍 인덕로 1100 (광양만권경제자유구역청, 광양시제2청사) 광양시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12210",
+      "name": "광주동구보건소",
+      "kind": "보건소",
+      "phone": "062-608-3265",
+      "address": "광주광역시 동구 서남로 1 (서석동) 별관",
+      "verified": "partial"
+    },
+    {
+      "code": "12240",
+      "name": "광주서구보건소",
+      "kind": "보건소",
+      "phone": "062-350-4108",
+      "homepage": "https://www.seogu.gwangju.kr/health/",
+      "address": "광주광역시 서구 경열로 33 (농성동, 서구청) 서구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12270",
+      "name": "광주남구보건소",
+      "kind": "보건소",
+      "phone": "062-607-4311",
+      "address": "광주광역시 남구 봉선로 1 (봉선동, 남구청) 5층",
+      "verified": "partial"
+    },
+    {
+      "code": "12300",
+      "name": "광주북구보건소",
+      "kind": "보건소",
+      "phone": "062-410-8112",
+      "homepage": "https://bukgu.gwangju.kr/health/",
+      "address": "광주광역시 북구 우치로 65 (중흥동, 북구보건소) 북구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12330",
+      "name": "광산구보건소",
+      "kind": "보건소",
+      "phone": "062-960-8736",
+      "homepage": "https://www.gwangsan.go.kr/health/",
+      "address": "광주광역시 광산구 하남마항로48번길 7 (흑석동, 하남3지구 주민복합시설(보건소)) 광산구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12710",
+      "name": "담양군보건소",
+      "kind": "보건소",
+      "phone": "061-383-4000",
+      "homepage": "https://www.damyang.go.kr/health/index.damyang",
+      "address": "전라남도 담양군 담양읍 완동길 10-11",
+      "verified": "partial"
+    },
+    {
+      "code": "12720",
+      "name": "곡성군보건의료원",
+      "kind": "보건의료원",
+      "phone": "061-362-4000",
+      "homepage": "https://www.gokseong.go.kr/health/main.do",
+      "address": "전라남도 곡성군 곡성읍 곡성로 854 곡성군보건의료원",
       "verified": "partial"
     },
     {
@@ -37,83 +356,547 @@
       "kind": "보건의료원",
       "phone": "061-780-2033",
       "homepage": "https://www.gurye.go.kr/health/main.do",
-      "address": "전남광주통합특별시 구례군 구례읍 동편제길 30",
-      "source_date": "2026-08-06",
+      "address": "전라남도 구례군 구례읍 동편제길 30 구례군보건의료원",
+      "verified": "partial"
+    },
+    {
+      "code": "12740",
+      "name": "고흥군보건소",
+      "kind": "보건소",
+      "phone": "061-830-5321",
+      "homepage": "https://www.goheung.go.kr/health/",
+      "address": "전라남도 고흥군 고흥읍 등암3길 5 (보건소) 고흥군 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12750",
+      "name": "보성군보건소",
+      "kind": "보건소",
+      "phone": "061-850-5900",
+      "homepage": "https://www.boseong.go.kr/health",
+      "address": "전라남도 보성군 보성읍 송재로 153 보성군 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12760",
+      "name": "화순군보건소",
+      "kind": "보건소",
+      "phone": "061-379-5305",
+      "homepage": "https://www.hwasun.go.kr/index.do?S=S06",
+      "address": "전라남도 화순군 화순읍 쌍충로 62 (화순군보건소) 화순군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12770",
+      "name": "장흥군보건소",
+      "kind": "보건소",
+      "phone": "061-862-4000",
+      "homepage": "https://www.jangheung.go.kr/health",
+      "address": "전라남도 장흥군 장흥읍 흥성로 49 장흥군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12780",
+      "name": "강진군보건소",
+      "kind": "보건소",
+      "phone": "061-430-5204",
+      "homepage": "https://www.gangjin.go.kr/hospital",
+      "address": "전라남도 강진군 강진읍 목리길 11 (강진군보건소) 강진군 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12790",
+      "name": "해남군보건소",
+      "kind": "보건소",
+      "phone": "061-531-3713",
+      "homepage": "http://www.haenam.go.kr/health/index.9is?contentUid=18e3368f6797832401681169c3cf5d94",
+      "address": "전라남도 해남군 해남읍 해남로 46 (해남보건소) 해남군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12800",
+      "name": "영암군보건소",
+      "kind": "보건소",
+      "phone": "061-470-6525",
+      "homepage": "https://www.yeongam.go.kr/home/health",
+      "address": "전라남도 영암군 영암읍 오리정길 39, 영암군보건소 (영암군보건소) 영암군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12810",
+      "name": "무안군보건소",
+      "kind": "보건소",
+      "phone": "061-450-5041",
+      "homepage": "https://www.muan.go.kr/health",
+      "address": "전라남도 무안군 무안읍 면성1길 128 (무안군 보건소) 무안군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12820",
+      "name": "함평군보건소",
+      "kind": "보건소",
+      "phone": "061-320-2409",
+      "homepage": "https://www.hampyeong.go.kr/health/",
+      "address": "전라남도 함평군 함평읍 중앙길 54-8 (함평보건소) 함평군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12830",
+      "name": "영광군보건소",
+      "kind": "보건소",
+      "phone": "061-350-5552",
+      "homepage": "https://www.yeonggwang.go.kr",
+      "address": "전라남도 영광군 영광읍 신남로4길 17 영광군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12840",
+      "name": "장성군보건소",
+      "kind": "보건소",
+      "phone": "061-390-8371",
+      "homepage": "https://www.jangseong.go.kr/home/www/openinfo/health",
+      "address": "전라남도 장성군 장성읍 청운11길 13 (장성군보건소) 장성군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "12850",
+      "name": "완도군보건의료원",
+      "kind": "보건의료원",
+      "phone": "061-550-6720",
+      "homepage": "https://www.wando.go.kr/health#none",
+      "address": "전라남도 완도군 완도읍 농공단지길 34, 본관 (완도보건의료원) 완도군보건의료원",
+      "verified": "partial"
+    },
+    {
+      "code": "12860",
+      "name": "진도군보건소",
+      "kind": "보건소",
+      "phone": "061-540-6005",
+      "homepage": "https://jindo.go.kr/home/sub.cs?m=603",
+      "address": "전라남도 진도군 진도읍 남동1길 40-9 (진도군보건소)",
       "verified": "partial"
     },
     {
       "code": "12870",
-      "name": "신안군",
+      "name": "신안군보건소",
       "kind": "보건소",
       "phone": "061-243-8550",
-      "homepage": "https://www.shinan.go.kr/home/www/dept_info/health/",
-      "address": "전남광주통합특별시 신안군 압해읍 천사로 1004",
-      "source_date": "2026-10-13",
+      "homepage": "https://www.shinan.go.kr/home/www/dept_info/health/page.wscms",
+      "address": "전라남도 신안군 압해읍 천사로 1004 (신안군청) 신안군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "26110",
+      "name": "부산중구보건소",
+      "kind": "보건소",
+      "phone": "051-600-4741",
+      "homepage": "https://www.bsjunggu.go.kr/health",
+      "address": "부산광역시 중구 중구로 120 (대청동1가, 중구청) 중구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "26140",
+      "name": "부산서구보건소",
+      "kind": "보건소",
+      "phone": "051-242-4000",
+      "homepage": "https://www.bsseogu.go.kr/health/index.bsseogu",
+      "address": "부산광역시 서구 부용로 30 (부용동2가, 서구보건소 부민노인복지관) 서구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "26170",
+      "name": "부산동구보건소",
+      "kind": "보건소",
+      "phone": "051-440-6500",
+      "homepage": "https://www.bsdonggu.go.kr/health/index.donggu",
+      "address": "부산광역시 동구 구청로 1 (수정동, 동구청), 보건소 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "26200",
+      "name": "영도구보건소",
+      "kind": "보건소",
+      "phone": "051-416-4000",
+      "homepage": "https://www.yeongdo.go.kr/health.web",
+      "address": "부산광역시 영도구 태종로 423 (청학동, 영도구청), 보건소동 영도구 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "26230",
+      "name": "부산진구보건소",
+      "kind": "보건소",
+      "phone": "051-645-4000",
+      "homepage": "https://www.busanjin.go.kr/health/index.busanjin",
+      "address": "부산광역시 부산진구 황령대로8번길 36 (범천동, 부산진보건소) 부산진구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "26260",
+      "name": "동래구보건소",
+      "kind": "보건소",
+      "phone": "051-555-4000",
+      "homepage": "http://www.dongnae.go.kr/health",
+      "address": "부산광역시 동래구 명륜로187번길 56 (명륜동, 동래구보건소) 동래구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "26290",
+      "name": "부산남구보건소",
+      "kind": "보건소",
+      "phone": "051-607-6460",
+      "homepage": "https://www.bsnamgu.go.kr/index.namgu?menuCd=DOM_000000115000000000",
+      "address": "부산광역시 남구 못골로 23 (대연동, 남구보건소) 남구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "26320",
+      "name": "부산북구보건소",
+      "kind": "보건소",
+      "phone": "051-309-4500",
+      "homepage": "https://www.bsbukgu.go.kr/health/index.bsbukgu",
+      "address": "부산광역시 북구 금곡대로 348 (화명동, 북구보건소), 북구보건소 북구보건소",
       "verified": "partial"
     },
     {
       "code": "26350",
       "name": "해운대구보건소",
       "kind": "보건소",
-      "phone": "051-749-4000",
-      "homepage": "https://www.haeundae.go.kr/health/index.do",
-      "address": "부산광역시 해운대구 양운로37번길 59",
-      "source_date": "2025-12-15",
+      "phone": "051-746-4000",
+      "homepage": "http://health.haeundae.go.kr",
+      "address": "부산광역시 해운대구 양운로37번길 59 (좌동, 해운대구보건소)",
+      "verified": "partial"
+    },
+    {
+      "code": "26380",
+      "name": "사하구보건소",
+      "kind": "보건소",
+      "phone": "051-220-5701",
+      "homepage": "https://www.saha.go.kr/health/main.do",
+      "address": "부산광역시 사하구 하신중앙로 185 (신평동, 사하구 제2청사, 신평2동행정복지센터) 사하구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "26410",
+      "name": "금정구보건소",
+      "kind": "보건소",
+      "phone": "051-519-5050",
+      "homepage": "https://www.geumjeong.go.kr/health/index.geumj",
+      "address": "부산광역시 금정구 중앙대로 1777 (부곡동, 금정구청), 보건소 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "26440",
+      "name": "부산강서구보건소",
+      "kind": "보건소",
+      "phone": "051-970-3415",
+      "homepage": "https://www.bsgangseo.go.kr/health",
+      "address": "부산광역시 강서구 공항로811번길 10 (대저2동, 강서브라이트센터) 보건소",
       "verified": "partial"
     },
     {
       "code": "26470",
       "name": "연제구보건소",
       "kind": "보건소",
-      "phone": "051-665-4811",
-      "homepage": "https://www.yeonje.go.kr/health/main.do",
-      "address": "부산광역시 연제구 연제로 2",
-      "source_date": "2025-11-05",
+      "phone": "051-665-4783",
+      "homepage": "https://www.yeonje.go.kr/health",
+      "address": "부산광역시 연제구 연제로 2 (연산동, 연제구청), 연제구 보건소 연제구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "26500",
+      "name": "수영구보건소",
+      "kind": "보건소",
+      "phone": "051-752-4000",
+      "homepage": "https://www.suyeong.go.kr/health",
+      "address": "부산광역시 수영구 수영로 637-5 (광안동, 수영구 보건소), 본관 수영구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "26530",
+      "name": "사상구보건소",
+      "kind": "보건소",
+      "phone": "051-310-4791",
+      "homepage": "https://www.sasang.go.kr/health/index.sasang",
+      "address": "부산광역시 사상구 학감대로 242 (감전동, 사상구청) 사상구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "26710",
+      "name": "기장군보건소",
+      "kind": "보건소",
+      "phone": "051-709-4796",
+      "homepage": "https://www.gijang.go.kr/health/index.gijang",
+      "address": "부산광역시 기장군 기장읍 기장대로 560 (기장군청) 기장군 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "27110",
+      "name": "대구광역시 중구보건소",
+      "kind": "보건소",
+      "phone": "053-661-3121",
+      "homepage": "https://www.jung.daegu.kr/new/healthcenter/pages/main/",
+      "address": "대구광역시 중구 태평로 45 (태평로3가, 중구보건소) 중구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "27140",
+      "name": "대구광역시 동구보건소",
+      "kind": "보건소",
+      "phone": "053-662-3300",
+      "homepage": "https://www.dong.daegu.kr/health/",
+      "address": "대구광역시 동구 동촌로 79 (검사동, 동구보건소)",
+      "verified": "partial"
+    },
+    {
+      "code": "27170",
+      "name": "대구광역시 서구보건소",
+      "kind": "보건소",
+      "phone": "053-663-3111",
+      "homepage": "https://www.dgs.go.kr/health/",
+      "address": "대구광역시 서구 국채보상로 257 (평리동, 서구청), 서구보건소 서구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "27200",
+      "name": "대구광역시 남구보건소",
+      "kind": "보건소",
+      "phone": "053-664-6000",
+      "homepage": "https://nam.daegu.kr/health/index.do",
+      "address": "대구광역시 남구 영선길 34 (대명동, 남구 보건소), 보건의료서비스센터 지하1층~지상5층",
+      "verified": "partial"
+    },
+    {
+      "code": "27230",
+      "name": "대구광역시 북구보건소",
+      "kind": "보건소",
+      "phone": "053-665-3211",
+      "homepage": "http://www.buk.daegu.kr/health/index.do",
+      "address": "대구광역시 북구 성북로 49 (침산동, 북구보건소) 49",
+      "verified": "partial"
+    },
+    {
+      "code": "27260",
+      "name": "수성구보건소",
+      "kind": "보건소",
+      "phone": "053-666-3111",
+      "homepage": "https://www.suseong.kr/health/index.do",
+      "address": "대구광역시 수성구 수성로 213 (중동, 수성구보건소), 수성구보건소(구관) 수성구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "27290",
+      "name": "달서구보건소",
+      "kind": "보건소",
+      "phone": "053-667-5611",
+      "homepage": "https://www.dalseo.daegu.kr/healthcenter",
+      "address": "대구광역시 달서구 학산로 45 (월성동, 달서구청) 별관(월성동) 달서구보건소",
       "verified": "partial"
     },
     {
       "code": "27710",
-      "name": "달성군보건소",
+      "name": "달성군 보건소",
       "kind": "보건소",
       "phone": "053-668-3333",
-      "homepage": "https://dalseong.daegu.kr/",
-      "address": "대구광역시 달성군 현풍읍 현풍중앙로 27",
-      "source_date": "2026-06-24",
+      "homepage": "https://www.dalseong.daegu.kr/healthcenter/index.do",
+      "address": "대구광역시 달성군 현풍읍 현풍중앙로 27 (달성군 보건소) 달성군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "27720",
+      "name": "군위군보건소",
+      "kind": "보건소",
+      "phone": "054-380-7401",
+      "homepage": "https://www.gunwi.go.kr/health/",
+      "address": "대구광역시 군위군 군위읍 군청로 70 (군위군보건소) 군위군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "28177",
+      "name": "인천광역시미추홀구보건소",
+      "kind": "보건소",
+      "phone": "032-880-5310",
+      "homepage": "https://www.michuhol.go.kr/clinic/main.do",
+      "address": "인천광역시 미추홀구 주안서로 25 (도화동, 미추홀구 보건소) 미추홀구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "28185",
+      "name": "연수구보건소",
+      "kind": "보건소",
+      "phone": "032-7498-8000",
+      "homepage": "https://www.yeonsu.go.kr/clinic/",
+      "address": "인천광역시 연수구 함박뫼로 13 (청학동, 연수보건소) 연수구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "28200",
+      "name": "인천광역시남동구보건소",
+      "kind": "보건소",
+      "phone": "032-464-4001",
+      "homepage": "https://www.namdong.go.kr/clinic/",
+      "address": "인천광역시 남동구 소래로 633 (만수동, 남동구청) 남동구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "28237",
+      "name": "인천광역시부평구보건소",
+      "kind": "보건소",
+      "phone": "032-509-8200",
+      "homepage": "https://www.icbp.go.kr/clinic/",
+      "address": "인천광역시 부평구 부흥로 291 (부평동, 부평구 보건소) 부평구 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "28245",
+      "name": "계양구보건소",
+      "kind": "보건소",
+      "phone": "032-430-7801",
+      "homepage": "https://www.gyeyang.go.kr/open_content/clinic/",
+      "address": "인천광역시 계양구 계양문화로 63 (계산동, 계양구보건소) 계양구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "28710",
+      "name": "강화군보건소",
+      "kind": "보건소",
+      "phone": "032-930-4061",
+      "homepage": "https://www.ganghwa.go.kr/open_content/clinic/",
+      "address": "인천광역시 강화군 강화읍 충렬사로 26-1 강화군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "28720",
+      "name": "옹진군보건소",
+      "kind": "보건소",
+      "phone": "032-899-3112",
+      "homepage": "https://www.ongjin.go.kr/open_content/clinic/",
+      "address": "인천광역시 미추홀구 매소홀로 120 (용현동, 옹진군청) 옹진군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "30110",
+      "name": "대전광역시 동구보건소",
+      "kind": "보건소",
+      "phone": "042-251-4114",
+      "homepage": "https://www.donggu.go.kr/dg/kor/49/health",
+      "address": "대전광역시 동구 동구청로 147 (가오동, 동구청) 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "30140",
+      "name": "대전광역시 중구보건소",
+      "kind": "보건소",
+      "phone": "042-288-8000",
+      "homepage": "https://www.djjunggu.go.kr/health/index.do",
+      "address": "대전광역시 중구 산성로 63 (문화동, 중구보건소) 1층",
+      "verified": "partial"
+    },
+    {
+      "code": "30170",
+      "name": "대전광역시 서구보건소",
+      "kind": "보건소",
+      "phone": "042-288-4500",
+      "homepage": "https://www.seogu.go.kr/health/index.do",
+      "address": "대전광역시 서구 만년로 74 (만년동, 대전서구보건소) 4층 보건행정",
+      "verified": "partial"
+    },
+    {
+      "code": "30200",
+      "name": "대전광역시 유성구보건소",
+      "kind": "보건소",
+      "phone": "042-611-5000",
+      "homepage": "https://www.yuseong.go.kr/health/index.do",
+      "address": "대전광역시 유성구 박산로 177 (구암동, 유성구보건소) 0",
+      "verified": "partial"
+    },
+    {
+      "code": "30230",
+      "name": "대덕구보건소",
+      "kind": "보건소",
+      "phone": "042-608-5499",
+      "homepage": "https://www.daedeok.go.kr/chc/CHC.do",
+      "address": "대전광역시 대덕구 석봉로38번길 55 (석봉동, 대덕구보건소) 2층",
+      "verified": "partial"
+    },
+    {
+      "code": "31110",
+      "name": "울산중구보건소",
+      "kind": "보건소",
+      "phone": "052-290-4300",
+      "homepage": "https://www.junggu.ulsan.kr/health",
+      "address": "울산광역시 중구 외솔큰길 225 (남외동, 중구보건소), 중구보건소 울산광역시 중구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "31140",
+      "name": "울산남구보건소",
+      "kind": "보건소",
+      "phone": "052-226-2805",
+      "homepage": "https://www.ulsannamgu.go.kr/health/mainPage.do",
+      "address": "울산광역시 남구 삼산중로 132 (삼산동, 울산남구보건소) 울산광역시 남구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "31170",
+      "name": "울산동구보건소",
+      "kind": "보건소",
+      "phone": "052-209-4080",
+      "homepage": "https://www.donggu.ulsan.kr/health/main.do",
+      "address": "울산광역시 동구 봉수로 155 (화정동, 동구청사), 종합사회복지관,보건소,동구청소년문화의집 동구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "31200",
+      "name": "울산북구보건소",
+      "kind": "보건소",
+      "phone": "052-289-3450",
+      "homepage": "https://www.bukgu.ulsan.kr/health/",
+      "address": "울산광역시 북구 산업로 1018 (연암동, 보건소) .",
+      "verified": "partial"
+    },
+    {
+      "code": "31710",
+      "name": "울주군보건소",
+      "kind": "보건소",
+      "phone": "052-204-2798",
+      "homepage": "https://www.ulju.ulsan.kr/health/main.do",
+      "address": "울산광역시 울주군 삼남읍 서향교1길 67-12 (울주군보건소) 울주군보건소",
       "verified": "partial"
     },
     {
       "code": "36110",
-      "name": "세종특별자치시 보건소",
+      "name": "세종특별자치시보건소",
       "kind": "보건소",
-      "address": "세종특별자치시 조치원읍 대첩로 32",
-      "source_date": "2026-01-15",
+      "phone": "044-301-2000",
+      "homepage": "https://www.sejong.go.kr/health",
+      "address": "세종특별자치시  조치원읍 대첩로 32 (세종특별자치시보건소) 보건소",
       "verified": "partial"
     },
     {
       "code": "41111",
       "name": "장안구보건소",
       "kind": "보건소",
-      "phone": "031-5191-0118",
-      "address": "경기도 수원시 장안구 송원로 101",
-      "source_date": "2025-11-26",
+      "phone": "031-5191-0119",
+      "homepage": "https://health.suwon.go.kr/",
+      "address": "경기도 수원시 장안구 송원로 101 (조원동, 장안구청, 장안보건소, 장안종합구민회관), 장안보건소 장안구보건소",
       "verified": "partial"
     },
     {
       "code": "41113",
-      "name": "권선구보건소",
+      "name": "수원시권선구보건소",
       "kind": "보건소",
-      "phone": "031-5191-0317",
-      "address": "경기도 수원시 권선구 호매실로 22-50",
-      "source_date": "2025-11-26",
+      "phone": "031-5191-0318",
+      "homepage": "https://health.suwon.go.kr/",
+      "address": "경기도 수원시 권선구 호매실로 22-50 (탑동, 권선구보건소) 권선구보건소",
       "verified": "partial"
     },
     {
       "code": "41115",
       "name": "팔달구보건소",
       "kind": "보건소",
-      "phone": "031-5191-0517",
-      "address": "경기도 수원시 팔달구 팔달산로 6",
-      "source_date": "2025-11-26",
+      "phone": "031-5191-0521",
+      "homepage": "https://health.suwon.go.kr",
+      "address": "경기도 수원시 팔달구 팔달산로 6 (교동, 팔달구 보건소) 팔달구보건소",
       "verified": "partial"
     },
     {
@@ -121,56 +904,249 @@
       "name": "영통구보건소",
       "kind": "보건소",
       "phone": "031-5191-0718",
-      "address": "경기도 수원시 영통구 영통로 396",
-      "source_date": "2025-11-26",
+      "homepage": "https://health.suwon.go.kr",
+      "address": "경기도 수원시 영통구 영통로 396 (영통동, 영통구보건소) 영통구보건소",
       "verified": "partial"
     },
     {
-      "code": "41220",
-      "name": "송탄보건소",
+      "code": "41131",
+      "name": "성남시수정구보건소",
       "kind": "보건소",
-      "phone": "031-8024-7273",
-      "homepage": "https://www.pyeongtaek.go.kr/health/main.do",
-      "address": "경기도 평택시 서정로 295",
-      "source_date": "2026-02-20",
+      "phone": "031-729-3870",
+      "homepage": "https://www.seongnam.go.kr/health/",
+      "address": "경기도 성남시 수정구 수정로 218 (신흥동, 수정구보건소) 수정구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41133",
+      "name": "성남시중원구보건소",
+      "kind": "보건소",
+      "phone": "031-729-3930",
+      "homepage": "https://www.seongnam.go.kr/health",
+      "address": "경기도 성남시 중원구 금상로 137 (상대원동, 노인보건센터, 중원구보건소), 중원구보건소 중원구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41135",
+      "name": "성남시분당구보건소",
+      "kind": "보건소",
+      "phone": "031-729-3990",
+      "homepage": "http://www.seongnam.go.kr/health/",
+      "address": "경기도 성남시 분당구 양현로 306 (야탑동, 분당보건소) 분당구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41150",
+      "name": "의정부시보건소",
+      "kind": "보건소",
+      "phone": "031-870-6010",
+      "homepage": "https://www.ui4u.go.kr/health/main.do",
+      "address": "경기도 의정부시 범골로 131 (의정부동, 의정부시보건소) 의정부시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41171",
+      "name": "안양시 만안구보건소",
+      "kind": "보건소",
+      "phone": "031-8045-3472",
+      "homepage": "https://www.anyang.go.kr/health/index.do",
+      "address": "경기도 안양시 만안구 문예로 48 (안양동, 만안구보건소) 만안구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41173",
+      "name": "안양시 동안구보건소",
+      "kind": "보건소",
+      "phone": "031-8045-4472",
+      "homepage": "https://www.anyang.go.kr/health/index.do",
+      "address": "경기도 안양시 동안구 평촌대로253번길 41 (비산동, 동안구보건소) 동안구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41192",
+      "name": "부천시보건소",
+      "kind": "보건소",
+      "phone": "032-625-4225",
+      "homepage": "http://pubhealth.bucheon.go.kr/site/main/index161",
+      "address": "경기도 부천시 원미구 옥산로10번길 16 (중동, 부천시보건소) 부천시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41194",
+      "name": "소사보건소",
+      "kind": "보건소",
+      "phone": "032-625-4252",
+      "address": "경기도 부천시 소사구 경인옛로 73 (소사본동, 소사구청) 1층,2층",
+      "verified": "partial"
+    },
+    {
+      "code": "41196",
+      "name": "부천시 오정보건소",
+      "kind": "보건소",
+      "phone": "032-625-4373",
+      "homepage": "https://pubhealth.bucheon.go.kr",
+      "address": "경기도 부천시 오정구 성오로 172 (오정동, 오정구청) 1,2층 오정보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41210",
+      "name": "광명시보건소",
+      "kind": "보건소",
+      "phone": "02-2680-2862",
+      "homepage": "https://www.gm.go.kr/health/index.do",
+      "address": "경기도 광명시 오리로 613 (하안동, 광명시보건소) 광명시보건소",
       "verified": "partial"
     },
     {
       "code": "41220",
-      "name": "평택보건소",
+      "name": "평택시송탄보건소",
+      "kind": "보건소",
+      "phone": "031-8024-6615",
+      "homepage": "https://www.pyeongtaek.go.kr/health/main.do",
+      "address": "경기도 평택시 서정로 295 (서정동, 송탄보건소) .",
+      "verified": "partial"
+    },
+    {
+      "code": "41220",
+      "name": "평택시평택보건소",
       "kind": "보건소",
       "phone": "031-8024-5559",
       "homepage": "https://www.pyeongtaek.go.kr/health/main.do",
-      "address": "경기도 평택시 평택5로 56",
-      "source_date": "2026-02-20",
+      "address": "경기도 평택시 평택5로 56 (비전동) 평택보건소",
       "verified": "partial"
     },
     {
-      "code": "41270",
-      "name": "단원보건소",
+      "code": "41250",
+      "name": "동두천시보건소",
       "kind": "보건소",
-      "phone": "1666-1234",
-      "address": "경기도 안산시 단원구 화랑로 250(초지동)",
-      "source_date": "2026-06-16",
+      "phone": "031-860-3372",
+      "homepage": "https://www.ddc.go.kr/",
+      "address": "경기도 동두천시 중앙로 167 (생연동, 동두천시보건소) 동두천시보건소",
       "verified": "partial"
     },
     {
-      "code": "41270",
-      "name": "상록수보건소",
+      "code": "41271",
+      "name": "안산시상록수보건소",
       "kind": "보건소",
-      "phone": "1666-1234",
-      "address": "경기도 안산시 상록구 차돌배기로1길 5 (사동)",
-      "source_date": "2026-06-16",
+      "phone": "031-481-5551",
+      "homepage": "https://www.ansan.go.kr/snshealth/main/main.do",
+      "address": "경기도 안산시 상록구 차돌배기로1길 5 (사동, 상록수보건소) 상록수보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41273",
+      "name": "안산시단원보건소",
+      "kind": "보건소",
+      "phone": "031-481-6347",
+      "homepage": "https://www.ansan.go.kr/health/main/main.do",
+      "address": "경기도 안산시 단원구 화랑로 250 (초지동, 단원구청, 단원보건소) 단원보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41281",
+      "name": "고양시덕양구보건소",
+      "kind": "보건소",
+      "phone": "031-8075-4006",
+      "homepage": "https://www.goyang.go.kr/health/index.do",
+      "address": "경기도 고양시 덕양구 원당로33번길 28 (주교동, 덕양구보건소) 주교동 603지번",
+      "verified": "partial"
+    },
+    {
+      "code": "41285",
+      "name": "일산동구보건소",
+      "kind": "보건소",
+      "phone": "031-8075-4087",
+      "homepage": "https://www.goyang.go.kr/health/index.do",
+      "address": "경기도 고양시 일산동구 중앙로 1100 (백석동) 일산동구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41287",
+      "name": "일산서구보건소",
+      "kind": "보건소",
+      "phone": "031-8075-4160",
+      "homepage": "https://www.goyang.go.kr/health/health01/health01_6/health01_6_1.jsp",
+      "address": "경기도 고양시 일산서구 일중로 54 (일산동, 일산서구보건소) 일산서구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41290",
+      "name": "과천시보건소",
+      "kind": "보건소",
+      "phone": "02-2150-3801",
+      "homepage": "https://www.gccity.go.kr/ghc/main.do",
+      "address": "경기도 과천시 관문로 69 (중앙동, 과천시청), 과천시 보건소 과천시보건소",
       "verified": "partial"
     },
     {
       "code": "41310",
       "name": "구리시보건소",
       "kind": "보건소",
-      "phone": "031-550-8987",
+      "phone": "031-550-8967",
       "homepage": "https://www.guri.go.kr/health/index.do",
-      "address": "경기도 구리시 건원대로34번길 84",
-      "source_date": "2026-07-28",
+      "address": "경기도 구리시 건원대로34번길 84 (인창동, 구리시 보건소) 구리시 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41360",
+      "name": "남양주동부보건소",
+      "kind": "보건소",
+      "phone": "031-590-8040",
+      "address": "경기도 남양주시 화도읍 비룡로 59 (화도수동행정복지센터) 별관",
+      "verified": "partial"
+    },
+    {
+      "code": "41360",
+      "name": "남양주보건소",
+      "kind": "보건소",
+      "phone": "031-590-8888",
+      "homepage": "https://www.nyj.go.kr/health/4267",
+      "address": "경기도 남양주시 경춘로 522 (다산동, 남양주시청제2청사), 보건소 제2청사",
+      "verified": "partial"
+    },
+    {
+      "code": "41360",
+      "name": "남양주풍양보건소",
+      "kind": "보건소",
+      "phone": "031-590-4771",
+      "homepage": "https://www.nyj.go.kr/health/index.do",
+      "address": "경기도 남양주시 진접읍 해밀예당1로 30-39 남양주풍양보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41370",
+      "name": "오산시보건소",
+      "kind": "보건소",
+      "phone": "031-8036-6025",
+      "homepage": "https://www.osan.go.kr/depart/contents.do?mId=0502070000",
+      "address": "경기도 오산시 경기동로 59 (오산동, 오산시보건소) 오산시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41390",
+      "name": "시흥시보건소",
+      "kind": "보건소",
+      "phone": "031-310-5815",
+      "homepage": "https://www.siheung.go.kr/portal/contents.do?mId=0307010000",
+      "address": "경기도 시흥시 호현로 55 (대야동, 시흥시보건소대야종합사회복지관) 시흥시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41410",
+      "name": "군포시보건소",
+      "kind": "보건소",
+      "phone": "031-461-5464",
+      "homepage": "https://www.gunpo.go.kr/health/index.do",
+      "address": "경기도 군포시 군포로 221 (부곡동, 군포시보건소) 군포시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41430",
+      "name": "의왕시보건소",
+      "kind": "보건소",
+      "phone": "031-345-3541",
+      "homepage": "http://www.uiwang.go.kr/heal/index",
+      "address": "경기도 의왕시 오봉로 34 (고천동, 의왕시보건소), 본관동 보건소",
       "verified": "partial"
     },
     {
@@ -179,8 +1155,43 @@
       "kind": "보건소",
       "phone": "031-790-6555",
       "homepage": "https://www.hanam.go.kr/health/index.do",
-      "address": "경기도 하남시 대청로 10",
-      "source_date": "2025-12-10",
+      "address": "경기도 하남시 대청로 10 (신장동, 하남시청), 보건소 하남시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41461",
+      "name": "처인구보건소",
+      "kind": "보건소",
+      "phone": "031-6193-0005",
+      "homepage": "https://www.yongin.go.kr/health/index.do",
+      "address": "경기도 용인시 처인구 중부대로 1199 (삼가동, 용인시청), 보건소 처인구 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41463",
+      "name": "기흥구보건소",
+      "kind": "보건소",
+      "phone": "031-6193-0263",
+      "homepage": "https://www.yongin.go.kr/health/index.do",
+      "address": "경기도 용인시 기흥구 신갈로58번길 11 (신갈동, 신갈동행정복지센터및기흥구보건소) 기흥구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41465",
+      "name": "수지구보건소",
+      "kind": "보건소",
+      "phone": "031-6193-0760",
+      "homepage": "https://www.yongin.go.kr/health/index.do",
+      "address": "경기도 용인시 수지구 포은대로 435 (풍덕천동, 수지구청, 보건소), 수지구보건소 수지구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41480",
+      "name": "운정보건소",
+      "kind": "보건소",
+      "phone": "031-820-7300",
+      "homepage": "https://clinic.paju.go.kr/clinic/index.do",
+      "address": "경기도 파주시 금바위로 44 (와동동) 운정보건소",
       "verified": "partial"
     },
     {
@@ -188,28 +1199,106 @@
       "name": "파주보건소",
       "kind": "보건소",
       "phone": "031-940-4800",
-      "homepage": "http://clinic.paju.go.kr/clinic/index.do",
-      "address": "경기도 파주시 후곡로 13",
-      "source_date": "2025-12-22",
+      "homepage": "https://clinic.paju.go.kr/clinic/index.do",
+      "address": "경기도 파주시 후곡로 13 (금촌동, 파주시보건소) 파주보건소",
       "verified": "partial"
     },
     {
-      "code": "41480",
-      "name": "파주시운정보건소",
+      "code": "41500",
+      "name": "이천시보건소",
       "kind": "보건소",
-      "phone": "031-820-7300",
-      "homepage": "http://clinic.paju.go.kr/clinic/index.do",
-      "address": "경기도 파주시 금바위로 44",
-      "source_date": "2025-12-22",
+      "phone": "031-6190-7010",
+      "homepage": "https://www.icheon.go.kr/depart/health/main.do?mid=0601000000&token=1726016739899",
+      "address": "경기도 이천시 부악로 36 (중리동), 이천시보건소 이천시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41550",
+      "name": "안성시보건소",
+      "kind": "보건소",
+      "phone": "031-678-5710",
+      "homepage": "https://www.anseong.go.kr/health/main.do",
+      "address": "경기도 안성시 강변로74번길 18 (도기동, 안성시보건소) 안성시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41570",
+      "name": "김포시보건소",
+      "kind": "보건소",
+      "phone": "031-5186-4005",
+      "homepage": "https://www.gimpo.go.kr/health/index.do",
+      "address": "경기도 김포시 사우중로 108 (사우동, 김포시 보건소) 단독건물",
+      "verified": "partial"
+    },
+    {
+      "code": "41590",
+      "name": "화성시동부보건소",
+      "kind": "보건소",
+      "phone": "031-5189-4430",
+      "homepage": "https://www.hscity.go.kr/health/index.do",
+      "address": "경기도 화성시 병점구 떡전골로 72-3 (병점동) 2,3층(리치프라자)",
+      "verified": "partial"
+    },
+    {
+      "code": "41590",
+      "name": "화성시동탄보건소",
+      "kind": "보건소",
+      "phone": "031-5189-4360",
+      "homepage": "https://www.hscity.go.kr/health/index.do",
+      "address": "경기도 화성시 노작로 226-9 (석우동, 동탄보건지소) 동탄보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41590",
+      "name": "화성시서부보건소",
+      "kind": "보건소",
+      "phone": "031-5189-2551",
+      "homepage": "https://www.hscity.go.kr/health/index.do",
+      "address": "경기도 화성시 향남읍 3.1만세로 1055 (화성시보건소) 화성시서부보건소",
       "verified": "partial"
     },
     {
       "code": "41610",
-      "name": "광주시 보건소",
+      "name": "광주시보건소",
       "kind": "보건소",
       "phone": "031-760-2110",
-      "address": "경기도 광주시 파발로 194",
-      "source_date": "2026-07-29",
+      "homepage": "https://www.gjcity.go.kr",
+      "address": "경기도 광주시 파발로 194 (경안동, 광주시 보건소) 광주시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41630",
+      "name": "양주시보건소",
+      "kind": "보건소",
+      "phone": "031-8082-7106",
+      "homepage": "https://www.yangju.go.kr/health/index.do",
+      "address": "경기도 양주시 부흥로 1533 (남방동, 양주시보건소,양주시의회,양주시청) 양주시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41650",
+      "name": "포천시보건소",
+      "kind": "보건소",
+      "phone": "031-538-3600",
+      "homepage": "https://www.pocheon.go.kr/pbhlth/index.do",
+      "address": "경기도 포천시 포천로 1612 (신읍동, 포천시보건소) 포천시 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41670",
+      "name": "여주시보건소",
+      "kind": "보건소",
+      "phone": "031-887-3601",
+      "homepage": "https://www.yeoju.go.kr/health/index.do",
+      "address": "경기도 여주시 여흥로160번길 14 (상동, 여주시보건소) .",
+      "verified": "partial"
+    },
+    {
+      "code": "41800",
+      "name": "연천군보건의료원",
+      "kind": "보건의료원",
+      "phone": "031-839-4001",
+      "address": "경기도 연천군 전곡읍 은대성로 95 (연천군보건의료원) 연천군보건의료원",
       "verified": "partial"
     },
     {
@@ -217,29 +1306,446 @@
       "name": "가평군보건소",
       "kind": "보건소",
       "phone": "031-582-2488",
-      "homepage": "https://www.gp.go.kr/health/index.do",
-      "address": "경기도 가평군 가평읍 가화로 155-18",
-      "source_date": "2025-12-24",
+      "homepage": "https://gp.go.kr/health/index.do",
+      "address": "경기도 가평군 가평읍 가화로 155-18 (가평군보건소) 가평군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "41830",
+      "name": "양평군보건소",
+      "kind": "보건소",
+      "phone": "031-770-3524",
+      "homepage": "https://www.yp21.go.kr/health/index.do",
+      "address": "경기도 양평군 양평읍 마유산로 17, 양평군보건소 (양평군보건소) .",
+      "verified": "partial"
+    },
+    {
+      "code": "43111",
+      "name": "청주시상당보건소",
+      "kind": "보건소",
+      "phone": "043-201-3100",
+      "homepage": "https://www.cheongju.go.kr/sdhealth/index.do",
+      "address": "충청북도 청주시 상당구 남일면 단재로 480 상당보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "43112",
+      "name": "청주시서원보건소",
+      "kind": "보건소",
+      "phone": "043-201-3220",
+      "homepage": "https://www.cheongju.go.kr/swhealth/index.do",
+      "address": "충청북도 청주시 서원구 사직대로 227 (사직동, 서원구청) 서원보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "43113",
+      "name": "청주시흥덕보건소",
+      "kind": "보건소",
+      "phone": "043-201-3580",
+      "homepage": "https://www.cheongju.go.kr/hdhealth/index.do",
+      "address": "충청북도 청주시 흥덕구 대농로 88 (복대동, 흥덕보건소 본관) 흥덕보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "43114",
+      "name": "청주시청원보건소",
+      "kind": "보건소",
+      "phone": "043-201-3412",
+      "homepage": "http://www.cheongju.go.kr/cwhealth/index.do",
+      "address": "충청북도 청주시 청원구 오창읍 과학산업3로 238 (청원구 보건소) 청주시청원보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "43130",
+      "name": "충주시보건소",
+      "kind": "보건소",
+      "phone": "043-850-3415",
+      "homepage": "https://www.chungju.go.kr/health/",
+      "address": "충청북도 충주시 사직산21길 34 (문화동, 충주시 건강복지타운), 충주시 보건소 .",
+      "verified": "partial"
+    },
+    {
+      "code": "43150",
+      "name": "제천시보건소",
+      "kind": "보건소",
+      "phone": "043-646-2720",
+      "homepage": "https://www.jecheon.go.kr/health/index.do",
+      "address": "충청북도 제천시 의림대로 242 (청전동) 제천시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "43720",
+      "name": "보은군보건소",
+      "kind": "보건소",
+      "phone": "043-540-5602",
+      "homepage": "http://www.boeun.go.kr?health",
+      "address": "충청북도 보은군 보은읍 동광길 50 (보은군보건소) 보은군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "43730",
+      "name": "옥천군보건소",
+      "kind": "보건소",
+      "phone": "043-730-2114",
+      "homepage": "http://health.oc.go.kr",
+      "address": "충청북도 옥천군 옥천읍 삼양로8길 10 옥천군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "43740",
+      "name": "영동군보건소",
+      "kind": "보건소",
+      "phone": "043-740-5600",
+      "homepage": "https://www.yd21.go.kr/health/",
+      "address": "충청북도 영동군 영동읍 반곡동길 7, 건강증진센터 (영동군보건소) 영동군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "43745",
+      "name": "증평군보건소",
+      "kind": "보건소",
+      "phone": "043-835-4220",
+      "homepage": "https://www.jp.go.kr/health.do",
+      "address": "충청북도 증평군 증평읍 보건복지로 64-1 (증평군보건소) 증평군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "43750",
+      "name": "진천군보건소",
+      "kind": "보건소",
+      "phone": "043-539-7771",
+      "homepage": "https://www.jincheon.go.kr/health/main.do",
+      "address": "충청북도 진천군 진천읍 중앙북1길 11-8, 본관 (진천군보건소) 본관",
+      "verified": "partial"
+    },
+    {
+      "code": "43760",
+      "name": "괴산군보건소",
+      "kind": "보건소",
+      "phone": "043-832-4000",
+      "homepage": "https://www.goesan.go.kr/health/index.do#layerPopBtn",
+      "address": "충청북도 괴산군 괴산읍 동진천길 43 (괴산군보건소) 괴산군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "43770",
+      "name": "음성군보건소",
+      "kind": "보건소",
+      "phone": "043-871-1830",
+      "homepage": "https://www.eumseong.go.kr/health",
+      "address": "충청북도 음성군 음성읍 중앙로 49 (음성보건소) 음성군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "43800",
+      "name": "단양군보건의료원",
+      "kind": "보건의료원",
+      "phone": "043-420-7700",
+      "homepage": "https://www.danyang.go.kr/health/149",
+      "address": "충청북도 단양군 단양읍 삼봉로 53 (단양군보건의료원) 단양보건의료원",
+      "verified": "partial"
+    },
+    {
+      "code": "44131",
+      "name": "천안시동남구보건소",
+      "kind": "보건소",
+      "phone": "041-521-2650",
+      "homepage": "https://www.cheonan.go.kr/dhealth.do",
+      "address": "충청남도 천안시 동남구 버들로 34 (문화동) 동남구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "44133",
+      "name": "천안시서북구보건소",
+      "kind": "보건소",
+      "phone": "041-521-2552",
+      "homepage": "https://www.cheonan.go.kr/shealth.do",
+      "address": "충청남도 천안시 서북구 번영로 156 (불당동, 천안시청) 서북구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "44150",
+      "name": "공주시보건소",
+      "kind": "보건소",
+      "phone": "041-840-8755",
+      "homepage": "https://www.gongju.go.kr/health/",
+      "address": "충청남도 공주시 봉황로 123 (교동, 보건소) 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "44180",
+      "name": "보령시보건소",
+      "kind": "보건소",
+      "phone": "041-930-0900",
+      "homepage": "https://www.brcn.go.kr/health.do",
+      "address": "충청남도 보령시 남포면 보령남로 234 보령시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "44200",
+      "name": "아산시보건소",
+      "kind": "보건소",
+      "phone": "041-537-3403",
+      "homepage": "https://www.asan.go.kr/health/main/",
+      "address": "충청남도 아산시 번영로224번길 20 (모종동, 아산시보건소) .",
+      "verified": "partial"
+    },
+    {
+      "code": "44210",
+      "name": "서산시보건소",
+      "kind": "보건소",
+      "phone": "041-661-6550",
+      "address": "충청남도 서산시 호수공원6로 6 (읍내동, 서산시보건소) 서산시 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "44230",
+      "name": "논산시보건소",
+      "kind": "보건소",
+      "phone": "041-746-8011",
+      "homepage": "https://www.nonsan.go.kr/health/",
+      "address": "충청남도 논산시 논산대로 382 (관촉동) 논산시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "44250",
+      "name": "계룡시보건소",
+      "kind": "보건소",
+      "phone": "042-840-3507",
+      "homepage": "https://www.gyeryong.go.kr/health/",
+      "address": "충청남도 계룡시 장안로 54 (금암동, 계룡시보건소) 계룡시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "44270",
+      "name": "당진시보건소",
+      "kind": "보건소",
+      "phone": "041-360-6000",
+      "homepage": "https://www.dangjin.go.kr/health.do",
+      "address": "충청남도 당진시 서부로 56 (채운동, 당진시보건소), 당진시보건소 당진시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "44710",
+      "name": "금산군보건소",
+      "kind": "보건소",
+      "phone": "041-750-4310",
+      "homepage": "https://www.geumsan.go.kr/health",
+      "address": "충청남도 금산군 금산읍 금산로 1559, 금산군보건소 (다락원) 금산군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "44760",
+      "name": "부여군보건소",
+      "kind": "보건소",
+      "phone": "041-830-8600",
+      "homepage": "https://www.buyeo.go.kr/html/health/index.html",
+      "address": "충청남도 부여군 부여읍 성왕로 205 (부여군 보건소) 부여군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "44770",
+      "name": "서천군보건소",
+      "kind": "보건소",
+      "phone": "041-950-6700",
+      "homepage": "https://www.seocheon.go.kr/health.do",
+      "address": "충청남도 서천군 서천읍 사곡길 26 (서천군보건소) .",
+      "verified": "partial"
+    },
+    {
+      "code": "44790",
+      "name": "청양군보건의료원",
+      "kind": "보건의료원",
+      "phone": "041-940-4515",
+      "homepage": "https://www.cheongyang.go.kr/health.do",
+      "address": "충청남도 청양군 청양읍 칠갑산로7길 54 (청양군보건의료원) 청양군보건의료원",
+      "verified": "partial"
+    },
+    {
+      "code": "44800",
+      "name": "홍성군보건소",
+      "kind": "보건소",
+      "phone": "041-632-2588",
+      "homepage": "https://www.hongseong.go.kr/health.do",
+      "address": "충청남도 홍성군 홍성읍 문화로 106 (홍성군보건소) 홍성군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "44810",
+      "name": "예산군보건소",
+      "kind": "보건소",
+      "phone": "041-339-8993",
+      "homepage": "https://www.yesan.go.kr/health.do",
+      "address": "충청남도 예산군 예산읍 군청로 22 (예산군청) 예산군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "44825",
+      "name": "태안군보건의료원",
+      "kind": "보건의료원",
+      "phone": "041-671-5300",
+      "homepage": "http://www.taean.go.kr",
+      "address": "충청남도 태안군 태안읍 서해로 1952-16 (태안군보건의료원) 태안군보건의료원",
+      "verified": "partial"
+    },
+    {
+      "code": "47111",
+      "name": "포항시남구보건소",
+      "kind": "보건소",
+      "phone": "054-270-4015",
+      "homepage": "https://www.pohang.go.kr/health/main.do",
+      "address": "경상북도 포항시 남구 동해안로 6119 (인덕동, 남구보건소) 남구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47113",
+      "name": "포항시북구보건소",
+      "kind": "보건소",
+      "phone": "054-270-4114",
+      "homepage": "https://www.pohang.go.kr/health/main.do",
+      "address": "경상북도 포항시 북구 흥해읍 한동로 1 (포항 북구보건소) 포항시북구보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47130",
+      "name": "경주시보건소",
+      "kind": "보건소",
+      "phone": "054-779-8573",
+      "homepage": "https://www.gyeongju.go.kr/health/index.do",
+      "address": "경상북도 경주시 양정로 300 (동천동, 경주시보건소) 경주시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47150",
+      "name": "김천시보건소",
+      "kind": "보건소",
+      "phone": "054-433-4000",
+      "homepage": "https://www.gc.go.kr/health/main.do",
+      "address": "경상북도 김천시 시청1길 221 (신음동, 김천시보건소) -",
+      "verified": "partial"
+    },
+    {
+      "code": "47170",
+      "name": "안동시보건소",
+      "kind": "보건소",
+      "phone": "054-855-5986",
+      "homepage": "https://www.andong.go.kr/health/main.do",
+      "address": "경상북도 안동시 서동문로 165 (북문동, 안동시보건소) 안동시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47190",
+      "name": "구미보건소",
+      "kind": "보건소",
+      "phone": "054-480-4000",
+      "homepage": "https://www.gumi.go.kr/health/main.do",
+      "address": "경상북도 구미시 선산대로 111 (지산동, 구미보건소) 구미보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47190",
+      "name": "구미시선산보건소",
+      "kind": "보건소",
+      "phone": "054-480-4130",
+      "homepage": "https://www.gumi.go.kr/ssphc/main.do",
+      "address": "경상북도 구미시 선산읍 선주로 121 (선산보건소) 선산보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47210",
+      "name": "영주시보건소",
+      "kind": "보건소",
+      "phone": "054-631-4000",
+      "homepage": "https://www.yeongju.go.kr/open_content/health/index.do",
+      "address": "경상북도 영주시 시청로1번길 19 (휴천동, 영주시보건소) 영주시보건소",
       "verified": "partial"
     },
     {
       "code": "47230",
       "name": "영천시보건소",
       "kind": "보건소",
-      "phone": "054-339-7894",
-      "homepage": "https://www.yc.go.kr/health/main.do",
-      "address": "경상북도 영천시 옛군청1길 31",
-      "source_date": "2026-10-07",
+      "phone": "054-339-7860",
+      "homepage": "https://www.yc.go.kr/health/",
+      "address": "경상북도 영천시 옛군청1길 31 (문내동, 영천시 보건소) 영천시 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47250",
+      "name": "상주시보건소",
+      "kind": "보건소",
+      "phone": "054-535-4000",
+      "homepage": "https://health.sangju.go.kr",
+      "address": "경상북도 상주시 중앙로 111 (무양동, 상주시 의회청사), 상주시보건소 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47280",
+      "name": "문경시보건소",
+      "kind": "보건소",
+      "phone": "054-550-8052",
+      "homepage": "http://www.mghc.go.kr/",
+      "address": "경상북도 문경시 점촌1길 9 (점촌동, 문경시보건소) 문경시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47290",
+      "name": "경산시보건소",
+      "kind": "보건소",
+      "phone": "053-810-6363",
+      "homepage": "https://www.gbgs.go.kr/open_content/health/index.do",
+      "address": "경상북도 경산시 남매로 158 (중방동, 경산시보건소) 경산시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47730",
+      "name": "의성군보건소",
+      "kind": "보건소",
+      "phone": "054-830-6660",
+      "homepage": "https://www.usc.go.kr/health",
+      "address": "경상북도 의성군 의성읍 구봉길 228 (의성군보건소) 의성군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47750",
+      "name": "청송군보건의료원",
+      "kind": "보건의료원",
+      "phone": "054-870-7100",
+      "homepage": "https://www.cs.go.kr/health.web",
+      "address": "경상북도 청송군 청송읍 의료원길 19, 주1동(의료원) (청송보건의료원) 청송군보건의료원",
       "verified": "partial"
     },
     {
       "code": "47760",
       "name": "영양군보건소",
       "kind": "보건소",
-      "phone": "054-680-5114",
-      "homepage": "https://www.yyg.go.kr/www/health/",
-      "address": "경상북도 영양군 영양읍 동서대로 82",
-      "source_date": "2025-12-22",
+      "phone": "054-680-5112",
+      "homepage": "https://www.yyg.go.kr/www/health",
+      "address": "경상북도 영양군 영양읍 동서대로 82, 가동 (영양군 보건소)",
+      "verified": "partial"
+    },
+    {
+      "code": "47770",
+      "name": "영덕군보건소",
+      "kind": "보건소",
+      "phone": "054-730-6842",
+      "address": "경상북도 영덕군 영덕읍 군청길 53 (보건소) 영덕군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47820",
+      "name": "청도군보건소",
+      "kind": "보건소",
+      "phone": "054-370-6470",
+      "homepage": "https://www.cheongdo.go.kr/open.content/health/",
+      "address": "경상북도 청도군 화양읍 청화로 79-11 청도군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47830",
+      "name": "고령군보건소",
+      "kind": "보건소",
+      "phone": "054-954-1300",
+      "address": "경상북도 고령군 대가야읍 왕릉로 56-5 (고령군보건소) 고령군보건소",
       "verified": "partial"
     },
     {
@@ -249,35 +1755,529 @@
       "phone": "054-933-2400",
       "homepage": "https://www.sj.go.kr/S0006/main.do",
       "address": "경상북도 성주군 성주읍 성밖숲길 12 (성주군보건소,건강증진센터) 성주군보건소",
-      "source_date": "2026-07-31",
+      "verified": "partial"
+    },
+    {
+      "code": "47850",
+      "name": "칠곡군보건소",
+      "kind": "보건소",
+      "phone": "054-973-4000",
+      "homepage": "https://www.chilgok.go.kr/health/main.do",
+      "address": "경상북도 칠곡군 왜관읍 관문로1길 30 (칠곡군보건소) 칠곡군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47900",
+      "name": "예천군보건소",
+      "kind": "보건소",
+      "phone": "054-650-8011",
+      "homepage": "https://www.ycg.kr/open.content/health/?hl=ko",
+      "address": "경상북도 예천군 예천읍 군청길 33, 보건소 (예천군보건소) 예천군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47920",
+      "name": "봉화군보건소",
+      "kind": "보건소",
+      "phone": "054-673-4000",
+      "homepage": "https://www.bonghwa.go.kr/open.content/health/",
+      "address": "경상북도 봉화군 봉화읍 봉화로 1203 봉화군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47930",
+      "name": "울진군보건소",
+      "kind": "보건소",
+      "phone": "054-789-5000",
+      "homepage": "https://www.uljin.go.kr/health/index.uljin",
+      "address": "경상북도 울진군 울진읍 읍내8길 61-8, 울진군 보건소 (울진군보건소) 울진군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "47940",
+      "name": "울릉군보건의료원",
+      "kind": "보건의료원",
+      "phone": "054-790-6817",
+      "homepage": "https://www.ulleung.go.kr/health/index.do",
+      "address": "경상북도 울릉군 울릉읍 울릉순환로 396-18 (보건의료원) 보건의료원",
+      "verified": "partial"
+    },
+    {
+      "code": "48120",
+      "name": "창원시 마산보건소",
+      "kind": "보건소",
+      "phone": "055-245-4000",
+      "homepage": "https://www.changwon.go.kr/cwportal/depart/11066/14417/13731.web",
+      "address": "경상남도 창원시 마산합포구 월영동북로 15 (해운동, 마산보건소) 마산보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48120",
+      "name": "창원시 진해보건소",
+      "kind": "보건소",
+      "phone": "055-225-6101",
+      "homepage": "https://www.changwon.go.kr/cwportal/depart/11066/14418/13732.web",
+      "address": "경상남도 창원시 진해구 진해대로 1101 (풍호동, 진해보건소) 진해보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48120",
+      "name": "창원시 창원보건소",
+      "kind": "보건소",
+      "phone": "055-225-4000",
+      "homepage": "https://www.changwon.go.kr/cwportal/depart/11066.web",
+      "address": "경상남도 창원시 성산구 중앙대로162번안길 8 (신월동, 창원보건소) 창원보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48170",
+      "name": "진주시보건소",
+      "kind": "보건소",
+      "phone": "055-741-4000",
+      "address": "경상남도 진주시 월아산로 2026 (초전동, 경상남도청 서부청사), 경상남도청서부청사, 진주시보건소 진주시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48220",
+      "name": "통영시보건소",
+      "kind": "보건소",
+      "phone": "055-650-6080",
+      "homepage": "https://www.tongyeong.go.kr/health.web",
+      "address": "경상남도 통영시 안개4길 108 (무전동, 통영시보건소) .",
+      "verified": "partial"
+    },
+    {
+      "code": "48240",
+      "name": "사천시보건소",
+      "kind": "보건소",
+      "phone": "055-831-3560",
+      "homepage": "https://www.sacheon.go.kr",
+      "address": "경상남도 사천시 용현면 시청로 77-1 (사천시 보건소) 사천시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48250",
+      "name": "김해시보건소",
+      "kind": "보건소",
+      "phone": "055-330-4451",
+      "homepage": "https://www.gimhae.go.kr",
+      "address": "경상남도 김해시 분성로 227 (외동, 김해시 보건소) 김해시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48250",
+      "name": "김해시서부보건소",
+      "kind": "보건소",
+      "phone": "055-330-7971",
+      "homepage": "https://www.gimhae.go.kr/00976/01553/08574.web",
+      "address": "경상남도 김해시 능동로 149 (부곡동, 장유건강지원센터) 김해시서부보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48270",
+      "name": "밀양시보건소",
+      "kind": "보건소",
+      "phone": "055-359-7020",
+      "homepage": "https://www.miryang.go.kr/hlt",
+      "address": "경상남도 밀양시 삼문중앙로 41 (삼문동, 밀양시보건소) 밀양시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48310",
+      "name": "거제시보건소",
+      "kind": "보건소",
+      "phone": "055-639-6200",
+      "address": "경상남도 거제시 수양로 506 (양정동, 거제시보건소) 거제시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48330",
+      "name": "양산시보건소",
+      "kind": "보건소",
+      "phone": "055-388-4000",
+      "address": "경상남도 양산시 삽량로 169 (중부동, 양산시보건소) 양산시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48330",
+      "name": "웅상보건소",
+      "kind": "보건소",
+      "phone": "055-365-1008",
+      "homepage": "https://www.yangsan.go.kr/health/contents.do?mid=0104030000",
+      "address": "경상남도 양산시 삼호로 164 (삼호동, 웅상보건지소), 1동 1동",
+      "verified": "partial"
+    },
+    {
+      "code": "48720",
+      "name": "의령군보건소",
+      "kind": "보건소",
+      "phone": "055-570-4010",
+      "homepage": "https://www.uiryeong.go.kr/index.uiryeong?menuCd=DOM_000000205004001000",
+      "address": "경상남도 의령군 의령읍 의병로8길 16 (의령군보건소) 의령군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48730",
+      "name": "함안군보건소",
+      "kind": "보건소",
+      "phone": "055-580-3101",
+      "address": "경상남도 함안군 가야읍 중앙남4길 10 (함안군보건소) 함안군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48740",
+      "name": "창녕군보건소",
+      "kind": "보건소",
+      "phone": "055-530-6202",
+      "address": "경상남도 창녕군 창녕읍 군청1길 37 (창녕군 보건소) 창녕군 보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48820",
+      "name": "고성군보건소",
+      "kind": "보건소",
+      "phone": "055-670-4001",
+      "homepage": "https://www.goseong.go.kr/health/",
+      "address": "경상남도 고성군 고성읍 남포로79번길 103-3 (고성군보건소) 고성군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48840",
+      "name": "남해군보건소",
+      "kind": "보건소",
+      "phone": "055-860-8701",
+      "homepage": "https://www.namhae.go.kr",
+      "address": "경상남도 남해군 남해읍 선소로 6 (보건소) 남해군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48850",
+      "name": "하동군보건소",
+      "kind": "보건소",
+      "phone": "055-882-4000",
+      "homepage": "https://www.hadong.go.kr/health.web",
+      "address": "경상남도 하동군 하동읍 군청로 31 (하동보건소) 하동군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "48860",
+      "name": "산청군보건의료원",
+      "kind": "보건의료원",
+      "phone": "055-970-7500",
+      "homepage": "https://www.sancheong.go.kr/health/index.do",
+      "address": "경상남도 산청군 산청읍 중앙로 97 (산청군보건의료원) 산청군보건의료원",
+      "verified": "partial"
+    },
+    {
+      "code": "48870",
+      "name": "함양군보건소",
+      "kind": "보건소",
+      "phone": "055-960-5340",
+      "homepage": "https://www.hygn.go.kr/health.web",
+      "address": "경상남도 함양군 함양읍 한들로 141 (함양군보건소) -",
+      "verified": "partial"
+    },
+    {
+      "code": "48880",
+      "name": "거창군보건소",
+      "kind": "보건소",
+      "phone": "055-940-8310",
+      "homepage": "https://www.geochang.go.kr/health/Index.do",
+      "address": "경상남도 거창군 거창읍 거함대로 3079 (보건소) 보건소",
       "verified": "partial"
     },
     {
       "code": "48890",
       "name": "합천군보건소",
       "kind": "보건소",
-      "address": "경상남도 합천군 합천읍 동서로 39",
-      "source_date": "2025-12-01",
+      "phone": "055-930-4012",
+      "homepage": "https://www.hc.go.kr/health.web",
+      "address": "경상남도 합천군 합천읍 동서로 39 (종합사회복지관) .",
+      "verified": "partial"
+    },
+    {
+      "code": "50110",
+      "name": "제주시동부보건소",
+      "kind": "보건소",
+      "phone": "064-728-4180",
+      "homepage": "https://www.jejusi.go.kr/chc/intro/ejeju/greeting.do",
+      "address": "제주특별자치도 제주시 구좌읍 김녕로14길 6 (동부보건소) .",
+      "verified": "partial"
+    },
+    {
+      "code": "50110",
+      "name": "제주시서부보건소",
+      "kind": "보건소",
+      "phone": "064-728-1513",
+      "homepage": "https://www.jejusi.go.kr/chc/intro/wjeju/greeting.do",
+      "address": "제주특별자치도 제주시 한림읍 강구로 5 (서부보건소) .",
+      "verified": "partial"
+    },
+    {
+      "code": "50110",
+      "name": "제주시제주보건소",
+      "kind": "보건소",
+      "phone": "064-728-4000",
+      "homepage": "https://www.jejusi.go.kr/chc/main.do",
+      "address": "제주특별자치도 제주시 연삼로 264 (도남동, 제주보건소) 제주보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "50130",
+      "name": "서귀포시동부보건소",
+      "kind": "보건소",
+      "phone": "064-760-6100",
+      "address": "제주특별자치도 서귀포시 남원읍 태위로 527 (동부보건소) 서귀포시동부보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "50130",
+      "name": "서귀포시서귀포보건소",
+      "kind": "보건소",
+      "phone": "064-760-6011",
+      "homepage": "https://www.seogwipo.go.kr/group/health/seogwipo/main.htm",
+      "address": "제주특별자치도 서귀포시 중앙로101번길 52 (서홍동, 서귀포보건소), 별관 서귀포보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "50130",
+      "name": "서귀포시서부보건소",
+      "kind": "보건소",
+      "phone": "064-760-6251",
+      "homepage": "https://www.seogwipo.go.kr/group/health/west/main.htm",
+      "address": "제주특별자치도 서귀포시 대정읍 최남단해안로15번길 12 (서부보건소) 서부보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "51110",
+      "name": "춘천시보건소",
+      "kind": "보건소",
+      "phone": "033-250-3550",
+      "homepage": "https://www.chuncheon.go.kr/health/",
+      "address": "강원도 춘천시 중앙로 135 (중앙로3가, 춘천시보건소) 춘천시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "51130",
+      "name": "원주시보건소",
+      "kind": "보건소",
+      "phone": "033-737-4011",
+      "homepage": "https://www.wonju.go.kr/health/index.do",
+      "address": "강원도 원주시 원일로 139 (일산동, 시민문화센터) 원주시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "51150",
+      "name": "강릉시보건소",
+      "kind": "보건소",
+      "phone": "033-660-3010",
+      "homepage": "https://www.gn.go.kr/phc/index.do#popup",
+      "address": "강원도 강릉시 남부로17번길 38 (내곡동, 강릉시보건소), 가동 강릉시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "51170",
+      "name": "동해시보건소",
+      "kind": "보건소",
+      "phone": "033-530-2401",
+      "homepage": "https://www.dh.go.kr/health",
+      "address": "강원도 동해시 천곡로 100-2 (천곡동, 보건소) .",
+      "verified": "partial"
+    },
+    {
+      "code": "51190",
+      "name": "태백시보건소",
+      "kind": "보건소",
+      "phone": "033-552-4000",
+      "homepage": "https://www.taebaek.go.kr/health/index.do",
+      "address": "강원특별자치도 태백시 태백로 905 (황지동, 보건소) 태백시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "51210",
+      "name": "속초시보건소",
+      "kind": "보건소",
+      "phone": "033-631-4000",
+      "homepage": "https://www.sokcho.go.kr/bo/health",
+      "address": "강원특별자치도 속초시 수복로 36 (교동, 속초시보건소) 속초시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "51230",
+      "name": "삼척시보건소",
+      "kind": "보건소",
+      "phone": "033-572-4000",
+      "homepage": "https://www.samcheok.go.kr",
+      "address": "강원특별자치도 삼척시 척주로 76 (남양동, 삼척시보건소) 삼척시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "51720",
+      "name": "홍천군보건소",
+      "kind": "보건소",
+      "phone": "033-430-4000",
+      "homepage": "https://www.hongcheon.go.kr/health/index.do",
+      "address": "강원특별자치도 홍천군 홍천읍 신장대로 5 (홍천군보건소) 홍천군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "51730",
+      "name": "횡성군보건소",
+      "kind": "보건소",
+      "phone": "033-340-5613",
+      "homepage": "https://www.hsg.go.kr/health/index.do",
+      "address": "강원도 횡성군 횡성읍 횡성로 379 (횡성보건소) 횡성군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "51750",
+      "name": "영월군보건소",
+      "kind": "보건소",
+      "phone": "033-372-4000",
+      "homepage": "https://www.yw.go.kr/health/",
+      "address": "강원특별자치도 영월군 영월읍 하송로 44 (영월군 보건소) 영월군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "51760",
+      "name": "평창군보건의료원",
+      "kind": "보건의료원",
+      "phone": "033-332-4000",
+      "homepage": "https://www.pc.go.kr/health",
+      "address": "강원특별자치도 평창군 평창읍 노성로 11 (평창군 보건의료원) 평창군보건의료원",
+      "verified": "partial"
+    },
+    {
+      "code": "51770",
+      "name": "정선군보건소",
+      "kind": "보건소",
+      "phone": "033-560-2550",
+      "homepage": "https://www.jeongseon.go.kr",
+      "address": "강원도 정선군 정선읍 녹송로 33 (정선군보건소) 정선군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "51780",
+      "name": "철원군보건소",
+      "kind": "보건소",
+      "phone": "033-450-5550",
+      "homepage": "https://www.cwg.go.kr/health",
+      "address": "강원특별자치도 철원군 갈말읍 군탄로 16 (철원군보건소) 1",
+      "verified": "partial"
+    },
+    {
+      "code": "51790",
+      "name": "화천군보건의료원",
+      "kind": "보건의료원",
+      "phone": "033-441-4000",
+      "homepage": "http://ihc.go.kr/health/index.do",
+      "address": "강원도 화천군 화천읍 강변로 111, 화천보건의료원 (화천군보건의료원)  화천군보건의료원",
+      "verified": "partial"
+    },
+    {
+      "code": "51800",
+      "name": "양구군보건소",
+      "kind": "보건소",
+      "phone": "033-481-2400",
+      "homepage": "https://www.yanggu.go.kr/health/",
+      "address": "강원도 양구군 양구읍 관공서로 42 (양구군보건소) 양구군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "51810",
+      "name": "인제군보건소",
+      "kind": "보건소",
+      "phone": "033-461-2425",
+      "homepage": "https://www.inje.go.kr/health",
+      "address": "강원특별자치도 인제군 인제읍 인제로140번길 34 (인제보건소) 인제군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "51820",
+      "name": "고성군보건소",
+      "kind": "보건소",
+      "phone": "033-681-4000",
+      "homepage": "https://gwgs.go.kr/health/index.do",
+      "address": "강원특별자치도 고성군 간성읍 수성로 30 (보건소) 고성군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "51830",
+      "name": "양양군보건소",
+      "kind": "보건소",
+      "phone": "033-670-2550",
+      "homepage": "https://www.yangyang.go.kr/gw/healthcenter",
+      "address": "강원특별자치도 양양군 양양읍 양양로 9-5 (양양군보건소) 양양군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "52110",
+      "name": "전주시 보건소",
+      "kind": "보건소",
+      "phone": "063-281-6200",
+      "homepage": "http://health.jeonju.go.kr/index.jeonju",
+      "address": "전라북도 전주시 완산구 전라감영로 33 (중앙동4가, 전주시보건소) 전주시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "52113",
+      "name": "덕진보건소",
+      "kind": "보건소",
+      "phone": "063-250-3900",
+      "homepage": "https://health.jeonju.go.kr/",
+      "address": "전라북도 전주시 덕진구 우아1길 20 (우아동3가, 전주시덕진보건소) 덕진보건소",
       "verified": "partial"
     },
     {
       "code": "52130",
-      "name": "군산시 보건소",
+      "name": "군산시보건소",
       "kind": "보건소",
       "phone": "063-454-5000",
       "homepage": "https://www.gunsan.go.kr/health",
-      "address": "전북특별자치도 군산시 수송동로 58",
-      "source_date": "2025-12-03",
+      "address": "전북특별자치도 군산시 수송동로 58 (수송동, 군산시 보건소) 군산시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "52140",
+      "name": "익산시보건소",
+      "kind": "보건소",
+      "phone": "063-859-4802",
+      "homepage": "https://www.iksan.go.kr/health/index.iksan",
+      "address": "전라북도 익산시 무왕로 975 (신동, 익산시보건소) .",
       "verified": "partial"
     },
     {
       "code": "52180",
       "name": "정읍시보건소",
       "kind": "보건소",
-      "phone": "063-539-6137",
-      "homepage": "https://www.jeongeup.go.kr/buseo/index.jeongeup?menuCd=DOM_000001026000000000",
-      "address": "전북특별자치도 정읍시 수성1로 61",
-      "source_date": "2026-07-31",
+      "phone": "063-539-6071",
+      "homepage": "https://www.jeongeup.go.kr/health/index.jeongeup",
+      "address": "전라북도 정읍시 수성1로 61 (수성동, 정읍보건소), 보건소 정읍시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "52190",
+      "name": "남원시보건소",
+      "kind": "보건소",
+      "phone": "063-625-4000",
+      "address": "전라북도 남원시 요천로 1285 (조산동, 남원시보건소) 남원시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "52210",
+      "name": "김제시보건소",
+      "kind": "보건소",
+      "phone": "063-540-1300",
+      "address": "전라북도 김제시 성산길 138 (요촌동, 보건소) 김제시보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "52710",
+      "name": "완주군보건소",
+      "kind": "보건소",
+      "phone": "063-290-3008",
+      "homepage": "https://www.wanju.go.kr/health/index.9is",
+      "address": "전라북도 완주군 삼례읍 삼봉8로 10-10 0",
       "verified": "partial"
     },
     {
@@ -285,8 +2285,58 @@
       "name": "진안군보건소",
       "kind": "보건소",
       "phone": "063-430-8501",
-      "address": "전북특별자치도 진안군 진안읍 진무로 1189",
-      "source_date": "2025-11-18",
+      "address": "전라북도 진안군 진안읍 진무로 1189 (진안보건소) 진안군보건소",
+      "verified": "partial"
+    },
+    {
+      "code": "52730",
+      "name": "무주군보건의료원",
+      "kind": "보건의료원",
+      "phone": "063-320-8322",
+      "address": "전라북도 무주군 무주읍 한풍루로 413 (무주군보건의료원) 무주군보건의료원",
+      "verified": "partial"
+    },
+    {
+      "code": "52740",
+      "name": "장수군보건의료원",
+      "kind": "보건의료원",
+      "phone": "063-351-8000",
+      "homepage": "https://www.jangsu.go.kr/health/index.jangsu",
+      "address": "전북특별자치도 장수군 장수읍 장천로 247 (장수보건의료원) .",
+      "verified": "partial"
+    },
+    {
+      "code": "52750",
+      "name": "임실군보건의료원",
+      "kind": "보건의료원",
+      "phone": "063-640-3101",
+      "homepage": "https://www.imsil.go.kr",
+      "address": "전라북도 임실군 임실읍 호국로 1680, 임실군 보건의료원 (임실군 보건의료원) 임실군보건의료원",
+      "verified": "partial"
+    },
+    {
+      "code": "52770",
+      "name": "순창군보건의료원",
+      "kind": "보건의료원",
+      "phone": "063-650-5373",
+      "address": "전북특별자치도 순창군 순창읍 교성로 135 (순창군보건의료원) 순창군보건의료원",
+      "verified": "partial"
+    },
+    {
+      "code": "52790",
+      "name": "고창군보건소",
+      "kind": "보건소",
+      "phone": "063-560-8711",
+      "address": "전라북도 고창군 고창읍 전봉준로 90 (고창군보건소) 90",
+      "verified": "partial"
+    },
+    {
+      "code": "52800",
+      "name": "부안군보건소",
+      "kind": "보건소",
+      "phone": "063-584-1261",
+      "homepage": "https://www.buan.go.kr",
+      "address": "전라북도 부안군 부안읍 오리정로 124, 1 (보건소) 부안군보건소",
       "verified": "partial"
     }
   ]
