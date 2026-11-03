@@ -9,7 +9,7 @@ import { findLeaks, secretsFromEnv } from "../scripts/lib/sample-mask.js";
 import { ASSET_FILES } from "../scripts/visuals/generate.js";
 import { REPORT_FIGURE_ALT, assetPairs } from "../scripts/visuals/readme-figures.js";
 import type { PageResult } from "../site/src/app.js";
-import { SOURCE_NOTICE } from "../src/core/notice.js";
+import { REFERENCE_NOTICE, SOURCE_NOTICE } from "../src/core/notice.js";
 import type { TimelineArgs } from "../src/timeline/input.js";
 import { fakeDocument, type FakeElement } from "./helpers/fake-dom.js";
 import { DEPLOY_TERMS, htmlText } from "./helpers/visuals.js";
@@ -146,13 +146,16 @@ describe("Pages page (M33)", () => {
     const flat = text.replace(/\s+/g, " ");
     expect(flat).toContain(SOURCE_NOTICE);
     expect(text).not.toMatch(/비공식|unofficial|관계없는|개인 프로젝트|(공식|공공기관|정부)[^.\n]{0,20}(아니에요|아닙니다|아니며|아니고|아님)/i);
+    expect(text).not.toMatch(/아니|아닌|아님|아닙/);
     expect(html).toContain("<title>한국 임신·출산·육아 정보 도구 체험</title>");
     const header = html.slice(html.indexOf('<header id="notice"'), html.indexOf("</header>"));
     const headerText = htmlText(header);
-    for (const phrase of ["의료", "법률"]) {
+    for (const phrase of ["의료진", "관할 기관"]) {
       expect(headerText, phrase).toContain(phrase);
     }
     expect(headerText.replace(/\s+/g, " ")).toContain(SOURCE_NOTICE);
+    expect(html).toContain(`<p class="notice"><strong>면책:</strong> ${REFERENCE_NOTICE}</p>`);
+    expect(headerText.replace(/\s+/g, " ")).toContain(REFERENCE_NOTICE);
     expect(html.indexOf('<header id="notice"')).toBeLessThan(html.indexOf("<picture"));
     expect(/\d{4}-\d{2}-\d{2}/.test(text)).toBe(false);
     expect(/\d[\d,]*\s*만?원/.test(text)).toBe(false);
@@ -176,9 +179,10 @@ describe("Pages page (M33)", () => {
   it("report example section is static", () => {
     const s = section(html, "report-example");
     const sText = htmlText(s);
-    for (const phrase of ["한 장 보고서 예시", "AI 도우미", "정적 예시", "개인 맞춤이 아니", "입력을 받지 않"]) {
+    for (const phrase of ["한 장 보고서 예시", "AI 도우미", "정적 예시", "한 가정의 질문에 맞춘 답변 예시이고, 이 구획은 입력을 받지 않아요.", "입력을 받지 않"]) {
       expect(sText, phrase).toContain(phrase);
     }
+    expect(sText.replace(/\s+/g, " ")).toContain("앱·질문·날짜에 따라 답변이 달라질 수 있어요.");
     expect(s).toContain("assets/report-example-light.svg");
     expect(s).toContain("assets/report-example-dark.svg");
     expect(s).toContain(`alt="${REPORT_FIGURE_ALT}"`);
@@ -200,7 +204,7 @@ describe("Pages page (M33)", () => {
       '<pre id="raw-text">',
       "원문 그대로 보기",
       "예시·참고용",
-      "개인 맞춤이 아닙니다",
+      "예시·참고용으로 계산한 일반 일정이에요. 실제 일정과 기한은 관할 기관·의료진에게 확인하세요.",
       "관할 기관",
       "의료진",
     ]) {
