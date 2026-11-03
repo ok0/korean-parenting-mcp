@@ -62,7 +62,7 @@ export const KEY_GUIDE: Record<
   },
 };
 
-export function missingKeyError(keys: KeyName[]): ToolError {
+export function missingKeyError(keys: KeyName[], extra?: readonly string[]): ToolError {
   const envs = keys.map((k) => KEY_GUIDE[k].env);
   const actions = [
     ...keys.map((k) => {
@@ -70,6 +70,7 @@ export function missingKeyError(keys: KeyName[]): ToolError {
       return `${g.env} — ${g.title}: ${g.steps.join(" ")} (발급: ${g.url})`;
     }),
     ...DEFAULT_ACTIONS.MISSING_KEY,
+    ...(extra ?? []),
   ];
   return new ToolError("MISSING_KEY", `필요한 API 키가 설정되지 않았습니다: ${envs.join(", ")}`, {
     actions,

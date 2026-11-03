@@ -85,7 +85,7 @@ export async function runTool(def: ToolDef, rawArgs: unknown, ctx: ToolContext):
     }
 
     const missing = (def.requiredKeys ?? []).filter((k) => !ctx.config.keys[k]);
-    if (missing.length > 0) throw missingKeyError(missing);
+    if (missing.length > 0) throw missingKeyError(missing, def.keyActions);
 
     const callCtx: ToolContext = ctx.notices ? { ...ctx, notices: [] } : ctx;
     const out = await def.handler(parsed.data, callCtx);
