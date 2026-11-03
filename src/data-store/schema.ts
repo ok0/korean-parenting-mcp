@@ -982,6 +982,88 @@ export const ClinicGuideSchema = z
     }
   });
 
+export const HEALTH_CENTER_KINDS = ["보건소", "보건의료원", "보건지소", "보건진료소"] as const;
+export const HEALTH_CENTER_PRIMARY_KINDS = ["보건소", "보건의료원"] as const;
+export const HEALTH_CENTER_BASIS_ID = "health-center-standard-data";
+
+export const HealthCenterEntrySchema = z
+  .strictObject({
+    code: SggCode,
+    name: z.string().min(1),
+    kind: z.enum(HEALTH_CENTER_KINDS),
+    phone: z.string().regex(/^[0-9-]{7,15}$/).optional(),
+    homepage: z.string().regex(/^https?:\/\/\S+$/).optional(),
+    address: z.string().min(1).optional(),
+    source_date: IsoDate.optional(),
+    verified: VerifiedSchema,
+    verified_by: z.string().min(1).optional(),
+    verified_on: IsoDate.optional(),
+  })
+  .superRefine(requireVerifier);
+
+export const HealthCentersSchema = z
+  .strictObject({
+    source: z.strictObject({
+      dataset_id: z.literal("15107750"),
+      title: z.literal("전국보건기관표준데이터"),
+      url: z.literal("https://www.data.go.kr/data/15107750/standard.do"),
+      provider: z.string().min(1),
+      license: z.string().min(1).nullable(),
+      source_modified: IsoDate,
+      file_name: z.string().min(1),
+    }),
+    generated_at: IsoDate,
+    as_of: IsoDate,
+    basis_ids: z.tuple([z.literal(HEALTH_CENTER_BASIS_ID)]),
+    verified: VerifiedSchema,
+    verified_by: z.string().min(1).optional(),
+    verified_on: IsoDate.optional(),
+    note: z.string().optional(),
+    counts: z.strictObject({
+      source_rows: z.number().int().nonnegative(),
+      kept: z.number().int().nonnegative(),
+      unmatched: z.number().int().nonnegative(),
+    }),
+    centers: z.array(HealthCenterEntrySchema),
+  })
+  .superRefine((f, ctx) => {
+    requireVerifier(f, ctx);
+    if (f.counts.kept !== f.centers.length) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["counts", "kept"],
+        message: "kept는 centers 개수와 같아야 해요",
+      });
+    }
+    for (let i = 1; i < f.centers.length; i++) {
+      const prev = f.centers[i - 1];
+      const cur = f.centers[i];
+      if (prev && cur && compareCenters(prev, cur) >= 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["centers", i],
+          message: "centers는 code·kind·name 순으로 정렬되어 있어야 해요(중복 없이)",
+        });
+      }
+    }
+  });
+
+export function compareCenters(
+  a: { code: string; kind: string; name: string },
+  b: { code: string; kind: string; name: string },
+): number {
+  if (a.code !== b.code) return a.code < b.code ? -1 : 1;
+  const ka = HEALTH_CENTER_KINDS.indexOf(a.kind as (typeof HEALTH_CENTER_KINDS)[number]);
+  const kb = HEALTH_CENTER_KINDS.indexOf(b.kind as (typeof HEALTH_CENTER_KINDS)[number]);
+  if (ka !== kb) return ka - kb;
+  if (a.name !== b.name) return a.name < b.name ? -1 : 1;
+  return 0;
+}
+
+export type HealthCenterEntry = z.output<typeof HealthCenterEntrySchema>;
+export type HealthCentersFile = z.output<typeof HealthCentersSchema>;
+export type HealthCenterKind = (typeof HEALTH_CENTER_KINDS)[number];
+
 export type ClinicGuideFile = z.output<typeof ClinicGuideSchema>;
 export type ClinicToolGuide = z.output<typeof ClinicToolGuideSchema>;
 export type ClinicLinkEntry = z.output<typeof ClinicLinkSchema>;
