@@ -465,7 +465,7 @@ export const PrenatalSchema = ProvenanceFields.extend({
       fail("구간 시작이 끝보다 늦습니다");
     }
     if (next.from_week !== cur.to_week + 1) {
-      fail("산전 구간이 연속이 아닙니다");
+      fail("산전 구간은 연속이어야 합니다");
     }
   }
   if (iv[PRENATAL_INTERVAL_COUNT - 1]?.to_week !== null) {

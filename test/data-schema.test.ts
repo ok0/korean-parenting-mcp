@@ -614,7 +614,7 @@ describe("prenatal validation failures", () => {
     const second = x.intervals[1];
     if (second) second.from_week = 30;
     expect(() => validateDataset("prenatal", x, basis)).toThrow(DataValidationError);
-    expect(() => validateDataset("prenatal", x, basis)).toThrow("연속");
+    expect(() => validateDataset("prenatal", x, basis)).toThrow("산전 구간은 연속이어야 합니다");
   });
 
   it("rejects a last interval that ends before the due date", () => {
