@@ -109,6 +109,14 @@ describe("setup targets", () => {
     expect(result.ok).toBe(false);
   });
 
+  it.each([
+    ["[1,2]", "최상위 값은 JSON 객체여야 합니다"],
+    ['{"mcpServers":[]}', "mcpServers 값은 JSON 객체여야 합니다"],
+  ])("mergeDesktopConfig reason for %s", (text, reason) => {
+    const result = mergeDesktopConfig(text, buildServerEntry({}));
+    expect(result).toEqual({ ok: false, reason });
+  });
+
   it("claudeCodeArgs builds the exact argument list for two keys", () => {
     const entry = buildServerEntry({ DATA_GO_KR_SERVICE_KEY: "dg-1", SAFETYKOREA_AUTH_KEY: "sk-1" });
     const args = claudeCodeArgs(entry);

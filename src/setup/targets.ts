@@ -66,13 +66,13 @@ export function mergeDesktopConfig(existing: string | undefined, entry: ServerEn
     return { ok: false, reason: "JSON 문법 오류로 파일을 읽을 수 없습니다" };
   }
   if (!isPlainObject(parsed)) {
-    return { ok: false, reason: "최상위 값이 JSON 객체가 아닙니다" };
+    return { ok: false, reason: "최상위 값은 JSON 객체여야 합니다" };
   }
   let servers: Record<string, unknown>;
   if (Object.hasOwn(parsed, "mcpServers")) {
     const current = parsed.mcpServers;
     if (!isPlainObject(current)) {
-      return { ok: false, reason: "mcpServers 값이 JSON 객체가 아닙니다" };
+      return { ok: false, reason: "mcpServers 값은 JSON 객체여야 합니다" };
     }
     servers = current;
   } else {
