@@ -221,7 +221,7 @@ describe("report example figure from a real answer (M30c)", () => {
         REPORT_BADGE,
         SOURCE_NOTICE,
         REPORT_DISCLAIMER,
-        "법률 해석이 아닌 참고 정보",
+        "분할 횟수와 신청 절차는 회사 인사팀·고용센터에서 확인하세요.",
         "응급실",
         usedFeaturesLine(),
       ]) {
@@ -239,6 +239,16 @@ describe("report example figure from a real answer (M30c)", () => {
       expect(matchedPatterns(desc, CLIENT_BRANDS), f).toEqual([]);
     }
     expect(REPORT_BADGE).toBe("실제 답변 예시 · 한 가정의 질문에 맞춘 답변");
+    expect(REPORT_DISCLAIMER).toBe(
+      "참고용 일반 안내예요. 응급 상황은 119 또는 응급실, 건강 문제는 의료진과 상의하고, 금액·자격·기한은 담당 기관에서 최종 확인하세요.",
+    );
+    expect(REALTIME_FORBIDDEN.map(String)).toContain(String(/진료\s*시간\s*외/));
+    expect(REALTIME_FORBIDDEN.map(String).join(" ")).not.toMatch(/아니|아닌|아님|아닙/);
+    const leave = REPORT_SECTIONS.find((s) => s.heading === "맞벌이 휴가·휴직");
+    expect(leave?.source).toEqual([
+      "출처: 2026-10-31 근로기준법 제74조·남녀고용평등법 제18조의2·제19조와 생활법령정보 육아휴직 급여",
+      "분할 횟수와 신청 절차는 회사 인사팀·고용센터에서 확인하세요.",
+    ]);
     for (const id of ["find_benefits", "find_night_pediatric", "find_kindergarten"]) {
       const tool = allTools.find((x) => x.name === id);
       expect(tool?.requiredKeys?.length ?? 0, id).toBeGreaterThan(0);

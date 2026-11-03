@@ -12,12 +12,12 @@ export const REPORT_BADGE = "실제 답변 예시 · 한 가정의 질문에 맞
 export const REAL_ANSWER_NOTE = (date: string): string =>
   `${date}에 한 AI 앱에서 실제로 받은 답변을 그림에 맞게 줄여서 한 장으로 구성했어요. 앱·질문·날짜에 따라 답변이 달라질 수 있어요.`;
 export const REPORT_DISCLAIMER =
-  "의료·법률 판단이 아닌 일반 안내예요. 응급 상황은 119 또는 응급실, 금액·자격·기한은 담당 기관에서 최종 확인하세요.";
+  "참고용 일반 안내예요. 응급 상황은 119 또는 응급실, 건강 문제는 의료진과 상의하고, 금액·자격·기한은 담당 기관에서 최종 확인하세요.";
 export const REPORT_FEATURE_TOOLS = ["get_timeline", "find_benefits", "find_night_pediatric", "find_kindergarten"] as const;
 export const KEYED_NOTE = "뒤의 세 가지는 키가 필요한 기능이에요";
 export const MORE_LINE = (n: number): string => `외 ${n}건 더 있어요`;
 export const REALTIME_FORBIDDEN: readonly RegExp[] = [
-  /진료\s*중/, /진료\s*시간\s*아님/, /지금\s*(진료|열)/, /오늘\s*열/, /현재\s*정원/, /정원\s*여유/, /여석/, /빈자리\s*있/, /실시간/,
+  /진료\s*중/, /진료\s*시간\s*외/,/지금\s*(진료|열)/, /오늘\s*열/, /현재\s*정원/, /정원\s*여유/, /여석/, /빈자리\s*있/, /실시간/,
 ];
 
 export interface ReportSectionSpec {
@@ -76,7 +76,10 @@ export const REPORT_SECTIONS: readonly ReportSectionSpec[] = [
     ],
     countRows: true,
     notes: ["육아휴직 급여 참고값: 1~3개월 월 최대 250만원, 4~6개월 200만원, 7개월부터 160만원."],
-    source: ["출처: 2026-10-31 근로기준법 제74조·남녀고용평등법 제18조의2·제19조와 생활법령정보 육아휴직 급여이며, 법률 해석이 아닌 참고 정보입니다."],
+    source: [
+      "출처: 2026-10-31 근로기준법 제74조·남녀고용평등법 제18조의2·제19조와 생활법령정보 육아휴직 급여",
+      "분할 횟수와 신청 절차는 회사 인사팀·고용센터에서 확인하세요.",
+    ],
   },
   {
     heading: "지원금·혜택",
