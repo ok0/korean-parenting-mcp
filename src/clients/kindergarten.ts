@@ -55,12 +55,12 @@ function interpret(res: { status: number; contentType: string; text: string }, c
     if (reason === "html") throw upstream("유치원알리미 오류: 데이터 대신 웹 페이지(HTML)를 받았습니다", "html");
     if (reason === "empty") throw upstream("유치원알리미 오류: 빈 응답을 받았습니다", "empty");
     if (t.startsWith("{") || t.startsWith("[")) throw upstream("유치원알리미 오류: 응답(JSON)을 해석하지 못했습니다", "format");
-    throw upstream("유치원알리미 오류: 응답이 JSON 형식이 아닙니다", "not-json");
+    throw upstream("유치원알리미 오류: 응답이 JSON 형식이어야 합니다", "not-json");
   }
 
   if (!t.startsWith("{") || !isRecord(body)) {
     if (!ok2xx) throw statusError(res.status);
-    throw upstream("유치원알리미 오류: 응답이 JSON 형식이 아닙니다", "not-json");
+    throw upstream("유치원알리미 오류: 응답이 JSON 형식이어야 합니다", "not-json");
   }
 
   const status = typeof body.status === "string" ? body.status.trim().toUpperCase() : "";

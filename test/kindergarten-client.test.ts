@@ -72,7 +72,7 @@ describe("callKindergartenBasic", () => {
     const cases: [() => Response, string][] = [
       [() => kgRes(kgFx("error.json")), "ERROR"],
       [() => kgRes(kgFx("error-page.html")), "웹 페이지(HTML)"],
-      [() => kgRes("<r><a>1</a></r>", 200, "application/xml"), "JSON 형식이 아닙니다"],
+      [() => kgRes("<r><a>1</a></r>", 200, "application/xml"), "JSON 형식이어야 합니다"],
       [() => kgRes("{broken"), "해석하지 못했습니다"],
       [() => kgRes(kgFx("no-list.json")), "kinderInfo"],
       [() => kgRes(kgFx("error-page.html"), 500), "HTTP 500"],
