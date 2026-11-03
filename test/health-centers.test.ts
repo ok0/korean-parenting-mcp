@@ -21,6 +21,7 @@ import {
   lookupHealthCenterByRegion,
   type HealthCenterLookup,
 } from "../src/region/health-centers.js";
+import { SOURCE_PROFILES } from "../scripts/lib/health-centers-csv.js";
 import { scanNegativeWording } from "./helpers/affiliation-wording.js";
 
 const PRIMARY_KINDS: readonly string[] = ["보건소", "보건의료원"];
@@ -101,7 +102,7 @@ describe("health-centers", () => {
 
   describe("bundled list provenance", () => {
     it("file and every entry carry source, date, as_of and partial status", () => {
-      expect(hc.source.url).toBe("https://www.data.go.kr/data/15107750/standard.do");
+      expect(hc.source.url).toBe(SOURCE_PROFILES[hc.source.dataset_id].source.url);
       expect(hc.source.license).toBeNull();
       expect(hc.verified).toBe("partial");
       expect(hc.basis_ids).toEqual([HEALTH_CENTER_BASIS_ID]);
