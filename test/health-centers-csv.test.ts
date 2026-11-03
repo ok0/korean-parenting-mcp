@@ -9,14 +9,19 @@ import { normalizeRegion } from "../src/region/normalize.js";
 import { main } from "../scripts/build-health-centers.js";
 import {
   buildHealthCenters,
+  coverageNote,
   decodeCsvBytes,
   HeaderError,
   matchRegion,
   parseCsv,
   type RegionLookup,
+  type SourceRow,
   toSourceRows,
+  WORDING_PATTERNS,
+  wordingField,
 } from "../scripts/lib/health-centers-csv.js";
 import type { ScriptIO } from "../scripts/lib/script-io.js";
+import { NEGATIVE_NOTICE_PATTERNS, UNOFFICIAL_KO } from "./helpers/affiliation-wording.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const dirs: string[] = [];
@@ -266,5 +271,58 @@ describe("health center CSV conversion", () => {
     for (const src of sources) {
       for (const re of forbidden) expect(src).not.toMatch(re);
     }
+  });
+});
+
+describe("M58 wording and note", () => {
+  const row = (n: number, overrides: Partial<SourceRow> = {}): SourceRow => ({
+    row: n,
+    name: "",
+    sido: "서울특별시",
+    sigungu: "성동구",
+    kind: "보건소",
+    roadAddress: "",
+    lotAddress: "",
+    homepage: "",
+    phone: "",
+    dataDate: "",
+    ...overrides,
+  });
+
+  it("wording patterns equal the PAC39 file-layer patterns", () => {
+    expect(WORDING_PATTERNS.map(String)).toEqual(NEGATIVE_NOTICE_PATTERNS.map(String));
+  });
+
+  it("excludes entries whose text fails the wording rule and reports them", () => {
+    const rows: SourceRow[] = [
+      row(1, { name: `${UNOFFICIAL_KO}보건소` }),
+      row(2, { sigungu: "중구", name: "중구보건소", roadAddress: "서울 중구 아니길 1" }),
+      row(3, { sigungu: "종로구", name: "종로구보건소" }),
+    ];
+    const { data, report } = buildHealthCenters(rows, undefined, { lookup, ...opts });
+    expect(data.centers.map((c) => c.name)).toEqual(["종로구보건소"]);
+    expect(data.counts.kept).toBe(1);
+    expect(report.fieldIssues).toHaveLength(2);
+    expect(report.fieldIssues.every((issue) => issue.includes("PAC39"))).toBe(true);
+    expect(report.fieldIssues.some((issue) => issue.includes("기관명"))).toBe(true);
+    expect(report.fieldIssues.some((issue) => issue.includes("주소"))).toBe(true);
+    expect(HealthCentersSchema.safeParse(data).success).toBe(true);
+  });
+
+  it("writes the coverage note only while coverage is short", () => {
+    expect(coverageNote(28, 269)).toBe("주 기관 확인 지역 28/269곳. 목록에 없는 지역은 안내 링크로 대신해요");
+    expect(coverageNote(269, 269)).toBeUndefined();
+
+    const seongdong = [row(3, { name: "성동구보건소" })];
+    const short = buildHealthCenters(seongdong, undefined, { lookup, ...opts }).data;
+    expect(short.note).toBe(coverageNote(1, 269));
+
+    const full = buildHealthCenters(seongdong, undefined, {
+      ...opts,
+      lookup: { ...lookup, sigungu: regions.sigungu.filter((g) => g.code === "11200") },
+    }).data;
+    expect(full.note).toBeUndefined();
+
+    expect(WORDING_PATTERNS.every((p) => !p.test(coverageNote(1, 2) as string))).toBe(true);
   });
 });

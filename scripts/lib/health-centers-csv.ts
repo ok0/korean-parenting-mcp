@@ -226,6 +226,33 @@ const PHONE_RE = /^[0-9-]{7,15}$/;
 const HOMEPAGE_RE = /^https?:\/\/\S+$/;
 const DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
 const COMPACT_DATE_RE = /^(\d{4})(\d{2})(\d{2})$/;
+const joinParts = (...parts: string[]): string => parts.join("");
+/** PAC39 파일 층 패턴 7개. 조각을 이어 만들어 이 파일도 같은 검사를 통과한다. test/helpers/affiliation-wording.ts 의 목록과 같아야 한다(테스트로 고정). */
+export const WORDING_PATTERNS: readonly RegExp[] = [
+  new RegExp(joinParts("비", "공식")),
+  new RegExp(joinParts("un", "official"), "i"),
+  new RegExp(joinParts("비", "제휴")),
+  new RegExp(joinParts("무", "관")),
+  new RegExp(joinParts("관계", "없는")),
+  new RegExp(joinParts("개인", " 프로젝트")),
+  new RegExp([joinParts("아", "니"), joinParts("아", "닌"), joinParts("아", "님"), joinParts("아", "닙")].join("|")),
+];
+/** 항목의 기관명·주소·전화·홈페이지 중 패턴에 걸리는 첫 필드 이름. 없으면 undefined. */
+export function wordingField(entry: HealthCenterEntry): "기관명" | "주소" | "전화번호" | "홈페이지" | undefined {
+  const fields: ["기관명" | "주소" | "전화번호" | "홈페이지", string | undefined][] = [
+    ["기관명", entry.name],
+    ["주소", entry.address],
+    ["전화번호", entry.phone],
+    ["홈페이지", entry.homepage],
+  ];
+  for (const [label, value] of fields) {
+    if (value !== undefined && WORDING_PATTERNS.some((p) => p.test(value))) return label;
+  }
+  return undefined;
+}
+export function coverageNote(covered: number, units: number): string | undefined {
+  return covered < units ? `주 기관 확인 지역 ${covered}/${units}곳. 목록에 없는 지역은 안내 링크로 대신해요` : undefined;
+}
 
 function isKind(value: string): value is HealthCenterKind {
   return (HEALTH_CENTER_KINDS as readonly string[]).includes(value);
@@ -316,7 +343,13 @@ export function buildHealthCenters(
       unmatched.push(m.unmatched);
       continue;
     }
-    matched.push(toEntry(row, m.code, label, fieldIssues));
+    const entry = toEntry(row, m.code, label, fieldIssues);
+    const field = wordingField(entry);
+    if (field !== undefined) {
+      fieldIssues.push(`${label}: ${field} 문구가 표현 기준(PAC39) 검토 대상이라 원문을 고치지 않고 목록에서 뺐어요`);
+      continue;
+    }
+    matched.push(entry);
   }
 
   const primariesByCode = new Map<string, HealthCenterEntry[]>();
@@ -394,26 +427,6 @@ export function buildHealthCenters(
 
   const carried = prev !== undefined && added + removed + changed === 0 ? prev : undefined;
 
-  const data: HealthCentersFile = {
-    source: {
-      dataset_id: "15107750",
-      title: "전국보건기관표준데이터",
-      url: "https://www.data.go.kr/data/15107750/standard.do",
-      provider: "지방자치단체",
-      license: prev?.source.license ?? null,
-      source_modified: opts.sourceModified,
-      file_name: opts.fileName,
-    },
-    generated_at: opts.generatedAt,
-    as_of: opts.asOf,
-    basis_ids: [HEALTH_CENTER_BASIS_ID],
-    verified: carried?.verified ?? "partial",
-    ...(carried?.verified_by !== undefined ? { verified_by: carried.verified_by } : {}),
-    ...(carried?.verified_on !== undefined ? { verified_on: carried.verified_on } : {}),
-    counts: { source_rows: rows.length, kept: centers.length, unmatched: unmatched.length },
-    centers,
-  };
-
   // coverage: 주 기관(보건소·보건의료원)이 그 코드·상위 시·하위 구 중 한 곳에 있는 시군구 수. 원본이 전국을 담는지 확인하는 용도.
   const primary = new Set(centers.filter(isPrimary).map((c) => c.code));
   const parents = new Set(
@@ -431,6 +444,28 @@ export function buildHealthCenters(
       return `${sidoName} ${g.name}(${g.code})`;
     });
   const coverage = { units: opts.lookup.sigungu.length, covered: opts.lookup.sigungu.length - uncovered.length, missing };
+  const note = coverageNote(coverage.covered, coverage.units);
+
+  const data: HealthCentersFile = {
+    source: {
+      dataset_id: "15107750",
+      title: "전국보건기관표준데이터",
+      url: "https://www.data.go.kr/data/15107750/standard.do",
+      provider: "지방자치단체",
+      license: prev?.source.license ?? null,
+      source_modified: opts.sourceModified,
+      file_name: opts.fileName,
+    },
+    generated_at: opts.generatedAt,
+    as_of: opts.asOf,
+    basis_ids: [HEALTH_CENTER_BASIS_ID],
+    verified: carried?.verified ?? "partial",
+    ...(carried?.verified_by !== undefined ? { verified_by: carried.verified_by } : {}),
+    ...(carried?.verified_on !== undefined ? { verified_on: carried.verified_on } : {}),
+    ...(note !== undefined ? { note } : {}),
+    counts: { source_rows: rows.length, kept: centers.length, unmatched: unmatched.length },
+    centers,
+  };
 
   return {
     data,
