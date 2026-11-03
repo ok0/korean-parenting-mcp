@@ -18,6 +18,7 @@ import { computeOfflineTimeline } from "../src/timeline/offline.js";
 import { formatDate } from "../src/date/civil-date.js";
 import type { TimelineArgs } from "../src/timeline/input.js";
 import { createTestContext } from "./helpers/context.js";
+import { pickRegion } from "./helpers/health-center-picks.js";
 import { CLIENT_BRANDS } from "./helpers/visuals.js";
 
 interface Kpm {
@@ -50,6 +51,7 @@ const SAMPLES: TimelineArgs[] = [
   { birth_date: "2026-05-28", reference_date: "2026-10-28" },
   { birth_date: "2025-12-31", reference_date: "2026-03-15", months_ahead: 24, include_past: true, region: "성동구", birth_order: 3 },
   { birth_date: "2026-01-31", reference_date: "2026-02-01", fetus_count: 2 },
+  { birth_date: "2026-05-28", reference_date: "2026-10-28", region: pickRegion((l) => l.kind === "found")!.text },
 ];
 
 const INVALID: TimelineArgs[] = [
@@ -120,7 +122,7 @@ describe("site bundle", () => {
     });
   });
 
-  it("matches keyless get_timeline text for 12 samples", async () => {
+  it("matches keyless get_timeline text for 13 samples", async () => {
     expect(SAMPLES.length).toBeGreaterThanOrEqual(8);
     for (const s of SAMPLES) {
       const on = await getTimelineTool.handler(s as never, createTestContext());

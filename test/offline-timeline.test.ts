@@ -8,8 +8,11 @@ import { getTimelineTool } from "../src/tools/get-timeline.js";
 import type { TimelineArgs } from "../src/timeline/input.js";
 import { computeOfflineTimeline } from "../src/timeline/offline.js";
 import { createTestContext } from "./helpers/context.js";
+import { pickRegion } from "./helpers/health-center-picks.js";
 
 const TODAY = { y: 2026, m: 1, d: 1 };
+
+const FOUND = pickRegion((l) => l.kind === "found")?.text ?? "";
 
 const online = (args: TimelineArgs) => getTimelineTool.handler(args as never, createTestContext());
 
@@ -26,6 +29,8 @@ const SAMPLES: TimelineArgs[] = [
   { birth_date: "2026-05-28", reference_date: "2026-10-28" },
   { birth_date: "2025-12-31", reference_date: "2026-03-15", months_ahead: 24, include_past: true, region: "성동구", birth_order: 3 },
   { birth_date: "2026-01-31", reference_date: "2026-02-01", fetus_count: 2 },
+  { birth_date: "2026-05-28", reference_date: "2026-10-28", region: FOUND },
+  { due_date: "2027-02-10", reference_date: "2026-10-28", region: "경기도" },
 ];
 
 const INVALID: TimelineArgs[] = [
@@ -36,8 +41,9 @@ const INVALID: TimelineArgs[] = [
 ];
 
 describe("offline timeline", () => {
-  it("matches keyless get_timeline output for 10 samples", async () => {
-    expect(SAMPLES).toHaveLength(10);
+  it("matches keyless get_timeline output for 12 samples", async () => {
+    expect(FOUND).not.toBe("");
+    expect(SAMPLES).toHaveLength(12);
     for (const s of SAMPLES) {
       const on = await online(s);
       const off = computeOfflineTimeline(s, TODAY);
@@ -46,6 +52,8 @@ describe("offline timeline", () => {
       expect(off.output.footer).toBe(on.footer);
       expect(off.output.footer).toMatch(/자동 확인 대상 외|법제처 OC 미설정: 개정 여부 확인 생략/);
     }
+    expect(computeOfflineTimeline(SAMPLES[10]!, TODAY).output.footer).toContain("[health-center-standard-data]");
+    expect(computeOfflineTimeline(SAMPLES[11]!, TODAY).output.footer).not.toContain("[health-center-standard-data]");
   });
 
   it("throws the same ToolError for invalid input", async () => {
