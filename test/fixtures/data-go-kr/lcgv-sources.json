@@ -1,0 +1,21 @@
+{
+  "asOf": "2026-11-03",
+  "files": {
+    "lcgvList/mapo.xml": { "source": "실호출", "call": 1, "status": 200, "code": "0", "totalCount": 12, "items": 12, "params": { "ctpvNm": "서울특별시", "sggNm": "마포구" } },
+    "lcgvList/mapo-life007.xml": { "source": "실호출", "call": 2, "status": 200, "code": "0", "totalCount": 1, "items": 1, "params": { "ctpvNm": "서울특별시", "sggNm": "마포구", "lifeArray": "007" } },
+    "lcgvList/empty.xml": { "source": "실호출", "call": 6, "status": 200, "code": "40", "params": { "ctpvNm": "전라남도", "sggNm": "해남군" } },
+    "lcgvList/error-unknown-call5.xml": { "source": "실호출", "call": 5, "status": 200, "code": "99", "params": { "ctpvNm": "전남광주통합특별시", "sggNm": "해남군" } },
+    "lcgvList/error-unknown.xml": { "source": "실호출(research c10)", "status": 200, "code": "99" },
+    "lcgvList/haenam.xml": { "source": "실호출(research c07)", "status": 200, "code": "0", "totalCount": 25, "items": 3, "params": { "ctpvNm": "전남광주통합특별시", "sggNm": "해남군" } },
+    "lcgvList/search-chulsan.xml": { "source": "실호출", "call": 11, "status": 200, "code": "0", "totalCount": 254, "items": 3, "params": { "searchWrd": "출산" } },
+    "lcgvList/seoul-life007.xml": { "source": "실호출", "call": 9, "status": 200, "code": "0", "totalCount": 33, "items": 3, "params": { "ctpvNm": "서울특별시", "lifeArray": "007" } },
+    "lcgvList/error-bad-key.xml": { "source": "실호출", "call": 14, "status": 403, "code": "30", "params": { "ctpvNm": "서울특별시", "sggNm": "마포구" } },
+    "lcgvList/error-not-approved.xml": { "source": "합성", "status": 200, "code": "20" },
+    "lcgvList/error-daily-limit.xml": { "source": "합성", "status": 200, "code": "22" },
+    "lcgvList/error-rate-limit.xml": { "source": "합성", "status": 200, "code": "23" },
+    "lcgvList/error-key-expired.xml": { "source": "합성", "status": 200, "code": "31" },
+    "lcgvDetail/amount.xml": { "source": "실호출", "call": 12, "status": 200, "code": "0", "servId": "WLF00003366", "params": { "servId": "WLF00003366" } },
+    "lcgvDetail/mapo-life007.xml": { "source": "실호출", "call": 13, "status": 200, "code": "0", "servId": "WLF00004358", "params": { "servId": "WLF00004358" } },
+    "lcgvDetail/error-no-service.xml": { "source": "실호출(research c08)", "status": 400, "code": "12" }
+  }
+}
