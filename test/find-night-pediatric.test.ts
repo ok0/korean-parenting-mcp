@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { NEMC_DEPT_PEDIATRICS, NEMC_SEND_QT } from "../src/clients/data-go-kr-specs.js";
 import { dataGoKrError } from "../src/core/errors.js";
 import { runTool } from "../src/core/pipeline.js";
+import { CLINIC_REFERENCE_NOTICE } from "../src/core/notice.js";
 import { findNightPediatricTool } from "../src/tools/find-night-pediatric.js";
 import { bundledYearEntries, entriesToItems, hangUntilAbort, htmlRes200, kasiXml, xmlRes } from "./helpers/kasi-mock.js";
 import { KEY_FORMS, createNemcMock, nemcCtx, nemcFx, nemcXml } from "./helpers/nemc-mock.js";
@@ -85,6 +86,8 @@ describe("find_night_pediatric summary", () => {
     expect(text).toContain("119");
     expect(text).toContain("전화로 확인");
     expect(text).toContain("의료 면책");
+    expect(text).toContain(`의료 면책: 공공데이터의 기관·운영시간 정보를 옮겼어요. ${CLINIC_REFERENCE_NOTICE}`);
+    expect(text).not.toContain("진료 시간 아님");
     expect(text).toContain("공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.");
 
     const moonUrl = mock.last("moon")!;
@@ -139,7 +142,7 @@ describe("find_night_pediatric derived hours", () => {
     expect(block(text, "파생정보없음의원")).toContain("운영시간 확인 불가");
     expect(block(text, "파생정보없음의원")).toContain("전화: 정보 없음");
     expect(statusLine(text, "파생형식오류의원")).toContain("확인 불가");
-    expect(statusLine(text, "파생새벽의원")).toContain("진료 시간 아님");
+    expect(statusLine(text, "파생새벽의원")).toContain("진료 시간 외");
   });
 
   it("derived hours at 00:30 Wed", async () => {
@@ -149,14 +152,14 @@ describe("find_night_pediatric derived hours", () => {
     expect(statusLine(text, "파생야간의원")).toContain("진료 중");
     expect(block(text, "파생야간의원")).toContain("전날(화요일)");
     expect(statusLine(text, "파생새벽의원")).toContain("진료 중");
-    expect(statusLine(text, "파생자정의원")).toContain("진료 시간 아님");
+    expect(statusLine(text, "파생자정의원")).toContain("진료 시간 외");
   });
 
   it("derived hours at 01:30 Wed", async () => {
     const res = await run({ region: "성동구", now: "2026-10-28T01:30", limit: 10 }, nemcCtx(derivedMock()));
     const text = textOf(res);
     expect(res.isError).toBeFalsy();
-    expect(statusLine(text, "파생야간의원")).toContain("진료 시간 아님");
+    expect(statusLine(text, "파생야간의원")).toContain("진료 시간 외");
     expect(statusLine(text, "파생새벽의원")).toContain("진료 중");
   });
 

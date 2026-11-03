@@ -1,7 +1,7 @@
 import { dayOfWeek, isValidDate, makeDate, type CivilDate } from "../date/civil-date.js";
 
 export type DaySlot = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
-export type OpenStatus = "진료 중" | "진료 시간 아님" | "확인 불가";
+export type OpenStatus = "진료 중" | "진료 시간 외" | "확인 불가";
 export type ClinicKind = "달빛어린이병원" | "소아청소년과" | "진료과목에 소아청소년과 포함";
 
 // 기관명 기준 소아 계열 판별(M12 L1/L5: D002 110곳 중 19곳)
@@ -125,7 +125,7 @@ export function judgeOpen(
   const hoursText = t.overnight
     ? `${formatHhmm(t.s)}~다음 날 ${formatHhmm(t.c)}`
     : `${formatHhmm(t.s)}~${formatHhmm(t.c)}`;
-  const status: OpenStatus = openToday || carried ? "진료 중" : "진료 시간 아님";
+  const status: OpenStatus = openToday || carried ? "진료 중" : "진료 시간 외";
   if (!openToday && carried) {
     return { status, hoursText, carriedText };
   }
@@ -166,7 +166,7 @@ export function mergeClinics(
   return out;
 }
 
-const STATUS_RANK: Record<OpenStatus, number> = { "진료 중": 0, "확인 불가": 1, "진료 시간 아님": 2 };
+const STATUS_RANK: Record<OpenStatus, number> = { "진료 중": 0, "확인 불가": 1, "진료 시간 외": 2 };
 const KIND_RANK: Record<ClinicKind, number> = {
   달빛어린이병원: 0,
   소아청소년과: 1,

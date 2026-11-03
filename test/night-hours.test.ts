@@ -57,13 +57,13 @@ describe("night-hours", () => {
   it("judgeOpen same-day range", () => {
     const item = { dutyTime3s: "0900", dutyTime3c: "1830" };
     expect(judgeOpen(item, 3, 2, 600, "화요일")).toEqual({ status: "진료 중", hoursText: "09:00~18:30" });
-    expect(judgeOpen(item, 3, 2, 1110, "화요일").status).toBe("진료 시간 아님");
+    expect(judgeOpen(item, 3, 2, 1110, "화요일").status).toBe("진료 시간 외");
   });
 
   it("judgeOpen 2400 end", () => {
     const item = { dutyTime3s: "1800", dutyTime3c: "2400" };
     expect(judgeOpen(item, 3, 2, 1439, "화요일")).toEqual({ status: "진료 중", hoursText: "18:00~24:00" });
-    expect(judgeOpen(item, 3, 2, 1079, "화요일").status).toBe("진료 시간 아님");
+    expect(judgeOpen(item, 3, 2, 1079, "화요일").status).toBe("진료 시간 외");
   });
 
   it("judgeOpen overnight today", () => {
@@ -84,7 +84,7 @@ describe("night-hours", () => {
     expect(carried.status).toBe("진료 중");
     expect(carried.carriedText).toContain("화요일");
     expect(carried.carriedText).toContain("03:00");
-    expect(judgeOpen(item, 3, 2, 200, "화요일").status).toBe("진료 시간 아님");
+    expect(judgeOpen(item, 3, 2, 200, "화요일").status).toBe("진료 시간 외");
   });
 
   it("judgeOpen missing or malformed is 확인 불가", () => {
@@ -147,7 +147,7 @@ describe("night-hours", () => {
       judgement: { status } as Judgement,
     });
     const rows = [
-      mk("소아진료시간아님", "소아청소년과", 0, "진료 시간 아님"),
+      mk("소아진료시간외", "소아청소년과", 0, "진료 시간 외"),
       mk("소아확인불가", "소아청소년과", 1, "확인 불가"),
       mk("소아진료중", "소아청소년과", 2, "진료 중"),
       mk("달빛진료중", "달빛어린이병원", 3, "진료 중"),
@@ -156,7 +156,7 @@ describe("night-hours", () => {
       "달빛진료중",
       "소아진료중",
       "소아확인불가",
-      "소아진료시간아님",
+      "소아진료시간외",
     ]);
   });
 
