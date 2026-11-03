@@ -7,6 +7,7 @@ import {
   type HealthCenterEntry,
   type HealthCenterKind,
   type HealthCentersFile,
+  type SidoEntry,
   type SigunguEntry,
 } from "../../src/data-store/schema.js";
 
@@ -147,8 +148,11 @@ export function toSourceRows(table: string[][]): SourceRow[] {
 
 export interface RegionLookup {
   normalize: (input: string) => RegionResult;
+  sido: readonly SidoEntry[];
   sigungu: readonly SigunguEntry[];
 }
+
+const NO_SIGUNGU = new Set(["", "없음"]);
 
 function compact(s: string): string {
   return s.normalize("NFKC").replace(/\s+/g, "");
@@ -165,7 +169,22 @@ function rowLabel(row: SourceRow): string {
 
 export function matchRegion(row: SourceRow, lookup: RegionLookup): { code: string } | { unmatched: string } {
   const label = rowLabel(row);
-  if (row.sigungu === "") return { unmatched: `${label}: 시군구명이 비어 있어요` };
+  if (NO_SIGUNGU.has(row.sigungu)) {
+    const sidoResult = lookup.normalize(row.sido);
+    if (sidoResult.ok && sidoResult.region.code === undefined) {
+      const sidoName = sidoResult.region.sido;
+      const sido = lookup.sido.find((s) => s.name === sidoName);
+      const kids = sido ? lookup.sigungu.filter((g) => g.sido_code === sido.code) : [];
+      const [only] = kids;
+      if (kids.length === 1 && only) return { code: only.code };
+    }
+    return {
+      unmatched:
+        row.sigungu === ""
+          ? `${label}: 시군구명이 비어 있어요`
+          : `${label}: 시군구명이 '없음'이에요(시군구가 여럿인 시도)`,
+    };
+  }
 
   const r = lookup.normalize(`${row.sido} ${row.sigungu}`);
   const code = r.ok ? r.region.code : undefined;
@@ -199,6 +218,7 @@ export interface BuildReport {
   added: number;
   removed: number;
   changed: number;
+  dataDateRange: { min: string; max: string } | null;
 }
 
 const PHONE_RE = /^[0-9-]{7,15}$/;
@@ -274,6 +294,14 @@ export function buildHealthCenters(
   const unmatched: string[] = [];
   const multiplePrimary: string[] = [];
   const fieldIssues: string[] = [];
+
+  const dates = rows
+    .map((row) => normalizeDate(row.dataDate))
+    .filter((d): d is string => d !== undefined)
+    .sort();
+  const firstDate = dates[0];
+  const lastDate = dates.at(-1);
+  const dataDateRange = firstDate !== undefined && lastDate !== undefined ? { min: firstDate, max: lastDate } : null;
 
   const matched: HealthCenterEntry[] = [];
   for (const row of rows) {
@@ -387,6 +415,6 @@ export function buildHealthCenters(
 
   return {
     data,
-    report: { unmatched, multiplePrimary, fieldIssues, added, removed, changed },
+    report: { unmatched, multiplePrimary, fieldIssues, added, removed, changed, dataDateRange },
   };
 }
