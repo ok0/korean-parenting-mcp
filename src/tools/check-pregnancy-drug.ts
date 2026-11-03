@@ -11,8 +11,8 @@ const DEFAULT_LIMIT = 5;
 const CONTENT_MAX = 200;
 const REMARK_MAX = 120;
 const NOTICE_COMBO =
-  "금기 성분은 임부금기로 지정된 성분입니다. 복합제는 검색한 성분이 아닌 다른 성분이 금기 대상일 수 있습니다.";
-const NOTICE_NOT_FOUND = "DUR 임부금기 목록에서 이 이름을 찾지 못했습니다. 찾지 못했다는 것이 안전하다는 뜻은 아닙니다.";
+  "금기 성분은 임부금기로 지정된 성분입니다. 복합제는 검색한 성분 외의 다른 성분이 금기 대상일 수 있습니다.";
+const NOTICE_NOT_FOUND = "DUR 임부금기 목록에서 이 이름을 찾지 못했습니다. 목록에서 찾지 못한 약도 복용 전에 의사·약사와 상의해 주세요.";
 const NOTICE_SCOPE = `조회 범위: 이름 검색 결과의 첫 페이지(최대 ${DUR_NUM_OF_ROWS ?? 10}건)만 받습니다. 상품명보다 성분명 검색이 잘 맞습니다.`;
 
 const schema = z.object({
@@ -152,7 +152,7 @@ const def: ToolDef<typeof schema> = {
   name: "check_pregnancy_drug",
   title: "임부금기 의약품 정보 조회(식약처 DUR 공공데이터)",
   description:
-    "약 이름(성분명 권장)으로 식품의약품안전처 DUR 임부금기 품목 정보를 조회해 품목명·업체·금기 성분·제형·금기 내용·비고·고시일을 요약합니다. 상품명은 조회되지 않을 수 있어 성분명 검색을 권장합니다. 복용 여부나 위험도를 판단하지 않으며 목록에 없다고 안전하다는 뜻이 아닙니다. 복용 전 의료진·약사와 상담하세요. 공공데이터포털 인증키(DATA_GO_KR_SERVICE_KEY)가 필요한 참고 도구입니다.",
+    "약 이름(성분명 권장)으로 식품의약품안전처 DUR 임부금기 품목 정보를 조회해 품목명·업체·금기 성분·제형·금기 내용·비고·고시일을 요약합니다. 상품명은 조회되지 않을 수 있어 성분명 검색을 권장합니다. 복용 여부나 위험도를 판단하지 않으며, 목록에서 찾지 못한 약도 복용 전에 의사·약사와 상의해 주세요. 공공데이터포털 인증키(DATA_GO_KR_SERVICE_KEY)가 필요한 참고 도구입니다.",
   schema,
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
   requiredKeys: ["DATA_GO_KR"],

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { CACHE_TTL_MS } from "../src/core/cache-ttl.js";
 import { DUR_NUM_OF_ROWS } from "../src/clients/data-go-kr-specs.js";
 import { dataGoKrError } from "../src/core/errors.js";
+import { DRUG_REFERENCE_NOTICE } from "../src/core/notice.js";
 import { runTool } from "../src/core/pipeline.js";
 import { checkPregnancyDrugTool } from "../src/tools/check-pregnancy-drug.js";
 import { DISCLAIMER_DRUG } from "../src/tools/shared/format.js";
@@ -150,9 +151,12 @@ describe("check_pregnancy_drug disclaimer and zero results", () => {
       expect(text).toContain(DISCLAIMER_DRUG);
       expect(text).toContain("의사·약사");
       expect(text).toContain("목록에서 찾지 못한 약도 복용 전에 의사·약사와 상의해 주세요");
+      expect(text).toContain(DRUG_REFERENCE_NOTICE);
+      expect(text).not.toContain("안전하다는 뜻");
       expect(text).not.toMatch(FORBIDDEN);
     }
     expect(DISCLAIMER_DRUG).not.toMatch(FORBIDDEN);
+    expect(checkPregnancyDrugTool.description).not.toMatch(/아니|아닌|아님|아닙/);
   });
 
   it("zero results", async () => {
@@ -165,6 +169,8 @@ describe("check_pregnancy_drug disclaimer and zero results", () => {
       expect(text).toContain("성분명");
       expect(text).toContain("약사");
       expect(text).toContain(NOTICE_NOT_FOUND);
+      expect(text).toContain(DRUG_REFERENCE_NOTICE);
+      expect(text).toContain("목록에서 찾지 못한 약도 복용 전에 의사·약사와 상의해 주세요");
     }
   });
 });
