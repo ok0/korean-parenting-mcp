@@ -7,6 +7,8 @@ import {
   DOC_NOTICE,
   DESKTOP_APP_NAME,
   DOC_PAGES,
+  HEALTH_CENTER_DATASET_URL,
+  LCGV_DATASET_URL,
   MCPB_ASSET,
   MCPB_TAG,
   MCPB_URL,
@@ -22,6 +24,8 @@ import { BRANCH, RAW_ASSET_PREFIX, REPO } from "../scripts/visuals/readme-figure
 import { OFFICIAL_CLAIM_META, OFFICIAL_CLAIM_OUTPUT, matchedPatterns } from "./helpers/wording.js";
 import { SERVER_NAME as SETUP_SERVER_KEY } from "../src/setup/targets.js";
 import { REFERENCE_NOTICE, SOURCE_NOTICE } from "../src/core/notice.js";
+import { LCGV_APPLY_ACTION } from "../src/local-support/summarize.js";
+import { HEALTH_CENTER_SOURCES } from "../src/data-store/schema.js";
 
 const LINKS_SOURCE = fileURLToPath(new URL("../scripts/docs/links.ts", import.meta.url));
 
@@ -104,6 +108,12 @@ describe("docs link constants (M34)", () => {
       expect(STATUS_LEGEND).toContain(badge);
     }
     expect(STATUS_LEGEND).not.toContain("\n");
+  });
+
+  it("dataset URL constants match runtime sources (M63)", () => {
+    expect(LCGV_DATASET_URL).toBe("https://www.data.go.kr/data/15108347/openapi.do");
+    expect(LCGV_APPLY_ACTION).toContain(LCGV_DATASET_URL);
+    expect(HEALTH_CENTER_DATASET_URL).toBe(HEALTH_CENTER_SOURCES["3072692"].url);
   });
 
   it("DOC_NOTICE wording", () => {
