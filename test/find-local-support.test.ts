@@ -215,8 +215,9 @@ const SYN_NO_TAG_ROWS: Record<string, string>[] = [
 describe("find_local_support", () => {
   it("AC1 meta and registration", async () => {
     expect(checkToolMeta(findLocalSupportTool, allTools.map((t) => t.name))).toEqual([]);
-    expect(allTools).toHaveLength(10);
-    expect(allTools.map((t) => t.name)).not.toContain("find_local_support");
+    expect(allTools).toHaveLength(11);
+    expect(allTools.map((t) => t.name)).toContain("find_local_support");
+    expect(allTools[allTools.length - 1]).toBe(findLocalSupportTool);
 
     const { client, close } = await open(lcgvCtx(createLcgvMock()));
     try {
@@ -236,6 +237,31 @@ describe("find_local_support", () => {
       expect(/비공식|unofficial|무관/i.test(meta)).toBe(false);
     } finally {
       await close();
+    }
+  });
+
+  it("M62 registry server: no key, zero calls", async () => {
+    const mock = createLcgvMock();
+    const ctx = lcgvCtx(mock, { noKey: true });
+    const server = createServer(ctx);
+    const [ct, st] = InMemoryTransport.createLinkedPair();
+    await server.connect(st);
+    const client = new Client({ name: "t", version: "0" });
+    await client.connect(ct);
+    try {
+      const { tools } = await client.listTools();
+      expect(tools).toHaveLength(11);
+      expect(tools.map((t) => t.name)).toContain("find_local_support");
+      const r = await client.callTool({ name: "find_local_support", arguments: { region: MAPO } });
+      const content = r.content as { type: string; text: string }[];
+      expect(r.isError).toBe(true);
+      expect(content[0]!.text).toContain("DATA_GO_KR_SERVICE_KEY");
+      expect(content[0]!.text).toContain("15108347");
+      expect(content[0]!.text).toContain(LCGV_APPLY_ACTION);
+      expect(mock.count()).toBe(0);
+    } finally {
+      await client.close();
+      await server.close();
     }
   });
 
