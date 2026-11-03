@@ -149,6 +149,18 @@ export const REMOTE_POLICY: readonly RemotePolicy[] = [
     ],
     confirmation: { kinder: "not-asked" },
   },
+  {
+    tool: "find_local_support",
+    expose: false,
+    providers: [],
+    verdict: "해당 없음",
+    conditions: ["로컬 전용 선택 기능(ADR-62)"],
+    confirmation: {},
+    replacement: {
+      summary: "우리 지역 육아 지원 서비스 찾기는 내 컴퓨터에서 실행하는 로컬 모드(npm·.mcpb)에서 공공데이터포털 서비스 키를 설정해 쓸 수 있어요. 지역별 복지 서비스는 복지로에서 지역을 골라 직접 찾아볼 수 있어요.",
+      links: [{ title: "복지로", url: "https://www.bokjiro.go.kr" }],
+    },
+  },
 ];
 
 export const REMOTE_EXCLUDED_HEADING = "## 원격 모드에서 제공하지 않는 기능";
