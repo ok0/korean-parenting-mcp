@@ -96,7 +96,7 @@ describe("tool meta", () => {
     expect(matchedPatterns(checkup.description, REMOTE_PROMISE_PATTERNS)).toEqual([]);
     expect(matchedPatterns(SERVER_INSTRUCTIONS, REMOTE_PROMISE_PATTERNS)).toEqual([]);
     expect(matchedPatterns(checkup.description, OFFICIAL_CLAIM_META)).toEqual([]);
-    expect(KEY_GUIDE.DATA_GO_KR.tools).toEqual(["find_night_pediatric", "find_benefits", "check_pregnancy_drug"]);
+    expect(KEY_GUIDE.DATA_GO_KR.tools).toEqual(["find_night_pediatric", "find_benefits", "check_pregnancy_drug", "find_local_support"]);
   });
 
   it("checker rejects kindergarten portal claims", () => {

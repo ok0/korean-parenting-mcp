@@ -5,6 +5,7 @@ import { checkPregnancyDrugTool } from "../src/tools/check-pregnancy-drug.js";
 import { checkRecallTool } from "../src/tools/check-recall.js";
 import { findBenefitsTool } from "../src/tools/find-benefits.js";
 import { findKindergartenTool } from "../src/tools/find-kindergarten.js";
+import { findLocalSupportTool } from "../src/tools/find-local-support.js";
 import { findNightPediatricTool } from "../src/tools/find-night-pediatric.js";
 import { getLeaveArticleTool } from "../src/tools/get-leave-article.js";
 import { createTestContext } from "./helpers/context.js";
@@ -16,6 +17,7 @@ const CASES: [ToolDef, Record<string, unknown>][] = [
   [checkPregnancyDrugTool, { drug_name: "아세트아미노펜" }],
   [checkRecallTool, { product_name: "카시트" }],
   [findKindergartenTool, { region: "성동구" }],
+  [findLocalSupportTool, { region: "서울 마포구" }],
 ];
 
 describe("unset keys snapshot", () => {
