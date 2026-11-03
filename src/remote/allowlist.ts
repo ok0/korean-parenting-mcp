@@ -166,11 +166,11 @@ export function policyViolations(policy: readonly RemotePolicy[], toolNames: rea
     if (!seen.has(name)) out.push(`${name}: 원격 정책 행이 없습니다`);
   }
   for (const p of policy) {
-    if (!names.has(p.tool)) out.push(`${p.tool}: 등록된 도구가 아닙니다`);
+    if (!names.has(p.tool)) out.push(`${p.tool}: 정책 행의 도구는 등록된 도구여야 합니다`);
     if (p.verdict === "불명확" && p.expose) {
       for (const prov of p.providers) {
         if (p.confirmation[prov] !== "allowed") {
-          out.push(`${p.tool}: 판정 불명확인데 노출되며 ${prov} 서면 확인이 allowed가 아닙니다`);
+          out.push(`${p.tool}: 판정 불명확인데 노출되므로 ${prov} 서면 확인은 allowed여야 합니다`);
         }
       }
     }

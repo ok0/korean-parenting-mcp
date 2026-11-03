@@ -64,6 +64,15 @@ describe("remote allowlist policy", () => {
     expect(policyViolations(policy, names).some((v) => v.includes("ip-registration"))).toBe(true);
   });
 
+  it("violation messages use positive wording", () => {
+    const ghost = [...clone(), { tool: "ghost_tool", expose: true, providers: [], verdict: "해당 없음", conditions: [], confirmation: {} } as RemotePolicy];
+    expect(policyViolations(ghost, names)).toContain("ghost_tool: 정책 행의 도구는 등록된 도구여야 합니다");
+    const unclear = clone().map((p) =>
+      p.tool === "find_benefits" ? ({ ...p, verdict: "불명확", confirmation: { mois: "not-asked" } } as RemotePolicy) : p,
+    );
+    expect(policyViolations(unclear, names)).toContain("find_benefits: 판정 불명확인데 노출되므로 mois 서면 확인은 allowed여야 합니다");
+  });
+
   it("blockedBy rows are not exposed", () => {
     for (const p of REMOTE_POLICY) {
       if (p.blockedBy !== undefined) expect(p.expose).toBe(false);
