@@ -21,7 +21,7 @@ import {
 import { BRANCH, RAW_ASSET_PREFIX, REPO } from "../scripts/visuals/readme-figures.js";
 import { OFFICIAL_CLAIM_META, OFFICIAL_CLAIM_OUTPUT, matchedPatterns } from "./helpers/wording.js";
 import { SERVER_NAME as SETUP_SERVER_KEY } from "../src/setup/targets.js";
-import { SOURCE_NOTICE } from "../src/core/notice.js";
+import { REFERENCE_NOTICE, SOURCE_NOTICE } from "../src/core/notice.js";
 
 const LINKS_SOURCE = fileURLToPath(new URL("../scripts/docs/links.ts", import.meta.url));
 
@@ -107,12 +107,14 @@ describe("docs link constants (M34)", () => {
   });
 
   it("DOC_NOTICE wording", () => {
-    expect(DOC_NOTICE).toBe(SOURCE_NOTICE + " 의료·법률 자문이 아니며, 건강 상태는 의료진에게, 제도·신청 기한은 관할 기관에 확인하세요.");
+    expect(DOC_NOTICE).toBe(SOURCE_NOTICE + " " + REFERENCE_NOTICE);
     expect(DOC_NOTICE.startsWith(SOURCE_NOTICE)).toBe(true);
-    for (const word of ["의료", "법률", "관할 기관"]) {
+    expect(DOC_NOTICE).toContain(REFERENCE_NOTICE);
+    for (const word of ["참고용", "상의", "의료진", "관할 기관"]) {
       expect(DOC_NOTICE).toContain(word);
     }
     expect(DOC_NOTICE).not.toMatch(/비공식|unofficial|관계없는|개인 프로젝트|(공식|공공기관|정부)[^.\n]{0,20}(아니에요|아닙니다|아니며|아니고|아님)/i);
+    expect(DOC_NOTICE).not.toMatch(/아니|아닌|아님|아닙/);
     expect(matchedPatterns(DOC_NOTICE, OFFICIAL_CLAIM_OUTPUT)).toEqual([]);
     expect(matchedPatterns(DOC_NOTICE, OFFICIAL_CLAIM_META)).toEqual([]);
   });
