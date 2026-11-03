@@ -37,7 +37,7 @@
 <text x="476" y="770" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="770">• 육아휴직 · 각자 · 1인 1년 이내(만 8세 이하), 부부 각 3개월 이상 사용 시 한쪽 6개월 추가</tspan></text>
 <text x="476" y="790" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="790">• 단기 육아휴직 · 각자 · 연 1회 1~2주(2026-09-18 시행)</tspan></text>
 <text x="476" y="810" font-size="13" fill="#A9B4C0" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="810">육아휴직 급여 참고값: 1~3개월 월 최대 250만원, 4~6개월 200만원, 7개월부터 160만원.</tspan></text>
-<text x="476" y="833" font-size="13" fill="#A9B4C0" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="833">출처: 2026-10-31 근로기준법 제74조·남녀고용평등법 제18조의2·제19조와 생활법령정보 육아휴직</tspan><tspan x="476" y="852">급여이며, 법률 해석이 아닌 참고 정보입니다.</tspan></text>
+<text x="476" y="833" font-size="13" fill="#A9B4C0" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="833">출처: 2026-10-31 근로기준법 제74조·남녀고용평등법 제18조의2·제19조와 생활법령정보 육아휴직 급여 ·</tspan><tspan x="476" y="852">분할 횟수와 신청 절차는 회사 인사팀·고용센터에서 확인하세요.</tspan></text>
 <text x="476" y="889" font-size="16" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.2" font-weight="700"><tspan x="476" y="889">지원금·혜택</tspan></text>
 <text x="476" y="911" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="911">국가 현금성 지원만 첫해 약 1,520만원(첫만남 200 + 부모급여 1,200 + 아동수당 120)이며,</tspan><tspan x="476" y="931">서울·성동구 산후 지원이 더해집니다.</tspan></text>
 <text x="476" y="951" font-size="14" fill="#E8EDF2" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="951">• 임신·출산 진료비 · 100만원 바우처 · 지금, 건강보험공단·카드사</tspan></text>
@@ -67,6 +67,6 @@
 <line x1="476" y1="1597" x2="1124" y2="1597" stroke="#3A4654" stroke-width="1"/>
 <text x="476" y="1611" font-size="13" fill="#A9B4C0" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="1611">사용한 기능: 출산·육아 일정 계산, 임신·육아 지원금 찾기, 밤·휴일 소아 진료 찾기, 유치원 자리 알아보기</tspan><tspan x="476" y="1630">· 뒤의 세 가지는 키가 필요한 기능이에요</tspan></text>
 <text x="476" y="1649" font-size="13" fill="#A9B4C0" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="1649">공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요. 최종 확인은 해당 기관에서 해 주세요.</tspan></text>
-<text x="476" y="1668" font-size="13" fill="#A9B4C0" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="1668">의료·법률 판단이 아닌 일반 안내예요. 응급 상황은 119 또는 응급실, 금액·자격·기한은 담당 기관에서 최종</tspan><tspan x="476" y="1687">확인하세요.</tspan></text>
+<text x="476" y="1668" font-size="13" fill="#A9B4C0" data-max-w="648" letter-spacing="-0.1"><tspan x="476" y="1668">참고용 일반 안내예요. 응급 상황은 119 또는 응급실, 건강 문제는 의료진과 상의하고, 금액·자격·기한은</tspan><tspan x="476" y="1687">담당 기관에서 최종 확인하세요.</tspan></text>
 </g>
 </svg>
