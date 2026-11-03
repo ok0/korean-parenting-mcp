@@ -219,6 +219,7 @@ export interface BuildReport {
   removed: number;
   changed: number;
   dataDateRange: { min: string; max: string } | null;
+  coverage: { units: number; covered: number; missing: string[] };
 }
 
 const PHONE_RE = /^[0-9-]{7,15}$/;
@@ -413,8 +414,26 @@ export function buildHealthCenters(
     centers,
   };
 
+  // coverage: 주 기관(보건소·보건의료원)이 그 코드·상위 시·하위 구 중 한 곳에 있는 시군구 수. 원본이 전국을 담는지 확인하는 용도.
+  const primary = new Set(centers.filter(isPrimary).map((c) => c.code));
+  const parents = new Set(
+    opts.lookup.sigungu
+      .filter((g) => g.parent_code !== undefined && primary.has(g.code))
+      .map((g) => g.parent_code as string),
+  );
+  const uncovered = opts.lookup.sigungu.filter(
+    (g) => !(primary.has(g.code) || (g.parent_code !== undefined && primary.has(g.parent_code)) || parents.has(g.code)),
+  );
+  const missing = [...uncovered]
+    .sort((a, b) => (a.code < b.code ? -1 : a.code > b.code ? 1 : 0))
+    .map((g) => {
+      const sidoName = opts.lookup.sido.find((s) => s.code === g.sido_code)?.name ?? g.sido_code;
+      return `${sidoName} ${g.name}(${g.code})`;
+    });
+  const coverage = { units: opts.lookup.sigungu.length, covered: opts.lookup.sigungu.length - uncovered.length, missing };
+
   return {
     data,
-    report: { unmatched, multiplePrimary, fieldIssues, added, removed, changed, dataDateRange },
+    report: { unmatched, multiplePrimary, fieldIssues, added, removed, changed, dataDateRange, coverage },
   };
 }
