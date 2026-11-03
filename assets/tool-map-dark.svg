@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="766" viewBox="0 0 1200 766" role="img" aria-labelledby="title desc" font-family="Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif">
-<title id="title">육아 도우미 한 장 지도 (도구 10개)</title>
-<desc id="desc">부모의 질문을 AI 도우미가 받아 도구 10개 중 알맞은 것을 고르고, 도구는 미리 담아 둔 정보나 공공기관 자료로 답합니다. 도구: get_timeline, get_leave_article, find_night_pediatric, find_benefits, check_pregnancy_drug, check_recall, find_daycare, find_vaccination_clinic, find_checkup_clinic, find_kindergarten</desc>
-<rect x="0" y="0" width="1200" height="766" fill="#0F141A"/>
-<text x="30" y="44" font-size="22" fill="#E8EDF2" data-max-w="1140" letter-spacing="-0.4" font-weight="700"><tspan x="30" y="44">질문 하나가 답이 되기까지 · 도구 10개</tspan></text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="830" viewBox="0 0 1200 830" role="img" aria-labelledby="title desc" font-family="Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif">
+<title id="title">육아 도우미 한 장 지도 (도구 11개)</title>
+<desc id="desc">부모의 질문을 AI 도우미가 받아 도구 11개 중 알맞은 것을 고르고, 도구는 미리 담아 둔 정보나 공공기관 자료로 답합니다. 도구: get_timeline, get_leave_article, find_night_pediatric, find_benefits, check_pregnancy_drug, check_recall, find_daycare, find_vaccination_clinic, find_checkup_clinic, find_kindergarten, find_local_support</desc>
+<rect x="0" y="0" width="1200" height="830" fill="#0F141A"/>
+<text x="30" y="44" font-size="22" fill="#E8EDF2" data-max-w="1140" letter-spacing="-0.4" font-weight="700"><tspan x="30" y="44">질문 하나가 답이 되기까지 · 도구 11개</tspan></text>
 <text x="30" y="70" font-size="13" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="70">부모가 평소 말로 물으면, AI 도우미가 알맞은 도구를 골라 정보를 찾아 답해요.</tspan></text>
 <rect x="30" y="124" width="180" height="150" rx="8" fill="#1A222C" stroke="#3A4654"/>
 <text x="46" y="171" font-size="15" fill="#E8EDF2" data-max-w="148" letter-spacing="-0.1" font-weight="700"><tspan x="46" y="171">부모의 질문</tspan></text>
@@ -60,26 +60,33 @@
 <rect x="710" y="411" width="66.7" height="16" rx="8" fill="#3A2A0A"/>
 <text x="718" y="423" font-size="11" fill="#FFD27A" data-max-w="50.7" letter-spacing="-0.1" font-weight="700"><tspan x="718" y="423">신청 필요</tspan></text>
 </g>
-<text x="450" y="468" font-size="13" fill="#A9B4C0" data-max-w="480" letter-spacing="-0.1" font-weight="700"><tspan x="450" y="468">어린이집·유치원</tspan></text>
+<g data-tool="find_local_support" data-source="live-key" data-key="required">
+<rect x="450" y="444" width="236" height="56" rx="8" fill="#1A222C" stroke="#3A4654"/>
+<path d="M458 444 A8 8 0 0 0 450 452 V492 A8 8 0 0 0 458 500 Z" fill="#7DB3FF"/>
+<text x="466" y="467" font-size="14" fill="#E8EDF2" data-max-w="212" letter-spacing="-0.1" font-weight="700"><tspan x="466" y="467">우리 지역 육아 지원 찾기</tspan></text>
+<rect x="466" y="475" width="66.7" height="16" rx="8" fill="#3A2A0A"/>
+<text x="474" y="487" font-size="11" fill="#FFD27A" data-max-w="50.7" letter-spacing="-0.1" font-weight="700"><tspan x="474" y="487">신청 필요</tspan></text>
+</g>
+<text x="450" y="532" font-size="13" fill="#A9B4C0" data-max-w="480" letter-spacing="-0.1" font-weight="700"><tspan x="450" y="532">어린이집·유치원</tspan></text>
 <g data-tool="find_daycare" data-source="builtin">
-<rect x="450" y="476" width="236" height="56" rx="8" fill="#1A222C" stroke="#3A4654"/>
-<path d="M458 476 A8 8 0 0 0 450 484 V524 A8 8 0 0 0 458 532 Z" fill="#7FD18E"/>
-<text x="466" y="509" font-size="14" fill="#E8EDF2" data-max-w="212" letter-spacing="-0.1" font-weight="700"><tspan x="466" y="509">어린이집 찾기 안내</tspan></text>
+<rect x="450" y="540" width="236" height="56" rx="8" fill="#1A222C" stroke="#3A4654"/>
+<path d="M458 540 A8 8 0 0 0 450 548 V588 A8 8 0 0 0 458 596 Z" fill="#7FD18E"/>
+<text x="466" y="573" font-size="14" fill="#E8EDF2" data-max-w="212" letter-spacing="-0.1" font-weight="700"><tspan x="466" y="573">어린이집 찾기 안내</tspan></text>
 </g>
 <g data-tool="find_kindergarten" data-source="live-key" data-key="required">
-<rect x="694" y="476" width="236" height="56" rx="8" fill="#1A222C" stroke="#3A4654"/>
-<path d="M702 476 A8 8 0 0 0 694 484 V524 A8 8 0 0 0 702 532 Z" fill="#7DB3FF"/>
-<text x="710" y="499" font-size="14" fill="#E8EDF2" data-max-w="212" letter-spacing="-0.1" font-weight="700"><tspan x="710" y="499">유치원 자리 알아보기</tspan></text>
-<rect x="710" y="507" width="66.7" height="16" rx="8" fill="#3A2A0A"/>
-<text x="718" y="519" font-size="11" fill="#FFD27A" data-max-w="50.7" letter-spacing="-0.1" font-weight="700"><tspan x="718" y="519">신청 필요</tspan></text>
+<rect x="694" y="540" width="236" height="56" rx="8" fill="#1A222C" stroke="#3A4654"/>
+<path d="M702 540 A8 8 0 0 0 694 548 V588 A8 8 0 0 0 702 596 Z" fill="#7DB3FF"/>
+<text x="710" y="563" font-size="14" fill="#E8EDF2" data-max-w="212" letter-spacing="-0.1" font-weight="700"><tspan x="710" y="563">유치원 자리 알아보기</tspan></text>
+<rect x="710" y="571" width="66.7" height="16" rx="8" fill="#3A2A0A"/>
+<text x="718" y="583" font-size="11" fill="#FFD27A" data-max-w="50.7" letter-spacing="-0.1" font-weight="700"><tspan x="718" y="583">신청 필요</tspan></text>
 </g>
-<text x="450" y="564" font-size="13" fill="#A9B4C0" data-max-w="480" letter-spacing="-0.1" font-weight="700"><tspan x="450" y="564">안전</tspan></text>
+<text x="450" y="628" font-size="13" fill="#A9B4C0" data-max-w="480" letter-spacing="-0.1" font-weight="700"><tspan x="450" y="628">안전</tspan></text>
 <g data-tool="check_recall" data-source="live-key" data-key="required">
-<rect x="450" y="572" width="236" height="56" rx="8" fill="#1A222C" stroke="#3A4654"/>
-<path d="M458 572 A8 8 0 0 0 450 580 V620 A8 8 0 0 0 458 628 Z" fill="#7DB3FF"/>
-<text x="466" y="595" font-size="14" fill="#E8EDF2" data-max-w="212" letter-spacing="-0.1" font-weight="700"><tspan x="466" y="595">아기 용품 리콜 확인</tspan></text>
-<rect x="466" y="603" width="66.7" height="16" rx="8" fill="#3A2A0A"/>
-<text x="474" y="615" font-size="11" fill="#FFD27A" data-max-w="50.7" letter-spacing="-0.1" font-weight="700"><tspan x="474" y="615">신청 필요</tspan></text>
+<rect x="450" y="636" width="236" height="56" rx="8" fill="#1A222C" stroke="#3A4654"/>
+<path d="M458 636 A8 8 0 0 0 450 644 V684 A8 8 0 0 0 458 692 Z" fill="#7DB3FF"/>
+<text x="466" y="659" font-size="14" fill="#E8EDF2" data-max-w="212" letter-spacing="-0.1" font-weight="700"><tspan x="466" y="659">아기 용품 리콜 확인</tspan></text>
+<rect x="466" y="667" width="66.7" height="16" rx="8" fill="#3A2A0A"/>
+<text x="474" y="679" font-size="11" fill="#FFD27A" data-max-w="50.7" letter-spacing="-0.1" font-weight="700"><tspan x="474" y="679">신청 필요</tspan></text>
 </g>
 <rect x="970" y="124" width="200" height="150" rx="8" fill="#1A222C" stroke="#3A4654"/>
 <path d="M970 132 A8 8 0 0 1 978 124 H1162 A8 8 0 0 1 1170 132 Z" fill="#7FD18E"/>
@@ -92,16 +99,16 @@
 <path d="M970 302 A8 8 0 0 1 978 294 H1162 A8 8 0 0 1 1170 302 Z" fill="#7DB3FF"/>
 <text x="986" y="339" font-size="14" fill="#7DB3FF" data-max-w="168" letter-spacing="-0.1" font-weight="700"><tspan x="986" y="339">공공기관에서 바로 확인</tspan></text>
 <text x="986" y="366" font-size="13" fill="#E8EDF2" data-max-w="168" letter-spacing="-0.1"><tspan x="986" y="366">물어본 그때 공공기관</tspan><tspan x="986" y="385">자료를 찾아 답해요</tspan></text>
-<text x="986" y="416" font-size="13" fill="#E8EDF2" data-max-w="168" letter-spacing="-0.1" font-weight="700"><tspan x="986" y="416">도구 6개</tspan></text>
+<text x="986" y="416" font-size="13" fill="#E8EDF2" data-max-w="168" letter-spacing="-0.1" font-weight="700"><tspan x="986" y="416">도구 7개</tspan></text>
 <line x1="934" y1="369" x2="966" y2="369" stroke="#A9B4C0" stroke-width="2"/>
 <polygon points="966,369 958,364 958,374" fill="#A9B4C0"/>
-<rect x="30" y="656" width="14" height="14" fill="#7FD18E"/>
-<text x="52" y="668" font-size="13" fill="#E8EDF2" data-max-w="162" letter-spacing="-0.1"><tspan x="52" y="668">미리 담아 둔 정보로 답해요</tspan></text>
-<rect x="246" y="656" width="14" height="14" fill="#7DB3FF"/>
-<text x="268" y="668" font-size="13" fill="#E8EDF2" data-max-w="166" letter-spacing="-0.1"><tspan x="268" y="668">공공기관에서 바로 확인해요</tspan></text>
-<rect x="466" y="656" width="66.7" height="16" rx="8" fill="#3A2A0A"/>
-<text x="474" y="668" font-size="11" fill="#FFD27A" data-max-w="50.7" letter-spacing="-0.1" font-weight="700"><tspan x="474" y="668">신청 필요</tspan></text>
-<text x="540.7" y="668" font-size="13" fill="#E8EDF2" data-max-w="629.3" letter-spacing="-0.1"><tspan x="540.7" y="668">공공기관에 따로 사용 신청을 해야 쓸 수 있어요</tspan></text>
-<text x="30" y="700" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="700">※ 출산·육아 일정 계산 도구는 미리 담아 둔 정보로 계산하고, 따로 신청해 두면 공휴일과 법령 변경 여부도 공공기관에서 확인해요. 영유아 검진 병원 찾기 안내 도구는 미리 담아 둔 안내를 보여 주고, 따로</tspan><tspan x="30" y="717">신청해 두면 사는 지역의 검진기관 목록도 공공기관에서 확인해요.</tspan></text>
-<text x="30" y="738" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="738">공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요. 최종 확인은 해당 기관에서 해 주세요.</tspan></text>
+<rect x="30" y="720" width="14" height="14" fill="#7FD18E"/>
+<text x="52" y="732" font-size="13" fill="#E8EDF2" data-max-w="162" letter-spacing="-0.1"><tspan x="52" y="732">미리 담아 둔 정보로 답해요</tspan></text>
+<rect x="246" y="720" width="14" height="14" fill="#7DB3FF"/>
+<text x="268" y="732" font-size="13" fill="#E8EDF2" data-max-w="166" letter-spacing="-0.1"><tspan x="268" y="732">공공기관에서 바로 확인해요</tspan></text>
+<rect x="466" y="720" width="66.7" height="16" rx="8" fill="#3A2A0A"/>
+<text x="474" y="732" font-size="11" fill="#FFD27A" data-max-w="50.7" letter-spacing="-0.1" font-weight="700"><tspan x="474" y="732">신청 필요</tspan></text>
+<text x="540.7" y="732" font-size="13" fill="#E8EDF2" data-max-w="629.3" letter-spacing="-0.1"><tspan x="540.7" y="732">공공기관에 따로 사용 신청을 해야 쓸 수 있어요</tspan></text>
+<text x="30" y="764" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="764">※ 출산·육아 일정 계산 도구는 미리 담아 둔 정보로 계산하고, 따로 신청해 두면 공휴일과 법령 변경 여부도 공공기관에서 확인해요. 영유아 검진 병원 찾기 안내 도구는 미리 담아 둔 안내를 보여 주고, 따로</tspan><tspan x="30" y="781">신청해 두면 사는 지역의 검진기관 목록도 공공기관에서 확인해요.</tspan></text>
+<text x="30" y="802" font-size="12" fill="#A9B4C0" data-max-w="1140" letter-spacing="-0.1"><tspan x="30" y="802">공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요. 최종 확인은 해당 기관에서 해 주세요.</tspan></text>
 </svg>
