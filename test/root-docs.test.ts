@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { findLeaks } from "../scripts/lib/sample-mask.js";
-import { SOURCE_NOTICE } from "../src/core/notice.js";
+import { REFERENCE_NOTICE, SOURCE_NOTICE } from "../src/core/notice.js";
 import { ASSET_FILES } from "../scripts/visuals/generate.js";
 import { RAW_ASSET_PREFIX, REPORT_FIGURE_ALT, assetPairs } from "../scripts/visuals/readme-figures.js";
 import { CLIENT_PAGES, DOC_PAGES, DOCS_BLOB, MCPB_URL, docUrl } from "../scripts/docs/links.js";
@@ -39,6 +39,8 @@ describe("root documents", () => {
     expect(readme).not.toContain(".docs");
     expect(readme).not.toMatch(/(?<!비)공식\s*(서비스|앱|도구|서버|MCP)/);
     expect(readme).not.toMatch(/정부\s*(제공|공식)/);
+    expect(readme.split("\n")).toContain(REFERENCE_NOTICE);
+    expect(readme).not.toMatch(/아니|아닌|아님|아닙/);
   });
 
   it("title and description use the one-liner", () => {
@@ -119,6 +121,7 @@ describe("root documents", () => {
       ["처음이라면 두 줄", readme.replace("## 그림으로 보기", "처음이라면 여기부터 읽으세요.\n\n## 그림으로 보기"), '"처음이라면"으로 시작하는 줄이 2개'],
       ["고지 없음", L.filter((l) => l !== SOURCE_NOTICE).join("\n"), "출처 고지 없음"],
       ["옛 고지", readme.replace(SOURCE_NOTICE, "정부·공공기관과 관계없는 **비공식** 개인 프로젝트이며, 공공 API와 공개 법령을 바탕으로 안내합니다."), "출처 고지 없음"],
+      ["옛 면책", readme.replace(REFERENCE_NOTICE, "의료 정보는 진료를 대체하지 않으니 건강 상태나 치료는 반드시 의료진과 상담하세요. 법률·제도 정보는 관할 기관에 확인하세요."), "의료·법률 면책 없음"],
       ["부정형 소속", readme.replace("## 라이선스", "개인 프로젝트입니다.\n\n## 라이선스"), "부정형 소속 고지 금지"],
       ["공식 주장", readme.replace("## 라이선스", "정부 공식 서버입니다.\n\n## 라이선스"), "공식 주장 표현"],
       ["MIT 없음", readme.replace("MIT — ", ""), "MIT 없음"],
