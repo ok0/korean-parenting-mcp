@@ -44,7 +44,7 @@ describe("offline timeline", () => {
       expect(off).not.toBeInstanceOf(Promise);
       expect(off.output.body).toBe(on.body);
       expect(off.output.footer).toBe(on.footer);
-      expect(off.output.footer).toMatch(/자동 확인 대상 아님|법제처 OC 미설정: 개정 여부 확인 생략/);
+      expect(off.output.footer).toMatch(/자동 확인 대상 외|법제처 OC 미설정: 개정 여부 확인 생략/);
     }
   });
 

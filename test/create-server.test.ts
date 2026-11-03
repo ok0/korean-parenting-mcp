@@ -33,6 +33,8 @@ describe("createServer", () => {
     expect(lines[0]).toBe("korean-parenting-mcp는 한국 임신·출산·육아 일정과 공공 정보를 안내하는 MCP 서버입니다.");
     expect(lines[1]).toBe(`${SOURCE_NOTICE} 신청 기한·지원 금액은 정부24·복지로·국민건강보험공단·관할 주민센터·보건소에서, 건강 문제는 의료진과 상의해 주세요.`);
     expect(client.getInstructions()).not.toContain("비공식");
+    expect(client.getInstructions()).not.toMatch(/아니|아닌|아님|아닙/);
+    expect(client.getInstructions()).toContain("여석은 공시 기준 추정치");
     expect(client.getInstructions()).toContain("due_date");
     expect(client.getInstructions()).toContain("birth_date");
     expect(client.getInstructions()).toContain("get_leave_article");

@@ -142,7 +142,7 @@ describe("get_timeline revision status integration (mocked law.go.kr)", () => {
     for (const [id, line] of footerDocs(t)) {
       const doc = resolveBasis([id])[0]!;
       if (doc.law_api === null) {
-        expect(line).toContain("자동 확인 대상 아님");
+        expect(line).toContain("자동 확인 대상 외");
       } else if (hasBaseline(doc)) {
         expect(line).toContain("원문 확인됨");
         confirmed += 1;
@@ -251,7 +251,7 @@ describe("get_timeline revision status integration (mocked law.go.kr)", () => {
       const docs = footerDocs(t);
       for (const [id, line] of docs) {
         const doc = resolveBasis([id])[0]!;
-        if (doc.law_api === null) expect(line).toContain("자동 확인 대상 아님");
+        if (doc.law_api === null) expect(line).toContain("자동 확인 대상 외");
         else expect(line).toContain("법제처 OC 미설정: 개정 여부 확인 생략");
       }
       expect(t).toMatch(/원문 확인 0 \/ 개정됨 0 \/ 확인 불가 0 \/ 생략 [1-9]\d*/);

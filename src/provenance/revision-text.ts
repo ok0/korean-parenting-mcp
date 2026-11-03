@@ -16,7 +16,7 @@ export interface RevisionStatus {
 
 export const REVISION_TEXT = {
   skippedNoOc: "법제처 OC 미설정: 개정 여부 확인 생략",
-  skippedNoApi: "자동 확인 대상 아님",
+  skippedNoApi: "자동 확인 대상 외",
   skippedRemote: "개정 여부 확인 불가(원격)",
   confirmed: "원문 확인됨",
   changed: "근거가 개정되었습니다. 원문을 확인하세요",

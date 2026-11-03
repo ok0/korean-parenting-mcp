@@ -5,7 +5,7 @@ import { loadData } from "../src/data-store/load.js";
 import { runTool } from "../src/core/pipeline.js";
 import { getTimelineTool } from "../src/tools/get-timeline.js";
 import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_SOURCE, NOTICE_VACCINATION_SCOPE, verifiedText } from "../src/tools/shared/format.js";
-import { SOURCE_NOTICE } from "../src/core/notice.js";
+import { REFERENCE_NOTICE, SOURCE_NOTICE } from "../src/core/notice.js";
 import { checkupItems } from "../src/timeline/rules/checkups.js";
 import { doseItems, influenzaItems, UNVERIFIED_NOTE } from "../src/timeline/rules/vaccination.js";
 import { createTestContext } from "./helpers/context.js";
@@ -196,6 +196,22 @@ describe("get_timeline", () => {
     expect(iCut).toBeGreaterThan(-1);
     expect(iLocal).toBeGreaterThan(iCut);
     expect(iSep).toBeGreaterThan(iLocal);
+  });
+
+  it("keyless born and pregnant outputs carry source and reference notices", async () => {
+    for (const args of [
+      { birth_date: "2026-01-31", reference_date: "2026-02-01" },
+      { due_date: "2027-02-10", reference_date: "2026-10-28" },
+    ]) {
+      const r = await call(args);
+      expect(r.isError).toBeFalsy();
+      const t = text(r);
+      expect(t).toContain(SOURCE_NOTICE);
+      expect(t).toContain(REFERENCE_NOTICE);
+      expect(t).toContain(DISCLAIMER_MEDICAL_LEGAL);
+      expect(t).toContain("자동 확인 대상 외");
+      expect(t).not.toContain("자동 확인 대상 아님");
+    }
   });
 
   it("offline, keyless, no birth date in logs", async () => {

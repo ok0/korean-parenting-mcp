@@ -131,7 +131,7 @@ describe("revision check", () => {
   it("no OC: all skipped, fetch never called", async () => {
     const mock = createLawMock();
     const out = await checkRevisionDocs([LAW_DOC, ADM_DOC, BYL_DOC, NOBASE_DOC, WEB_DOC], ctxWith(mock, {}));
-    expect(byId(out, "test-web").message).toBe("자동 확인 대상 아님");
+    expect(byId(out, "test-web").message).toBe("자동 확인 대상 외");
     for (const id of ["test-law", "test-adm", "test-byl", "test-nobase"]) {
       expect(byId(out, id).state).toBe("skipped");
       expect(byId(out, id).message).toBe("법제처 OC 미설정: 개정 여부 확인 생략");
