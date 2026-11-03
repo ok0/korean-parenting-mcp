@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { PeriodRuleSchema, ProvenanceSchema, VACCINE_CODES } from "../src/data-store/schema.js";
+import {
+  compareCenters,
+  PeriodRuleSchema,
+  ProvenanceSchema,
+  VACCINE_CODES,
+  type HealthCentersFile,
+} from "../src/data-store/schema.js";
 import {
   collectBasisIds,
   DataValidationError,
@@ -872,5 +878,66 @@ describe("leave articles", () => {
       expect(d.verified).not.toBe("full");
       expect(d.note).toMatch(/M11|미확인|미대조/);
     }
+  });
+});
+
+describe("health-centers data", () => {
+  const first = (f: HealthCentersFile): HealthCentersFile["centers"][number] => {
+    const c = f.centers[0];
+    if (c === undefined) throw new Error("no centers");
+    return c;
+  };
+  const unknownCodes = (file: HealthCentersFile, regions: ReturnType<typeof loadData<"regions">>): string[] => {
+    const known = new Set(regions.sigungu.map((g) => g.code));
+    return [...new Set(file.centers.map((c) => c.code).filter((code) => !known.has(code)))].sort();
+  };
+
+  it("loads health-centers and resolves its basis ids", () => {
+    const file = loadData("health-centers");
+    expect(() => resolveBasis(collectBasisIds(file))).not.toThrow();
+    const doc = resolveBasis(collectBasisIds(file))[0];
+    expect(doc?.kind).toBe("web");
+    expect(doc?.law_api).toBeNull();
+  });
+
+  it("every code is a regions.json sigungu", () => {
+    expect(unknownCodes(loadData("health-centers"), loadData("regions"))).toEqual([]);
+  });
+
+  it("centers are sorted by code, kind and name", () => {
+    const centers = loadData("health-centers").centers;
+    for (let i = 1; i < centers.length; i++) {
+      const prev = centers[i - 1];
+      const cur = centers[i];
+      if (prev === undefined || cur === undefined) throw new Error("missing center");
+      expect(compareCenters(prev, cur)).toBeLessThan(0);
+    }
+  });
+
+  it("flags an unregistered code", () => {
+    const x = structuredClone(loadData("health-centers"));
+    first(x).code = "99999";
+    expect(unknownCodes(x, loadData("regions"))).toEqual(["99999"]);
+  });
+
+  it("rejects a missing field", () => {
+    const x = structuredClone(loadData("health-centers"));
+    delete (first(x) as unknown as Record<string, unknown>).name;
+    expect(() => validateDataset("health-centers", x, loadData("basis-documents"))).toThrow(DataValidationError);
+  });
+
+  it("rejects full without verifier", () => {
+    const entry = structuredClone(loadData("health-centers"));
+    first(entry).verified = "full";
+    expect(() => validateDataset("health-centers", entry, loadData("basis-documents"))).toThrow();
+    const file = structuredClone(loadData("health-centers"));
+    file.verified = "full";
+    expect(() => validateDataset("health-centers", file, loadData("basis-documents"))).toThrow();
+  });
+
+  it("rejects counts that disagree with centers", () => {
+    const x = structuredClone(loadData("health-centers"));
+    x.counts.kept += 1;
+    expect(() => validateDataset("health-centers", x, loadData("basis-documents"))).toThrow();
   });
 });

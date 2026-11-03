@@ -1,8 +1,9 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { HEALTH_CENTERS_MAX_BYTES } from "../src/data-store/schema.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
@@ -65,6 +66,9 @@ describe("npm package contents", () => {
       expect(paths).toContain("README.md");
       expect(paths).toContain("LICENSE");
       expect(paths).toContain("package.json");
+      expect(paths).toContain("data/health-centers.json");
+      expect(paths.filter((p) => /\.(csv|xlsx?)$/i.test(p) || /(^|\/)page-\d{4}\.json$/.test(p) || /data-src|api-notes/.test(p))).toEqual([]);
+      expect(paths.filter((p) => p.startsWith("data/") && !/^data\/[a-z0-9-]+\.json$/.test(p))).toEqual([]);
 
       const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as {
         dependencies?: Record<string, string>;
@@ -82,6 +86,11 @@ describe("npm package contents", () => {
     },
     60000,
   );
+
+  it("bundled health center list stays within its size cap", () => {
+    expect(HEALTH_CENTERS_MAX_BYTES).toBe(150_000);
+    expect(statSync(join(root, "data/health-centers.json")).size).toBeLessThanOrEqual(HEALTH_CENTERS_MAX_BYTES);
+  });
 
   it("forbiddenPaths flags docs/ in a synthetic pack list", () => {
     expect(forbiddenPaths(["README.md", "build/index.js", "docs/install.md", "docs/clients/vscode.md"])).toEqual([
