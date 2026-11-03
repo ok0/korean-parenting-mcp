@@ -20,6 +20,24 @@
 
 `check_recall`은 제품안전정보센터(SafetyKorea) 서비스 ID(`SAFETYKOREA_AUTH_KEY`)가 있어야 쓰는 선택 기능입니다.
 
+## 우리 지역 육아 지원 찾기(`find_local_support`)
+
+`find_local_support`는 사는 지역(시·도 또는 시·군·구)의 임신·출산·영유아 지원 서비스를 참고용으로 찾아 줍니다. 찾은 서비스마다 원문 일부와 수정일, 확인처를 함께 보여 줍니다.
+
+AI 도우미에게 이렇게 물어보세요.
+
+- "서울 마포구에서 임신 중에 받을 수 있는 지원 서비스를 찾아줘."
+- "전라남도 해남군에서 영유아를 키우는 집이 받을 수 있는 지원을 알려줘."
+- "경기도 수원시 출산 지원 중에 산후조리와 관련된 서비스를 보여줘."
+
+- 필요한 키: `DATA_GO_KR_SERVICE_KEY`(다른 공공데이터포털 도구와 같은 키)
+- 활용신청: 공공데이터포털의 [한국사회보장정보원 지자체복지서비스](https://www.data.go.kr/data/15108347/openapi.do)에서 활용신청을 하면 자동승인됩니다.
+- 호출 한도: 개발계정은 하루 1,000회까지 호출할 수 있습니다. 같은 질문을 다시 하면 저장해 둔 응답을 다시 써서 호출 수를 아낍니다(목록 12시간, 상세 24시간).
+
+도구 응답에는 다음 안내가 함께 나옵니다.
+
+> 공공기관이 제공하는 기능(공개 API)을 이용해 정리한 참고용 정보예요. 신청 조건과 금액은 해당 지자체에 확인하세요.
+
 ## 키 발급
 
 ### 공공데이터포털 — `DATA_GO_KR_SERVICE_KEY`
@@ -36,6 +54,7 @@
 | 15059486 DUR 품목정보 | `check_pregnancy_drug` | https://www.data.go.kr/data/15059486/openapi.do |
 | 15012690 한국천문연구원 특일 정보 (공휴일 확인, 선택) | `get_timeline` | https://www.data.go.kr/data/15012690/openapi.do |
 | 15154419 국민건강보험공단 검진기관 찾기 조회 (검진기관 조회, 선택) | `find_checkup_clinic` | https://www.data.go.kr/data/15154419/openapi.do |
+| 15108347 한국사회보장정보원 지자체복지서비스 (자동승인) | `find_local_support` | https://www.data.go.kr/data/15108347/openapi.do |
 
 ### 유치원알리미 — `KINDERGARTEN_API_KEY`
 
