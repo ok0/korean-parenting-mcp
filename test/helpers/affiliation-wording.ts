@@ -15,6 +15,9 @@ export const NEGATIVE_NOTICE_PATTERNS: readonly RegExp[] = [
   NEGATIVE_STEM,
 ];
 
+/** Patterns that are not checked inside verbatim official text. */
+export const VERBATIM_EXEMPT_PATTERNS: readonly RegExp[] = NEGATIVE_NOTICE_PATTERNS.slice(2);
+
 /** One allowlisted exact sentence with its reason and maximum hit count. */
 export interface StemAllowEntry {
   text: string;
@@ -47,10 +50,20 @@ export function countOccurrences(haystack: string, needle: string): number {
   }
 }
 
-/** Scans one text for negative or affiliation wording after removing allowlisted sentences. */
+/** Removes each non-empty segment from text by replacing it with a newline. */
+export function removeSegments(text: string, segments: readonly string[]): string {
+  for (const segment of segments) {
+    if (segment === "") continue;
+    text = text.split(segment).join("\n");
+  }
+  return text;
+}
+
+/** Scans one text for negative or affiliation wording after removing allowlisted sentences and verbatim official text. */
 export function scanNegativeWording(
   text: string,
   allowlist: readonly StemAllowEntry[] = NEGATIVE_STEM_ALLOWLIST,
+  verbatim: readonly string[] = [],
 ): WordingScan {
   const violations: string[] = [];
   const allowHits: number[] = allowlist.map(() => 0);
@@ -60,11 +73,13 @@ export function scanNegativeWording(
     allowHits[i] = countOccurrences(rest, entry.text);
     rest = rest.split(entry.text).join("\n");
   });
+  const verbatimRest = removeSegments(rest, verbatim);
   for (const p of NEGATIVE_NOTICE_PATTERNS) {
-    const m = p.exec(rest);
+    const target = VERBATIM_EXEMPT_PATTERNS.includes(p) ? verbatimRest : rest;
+    const m = p.exec(target);
     if (m !== null) {
       violations.push(
-        `${p.source} @ "${rest.slice(Math.max(0, m.index - 15), m.index + m[0].length + 15)}"`,
+        `${p.source} @ "${target.slice(Math.max(0, m.index - 15), m.index + m[0].length + 15)}"`,
       );
     }
   }
@@ -73,13 +88,13 @@ export function scanNegativeWording(
 
 /** Scans labeled texts and sums allowlist hits across all of them. */
 export function checkTexts(
-  items: readonly { label: string; text: string }[],
+  items: readonly { label: string; text: string; verbatim?: readonly string[] }[],
   allowlist: readonly StemAllowEntry[] = NEGATIVE_STEM_ALLOWLIST,
 ): { violations: string[]; totals: number[] } {
   const totals: number[] = allowlist.map(() => 0);
   const violations: string[] = [];
   for (const item of items) {
-    const r = scanNegativeWording(item.text, allowlist);
+    const r = scanNegativeWording(item.text, allowlist, item.verbatim ?? []);
     r.allowHits.forEach((h, i) => {
       totals[i] = (totals[i] ?? 0) + h;
     });
