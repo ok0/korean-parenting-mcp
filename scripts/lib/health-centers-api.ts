@@ -58,8 +58,10 @@ export function parseApiPage(text: string): ApiPage {
   if (t.startsWith("<")) {
     const code =
       /<(?:returnReasonCode|resultCode)>([^<]*)</.exec(t)?.[1] ?? "XML";
+    const pick = (tag: string) =>
+      new RegExp(`<${tag}>([^<]*)<`).exec(t)?.[1];
     const msg =
-      /<(?:returnAuthMsg|resultMsg|errMsg)>([^<]*)</.exec(t)?.[1] ?? "";
+      pick("returnAuthMsg") ?? pick("resultMsg") ?? pick("errMsg") ?? "";
     throw new ApiPageError(
       code,
       `공공데이터포털이 XML 오류 응답을 보냈어요: ${code} ${msg}`.trim(),
