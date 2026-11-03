@@ -15,6 +15,9 @@ export const NEGATIVE_NOTICE_PATTERNS: readonly RegExp[] = [
   NEGATIVE_STEM,
 ];
 
+/** Assertive claim wording (최신, 받을 수 있, 대상입니다 …) that local-support text must avoid. */
+export const LOCAL_ASSERTIVE: RegExp = /최신|받을 수 있|받을 수 없|대상입니다|지급됩니다|제공합니다/u;
+
 /** Patterns that are not checked inside verbatim official text. */
 export const VERBATIM_EXEMPT_PATTERNS: readonly RegExp[] = NEGATIVE_NOTICE_PATTERNS.slice(2);
 

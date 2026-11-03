@@ -304,4 +304,26 @@ describe("project structure", () => {
     const boundarySpecs = [...new Set(runtimeSpecifiers(join(root, boundary)).filter((s) => s.startsWith(".")))];
     expect(boundarySpecs).toEqual(["./validate.js"]);
   });
+
+  it("offline path runtime files stay within the allowlist", () => {
+    const prefixes = ["src/timeline/", "src/date/"];
+    const files = [
+      "src/data-store/load.ts",
+      "src/data-store/validate.ts",
+      "src/data-store/schema.ts",
+      "src/provenance/revision-text.ts",
+      "src/core/tool-error.ts",
+      "src/tools/shared/format.ts",
+      "src/core/notice.ts",
+      "src/region/normalize.ts",
+      "src/region/health-centers.ts",
+    ];
+    const reach = reachRuntime("src/timeline/offline.ts");
+    for (const f of reach) {
+      expect(prefixes.some((p) => f.startsWith(p)) || files.includes(f), f).toBe(true);
+    }
+    for (const f of ["src/region/normalize.ts", "src/region/health-centers.ts", "src/core/notice.ts"]) {
+      expect(reach.has(f), f).toBe(true);
+    }
+  });
 });
