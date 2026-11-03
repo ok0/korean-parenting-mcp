@@ -17,16 +17,22 @@ import { facilityMarks, laneOf, renderLifeTimeline, stageBands } from "../script
 import { TOOL_LABELS, assertLabelsCover, optionalLiveNote, sourceKind } from "../scripts/visuals/labels.js";
 import { buildStories } from "../scripts/visuals/stories.js";
 import { THEMES, estimateWidth, stackBaselines, textBlock, textPairs } from "../scripts/visuals/theme.js";
+import { SOURCE_NOTICE } from "../src/core/notice.js";
 import {
   ANSWER_FORBIDDEN,
   DEPLOY_TERMS,
   FIGURE_MEDICAL_FORBIDDEN,
+  FIGURE_NEGATIVE_NOTICE,
   PLAIN_FORBIDDEN,
   SNAKE_ID,
   contrast,
+  flatText,
   isoDates,
+  svgSize,
   textElements,
+  textLines,
   visibleText,
+  withoutSourceNotice,
 } from "./helpers/visuals.js";
 import {
   ASSERTIVE_SAFETY,
@@ -205,10 +211,11 @@ describe("visual assets (M30)", () => {
         const y = Number(m[1]);
         expect(y >= lmp.y && y <= birth.y + 6, `${f} ${m[0]}`).toBe(true);
       }
-      for (const word of ["예시", "개인 맞춤 아님", "비공식", "관할 기관", "의료진"]) {
+      for (const word of ["예시", "일반 일정", "의료진"]) {
         expect(v, `${f} ${word}`).toContain(word);
       }
       expect(v, f).toContain(`데이터 기준일 ${maxAsOf}`);
+      expect(flatText(svg), f).toContain(`${SOURCE_NOTICE} 건강 문제는 의료진과 상의해 주세요 · 데이터 기준일 ${maxAsOf}`);
       for (const item of t.result.items) {
         if (compare(item.start, limit) <= 0) {
           expect(svg, `${f} ${item.id}`).toContain(`data-item="${item.id}"`);
@@ -299,7 +306,7 @@ describe("visual assets (M30)", () => {
     for (const f of ASSET_FILES) {
       const svg = svgOf(f);
       const v = visibleText(svg);
-      expect(matchedPatterns(v, PLAIN_FORBIDDEN), f).toEqual([]);
+      expect(matchedPatterns(withoutSourceNotice(v), PLAIN_FORBIDDEN), f).toEqual([]);
       expect(matchedPatterns(v, DEPLOY_TERMS), f).toEqual([]);
       expect(SNAKE_ID.test(v), f).toBe(false);
       // report lines are verbatim tool output, where the link name 아이사랑 is allowed (as in OFFICIAL_CLAIM_OUTPUT)
@@ -381,6 +388,79 @@ describe("visual assets (M30)", () => {
         const y1 = Number(/\sy1="([^"]+)"/.exec(line)?.[1]);
         const y2 = Number(/\sy2="([^"]+)"/.exec(line)?.[1]);
         expect(Math.abs(y2 - y1), `${f} ${line}`).toBeLessThanOrEqual(30);
+      }
+    }
+  });
+});
+
+const MEDICAL_SAFETY_NOTICES: readonly (readonly [string, readonly string[]])[] = [
+  [
+    "report-example-",
+    [
+      "의료·법률 판단이 아닌 일반 안내예요. 응급 상황은 119 또는 응급실, 금액·자격·기한은 담당 기관에서 최종 확인하세요.",
+      "법률 해석이 아닌 참고 정보",
+    ],
+  ],
+  [
+    "question-stories-",
+    ["기록이 없다고 안전하다는 뜻은 아니에요.", "위급하면 119에 연락하세요.", "건강 문제는 의료진과 상의하세요."],
+  ],
+  ["life-timeline-", ["로 계산한 일반 일정 예시예요", "로 계산한 일반 일정"]],
+];
+
+describe("figure source notice (M48)", () => {
+  it("generators import SOURCE_NOTICE and carry no negative affiliation wording", () => {
+    for (const rel of [
+      "scripts/visuals/tool-map.ts",
+      "scripts/visuals/life-timeline.ts",
+      "scripts/visuals/stories.ts",
+      "scripts/visuals/report.ts",
+    ]) {
+      const src = readFileSync(join(root, rel), "utf8");
+      expect(src, rel).toContain('from "../../src/core/notice.js"');
+      expect(src, rel).not.toContain("공공기관이 제공하는 공개 API");
+      expect(matchedPatterns(src, FIGURE_NEGATIVE_NOTICE), rel).toEqual([]);
+    }
+    expect(readFileSync(join(root, "scripts/visuals/life-timeline.ts"), "utf8")).not.toContain("아님");
+    for (const rel of ["scripts/visuals/labels.ts", "scripts/visuals/readme-figures.ts"]) {
+      expect(matchedPatterns(readFileSync(join(root, rel), "utf8"), FIGURE_NEGATIVE_NOTICE), rel).toEqual([]);
+    }
+  });
+
+  it("every figure shows SOURCE_NOTICE and no negative affiliation wording", () => {
+    for (const f of ASSET_FILES) {
+      const svg = svgOf(f);
+      expect(flatText(svg), f).toContain(SOURCE_NOTICE);
+      expect(matchedPatterns(`${visibleText(svg)}\n${descOf(svg)}`, FIGURE_NEGATIVE_NOTICE), f).toEqual([]);
+      expect(svg, f).not.toContain("비공식");
+      expect(visibleText(svg) + "\n" + descOf(svg), f).not.toMatch(/아님/);
+    }
+  });
+
+  it("every text line stays inside the canvas", () => {
+    for (const f of ASSET_FILES) {
+      const svg = svgOf(f);
+      const { width, height } = svgSize(svg);
+      const lines = textLines(svg);
+      expect(lines.length, f).toBeGreaterThan(0);
+      for (const l of lines) {
+        const w = estimateWidth(l.text, l.fontSize, l.bold);
+        const left = l.anchor === "start" ? l.x : l.anchor === "middle" ? l.x - w / 2 : l.x - w;
+        const where = `${f}: ${l.text}`;
+        expect(left, where).toBeGreaterThanOrEqual(0);
+        expect(left + w, where).toBeLessThanOrEqual(width);
+        expect(l.y - l.fontSize, where).toBeGreaterThanOrEqual(0);
+        expect(l.y + 0.25 * l.fontSize, where).toBeLessThanOrEqual(height);
+      }
+    }
+  });
+
+  it("medical and safety notices are byte-identical", () => {
+    for (const f of ASSET_FILES) {
+      const v = flatText(svgOf(f));
+      for (const [prefix, notices] of MEDICAL_SAFETY_NOTICES) {
+        if (!f.startsWith(prefix)) continue;
+        for (const s of notices) expect(v, `${f} ${s}`).toContain(s);
       }
     }
   });

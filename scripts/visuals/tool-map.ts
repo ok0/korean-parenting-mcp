@@ -1,3 +1,4 @@
+import { SOURCE_NOTICE } from "../../src/core/notice.js";
 import type { ToolDef } from "../../src/tools/registry.js";
 import {
   GROUP_ORDER,
@@ -257,7 +258,7 @@ export function renderToolMap(tools: readonly ToolDef[], theme: Theme): string {
   const footer = textBlock({
     x: 30,
     y: footerY,
-    text: "비공식 도구예요. 공공기관 자료를 쓰지만 공공기관이 만든 서비스는 아니에요.",
+    text: SOURCE_NOTICE,
     maxWidth: 1140,
     fontSize: 12,
     fill: theme.muted,

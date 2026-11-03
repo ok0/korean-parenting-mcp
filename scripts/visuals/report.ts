@@ -1,3 +1,4 @@
+import { SOURCE_NOTICE } from "../../src/core/notice.js";
 import { TOOL_LABELS } from "./labels.js";
 import { answerSection, answerTitle, normalizeAnswer, tableRowCount, type ReportSource } from "./report-source.js";
 import { arrow, svgDoc, textBlock, type Theme } from "./theme.js";
@@ -7,7 +8,7 @@ export const SEP = " · ";
 export const BULLET = "• ";
 export const REPORT_TITLE = "실제 질문과 답변으로 만든 한 장 준비 보고서";
 export const QUESTION_LABEL = "AI 도우미에게 실제로 보낸 질문"; // client-neutral.test requires "AI 도우미" in visible text
-export const REPORT_BADGE = "실제 답변 예시 · 개인 맞춤 아님 · 비공식 도구";
+export const REPORT_BADGE = "실제 답변 예시 · 한 가정의 질문에 맞춘 답변";
 export const REAL_ANSWER_NOTE = (date: string): string =>
   `${date}에 한 AI 앱에서 실제로 받은 답변을 그림에 맞게 줄여서 한 장으로 구성했어요. 앱·질문·날짜에 따라 답변이 달라질 수 있어요.`;
 export const REPORT_DISCLAIMER =
@@ -256,6 +257,7 @@ export function renderReport(m: ReportModel, theme: Theme): string {
 
   rule(22);
   block(14, { text: usedFeaturesLine(m.tools), fontSize: 13, lineHeight: 19, fill: theme.muted });
+  block(0, { text: SOURCE_NOTICE, fontSize: 13, lineHeight: 19, fill: theme.muted });
   block(0, { text: REPORT_DISCLAIMER, fontSize: 13, lineHeight: 19, fill: theme.muted });
 
   const paperH = y - paperY + 24;

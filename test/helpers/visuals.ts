@@ -1,3 +1,5 @@
+import { SOURCE_NOTICE } from "../../src/core/notice.js";
+
 export const PLAIN_FORBIDDEN: readonly RegExp[] = [
   /API/i,
   /MCP/i,
@@ -161,6 +163,61 @@ export const FIGURE_MEDICAL_FORBIDDEN: readonly RegExp[] = [
 
 export function flatText(svg: string): string {
   return textElements(svg).map((e) => e.lines.join(" ")).join("\n");
+}
+
+/** ADR-59 소속·출처 부정형 고지 (M49 NEGATIVE_NOTICE_PATTERNS와 같은 목록, 그림 범위). */
+export const FIGURE_NEGATIVE_NOTICE: readonly RegExp[] = [
+  /비공식/,
+  /unofficial/i,
+  /비제휴/,
+  /만든 서비스는 아니/,
+  /제휴\s*아님/,
+  /무관/,
+  /관계없는/,
+  /개인 프로젝트/,
+  /(공식|공공기관|정부)[^.\n]{0,20}(아니에요|아닙니다|아니며|아니고|아님)/,
+];
+
+const SOURCE_NOTICE_RE = new RegExp(SOURCE_NOTICE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/ /g, "\\s+"), "g");
+
+/** 출처 고지 문장을 지운 글 ("공개 API" 단어는 고지 안에서만 허용). */
+export function withoutSourceNotice(text: string): string {
+  return text.replace(SOURCE_NOTICE_RE, " ");
+}
+
+export interface TextLine {
+  x: number;
+  y: number;
+  fontSize: number;
+  bold: boolean;
+  anchor: "start" | "middle" | "end";
+  text: string;
+}
+
+/** <text> 안의 tspan마다 위치·글자 (textBlock 출력 형식 `<tspan x=".." y="..">`). */
+export function textLines(svg: string): TextLine[] {
+  const out: TextLine[] = [];
+  for (const m of svg.matchAll(/<text([^>]*)>([\s\S]*?)<\/text>/g)) {
+    const attrs = m[1] ?? "";
+    const inner = m[2] ?? "";
+    const attr = (name: string): string | undefined => new RegExp(`\\s${name}="([^"]*)"`).exec(attrs)?.[1];
+    const weight = attr("font-weight");
+    const fontSize = Number(attr("font-size"));
+    const bold = weight === "bold" || Number(weight) >= 600;
+    const anchor = (attr("text-anchor") ?? "start") as "start" | "middle" | "end";
+    for (const t of inner.matchAll(/<tspan\b[^>]*\sx="([^"]+)"[^>]*\sy="([^"]+)"[^>]*>([\s\S]*?)<\/tspan>/g)) {
+      out.push({ x: Number(t[1]), y: Number(t[2]), fontSize, bold, anchor, text: unescapeXml(t[3] ?? "") });
+    }
+  }
+  return out;
+}
+
+export function svgSize(svg: string): { width: number; height: number } {
+  const tag = /<svg\b[^>]*>/.exec(svg)?.[0] ?? "";
+  const width = /\swidth="([^"]+)"/.exec(tag)?.[1];
+  const height = /\sheight="([^"]+)"/.exec(tag)?.[1];
+  if (width === undefined || height === undefined) throw new Error("svg width/height 없음");
+  return { width: Number(width), height: Number(height) };
 }
 
 export function descText(svg: string): string {

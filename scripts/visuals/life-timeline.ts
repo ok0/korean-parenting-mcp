@@ -1,3 +1,4 @@
+import { SOURCE_NOTICE } from "../../src/core/notice.js";
 import { daycareStage } from "../../src/daycare/guide.js";
 import { addMonthsClamp, compare, daysBetween, formatDate, type CivilDate } from "../../src/date/civil-date.js";
 import type { OfflineTimeline } from "../../src/timeline/offline.js";
@@ -158,7 +159,7 @@ export function renderLifeTimeline(t: OfflineTimeline, theme: Theme): string {
     textBlock({
       x: LEFT,
       y: 70,
-      text: `출산예정일 ${formatDate(birth)} 예시로 계산한 일정이에요 (개인 맞춤 아님)`,
+      text: `출산예정일 ${formatDate(birth)}로 계산한 일반 일정 예시예요`,
       maxWidth: 1140,
       fontSize: 13,
       fill: theme.muted,
@@ -332,11 +333,11 @@ export function renderLifeTimeline(t: OfflineTimeline, theme: Theme): string {
   const years = [...holidayYears].sort((a, b) => a - b);
   const footer: { text: string; fill: string }[] = [
     {
-      text: `예시 그림: 출산예정일 ${formatDate(birth)} · 기준일 ${formatDate(t.view.referenceDate)}로 계산 · 개인 맞춤 아님`,
+      text: `예시 그림: 출산예정일 ${formatDate(birth)} · 기준일 ${formatDate(t.view.referenceDate)}로 계산한 일반 일정`,
       fill: theme.text,
     },
     {
-      text: `비공식 도구예요. 실제 일정과 기한은 관할 기관과 의료진에게 꼭 확인하세요 · 데이터 기준일 ${maxAsOf}`,
+      text: `${SOURCE_NOTICE} 건강 문제는 의료진과 상의해 주세요 · 데이터 기준일 ${maxAsOf}`,
       fill: theme.text,
     },
   ];

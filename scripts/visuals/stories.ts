@@ -1,3 +1,4 @@
+import { SOURCE_NOTICE } from "../../src/core/notice.js";
 import { formatDate } from "../../src/date/civil-date.js";
 import type { OfflineTimeline } from "../../src/timeline/offline.js";
 import type { ToolDef } from "../../src/tools/registry.js";
@@ -205,20 +206,19 @@ export function renderStories(tools: readonly ToolDef[], t: OfflineTimeline, the
     rowY += cardH + 20;
   });
 
-  parts.push(
-    textBlock({
-      x: 30,
-      y: rowY + 16,
-      text: "모두 예시예요. 실제 답은 그때 공개된 정보에 따라 달라지고, 건강 문제는 의료진과 상의하세요. 비공식 도구예요.",
-      maxWidth: 1140,
-      fontSize: 12,
-      fill: theme.muted,
-    }).svg,
-  );
+  const footer = textBlock({
+    x: 30,
+    y: rowY + 16,
+    text: `모두 예시예요. 실제 답은 그때 공개된 정보에 따라 달라지고, 건강 문제는 의료진과 상의하세요. ${SOURCE_NOTICE}`,
+    maxWidth: 1140,
+    fontSize: 12,
+    fill: theme.muted,
+  });
+  parts.push(footer.svg);
 
   return svgDoc({
     width: W,
-    height: rowY + 44,
+    height: rowY + 44 + (footer.lines - 1) * 17,
     title: "질문 따라가기 예시 3가지",
     desc: `예시 질문 3개가 도구와 출처를 거쳐 답이 되는 과정입니다. 도구: ${stories.map((s) => s.tool).join(", ")}`,
     theme,

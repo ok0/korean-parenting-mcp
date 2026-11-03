@@ -31,6 +31,7 @@ import {
 } from "../scripts/visuals/report-source.js";
 import { REPORT_FIGURE_ALT } from "../scripts/visuals/readme-figures.js";
 import { THEMES } from "../scripts/visuals/theme.js";
+import { SOURCE_NOTICE } from "../src/core/notice.js";
 import { CLIENT_BRANDS, descText, flatText, textElements } from "./helpers/visuals.js";
 import { matchedPatterns } from "./helpers/wording.js";
 
@@ -218,8 +219,7 @@ describe("report example figure from a real answer (M30c)", () => {
         "앱·질문·날짜에 따라 답변이 달라질 수 있어요",
         "줄여서 한 장으로 구성했어요",
         REPORT_BADGE,
-        "비공식 도구",
-        "개인 맞춤 아님",
+        SOURCE_NOTICE,
         REPORT_DISCLAIMER,
         "법률 해석이 아닌 참고 정보",
         "응급실",
@@ -227,6 +227,7 @@ describe("report example figure from a real answer (M30c)", () => {
       ]) {
         expect(v, `${f} ${w}`).toContain(w);
       }
+      expect(v, f).not.toContain("비공식");
       expect((v.match(/출처:/g) ?? []).length, f).toBeGreaterThanOrEqual(6);
       expect(v, f).not.toContain("키 없이");
       for (const name of ENV_NAMES) expect(v, `${f} ${name}`).not.toContain(name);
@@ -237,6 +238,7 @@ describe("report example figure from a real answer (M30c)", () => {
       expect(matchedPatterns(v, CLIENT_BRANDS), f).toEqual([]);
       expect(matchedPatterns(desc, CLIENT_BRANDS), f).toEqual([]);
     }
+    expect(REPORT_BADGE).toBe("실제 답변 예시 · 한 가정의 질문에 맞춘 답변");
     for (const id of ["find_benefits", "find_night_pediatric", "find_kindergarten"]) {
       const tool = allTools.find((x) => x.name === id);
       expect(tool?.requiredKeys?.length ?? 0, id).toBeGreaterThan(0);
@@ -282,15 +284,26 @@ describe("report example figure from a real answer (M30c)", () => {
       "scripts/visuals/report-source.ts",
       "scripts/visuals/generate.ts",
       "scripts/visuals/readme-figures.ts",
+      "scripts/visuals/tool-map.ts",
+      "scripts/visuals/life-timeline.ts",
+      "scripts/visuals/stories.ts",
+      "scripts/visuals/labels.ts",
       "test/fixtures/visuals/real-question.md",
       "test/fixtures/visuals/real-answer.md",
       "README.md",
       "site/index.html",
       "assets/report-example-light.svg",
       "assets/report-example-dark.svg",
+      "assets/tool-map-light.svg",
+      "assets/tool-map-dark.svg",
+      "assets/life-timeline-light.svg",
+      "assets/life-timeline-dark.svg",
+      "assets/question-stories-light.svg",
+      "assets/question-stories-dark.svg",
       ".github/workflows/visuals-refresh.yml",
       "test/visuals-report.test.ts",
       "test/visuals.test.ts",
+      "test/helpers/visuals.ts",
       "test/root-docs.test.ts",
       "test/site-page.test.ts",
       "test/client-neutral.test.ts",
