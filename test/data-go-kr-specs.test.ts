@@ -14,7 +14,7 @@ describe("data.go.kr dataset specs", () => {
     const confirmed = Object.values(SPECS)
       .filter((s) => s.confirmed)
       .map((s) => s.id);
-    expect(confirmed).toEqual(["nemcList", "nemcMoonlight", "benefitsList", "durPregnancy", "checkupClinic", "kasiHoliday"]);
+    expect(confirmed).toEqual(["nemcList", "nemcMoonlight", "benefitsList", "durPregnancy", "checkupClinic", "kasiHoliday", "lcgvList", "lcgvDetail"]);
   });
 
   it("pins checkupClinic endpoint from M41 live calls", () => {

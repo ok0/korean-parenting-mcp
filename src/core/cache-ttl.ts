@@ -11,6 +11,8 @@ export const CACHE_TTL_MS = {
   lawRevision: DAY,
   lawArticle: DAY,
   kasiHoliday: DAY,
+  localSupportList: 12 * HOUR,
+  localSupportDetail: DAY,
   nightClinic: 0,
 } as const;
 

@@ -8,7 +8,9 @@ export type SpecId =
   | "durPregnancy"
   | "vaccClinic"
   | "checkupClinic"
-  | "kasiHoliday";
+  | "kasiHoliday"
+  | "lcgvList"
+  | "lcgvDetail";
 
 const STD_ITEMS = ["response", "body", "items", "item"];
 const STD_TOTAL = ["response", "body", "totalCount"];
@@ -17,6 +19,10 @@ const STD_CODE = ["response", "header", "resultCode"];
 const NEMC_DATASET_URL = "https://www.data.go.kr/data/15000736/openapi.do";
 const NEMC_ATTRIBUTION = "국립중앙의료원(공공데이터포털)";
 const NEMC_BASE_URL = "https://apis.data.go.kr/B552657/HsptlAsembySearchService";
+
+const LCGV_DATASET_URL = "https://www.data.go.kr/data/15108347/openapi.do";
+const LCGV_ATTRIBUTION = "한국사회보장정보원";
+const LCGV_BASE_URL = "https://apis.data.go.kr/B554287/LocalGovernmentWelfareInformations";
 
 /** NEMC 진료과목 코드 D002: 진료과목에 소아청소년과를 등록한 병·의원(전문과 구분 없음). M12 실호출: 성동구 110곳 중 소아 계열 이름 19곳, 나머지는 다른 전문과. 한 곳에만 둔다. */
 export const NEMC_DEPT_PEDIATRICS = "D002";
@@ -135,5 +141,36 @@ export const SPECS: Readonly<Record<SpecId, ApiSpec>> = {
     confirmed: true,
     knownParams: ["solYear", "numOfRows"],
     note: "실응답(2026-10-28)으로 확인. XML 경로 유지(R17), 2029년 빈 응답(.docs/api-notes/kasi-holidays.md 참조)",
+  },
+  lcgvList: {
+    id: "lcgvList",
+    title: "한국사회보장정보원 지자체복지서비스 — 목록",
+    datasetUrl: LCGV_DATASET_URL,
+    attribution: LCGV_ATTRIBUTION,
+    baseUrl: LCGV_BASE_URL,
+    operation: "LcgvWelfarelist",
+    itemsPath: ["wantedList", "servList"],
+    totalCountPath: ["wantedList", "totalCount"],
+    resultCodePath: ["wantedList", "resultCode"],
+    emptyCodes: ["40"],
+    cacheTtlMs: CACHE_TTL_MS.localSupportList,
+    confirmed: true,
+    knownParams: ["pageNo", "numOfRows", "lifeArray", "ctpvNm", "sggNm", "searchWrd"],
+    note: "실호출 확인(2026-11-03): XML 응답, 루트 wantedList, 결과 코드 40은 0건으로 처리. .docs/api-notes/lcgv-welfare.md",
+  },
+  lcgvDetail: {
+    id: "lcgvDetail",
+    title: "한국사회보장정보원 지자체복지서비스 — 상세",
+    datasetUrl: LCGV_DATASET_URL,
+    attribution: LCGV_ATTRIBUTION,
+    baseUrl: LCGV_BASE_URL,
+    operation: "LcgvWelfaredetailed",
+    itemsPath: ["wantedDtl"],
+    resultCodePath: ["wantedDtl", "resultCode"],
+    emptyCodes: ["40"],
+    cacheTtlMs: CACHE_TTL_MS.localSupportDetail,
+    confirmed: true,
+    knownParams: ["servId"],
+    note: "실호출 확인(2026-11-03): 오퍼레이션 철자 LcgvWelfaredetailed, 루트 wantedDtl. .docs/api-notes/lcgv-welfare.md",
   },
 };
