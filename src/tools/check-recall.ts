@@ -4,6 +4,7 @@ import { callSafetyKorea, SK_MAX_ROWS, SK_SPECS, type SkResult, type SkService }
 import { settleWithin } from "../core/deadline.js";
 import type { ToolContext } from "../core/context.js";
 import { ToolError } from "../core/errors.js";
+import { RECALL_REFERENCE_NOTICE } from "../core/notice.js";
 import {
   CHILD_KEYWORDS,
   compareRows,
@@ -41,11 +42,10 @@ const ERROR_PRIORITY: string[] = [
   "TIMEOUT",
   "INTERNAL",
 ];
-const NOTICE_NO_HISTORY = "리콜 이력이 없다는 것이 안전하다는 뜻은 아닙니다.";
-const NOTICE_CHILD = `어린이제품 구분: 서버에 어린이제품 분류 조건이 없어 제품명·모델·분류·사유에 어린이 관련 키워드(${CHILD_KEYWORDS.slice(0, 8).join(", ")} 등)가 있는지로 표시한 근사치입니다. 키워드 기반이라 어린이제품이 빠지거나 아닌 제품이 포함될 수 있습니다. 키워드가 없는 항목도 숨기지 않고 '어린이제품 여부 불명'으로 표시합니다(필터로 제외한 항목 0건).`;
-const NOTICE_KC = "KC 인증 항목은 리콜 이력이 아니라 인증 기록입니다(인증 상태를 함께 표시).";
-const DISCLAIMER_RECALL =
-  "리콜 정보 면책: 제품안전정보센터 공개 정보를 옮긴 참고 정보이며 리콜 여부 판단이나 구매·사용 가부 판단이 아닙니다. 최종 확인은 제품안전정보센터 사이트(https://www.safetykorea.kr)와 제조사·판매처에서 하세요. 리콜 이력이 없다는 것이 안전하다는 뜻은 아닙니다.";
+const NOTICE_NO_HISTORY = "리콜 기록을 찾지 못한 제품도 사용 전에 제조사·판매처 안내를 함께 확인해 주세요.";
+const NOTICE_CHILD = `어린이제품 구분: 서버에 어린이제품 분류 조건이 없어 제품명·모델·분류·사유에 어린이 관련 키워드(${CHILD_KEYWORDS.slice(0, 8).join(", ")} 등)가 있는지로 표시한 근사치입니다. 키워드 기반이라 어린이제품이 빠지거나 다른 제품이 함께 포함될 수 있습니다. 키워드가 없는 항목도 숨기지 않고 '어린이제품 여부 불명'으로 표시합니다(필터로 제외한 항목 0건).`;
+const NOTICE_KC = "KC 인증 항목은 인증 기록이에요(리콜 기록과 구분해 인증 상태를 함께 표시).";
+const DISCLAIMER_RECALL = `리콜 정보 면책: ${RECALL_REFERENCE_NOTICE}`;
 
 const schema = z.object({
   product_name: keywordField(
@@ -65,7 +65,7 @@ const schema = z.object({
     { min: 1, max: 10 },
   ).optional(),
   include_certification: boolField({
-    purpose: "KC 인증정보도 함께 조회할지 여부(인증 기록이며 리콜 이력이 아님).",
+    purpose: "KC 인증정보도 함께 조회할지 여부(인증 기록으로, 리콜 기록과 구분해 표시).",
     format: "true 또는 false, 기본 false",
     example: "false",
   }).optional(),
@@ -214,7 +214,7 @@ const def: ToolDef<typeof schema> = {
   name: "check_recall",
   title: "어린이제품 리콜 이력 조회(제품안전정보센터 Open API)",
   description:
-    "제품명 일부로 제품안전정보센터(SafetyKorea) Open API의 국내 리콜·국외 리콜·해외직구 안전성조사(선택 시 KC 인증) 기록을 조회해 출처 구분·제품명·업체·공표일·사유·조치를 공표일 최신순으로 요약하고, 어린이 관련 키워드로 어린이제품 가능성을 표시합니다. 리콜 여부나 구매 가부를 판단하지 않으며 이력이 없다고 안전하다는 뜻이 아닙니다. 제품안전정보센터 서비스 ID(SAFETYKOREA_AUTH_KEY)가 필요한 참고 도구입니다.",
+    "제품명 일부로 제품안전정보센터(SafetyKorea) Open API의 국내 리콜·국외 리콜·해외직구 안전성조사(선택 시 KC 인증) 기록을 조회해 출처 구분·제품명·업체·공표일·사유·조치를 공표일 최신순으로 요약하고, 어린이 관련 키워드로 어린이제품 가능성을 표시합니다. 리콜 여부나 구매 가부를 판단하지 않으며, 리콜 기록을 찾지 못한 제품도 사용 전에 제조사·판매처 안내를 함께 확인해 주세요. 제품안전정보센터 서비스 ID(SAFETYKOREA_AUTH_KEY)가 필요한 참고 도구입니다.",
   schema,
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
   requiredKeys: ["SAFETYKOREA"],

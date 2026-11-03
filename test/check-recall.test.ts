@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { z } from "zod";
 import { SK_MAX_ROWS, SK_SPECS, type SkService } from "../src/clients/safetykorea.js";
 import { CACHE_TTL_MS } from "../src/core/cache-ttl.js";
+import { RECALL_REFERENCE_NOTICE } from "../src/core/notice.js";
 import { runTool } from "../src/core/pipeline.js";
 import { checkRecallTool } from "../src/tools/check-recall.js";
 import {
@@ -115,8 +117,16 @@ describe("check_recall summary", () => {
     expect(first).toContain("조치: 수선 및 교환");
     expect(first).toContain("인증 상태: 적합");
     expect(first).toContain("키워드 기반");
-    expect(first).toContain("인증 기록입니다");
+    expect(first).toContain("KC 인증 항목은 인증 기록이에요(리콜 기록과 구분해 인증 상태를 함께 표시).");
+    expect(first).toContain(`리콜 정보 면책: ${RECALL_REFERENCE_NOTICE}`);
     expect(first).toContain(`제품명 일치 ${FIXTURE_TOTAL}건`);
+  });
+
+  it("certification field description and tool description use positive wording", () => {
+    const js = JSON.stringify(z.toJSONSchema(checkRecallTool.schema, { io: "input" }));
+    expect(js).toContain("(인증 기록으로, 리콜 기록과 구분해 표시)");
+    expect(js).not.toMatch(/아니|아닌|아님|아닙/);
+    expect(checkRecallTool.description).not.toMatch(/아니|아닌|아님|아닙/);
   });
 
   it("dedupe: same uid rows collapse and uid-less duplicates collapse", async () => {
@@ -190,9 +200,17 @@ describe("check_recall summary", () => {
     const res = await run({ product_name: "유모차" }, skCtx(mock));
     const text = textOf(res);
     expect(res.isError).toBeFalsy();
-    for (const w of ["(정상 조회)","안전하다는 뜻은 아닙니다", "제품명을 줄이거나", "https://www.safetykorea.kr"]) {
+    for (const w of [
+      "(정상 조회)",
+      "리콜 기록을 찾지 못한 제품도 사용 전에 제조사·판매처 안내를 함께 확인해 주세요.",
+      `리콜 정보 면책: ${RECALL_REFERENCE_NOTICE}`,
+      "제품명을 줄이거나",
+      "https://www.safetykorea.kr",
+    ]) {
       expect(text).toContain(w);
     }
+    expect(text).not.toContain("안전하다는 뜻은 아닙니다");
+    expect(text).not.toContain("(오류 아님)");
   });
 
   it("capped: upper bound notice", async () => {
@@ -301,7 +319,7 @@ describe("check_recall summary", () => {
       "국내 리콜정보",
       "조회 시각",
       "KST",
-      "리콜 여부 판단",
+      `리콜 정보 면책: ${RECALL_REFERENCE_NOTICE}`,
       "공공기관이 제공하는 공개 API와 자료를 이용해 정리해 드려요.",
     ]) {
       expect(text).toContain(w);
