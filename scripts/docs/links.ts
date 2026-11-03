@@ -15,6 +15,10 @@ export const MCPB_TAG = "mcpb-latest";
 export const MCPB_ASSET = "korean-parenting-mcp.mcpb";
 export const MCPB_URL = `${REPO_URL}/releases/download/${MCPB_TAG}/${MCPB_ASSET}`;
 export const DOC_NOTICE = `${SOURCE_NOTICE} ${REFERENCE_NOTICE}`;
+/** 지자체복지서비스(15108347) 활용신청 페이지. src/local-support/summarize.ts LCGV_APPLY_ACTION과 같은 값 — test/docs-constants.test.ts가 대조. */
+export const LCGV_DATASET_URL = "https://www.data.go.kr/data/15108347/openapi.do";
+/** 보건소 목록 주 원본(3072692) 페이지. src/data-store/schema.ts HEALTH_CENTER_SOURCES["3072692"].url과 같은 값 — test/docs-constants.test.ts가 대조. */
+export const HEALTH_CENTER_DATASET_URL = "https://www.data.go.kr/data/3072692/fileData.do";
 export interface DocPage { readonly id: string; readonly path: string; readonly title: string; readonly summary: string; readonly parent?: string; readonly required: boolean; }
 export const DOC_PAGES: readonly DocPage[] = [
   { id: "start", path: "docs/start.md", title: "처음이라면: 쉬운 시작 안내", summary: "무엇을 하는 도구인지, 어떻게 설치하는지 차근차근 알려 드려요", required: true },
