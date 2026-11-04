@@ -16,8 +16,10 @@ import { ToolError } from "../src/core/errors.js";
 import { getTimelineTool } from "../src/tools/get-timeline.js";
 import { computeOfflineTimeline } from "../src/timeline/offline.js";
 import { formatDate } from "../src/date/civil-date.js";
+import { loadData, resolveBasis } from "../src/data-store/load.js";
 import type { TimelineArgs } from "../src/timeline/input.js";
 import { createTestContext } from "./helpers/context.js";
+import { fakeDocument, type FakeElement } from "./helpers/fake-dom.js";
 import { pickRegion } from "./helpers/health-center-picks.js";
 import { CLIENT_BRANDS } from "./helpers/visuals.js";
 
@@ -30,6 +32,7 @@ interface Kpm {
 }
 
 const root = fileURLToPath(new URL("../", import.meta.url));
+const html = readFileSync(join(root, "site/index.html"), "utf8");
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as {
   scripts: Record<string, string>;
   files: string[];
@@ -145,10 +148,75 @@ describe("site bundle", () => {
         expect(card.title).toBe(item.title);
         expect(card.date).toBe(formatDate(item.start));
         expect(card.category).toBe(item.category);
-        for (const v of Object.values(card)) {
+        for (const [k, v] of Object.entries(card)) {
+          if (k === "sources") continue;
           expect(v === null || typeof v === "string").toBe(true);
         }
+        expect(card.sources).toEqual(
+          JSON.parse(
+            JSON.stringify(
+              resolveBasis([...new Set(item.provenance.basis_ids)]).map((d) => ({ title: d.title, url: d.url, asOf: d.as_of })),
+            ),
+          ),
+        );
       });
+    }
+  });
+
+  it("vaccination and parent allowance cards show document titles", () => {
+    const cards = SAMPLES.flatMap((s) => kpm.computeForPage(s, TODAY).cards ?? []) as unknown as Array<{
+      title: string;
+      category: string;
+      sources: Array<{ title: string }>;
+    }>;
+    const vaccine = cards.filter((c) => c.category === "접종");
+    expect(vaccine.length).toBeGreaterThan(0);
+    expect(
+      vaccine.some((c) => {
+        const titles = c.sources.map((s) => s.title);
+        return titles.includes("표준예방접종일정표(2026, 어린이)") && titles.includes("2026년 국가예방접종 지침");
+      }),
+    ).toBe(true);
+    const allowance = cards.filter((c) => c.title.includes("부모급여"));
+    expect(allowance.length).toBeGreaterThan(0);
+    expect(
+      allowance.some((c) => c.sources.some((s) => s.title === "2026년 부모급여 안내(정책브리핑)")),
+    ).toBe(true);
+  });
+
+  it("card DOM shows linked titles with as-of and no basis ids", () => {
+    const dom = fakeDocument(html);
+    const domCtx = vm.createContext({ URL, document: dom.document }, { codeGeneration: { strings: false, wasm: false } });
+    vm.runInContext(js, domCtx, { filename: "app.js" });
+    const { renderCard } = (domCtx as unknown as {
+      KPM: { renderCard(c: Record<string, unknown>): FakeElement };
+    }).KPM;
+    const ids = loadData("basis-documents").documents.map((d) => d.id);
+    expect(ids.length).toBe(23);
+    for (const s of SAMPLES) {
+      for (const card of kpm.computeForPage(s, TODAY).cards ?? []) {
+        const sources = card.sources as Array<{ title: string; url: string; asOf: string }>;
+        const li = renderCard(card);
+        for (const id of ids) expect(li.textContent).not.toContain(id);
+        // id-shaped tokens start with an ASCII lowercase letter; digit-led ranges like "2026-2027" in item titles are legitimate (PUB5 R4)
+        expect(li.textContent).not.toMatch(/(?<![A-Za-z0-9])[a-z][a-z0-9]*(?:-[a-z0-9]+)*-20\d\d/);
+        const line = li.children.find((ch) => ch.className === "card-source");
+        expect(line).toBeDefined();
+        if (!line) continue;
+        expect(line.textContent).not.toMatch(/(?<![A-Za-z0-9])[a-z][a-z0-9]*(?:-[a-z0-9]+)+/);
+        const links = line.children.filter((ch) => ch.tagName === "A");
+        expect(links.length).toBe(sources.length);
+        links.forEach((a, i) => {
+          const src = sources[i]!;
+          expect(a.textContent).toBe(src.title);
+          expect(a.href).toBe(src.url);
+          expect(a.target).toBe("_blank");
+          expect(a.rel.split(" ")).toContain("noopener");
+        });
+        for (const src of sources) expect(line.textContent).toContain(`${src.title} (기준일 ${src.asOf})`);
+        const titles = sources.map((src) => src.title);
+        expect(new Set(titles).size).toBe(titles.length);
+      }
     }
   });
 
