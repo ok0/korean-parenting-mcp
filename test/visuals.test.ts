@@ -348,6 +348,8 @@ describe("visual assets (M30)", () => {
     expect(Object.keys(pkg.devDependencies).sort()).toEqual([
       "@anthropic-ai/mcpb",
       "@types/node",
+      "ajv",
+      "ajv-formats",
       "esbuild",
       "pdfjs-dist",
       "typescript",
