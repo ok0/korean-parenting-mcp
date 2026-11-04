@@ -235,7 +235,7 @@ describe("health center API page conversion", () => {
     const out = join(dir, "hc.json");
 
     const checkRun = makeIo();
-    expect(await main(["--input", apiDir, "--source-modified", "2026-11-02", "--out", out, "--check"], checkRun.io)).toBe(10);
+    expect(await main(["--input", apiDir, "--source-modified", "2026-11-02", "--out", out, "--check"], checkRun.io, { corrections: [] })).toBe(10);
     expect(existsSync(out)).toBe(false);
     const text = checkRun.out.join("");
     expect(text).toContain("원본 행: 3");
@@ -245,12 +245,12 @@ describe("health center API page conversion", () => {
     expect(text).toContain("주 기관을 찾지 못한 지역:");
 
     const saveRun = makeIo();
-    expect(await main(["--input", apiDir, "--source-modified", "2026-11-02", "--out", out], saveRun.io)).toBe(0);
+    expect(await main(["--input", apiDir, "--source-modified", "2026-11-02", "--out", out], saveRun.io, { corrections: [] })).toBe(0);
     const saved = JSON.parse(readFileSync(out, "utf8")) as { source: { file_name: string } };
     expect(saved.source.file_name).toBe("tn_pubr_public_ht_inst_api");
 
     const recheck = makeIo();
-    expect(await main(["--input", apiDir, "--source-modified", "2026-11-02", "--out", out, "--check"], recheck.io)).toBe(0);
+    expect(await main(["--input", apiDir, "--source-modified", "2026-11-02", "--out", out, "--check"], recheck.io, { corrections: [] })).toBe(0);
   });
 
   it("CLI rejects incomplete API directories", async () => {
