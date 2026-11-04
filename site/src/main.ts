@@ -1,8 +1,9 @@
-import { computeForPage, kstToday, type PageCard, type PageResult } from "./app.js";
+import { SOURCE_TITLE_SEPARATOR } from "../../src/tools/shared/format.js";
+import { computeForPage, kstToday, type PageCard, type PageResult, type PageSource } from "./app.js";
 import { toTimelineArgs } from "./form.js";
 
 export { computeForPage, kstToday } from "./app.js";
-export type { PageCard, PageResult } from "./app.js";
+export type { PageCard, PageResult, PageSource } from "./app.js";
 export { toTimelineArgs } from "./form.js";
 export type { FormValues } from "./form.js";
 
@@ -17,7 +18,29 @@ function el<T extends HTMLElement>(id: string): T {
   return e as T;
 }
 
-function cardItem(c: PageCard): HTMLLIElement {
+function span(text: string): HTMLSpanElement {
+  const s = document.createElement("span");
+  s.textContent = text;
+  return s;
+}
+
+function sourceLine(sources: readonly PageSource[]): HTMLParagraphElement {
+  const p = document.createElement("p");
+  p.className = "card-source";
+  p.append(span("출처 "));
+  sources.forEach((s, i) => {
+    if (i > 0) p.append(span(SOURCE_TITLE_SEPARATOR));
+    const a = document.createElement("a");
+    a.href = s.url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = s.title;
+    p.append(a, span(" (기준일 " + s.asOf + ")"));
+  });
+  return p;
+}
+
+export function renderCard(c: PageCard): HTMLLIElement {
   const li = document.createElement("li");
   li.className = "card";
   const title = document.createElement("h3");
@@ -28,10 +51,7 @@ function cardItem(c: PageCard): HTMLLIElement {
   const meta = document.createElement("p");
   meta.className = "card-meta";
   meta.textContent = [c.status, c.category, c.nature].filter((x) => x !== null).join(" · ");
-  const source = document.createElement("p");
-  source.className = "card-source";
-  source.textContent = "출처 " + c.source;
-  li.append(title, date, meta, source);
+  li.append(title, date, meta, sourceLine(c.sources));
   return li;
 }
 
@@ -66,7 +86,7 @@ function run(): void {
   el<HTMLElement>(IDS.error).hidden = true;
   el<HTMLElement>(IDS.error).textContent = "";
   el<HTMLElement>(IDS.asOf).textContent = "계산에 쓴 오늘 날짜(한국 시간): " + r.asOf;
-  el<HTMLElement>(IDS.cards).replaceChildren(...r.cards.map(cardItem));
+  el<HTMLElement>(IDS.cards).replaceChildren(...r.cards.map(renderCard));
   el<HTMLElement>(IDS.raw).textContent = r.text;
   el<HTMLElement>(IDS.result).hidden = false;
 }

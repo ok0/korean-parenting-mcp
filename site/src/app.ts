@@ -2,7 +2,10 @@ import { ToolError } from "../../src/core/tool-error.js";
 import { formatDate, todayKst, type CivilDate } from "../../src/date/civil-date.js";
 import type { TimelineArgs } from "../../src/timeline/input.js";
 import { computeOfflineTimeline } from "../../src/timeline/offline.js";
+import { provenanceDocs } from "../../src/timeline/render.js";
 import type { Category, Nature, Status } from "../../src/timeline/types.js";
+
+export interface PageSource { title: string; url: string; asOf: string; }
 
 export interface PageCard {
   date: string;
@@ -11,7 +14,7 @@ export interface PageCard {
   category: Category;
   nature: Nature;
   status: Status | null;
-  source: string;
+  sources: PageSource[];
 }
 
 export type PageResult =
@@ -44,7 +47,7 @@ export function computeForPage(args: TimelineArgs, today: CivilDate): PageResult
     category: i.category,
     nature: i.nature,
     status: i.status ?? null,
-    source: i.provenance.basis_ids.join(", "),
+    sources: provenanceDocs(i.provenance).map((d) => ({ title: d.title, url: d.url, asOf: d.as_of })),
   }));
   return { ok: true, text, cards, asOf: formatDate(today) };
 }

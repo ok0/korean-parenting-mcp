@@ -5,6 +5,9 @@ export class FakeElement {
   value = "";
   hidden = false;
   className = "";
+  href = "";
+  target = "";
+  rel = "";
   private text = "";
   private listeners = new Map<string, Array<() => void>>();
 

@@ -147,6 +147,7 @@ describe("Pages page (M33)", () => {
     expect(flat).toContain(SOURCE_NOTICE);
     expect(text).not.toMatch(/비공식|unofficial|관계없는|개인 프로젝트|(공식|공공기관|정부)[^.\n]{0,20}(아니에요|아닙니다|아니며|아니고|아님)/i);
     expect(text).not.toMatch(/아니|아닌|아님|아닙/);
+    expect(text.replace(/\s+/g, " ")).toContain("제목을 누르면 원문이 새 탭으로 열립니다");
     expect(html).toContain("<title>한국 임신·출산·육아 정보 도구 체험</title>");
     const header = html.slice(html.indexOf('<header id="notice"'), html.indexOf("</header>"));
     const headerText = htmlText(header);
@@ -265,6 +266,11 @@ describe("Pages page (M33)", () => {
     if (!first) return;
     expect(byId("cards").children[0]?.textContent).toContain(first.title);
     expect(byId("cards").children[0]?.textContent).toContain(first.date);
+    const firstLine = byId("cards").children[0]?.children.find((ch) => ch.className === "card-source");
+    expect(firstLine?.textContent.startsWith("출처 ")).toBe(true);
+    expect(firstLine?.textContent).toContain(first.sources[0]!.title);
+    const firstLink = firstLine?.children.find((ch) => ch.tagName === "A");
+    expect(firstLink?.href).toBe(first.sources[0]!.url);
   });
 
   it("invalid and empty input show the get_timeline error (fake DOM)", () => {
