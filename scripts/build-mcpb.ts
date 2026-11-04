@@ -37,7 +37,7 @@ async function main(): Promise<void> {
     bundle: true,
     platform: "node",
     format: "esm",
-    target: "node20",
+    target: "node22",
     sourcemap: false,
     minify: false,
     banner: { js: ESM_REQUIRE_BANNER },

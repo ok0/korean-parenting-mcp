@@ -84,7 +84,7 @@ const MOVED_TOKENS: readonly string[] = [
 ];
 
 const MOVED_PHRASES: Record<string, readonly string[]> = {
-  "docs/install.md": ["Node.js 20.19", "STDIO", "API 키 없이 바로 실행"],
+  "docs/install.md": ["Node.js 22.12 이상이 필요합니다.", "STDIO", "API 키 없이 바로 실행"],
   "docs/setup-wizard.md": [
     "대화형 터미널에서만",
     "Enter로 건너뛸",
