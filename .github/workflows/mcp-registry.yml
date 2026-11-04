@@ -1,0 +1,59 @@
+name: mcp-registry
+# npm 2FA 승인을 마친 뒤 Actions에서 수동으로 실행해 공식 MCP Registry에 게시해요. main에서만 게시해요.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: mcp-registry
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MCP_PUBLISHER_VERSION: "1.8.7"
+      MCP_PUBLISHER_SHA256: "00b21004149a4ce66f0782508ae4a2bce67d1bea395a8da0bd8028159fb59579"
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22"
+      - run: npm ci
+      - run: npm run verify
+      - name: check version is public on npm
+        run: |
+          name="$(node -p "require('./server.json').name")"
+          ident="$(node -p "require('./server.json').packages[0].identifier")"
+          version="$(node -p "require('./server.json').packages[0].version")"
+          published="$(npm view "$ident@$version" mcpName 2> /dev/null || true)"
+          if [ "$published" != "$name" ]; then
+            echo "::error title=npm check::npm에 공개된 $ident@$version 의 mcpName이 $name 일 때 게시해요. 지금 값: '$published'. npmjs.com Staged Packages 탭에서 2FA 승인을 마친 뒤 다시 실행해 주세요."
+            exit 1
+          fi
+          echo "$ident@$version 이 npm에 공개되어 있어요. mcpName: $published"
+      - name: install mcp-publisher
+        run: |
+          asset="mcp-publisher_linux_amd64.tar.gz"
+          curl -fsSL -o "$asset" "https://github.com/modelcontextprotocol/registry/releases/download/v${MCP_PUBLISHER_VERSION}/${asset}"
+          echo "${MCP_PUBLISHER_SHA256}  ${asset}" | sha256sum -c -
+          tar -xzf "$asset" mcp-publisher
+          rm "$asset"
+      - name: login with GitHub OIDC
+        run: ./mcp-publisher login github-oidc
+      - name: publish to MCP Registry
+        run: ./mcp-publisher publish
+      - name: summary
+        run: |
+          name="$(node -p "require('./server.json').name")"
+          version="$(node -p "require('./server.json').version")"
+          {
+            echo "### MCP Registry 게시"
+            echo ""
+            echo "- 서버: $name@$version"
+            echo "- 레지스트리에서 이름·버전·설명을 확인하고 릴리스 체크리스트에 기록해 주세요."
+          } >> "$GITHUB_STEP_SUMMARY"
