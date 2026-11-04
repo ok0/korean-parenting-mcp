@@ -9,14 +9,24 @@
   },
   "keywords": [
     "mcp",
+    "mcp-server",
     "model-context-protocol",
-    "claude",
+    "ai-assistant",
     "korea",
     "parenting",
     "pregnancy",
     "childcare"
   ],
   "author": "ok0",
+  "homepage": "https://ok0.github.io/korean-parenting-mcp/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ok0/korean-parenting-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ok0/korean-parenting-mcp/issues"
+  },
+  "mcpName": "io.github.ok0/korean-parenting-mcp",
   "files": [
     "build",
     "!build/remote",

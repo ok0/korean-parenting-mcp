@@ -18,6 +18,10 @@ interface PackageJson {
   engines?: Record<string, string>;
   keywords?: string[];
   description?: string;
+  homepage?: string;
+  repository?: { type?: string; url?: string };
+  bugs?: { url?: string };
+  mcpName?: string;
 }
 
 function listTs(dir: string): string[] {
@@ -173,6 +177,12 @@ describe("project structure", () => {
     expect(pkg.engines?.node).toMatch(/^>=\d+/);
     expect(pkg.keywords?.length ?? 0).toBeGreaterThan(0);
     expect(pkg.description ?? "").toBe("한국 임신·출산·육아 정보 MCP 서버");
+    expect(pkg.repository).toEqual({ type: "git", url: "git+https://github.com/ok0/korean-parenting-mcp.git" });
+    expect(pkg.homepage).toBe("https://ok0.github.io/korean-parenting-mcp/");
+    expect(pkg.bugs?.url).toBe("https://github.com/ok0/korean-parenting-mcp/issues");
+    expect(pkg.mcpName).toBe("io.github.ok0/korean-parenting-mcp");
+    expect(pkg.keywords).toEqual(expect.arrayContaining(["mcp", "mcp-server", "model-context-protocol", "ai-assistant", "korea"]));
+    expect((pkg.keywords ?? []).join(" ")).not.toMatch(/claude|cursor|gemini|codex|chatgpt/i);
   });
 
   it("child_process only in setup", () => {
