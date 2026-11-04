@@ -4,7 +4,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { loadData } from "../src/data-store/load.js";
-import { compareCenters, type HealthCentersFile, HealthCentersSchema } from "../src/data-store/schema.js";
+import { compareCenters, type HealthCenterEntry, type HealthCentersFile, HealthCentersSchema } from "../src/data-store/schema.js";
 import { normalizeRegion } from "../src/region/normalize.js";
 import { main } from "../scripts/build-health-centers.js";
 import {
@@ -23,8 +23,13 @@ import {
   WORDING_PATTERNS,
   wordingField,
 } from "../scripts/lib/health-centers-csv.js";
+import {
+  applyCorrections,
+  HEALTH_CENTER_CORRECTIONS,
+  type HealthCenterCorrection,
+} from "../scripts/lib/health-center-corrections.js";
 import type { ScriptIO } from "../scripts/lib/script-io.js";
-import { NEGATIVE_NOTICE_PATTERNS, UNOFFICIAL_KO } from "./helpers/affiliation-wording.js";
+import { NEGATIVE_NOTICE_PATTERNS, scanNegativeWording, UNOFFICIAL_KO } from "./helpers/affiliation-wording.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const dirs: string[] = [];
@@ -207,25 +212,25 @@ describe("health center CSV conversion", () => {
     const input = fileURLToPath(new URL("./fixtures/health-centers/sample-utf8.csv", import.meta.url));
 
     const first = makeIo();
-    expect(await main(["--input", input, "--source-modified", "2026-11-02", "--out", out, "--check"], first.io)).toBe(10);
+    expect(await main(["--input", input, "--source-modified", "2026-11-02", "--out", out, "--check"], first.io, { corrections: [] })).toBe(10);
     expect(existsSync(out)).toBe(false);
     const firstText = first.out.join("");
     expect(firstText).toContain("원본 행: 14");
     expect(firstText).toContain("미일치: 2");
 
     const second = makeIo();
-    expect(await main(["--input", input, "--source-modified", "2026-11-02", "--out", out], second.io)).toBe(0);
+    expect(await main(["--input", input, "--source-modified", "2026-11-02", "--out", out], second.io, { corrections: [] })).toBe(0);
     expect(existsSync(out)).toBe(true);
     expect(HealthCentersSchema.safeParse(JSON.parse(readFileSync(out, "utf8"))).success).toBe(true);
 
     const third = makeIo();
-    expect(await main(["--input", input, "--source-modified", "2026-11-02", "--out", out, "--check"], third.io)).toBe(0);
+    expect(await main(["--input", input, "--source-modified", "2026-11-02", "--out", out, "--check"], third.io, { corrections: [] })).toBe(0);
 
     writeFileSync(join(dir, "changed.csv"), utf8Text.replace("02-000-0001", "02-000-9001"));
     const changedInput = join(dir, "changed.csv");
     const fourth = makeIo();
     expect(
-      await main(["--input", changedInput, "--source-modified", "2026-11-02", "--out", out, "--check"], fourth.io),
+      await main(["--input", changedInput, "--source-modified", "2026-11-02", "--out", out, "--check"], fourth.io, { corrections: [] }),
     ).toBe(10);
   });
 
@@ -459,7 +464,7 @@ describe("3072692 profile", () => {
     const args = ["--input", input, "--source-modified", "2025-12-31", "--out", out];
 
     const first = makeIo();
-    expect(await main(args, first.io)).toBe(0);
+    expect(await main(args, first.io, { corrections: [] })).toBe(0);
     const firstText = first.out.join("");
     expect(firstText).toContain("원본 형식: 3072692");
     expect(firstText).toContain("제외 유형: 건강생활지원센터 1");
@@ -471,6 +476,147 @@ describe("3072692 profile", () => {
     expect(saved.source.dataset_id).toBe("3072692");
 
     const second = makeIo();
-    expect(await main([...args, "--check"], second.io)).toBe(0);
+    expect(await main([...args, "--check"], second.io, { corrections: [] })).toBe(0);
+  });
+});
+
+describe("M65 corrections", () => {
+  const CORR: HealthCenterCorrection = {
+    code: code("서울특별시 성동구"),
+    name: "가상성동보건소",
+    field: "phone",
+    from: "02-000-0001",
+    to: "02-000-1001",
+    source_url: "https://example.invalid/hc",
+    checked_on: "2026-11-04",
+    verified_by: "agent web check (example.invalid)",
+  };
+  const sc = (phone?: string): HealthCenterEntry => ({
+    code: CORR.code,
+    name: CORR.name,
+    kind: "보건소",
+    ...(phone ? { phone } : {}),
+    verified: "partial",
+  });
+  const changedTable = table.map((row, i) => (i === 6 ? row.map((cell, j) => (j === 8 ? "061-000-9999" : cell)) : row));
+  const staleCases: [string, HealthCenterEntry[], string][] = [
+    ["mismatch", [sc("02-000-0002")], `${CORR.code}|가상성동보건소 phone: 현재 값 02-000-0002, 정정 전 값 02-000-0001`],
+    ["already to", [sc("02-000-1001")], `${CORR.code}|가상성동보건소 phone: 현재 값 02-000-1001, 정정 전 값 02-000-0001`],
+    ["no phone", [sc()], `${CORR.code}|가상성동보건소 phone: 현재 값 없음, 정정 전 값 02-000-0001`],
+    ["missing", [], `${CORR.code}|가상성동보건소 phone: 목록에서 항목을 찾지 못했어요(정정 전 값 02-000-0001)`],
+  ];
+
+  it("correction table has three official rows", () => {
+    expect(HEALTH_CENTER_CORRECTIONS.map((c) => `${c.code}|${c.name}|${c.from}|${c.to}`)).toEqual([
+      "11440|마포구보건소|02-3153-9114|02-3153-8114",
+      "12790|해남군보건소|061-531-3713|061-531-3738",
+      "41117|영통구보건소|031-5191-0718|031-5191-0778",
+    ]);
+    for (const c of HEALTH_CENTER_CORRECTIONS) {
+      expect(c.field).toBe("phone");
+      expect(c.source_url).toMatch(/^https?:\/\/(www\.)?(mapo\.go\.kr|haenam\.go\.kr|health\.suwon\.go\.kr)\//);
+      expect(c.checked_on).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(c.verified_by).toMatch(/^agent web check \(.+\)$/);
+    }
+    expect(scanNegativeWording(JSON.stringify(HEALTH_CENTER_CORRECTIONS)).violations).toEqual([]);
+  });
+
+  it("applies a correction with verification fields", () => {
+    const input = [sc("02-000-0001")];
+    const r = applyCorrections(input, [CORR]);
+    expect(r.entries[0]).toEqual({
+      ...input[0],
+      phone: "02-000-1001",
+      verified: "full",
+      verified_by: "agent web check (example.invalid)",
+      verified_on: "2026-11-04",
+    });
+    expect(r.applied).toEqual([`${CORR.code}|가상성동보건소 phone: 02-000-0001 → 02-000-1001`]);
+    expect(r.stale).toEqual([]);
+    expect(input[0]?.phone).toBe("02-000-0001");
+  });
+
+  it.each(staleCases)("reports stale rows and leaves entries unchanged: %s", (_label, input, message) => {
+    const r = applyCorrections(input, [CORR]);
+    expect(r.entries).toEqual(input);
+    expect(r.applied).toEqual([]);
+    expect(r.stale).toEqual([message]);
+  });
+
+  it("correction overrides inherited verification and rebuilds cleanly", () => {
+    const rows = toSourceRows(table);
+    const base = build(table).data;
+    const prev: HealthCentersFile = {
+      ...base,
+      centers: base.centers.map((c) =>
+        c.name === "가상성동보건소" ? { ...c, verified: "false" as const, verified_by: "tester", verified_on: "2026-11-01" } : c,
+      ),
+    };
+    const first = buildHealthCenters(rows, prev, { lookup, ...opts, generatedAt: "2026-11-09", corrections: [CORR] });
+    expect(first.data.centers.find((c) => c.name === "가상성동보건소")).toMatchObject({
+      phone: "02-000-1001",
+      verified: "full",
+      verified_by: "agent web check (example.invalid)",
+      verified_on: "2026-11-04",
+    });
+    expect(first.report.changed).toBe(1);
+    expect(first.report.corrections.stale).toEqual([]);
+    expect(first.data.generated_at).toBe("2026-11-03");
+    expect(first.data.verified).toBe(prev.verified);
+
+    const second = buildHealthCenters(rows, first.data, { lookup, ...opts, generatedAt: "2026-11-10", corrections: [CORR] });
+    expect(second.report.changed).toBe(0);
+    expect(second.data).toEqual(first.data);
+
+    const sourceChanged = buildHealthCenters(toSourceRows(changedTable), first.data, {
+      lookup,
+      ...opts,
+      generatedAt: "2026-11-10",
+      corrections: [CORR],
+    });
+    expect(sourceChanged.data.generated_at).toBe("2026-11-10");
+  });
+
+  it("CLI applies corrections and --check is clean", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "hc-corr-"));
+    dirs.push(dir);
+    const out = join(dir, "hc.json");
+    const input = fileURLToPath(new URL("./fixtures/health-centers/sample-utf8.csv", import.meta.url));
+    const args = ["--input", input, "--source-modified", "2026-11-02", "--out", out];
+
+    const write = makeIo();
+    expect(await main(args, write.io, { corrections: [CORR] })).toBe(0);
+    const saved = JSON.parse(readFileSync(out, "utf8")) as HealthCentersFile;
+    expect(saved.centers.find((c) => c.name === "가상성동보건소")).toMatchObject({ phone: "02-000-1001", verified: "full" });
+    expect(write.out.join("")).toContain("정정 표: 적용 1 · 다시 확인 0");
+
+    const check = makeIo();
+    expect(await main([...args, "--check"], check.io, { corrections: [CORR] })).toBe(0);
+  });
+
+  it("CLI stops with exit 1 on stale rows and writes nothing", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "hc-stale-"));
+    dirs.push(dir);
+    const out = join(dir, "hc.json");
+    const input = fileURLToPath(new URL("./fixtures/health-centers/sample-utf8.csv", import.meta.url));
+    const args = ["--input", input, "--source-modified", "2026-11-02", "--out", out];
+    const stale = [{ ...CORR, from: "02-000-0009" }];
+
+    const write = makeIo();
+    expect(await main(args, write.io, { corrections: stale })).toBe(1);
+    expect(existsSync(out)).toBe(false);
+    expect(write.err.join("")).toContain("정정 표를 다시 확인하세요");
+    expect(write.err.join("")).toContain("가상성동보건소");
+
+    const check = makeIo();
+    expect(await main([...args, "--check"], check.io, { corrections: stale })).toBe(1);
+    expect(existsSync(out)).toBe(false);
+
+    const defaults = makeIo();
+    expect(await main(args, defaults.io)).toBe(1);
+    expect(defaults.err.join("")).toContain("11440|마포구보건소");
+    expect(defaults.err.join("")).toContain("12790|해남군보건소");
+    expect(defaults.err.join("")).toContain("41117|영통구보건소");
+    expect(existsSync(out)).toBe(false);
   });
 });
