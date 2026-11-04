@@ -69,5 +69,8 @@
     "pdfjs-dist": "^4.10.38",
     "typescript": "^5.9.3",
     "vitest": "^4.1.12"
+  },
+  "overrides": {
+    "tmp": "^0.2.6"
   }
 }
