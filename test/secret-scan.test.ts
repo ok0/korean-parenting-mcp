@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -10,6 +11,13 @@ const secrets = secretsFromEnv(process.env);
 const strong = secrets.filter((s) => s.length >= 8);
 
 const HEURISTIC_ALLOW: Record<string, LeakRule[]> = {};
+
+// Official MCP registry schema, vendored byte-identical; its 64-hex value is a documented "example", not a key.
+const VENDORED_SCHEMA = {
+  rel: "test/fixtures/mcp-registry/server.schema.json",
+  sha256: "3fba09590c99f61735d234822279f4223fab9e300c0a81e81c91ab62a4114de0",
+  rule: "hex64",
+};
 
 const MAX_TRACKED_BYTES = 5 * 1024 * 1024;
 
@@ -64,6 +72,14 @@ describe("secret scan", () => {
         const allowed = HEURISTIC_ALLOW[rel] ?? [];
         return findLeaks(read(f), list, { heuristic })
           .filter((r) => !allowed.includes(r))
+          .filter(
+            (r) =>
+              !(
+                rel === VENDORED_SCHEMA.rel &&
+                r === VENDORED_SCHEMA.rule &&
+                createHash("sha256").update(readFileSync(f)).digest("hex") === VENDORED_SCHEMA.sha256
+              ),
+          )
           .map((r) => `${rel}:${r}`);
       }),
     );
