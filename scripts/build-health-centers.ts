@@ -12,6 +12,7 @@ import {
   parseApiManifest,
   parseApiPage,
 } from "./lib/health-centers-api.js";
+import { HEALTH_CENTER_CORRECTIONS, type HealthCenterCorrection } from "./lib/health-center-corrections.js";
 import {
   buildHealthCenters,
   decodeCsvBytes,
@@ -30,7 +31,11 @@ function bulletsOrNone(items: readonly string[]): string[] {
   return items.length === 0 ? ["- 없음"] : items.map((item) => `- ${item}`);
 }
 
-export async function main(argv: readonly string[], io: ScriptIO, deps?: { lookup?: RegionLookup }): Promise<number> {
+export async function main(
+  argv: readonly string[],
+  io: ScriptIO,
+  deps?: { lookup?: RegionLookup; corrections?: readonly HealthCenterCorrection[] },
+): Promise<number> {
   try {
     const check = argv.includes("--check");
     const rest = argv.filter((arg) => arg !== "--check");
@@ -134,6 +139,7 @@ export async function main(argv: readonly string[], io: ScriptIO, deps?: { looku
       fileName,
       profile,
       excludedKinds,
+      corrections: deps?.corrections ?? HEALTH_CENTER_CORRECTIONS,
     });
 
     const range = report.dataDateRange;
@@ -151,6 +157,9 @@ export async function main(argv: readonly string[], io: ScriptIO, deps?: { looku
       range === null ? "데이터기준일자: 없음" : `데이터기준일자: ${range.min} ~ ${range.max}`,
       `주 기관 지역: ${report.coverage.covered}/${report.coverage.units}`,
       `추가 ${report.added} · 삭제 ${report.removed} · 변경 ${report.changed}`,
+      `정정 표: 적용 ${report.corrections.applied.length} · 다시 확인 ${report.corrections.stale.length}`,
+      "정정 적용:",
+      ...bulletsOrNone(report.corrections.applied),
       "미일치 행:",
       ...bulletsOrNone(report.unmatched),
       "복수 주 기관 목록:",
@@ -161,6 +170,11 @@ export async function main(argv: readonly string[], io: ScriptIO, deps?: { looku
       ...bulletsOrNone(report.coverage.missing),
     ];
     io.stdout(`${lines.join("\n")}\n`);
+
+    if (report.corrections.stale.length > 0) {
+      io.stderr(["정정 표를 다시 확인하세요. 원본 값이 정정 표의 정정 전 값과 달라요. 출력 파일은 그대로 두었어요.", ...report.corrections.stale.map((s) => `- ${s}`)].join("\n") + "\n");
+      return EXIT.USAGE; // 종료 코드 1 (ADR-65)
+    }
 
     if (check) {
       return prev === undefined || report.added + report.removed + report.changed > 0 ? EXIT.CHANGED : EXIT.OK;
