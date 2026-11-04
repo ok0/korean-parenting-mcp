@@ -115,7 +115,7 @@ describe("welfareRegionParams", () => {
     const basis = welfareNamesBasis();
     expect(basis.asOf).toBe(WELFARE_NAMES_AS_OF);
     expect(WELFARE_NAMES_AS_OF).toBe("2026-11-03");
-    expect(basis.regionsAsOf).toBe("2026-10-28");
+    expect(basis.regionsAsOf).toBe("2026-11-04");
     expect(basis.sources.length).toBeGreaterThanOrEqual(1);
   });
 });
