@@ -174,7 +174,7 @@ describe("project structure", () => {
   it("package metadata for publishing", () => {
     expect(pkg.scripts?.prepublishOnly).toBe("npm run verify");
     expect(pkg.license).toBe("MIT");
-    expect(pkg.engines?.node).toMatch(/^>=\d+/);
+    expect(pkg.engines?.node).toBe(">=22.12");
     expect(pkg.keywords?.length ?? 0).toBeGreaterThan(0);
     expect(pkg.description ?? "").toBe("한국 임신·출산·육아 정보 MCP 서버");
     expect(pkg.repository).toEqual({ type: "git", url: "git+https://github.com/ok0/korean-parenting-mcp.git" });
