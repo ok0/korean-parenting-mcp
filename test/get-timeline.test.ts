@@ -105,15 +105,20 @@ describe("get_timeline", () => {
     expect(t.match(/\| 영유아 건강검진 \d차/g)).toHaveLength(8);
     expect(t.match(/\| 영유아 구강검진 \d차/g)).toHaveLength(4);
 
-    const itemLine = /^- \[(지난|진행 중|임박|예정)\] \d{4}-\d{2}-\d{2}( ~ \d{4}-\d{2}-\d{2})? \| .+ \| (법정 의무|권장|지원 신청|안내) \| 출처 [a-z0-9-]+(, [a-z0-9-]+)* \| 기준일 \d{4}-\d{2}-\d{2} \| (전체 검증|부분 검증|미검증)$/;
+    const itemLine = /^- \[(지난|진행 중|임박|예정)\] \d{4}-\d{2}-\d{2}( ~ \d{4}-\d{2}-\d{2})? \| .+ \| (법정 의무|권장|지원 신청|안내) \| 출처 [^|]+ \| 기준일 \d{4}-\d{2}-\d{2} \| (전체 검증|부분 검증|미검증)$/;
     const items = body(t).split("\n").filter((l) => l.startsWith("- ["));
     expect(items.length).toBeGreaterThan(0);
-    for (const l of items) expect(l).toMatch(itemLine);
+    for (const l of items) {
+      expect(l).toMatch(itemLine);
+      expect(l).not.toMatch(/출처 [a-z0-9-]+(, [a-z0-9-]+)* \|/);
+    }
     for (const c of checkupItems(parseDate("2026-01-31"))) {
       const l = items.find((x) => x.includes(`| ${c.title} |`));
       expect(l, c.id).toBeDefined();
       expect(l!.endsWith(`| ${verifiedText(c.provenance.verified)}`), c.id).toBe(true);
     }
+    const footer = t.slice(t.indexOf("\n---\n"));
+    expect(footer).toMatch(/^- \[[a-z0-9-]+\] .+ · https?:\/\/\S+$/m);
 
     const shifted = text(await call({ birth_date: "2025-08-31", reference_date: "2026-05-01" }));
     expect(shifted).toContain("2026-05-31 ~ 2026-09-29");

@@ -18,6 +18,12 @@ export function verifiedText(v: "full" | "partial" | "false" | undefined): strin
   return v === undefined ? "검증 상태 미기재" : VERIFIED_LABEL[v];
 }
 
+export const SOURCE_TITLE_SEPARATOR = " · ";
+
+export function basisTitles(docs: readonly BasisDoc[]): string {
+  return docs.map((d) => d.title).join(SOURCE_TITLE_SEPARATOR);
+}
+
 export function basisLine(doc: BasisDoc): string {
   const dates: string[] = [doc.doc_no];
   if (doc.promulgated !== undefined) dates.push(`공포 ${doc.promulgated}`);

@@ -7,7 +7,9 @@ import {
   DISCLAIMER_MEDICAL_LEGAL,
   NOTICE_SOURCE,
   basisFooter,
+  SOURCE_TITLE_SEPARATOR,
   basisLine,
+  basisTitles,
   composeFooter,
   partialNotice,
   revisionSummary,
@@ -60,6 +62,14 @@ describe("format", () => {
     const footer = basisFooter([]);
     expect(footer).toContain("근거 문서: 없음");
     expect(footer).not.toContain("자동 확인은 아직 제공하지 않");
+  });
+
+  it("basisTitles joins titles with the source separator", () => {
+    const a = { ...doc, title: "가 문서" };
+    const b = { ...doc, title: "나(1, 2) 문서" };
+    expect(basisTitles([a, b])).toBe("가 문서 · 나(1, 2) 문서");
+    expect(basisTitles([])).toBe("");
+    expect(SOURCE_TITLE_SEPARATOR).toBe(" · ");
   });
 
   it("composeFooter drops undefined and blank sections", () => {

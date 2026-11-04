@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { parseDate } from "../src/date/civil-date.js";
 import { bundledCalendar, createCalendar } from "../src/date/holiday-calendar.js";
 import { buildTimeline } from "../src/timeline/engine.js";
-import { footerBasisIds, renderItemLine, renderTimeline, type TimelineView } from "../src/timeline/render.js";
+import { footerBasisIds, provenanceDocs, renderItemLine, renderTimeline, type TimelineView } from "../src/timeline/render.js";
 import type { TimelineInput, TimelineItem, TimelineResult } from "../src/timeline/types.js";
 import {
   DISCLAIMER_MEDICAL_LEGAL,
@@ -71,11 +71,25 @@ describe("timeline render", () => {
   it("item line shows period, nature, source, as_of and verification", () => {
     const out = run("2026-01-31", "2026-02-01", 156, true);
     expect(out.body).toContain(
-      "[진행 중] 2026-01-31 ~ 2026-03-03 | 출생신고 기한 | 법정 의무 | 출처 family-registration-act, civil-act | 기준일 2026-10-28 | 부분 검증",
+      "[진행 중] 2026-01-31 ~ 2026-03-03 | 출생신고 기한 | 법정 의무 | 출처 가족관계의 등록 등에 관한 법률 · 민법 | 기준일 2026-10-28 | 부분 검증",
     );
     expect(out.body).toContain("원래 말일 2026-02-28");
     expect(out.body.match(/영유아 건강검진 \d차/g)?.length).toBe(8);
     expect(out.body.match(/영유아 구강검진 \d차/g)?.length).toBe(4);
+  });
+
+  it("unknown basis id in an item line throws", () => {
+    const out = run("2026-01-31", "2026-02-01", 156, true);
+    const item = out.result.items[0]!;
+    expect(() => renderItemLine({ ...item, provenance: { ...item.provenance, basis_ids: ["no-such-doc-2099"] } })).toThrow(
+      "알 수 없는 근거 문서 id: no-such-doc-2099",
+    );
+    expect(() => provenanceDocs({ ...item.provenance, basis_ids: ["no-such-doc-2099"] })).toThrow("알 수 없는 근거 문서 id");
+  });
+
+  it("footer keeps [id] title … url lines", () => {
+    const out = run("2026-01-31", "2026-02-01", 156, true);
+    expect(out.footer).toMatch(/^- \[family-registration-act\] 가족관계의 등록 등에 관한 법률 .* · https?:\/\/\S+$/m);
   });
 
   it("zero items gives widening hint", () => {

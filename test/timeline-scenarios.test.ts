@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { runTool } from "../src/core/pipeline.js";
+import { loadData, resolveBasis } from "../src/data-store/load.js";
 import { getTimelineTool } from "../src/tools/get-timeline.js";
 import { DISCLAIMER_MEDICAL_LEGAL, NOTICE_SOURCE, NOTICE_VACCINATION_SCOPE } from "../src/tools/shared/format.js";
 import { createTestContext } from "./helpers/context.js";
@@ -56,7 +57,7 @@ describe("fixed timeline scenarios", () => {
   });
 
   it("item lines carry provenance and order", async () => {
-    const itemLine = /^- \[(지난|진행 중|임박|예정)\] \d{4}-\d{2}-\d{2}( ~ \d{4}-\d{2}-\d{2})? \| .+ \| (법정 의무|권장|지원 신청|안내) \| 출처 [a-z0-9-]+(, [a-z0-9-]+)* \| 기준일 \d{4}-\d{2}-\d{2} \| (전체 검증|부분 검증|미검증)$/;
+    const itemLine = /^- \[(지난|진행 중|임박|예정)\] \d{4}-\d{2}-\d{2}( ~ \d{4}-\d{2}-\d{2})? \| .+ \| (법정 의무|권장|지원 신청|안내) \| 출처 [^|]+ \| 기준일 \d{4}-\d{2}-\d{2} \| (전체 검증|부분 검증|미검증)$/;
 
     for (const args of [A, B]) {
       const t = text(await runTool(getTimelineTool, args, createTestContext()));
@@ -64,7 +65,10 @@ describe("fixed timeline scenarios", () => {
         .split("\n")
         .filter((l) => l.startsWith("- ["));
       expect(items.length).toBeGreaterThan(0);
-      for (const l of items) expect(l).toMatch(itemLine);
+      for (const l of items) {
+        expect(l).toMatch(itemLine);
+        expect(l).not.toMatch(/출처 [a-z0-9-]+(, [a-z0-9-]+)* \|/);
+      }
 
       const starts = items.map((l) => /\] (\d{4}-\d{2}-\d{2})/.exec(l)![1]!);
       expect(starts).toEqual([...starts].sort());
@@ -81,8 +85,19 @@ describe("fixed timeline scenarios", () => {
       const head = t.slice(0, t.indexOf("\n\n---\n"));
       const ids = [...footer.matchAll(/^- \[([a-z0-9-]+)\]/gm)].map((m) => m[1]!);
       expect(ids.length).toBeGreaterThan(0);
+      // body source cells (item lines and local guidance lines) show titles, never ids (PUB5 R5)
+      const sources = head
+        .split("\n")
+        .map((l) => / \| 출처 ([^|]+) \| /.exec(l)?.[1])
+        .filter((s): s is string => s !== undefined);
+      expect(sources.length).toBeGreaterThanOrEqual(items.length);
+      const allIds = loadData("basis-documents").documents.map((d) => d.id);
+      for (const s of sources) for (const id of allIds) expect(s).not.toContain(id);
       // block basis is footer-only per M59 R6
-      for (const id of ids.filter((i) => i !== "health-center-standard-data")) expect(head).toContain(id);
+      const joined = sources.join("\n");
+      for (const id of ids.filter((i) => i !== "health-center-standard-data")) {
+        expect(joined).toContain(resolveBasis([id])[0]!.title);
+      }
 
       expect(t).not.toContain("자 생략");
     }
