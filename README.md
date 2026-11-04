@@ -55,6 +55,21 @@ MCP를 지원하는 AI 도우미에 연결하면, AI 도우미가 질문에 맞�
   <img src="https://raw.githubusercontent.com/ok0/korean-parenting-mcp/main/assets/report-example-light.svg" alt="한 AI 앱에 실제로 보낸 출산 준비 질문과, 그 앱이 일정 계산과 지원금·휴일 소아 진료·유치원 정보를 찾아 준 실제 답변을 그림에 맞게 한 장으로 줄인 보고서입니다." width="800">
 </picture>
 
+## 출처와 이용 조건
+
+이 서버는 아래 공공기관이 제공하는 기능(공개 API)과 자료를 이용해 정리해요.
+
+- [법제처 국가법령정보 공동활용](https://open.law.go.kr) — 출처를 밝히면 영리 목적을 포함해 자유롭게 활용할 수 있어요.
+- [유치원알리미](https://e-childschoolinfo.moe.go.kr) — 저작자와 출처를 표시하면 영리 목적을 포함한 변경과 자유이용을 허락해요(일반현황 API 기준).
+- [제품안전정보센터(SafetyKorea)](https://www.safetykorea.kr/release/openapi) — 이용 조건은 기관의 Open API 안내를 따라요.
+- 공공데이터포털(data.go.kr) 제공 데이터셋
+  - 이용허락범위 제한 없음: [한국사회보장정보원 지자체복지서비스](https://www.data.go.kr/data/15108347/openapi.do), [보건복지부 전국 지역보건의료기관 현황](https://www.data.go.kr/data/3072692/fileData.do), [국토교통부 전국 법정동](https://www.data.go.kr/data/15063424/fileData.do)
+  - 공공누리 제1유형(출처표시): [국민건강보험공단 검진기관 찾기 조회](https://www.data.go.kr/data/15154419/openapi.do)
+  - 각 데이터셋 페이지의 이용허락범위 안내를 따라요: [국립중앙의료원 전국 병·의원 찾기](https://www.data.go.kr/data/15000736/openapi.do), [행정안전부 대한민국 공공서비스(혜택) 정보](https://www.data.go.kr/data/15113968/openapi.do), [식품의약품안전처 DUR 품목정보](https://www.data.go.kr/data/15059486/openapi.do), [한국천문연구원 특일 정보](https://www.data.go.kr/data/15012690/openapi.do)
+- 안내 링크로 소개하는 누리집 — [예방접종도우미](https://nip.kdca.go.kr), [국민건강보험공단](https://www.nhis.or.kr), [아이사랑](https://www.childcare.go.kr), [복지로](https://www.bokjiro.go.kr), [정부24](https://www.gov.kr), [응급의료포털](https://www.e-gen.or.kr)의 이용 안내를 따라요.
+
+자료의 저작권과 이용 조건은 각 기관의 안내를 따라요.
+
 ## 라이선스
 
 MIT — `LICENSE` 참조

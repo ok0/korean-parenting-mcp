@@ -212,3 +212,25 @@ describe("README Pages link (M33)", () => {
     expect(intro).toContain("체험");
   });
 });
+
+describe("README sources and terms (PUB2)", () => {
+  const start = readme.indexOf("## 출처와 이용 조건");
+  const end = readme.indexOf("## 라이선스");
+  const section = readme.slice(start, end);
+
+  it("sits after the figures and before the license", () => {
+    expect(start).toBeGreaterThan(readme.lastIndexOf("</picture>"));
+    expect(end).toBeGreaterThan(start);
+    expect(section.trimEnd().split("\n").length).toBeLessThanOrEqual(15);
+  });
+
+  it("names the public sources with positive wording", () => {
+    for (const s of ["법제처", "공공데이터포털", "유치원알리미", "제품안전정보센터", "공공기관이 제공하는 기능(공개 API)", "각 기관의 안내를 따라요"]) {
+      expect(section, s).toContain(s);
+    }
+    for (const id of ["15108347", "3072692", "15063424", "15154419", "15000736", "15113968", "15059486", "15012690"]) {
+      expect(section, id).toContain(`https://www.data.go.kr/data/${id}/`);
+    }
+    expect(section).not.toMatch(/아니|아님|아닙|아닌|비공식|unofficial|무관|관계없/i);
+  });
+});

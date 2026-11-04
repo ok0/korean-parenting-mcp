@@ -14,7 +14,7 @@ export const ONE_LINER = "한국 임신·출산·육아 정보 MCP 서버";
 export const PAGES_URL = "https://ok0.github.io/korean-parenting-mcp/";
 export const MCPB_DOWNLOAD_LABEL = "설치 파일 바로 내려받기";
 
-export const README_HEADINGS: readonly string[] = ["# korean-parenting-mcp", "## 바로가기", "## 그림으로 보기", "## 라이선스"];
+export const README_HEADINGS: readonly string[] = ["# korean-parenting-mcp", "## 바로가기", "## 그림으로 보기", "## 출처와 이용 조건", "## 라이선스"];
 
 export const FORBIDDEN_README_HEADINGS: readonly RegExp[] = [/설치와\s*실행/, /설정\s*마법사/, /확장|\.mcpb/i, /선택·고급\s*기능/, /키\s*없이\s*쓰는\s*기능/];
 
