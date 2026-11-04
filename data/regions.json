@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-10-28",
+  "as_of": "2026-11-04",
   "verified": "partial",
   "note": "현존 시군구는 법정동 파일의 시군구 행(읍면동·리 공란)에서 생성. verified partial=법정동 파일과 유치원알리미 코드표 일치, false=코드표에 없어 대조 불가. nemc_q0은 정식 명칭, nemc_q1은 정식 명칭에서 공백을 뺀 값(일반구는 NEMC가 공백 없는 표기만 받음, M12 확인). 5자리 코드=법정동코드 앞 5자리(정황 근거, research/region-codes.md C3). 광주광역시·전라남도는 전남광주통합특별시 별칭으로만 남김.",
   "sources": [
@@ -9,8 +9,8 @@
       "provider": "국토교통부",
       "url": "https://www.data.go.kr/data/15063424/fileData.do",
       "license": "이용허락범위 제한 없음",
-      "as_of": "2026-06-30",
-      "retrieved": "2026-10-28",
+      "as_of": "2026-07-29",
+      "retrieved": "2026-11-04",
       "sha256": "e5657d4b53a16f72e42e9c0d91e84ff2d647e70dc56b9408da6fd057d0da45c3"
     },
     {
@@ -19,8 +19,8 @@
       "provider": "교육부 유치원알리미",
       "url": "https://e-childschoolinfo.moe.go.kr/openApi/sidoSigunguCode.do",
       "license": "공식 사이트 공개 코드표(코드 대조와 codes.kindergarten에만 사용)",
-      "as_of": "2026-10-28",
-      "retrieved": "2026-10-28",
+      "as_of": "2026-11-04",
+      "retrieved": "2026-11-04",
       "sha256": "94bb20b042c7b4bde170b8264c7116076e07dc98f8d97132841bc8f6c91e8925"
     }
   ],
