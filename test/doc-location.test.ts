@@ -15,6 +15,7 @@ const CONFIG_FILES = [
   "tsconfig.build.json",
   "tsconfig.scripts.json",
   "manifest.json",
+  "server.json",
   "vitest.config.ts",
   ".gitignore",
   ".mcpbignore",
