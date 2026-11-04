@@ -22,6 +22,7 @@ import {
   type HealthCenterLookup,
 } from "../src/region/health-centers.js";
 import { SOURCE_PROFILES } from "../scripts/lib/health-centers-csv.js";
+import { HEALTH_CENTER_CORRECTIONS } from "../scripts/lib/health-center-corrections.js";
 import { scanNegativeWording } from "./helpers/affiliation-wording.js";
 
 const PRIMARY_KINDS: readonly string[] = ["보건소", "보건의료원"];
@@ -36,6 +37,8 @@ const M64_SAMPLE: readonly string[] = [
   "52110|전주시 보건소",
   "52113|덕진보건소",
 ];
+const M64_FALSE = ["11440|마포구보건소", "12790|해남군보건소"];
+const CORRECTED: readonly string[] = HEALTH_CENTER_CORRECTIONS.map((c) => `${c.code}|${c.name}`);
 
 const hc = loadData("health-centers");
 const regions = loadData("regions");
@@ -123,7 +126,7 @@ describe("health-centers", () => {
           expect(c.verified_by, key).toBeUndefined();
           expect(c.verified_on, key).toBeUndefined();
         } else {
-          expect(M64_SAMPLE, key).toContain(key);
+          expect([...M64_SAMPLE, ...CORRECTED], key).toContain(key);
           expect(c.verified_by, key).toMatch(/^agent web check \(.+\)$/);
           expect(c.verified_on, key).toMatch(DATE_RE);
         }
@@ -135,9 +138,28 @@ describe("health-centers", () => {
       for (const k of M64_SAMPLE) {
         expect(hc.centers.some((c) => `${c.code}|${c.name}` === k && c.verified !== "partial"), k).toBe(true);
       }
-      expect(hc.centers.find((c) => c.code === "41117")?.verified).toBe("partial");
-      expect(hc.centers.filter((c) => c.verified === "full").length).toBe(6);
-      expect(hc.centers.filter((c) => c.verified === "false").length).toBe(2);
+      expect(hc.centers.filter((c) => c.verified === "full").length).toBe(
+        6 + CORRECTED.filter((k) => !M64_SAMPLE.includes(k) || M64_FALSE.includes(k)).length,
+      );
+      expect(hc.centers.filter((c) => c.verified === "false").length).toBe(
+        M64_FALSE.filter((k) => !CORRECTED.includes(k)).length,
+      );
+    });
+
+    it("M65 corrections are in the bundled list", () => {
+      for (const c of HEALTH_CENTER_CORRECTIONS) {
+        const matches = hc.centers.filter((e) => e.code === c.code && e.name === c.name);
+        expect(matches.length, `${c.code}|${c.name}`).toBeGreaterThan(0);
+        for (const e of matches) {
+          expect(e, `${c.code}|${c.name}`).toMatchObject({
+            phone: c.to,
+            verified: "full",
+            verified_by: c.verified_by,
+            verified_on: c.checked_on,
+          });
+          expect(e.phone, `${c.code}|${c.name}`).not.toBe(c.from);
+        }
+      }
     });
 
     it("note states the covered count while coverage is short", () => {

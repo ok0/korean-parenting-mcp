@@ -142,10 +142,10 @@
       "code": "11440",
       "name": "마포구보건소",
       "kind": "보건소",
-      "phone": "02-3153-9114",
+      "phone": "02-3153-8114",
       "homepage": "https://www.mapo.go.kr/site/health/home",
       "address": "서울특별시 마포구 월드컵로 212 (성산동, 마포구청), 마포구보건소 마포구보건소",
-      "verified": "false",
+      "verified": "full",
       "verified_by": "agent web check (mapo.go.kr)",
       "verified_on": "2026-11-04"
     },
@@ -410,10 +410,10 @@
       "code": "12790",
       "name": "해남군보건소",
       "kind": "보건소",
-      "phone": "061-531-3713",
+      "phone": "061-531-3738",
       "homepage": "http://www.haenam.go.kr/health/index.9is?contentUid=18e3368f6797832401681169c3cf5d94",
       "address": "전라남도 해남군 해남읍 해남로 46 (해남보건소) 해남군보건소",
-      "verified": "false",
+      "verified": "full",
       "verified_by": "agent web check (haenam.go.kr)",
       "verified_on": "2026-11-04"
     },
@@ -907,10 +907,12 @@
       "code": "41117",
       "name": "영통구보건소",
       "kind": "보건소",
-      "phone": "031-5191-0718",
+      "phone": "031-5191-0778",
       "homepage": "https://health.suwon.go.kr",
       "address": "경기도 수원시 영통구 영통로 396 (영통동, 영통구보건소) 영통구보건소",
-      "verified": "partial"
+      "verified": "full",
+      "verified_by": "agent web check (health.suwon.go.kr)",
+      "verified_on": "2026-11-04"
     },
     {
       "code": "41131",
