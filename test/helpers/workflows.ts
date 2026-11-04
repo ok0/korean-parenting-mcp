@@ -200,3 +200,37 @@ export function npmPublishProblems(text: string): string[] {
   if (/continue-on-error|always\(\)/.test(text)) problems.push("continue-on-error·always()는 쓰지 않습니다.");
   return problems;
 }
+
+export const MCP_PUBLISHER = { version: "1.8.7", sha256: "00b21004149a4ce66f0782508ae4a2bce67d1bea395a8da0bd8028159fb59579", asset: "mcp-publisher_linux_amd64.tar.gz" } as const;
+
+export function mcpRegistryProblems(text: string): string[] {
+  const problems: string[] = [];
+  if (!/^on:\n {2}workflow_dispatch:\npermissions:\n/m.test(text)) problems.push("트리거는 workflow_dispatch 하나여야 합니다.");
+  if (/^ {2}(push|pull_request|pull_request_target|schedule|workflow_run|workflow_call|repository_dispatch|release|merge_group):/m.test(text) || /branches:|tags:|cron:/.test(text)) problems.push("workflow_dispatch 외 트리거가 있습니다.");
+  if (JSON.stringify(topPermissions(text)) !== JSON.stringify({ contents: "read", "id-token": "write" }) || (text.match(/^[ \t]*permissions:/gm)?.length ?? 0) !== 1) problems.push("권한은 contents: read, id-token: write 두 개여야 합니다.");
+  if (secretNames(text).length > 0 || /secrets\.|github\.token|_TOKEN\b/.test(text)) problems.push("토큰·시크릿 참조가 있습니다.");
+  if (!/^concurrency:\n {2}group: mcp-registry\n {2}cancel-in-progress: false\n/m.test(text)) problems.push("concurrency(mcp-registry, cancel-in-progress: false)가 필요합니다.");
+  if (!/^ {4}timeout-minutes: \d+$/m.test(text)) problems.push("timeout-minutes가 필요합니다.");
+  const jobsPart = text.split("\njobs:\n")[1] ?? "";
+  if ((jobsPart.match(/^ {2}[\w-]+:\s*$/gm)?.length ?? 0) !== 1 || !/^ {4}if: github\.ref == 'refs\/heads\/main'$/m.test(text)) problems.push("main에서만 실행되는 job 하나여야 합니다.");
+  if (/^ {8}if:/m.test(text) || /continue-on-error|always\(\)/.test(text)) problems.push("단계 if·continue-on-error·always()는 쓰지 않습니다.");
+  const ver = /^ {6}MCP_PUBLISHER_VERSION: "([^"]*)"$/m.exec(text)?.[1];
+  const sha = /^ {6}MCP_PUBLISHER_SHA256: "([^"]*)"$/m.exec(text)?.[1];
+  if (ver !== MCP_PUBLISHER.version || sha !== MCP_PUBLISHER.sha256 || !/^\d+\.\d+\.\d+$/.test(ver ?? "") || !/^[0-9a-f]{64}$/.test(sha ?? "")) problems.push("mcp-publisher 버전과 sha256은 고정값이어야 합니다.");
+  if (/releases\/latest|\/latest\/|@latest|:latest/.test(text)) problems.push("latest 같은 가변 참조는 쓰지 않습니다.");
+  const inst = block(text, "sha256sum -c");
+  if (!inst.includes("releases/download/v${MCP_PUBLISHER_VERSION}/") || !inst.includes(MCP_PUBLISHER.asset) || !inst.includes('"${MCP_PUBLISHER_SHA256}  ${asset}" | sha256sum -c -') || inst.indexOf("sha256sum -c") > inst.indexOf("tar -xzf")) problems.push("publisher는 고정 버전을 내려받아 sha256 확인 뒤 풀어야 합니다.");
+  const checkoutIdx = stepIndex(text, /^uses: actions\/checkout@/m);
+  const ciIdx = stepIndex(text, /^run: npm ci\s*$/m);
+  const verifyIdx = stepIndex(text, /^run: npm run verify\s*$/m);
+  const npmIdx = stepIndex(text, /npm view /);
+  const installIdx = stepIndex(text, /sha256sum -c/);
+  const loginIdx = stepIndex(text, /^ {8}run: \.\/mcp-publisher login github-oidc\s*$/m);
+  const publishIdx = stepIndex(text, /^ {8}run: \.\/mcp-publisher publish\s*$/m);
+  if (!(checkoutIdx === 1 && checkoutIdx < ciIdx && ciIdx < verifyIdx && verifyIdx < npmIdx && npmIdx < installIdx && installIdx < loginIdx && loginIdx < publishIdx)) problems.push("단계 순서는 checkout → npm ci → npm run verify → npm 공개 확인 → publisher 설치·sha256 → login github-oidc → publish여야 합니다.");
+  if ((text.match(/mcp-publisher publish/g)?.length ?? 0) !== 1 || (text.match(/mcp-publisher login/g)?.length ?? 0) !== 1) problems.push("login·publish는 한 번씩만 있어야 합니다.");
+  const npm = steps(text)[npmIdx] ?? "";
+  if (npmIdx < 0 || !npm.includes("mcpName") || !npm.includes("require('./server.json')") || !npm.includes("exit 1")) problems.push("게시 전에 npm 공개 버전의 mcpName을 server.json name과 비교해야 합니다.");
+  if (/\bnpm (stage )?publish\b|gh release|curl[^\n]*-X|registry\.modelcontextprotocol\.io/.test(text)) problems.push("mcp-publisher publish 외 게시 경로가 있습니다.");
+  return problems;
+}

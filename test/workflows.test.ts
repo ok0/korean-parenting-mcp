@@ -7,9 +7,11 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { MCPB_ASSET } from "../scripts/docs/links.js";
 import { OUTPUT_FILE } from "../scripts/lib/mcpb.js";
 import {
+  MCP_PUBLISHER,
   USES,
   block,
   blockIndex,
+  mcpRegistryProblems,
   mcpbReleaseProblems,
   npmPublishProblems,
   runScript,
@@ -29,6 +31,7 @@ const WORKFLOWS = [
   ".github/workflows/pages.yml",
   ".github/workflows/mcpb-release.yml",
   ".github/workflows/npm-publish.yml",
+  ".github/workflows/mcp-registry.yml",
 ] as const;
 
 function read(rel: string): string {
@@ -36,6 +39,18 @@ function read(rel: string): string {
 }
 
 const hasActionlint = spawnSync("actionlint", ["-version"]).status === 0;
+
+function swapSteps(text: string, i: number, j: number): string {
+  const s = steps(text);
+  [s[i], s[j]] = [s[j] ?? "", s[i] ?? ""];
+  return s.join("      - ");
+}
+
+function dropStep(text: string, i: number): string {
+  const s = steps(text);
+  s.splice(i, 1);
+  return s.join("      - ");
+}
 
 describe("workflows", () => {
   beforeAll(() =>
@@ -360,6 +375,109 @@ describe("workflows", () => {
         for (const v of ["11.14.9", "10.9.2"]) {
           expect(run(gate, { STUB_NPM_VERSION: v }).status).not.toBe(0);
         }
+      } finally {
+        rmSync(dir, { recursive: true, force: true });
+      }
+    },
+  );
+
+  it("mcp-registry.yml (M68 R1–R8)", () => {
+    const text = read(".github/workflows/mcp-registry.yml");
+    expect(mcpRegistryProblems(text)).toEqual([]);
+    expect(text).not.toMatch(/아니|아닌|아님|아닙/);
+    expect(text).toContain(`MCP_PUBLISHER_VERSION: "${MCP_PUBLISHER.version}"`);
+    expect(text).toContain(`MCP_PUBLISHER_SHA256: "${MCP_PUBLISHER.sha256}"`);
+
+    const npmIdx = stepIndex(text, /npm view /);
+    const installIdx = stepIndex(text, /sha256sum -c/);
+    const loginIdx = stepIndex(text, /^ {8}run: \.\/mcp-publisher login github-oidc\s*$/m);
+    const publishIdx = stepIndex(text, /^ {8}run: \.\/mcp-publisher publish\s*$/m);
+
+    const samples = [
+      // trigger: an added push trigger
+      text.replace("  workflow_dispatch:\n", "  workflow_dispatch:\n  push:\n    branches: [main]\n"),
+      // permissions: broader contents or extra permission
+      text.replace("  contents: read\n", "  contents: write\n"),
+      text.replace("  id-token: write\n", "  id-token: write\n  packages: write\n"),
+      // secret reference
+      text.replace("        run: ./mcp-publisher publish\n", "        env:\n          MCP_TOKEN: ${{ secrets.MCP_TOKEN }}\n        run: ./mcp-publisher publish\n"),
+      // missing verify step
+      text.replace("      - run: npm run verify\n", ""),
+      text.replace("run: npm run verify", "run: npm run verify || true"),
+      text.replace("    if: github.ref == 'refs/heads/main'\n", ""),
+      text.replace("releases/download/v${MCP_PUBLISHER_VERSION}/", "releases/latest/download/"),
+      text.replace(" | sha256sum -c -", " > /dev/null"),
+      text.replace(MCP_PUBLISHER.sha256, "0".repeat(64)),
+      text.replace(`MCP_PUBLISHER_VERSION: "${MCP_PUBLISHER.version}"`, 'MCP_PUBLISHER_VERSION: "1.8.6"'),
+      swapSteps(text, npmIdx, installIdx),
+      swapSteps(text, loginIdx, publishIdx),
+      text.replace("login github-oidc", "login github"),
+      text.replace("cancel-in-progress: false", "cancel-in-progress: true"),
+      text.replace("      - name: publish to MCP Registry\n", "      - name: publish to MCP Registry\n        if: always()\n"),
+      dropStep(text, npmIdx),
+    ];
+    expect(samples).toHaveLength(17);
+    for (const sample of samples) {
+      expect(sample).not.toBe(text);
+      expect(mcpRegistryProblems(sample).length).toBeGreaterThan(0);
+    }
+  });
+
+  it.skipIf(process.platform === "win32")(
+    "mcp-registry.yml npm public check passes only for a public version with matching mcpName (M68 R5)",
+    () => {
+      const text = read(".github/workflows/mcp-registry.yml");
+      const server = JSON.parse(read("server.json")) as {
+        name: string;
+        packages: { identifier: string; version: string }[];
+      };
+      const target = `${server.packages[0]!.identifier}@${server.packages[0]!.version}`;
+      const dir = mkdtempSync(join(tmpdir(), "kpm-registry-npm-stub-"));
+      try {
+        const stub = join(dir, "npm");
+        writeFileSync(
+          stub,
+          [
+            "#!/bin/sh",
+            'if [ "$1" = "view" ] && [ "$2" = "$STUB_EXPECT" ] && [ "$3" = "mcpName" ]; then',
+            '  if [ -n "$STUB_NPM_VIEW" ]; then echo "$STUB_NPM_VIEW"; fi',
+            '  exit "${STUB_NPM_EXIT:-0}"',
+            "fi",
+            "exit 99",
+            "",
+          ].join("\n"),
+        );
+        chmodSync(stub, 0o755);
+
+        const run = (script: string, env: Record<string, string>) =>
+          spawnSync("bash", ["--noprofile", "--norc", "-eo", "pipefail", "-c", script], {
+            cwd: root,
+            encoding: "utf8",
+            env: {
+              ...process.env,
+              PATH: `${dir}:${process.env.PATH ?? ""}`,
+              STUB_EXPECT: target,
+              STUB_NPM_VIEW: "",
+              STUB_NPM_EXIT: "0",
+              ...env,
+            },
+          });
+
+        const script = runScript(text, "check version is public on npm");
+        expect(script.trim()).not.toBe("");
+
+        const ok = run(script, { STUB_NPM_VIEW: server.name, STUB_NPM_EXIT: "0" });
+        expect(ok.status).toBe(0);
+        expect(`${ok.stdout}${ok.stderr}`).toContain(server.name);
+
+        const missing = run(script, { STUB_NPM_VIEW: "", STUB_NPM_EXIT: "1" });
+        expect(missing.status).not.toBe(0);
+        const missingOut = `${missing.stdout}${missing.stderr}`;
+        expect(missingOut).toContain(target);
+        expect(missingOut).toContain("npm check");
+
+        expect(run(script, { STUB_NPM_VIEW: "", STUB_NPM_EXIT: "0" }).status).not.toBe(0);
+        expect(run(script, { STUB_NPM_VIEW: "io.github.someone/other", STUB_NPM_EXIT: "0" }).status).not.toBe(0);
       } finally {
         rmSync(dir, { recursive: true, force: true });
       }
