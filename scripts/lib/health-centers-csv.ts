@@ -1,4 +1,5 @@
 import type { RegionResult } from "../../src/region/normalize.js";
+import { applyCorrections, type HealthCenterCorrection } from "./health-center-corrections.js";
 import {
   compareCenters,
   HEALTH_CENTER_BASIS_ID,
@@ -285,6 +286,7 @@ export interface BuildOptions {
   fileName: string;
   profile?: SourceProfileId;
   excludedKinds?: Readonly<Record<string, number>>;
+  corrections?: readonly HealthCenterCorrection[];
 }
 
 export interface BuildReport {
@@ -298,6 +300,7 @@ export interface BuildReport {
   coverage: { units: number; covered: number; missing: string[] };
   profile: SourceProfileId;
   excludedKinds: Record<string, number>;
+  corrections: { applied: string[]; stale: string[] };
 }
 
 const PHONE_RE = /^[0-9-]{7,15}$/;
@@ -471,7 +474,7 @@ export function buildHealthCenters(
   const prevByKey = new Map<string, HealthCenterEntry>();
   for (const old of prev?.centers ?? []) prevByKey.set(keyOf(old), old);
 
-  const centers: HealthCenterEntry[] = kept.map((entry) => {
+  const inherited: HealthCenterEntry[] = kept.map((entry) => {
     const old = prevByKey.get(keyOf(entry));
     if (old === undefined || old.phone !== entry.phone || old.homepage !== entry.homepage) return entry;
     return {
@@ -481,15 +484,18 @@ export function buildHealthCenters(
       ...(old.verified_on !== undefined ? { verified_on: old.verified_on } : {}),
     };
   });
+  const corrected = applyCorrections(inherited, opts.corrections ?? []);
+  const centers = corrected.entries;
 
   const newKeys = new Set(centers.map(keyOf));
   let added = 0;
   let changed = 0;
-  for (const entry of centers) {
+  let correctionOnly = 0;
+  centers.forEach((entry, i) => {
     const old = prevByKey.get(keyOf(entry));
     if (old === undefined) {
       added += 1;
-      continue;
+      return;
     }
     if (
       old.phone !== entry.phone ||
@@ -498,14 +504,25 @@ export function buildHealthCenters(
       old.source_date !== entry.source_date
     ) {
       changed += 1;
+      const inheritedEntry = inherited[i];
+      if (
+        inheritedEntry !== undefined &&
+        inheritedEntry.phone !== entry.phone &&
+        old.phone === inheritedEntry.phone &&
+        old.homepage === entry.homepage &&
+        old.address === entry.address &&
+        old.source_date === entry.source_date
+      ) {
+        correctionOnly += 1;
+      }
     }
-  }
+  });
   let removed = 0;
   for (const key of prevByKey.keys()) {
     if (!newKeys.has(key)) removed += 1;
   }
 
-  const carried = prev !== undefined && added + removed + changed === 0 ? prev : undefined;
+  const carried = prev !== undefined && added + removed + changed - correctionOnly === 0 ? prev : undefined;
 
   // coverage: 주 기관(보건소·보건의료원)이 그 코드·상위 시·하위 구 중 한 곳에 있는 시군구 수. 원본이 전국을 담는지 확인하는 용도.
   const primary = new Set(centers.filter(isPrimary).map((c) => c.code));
@@ -533,7 +550,7 @@ export function buildHealthCenters(
       source_modified: opts.sourceModified,
       file_name: opts.fileName,
     },
-    generated_at: opts.generatedAt,
+    generated_at: carried?.generated_at ?? opts.generatedAt,
     as_of: opts.asOf,
     basis_ids: [HEALTH_CENTER_BASIS_ID],
     verified: carried?.verified ?? "partial",
@@ -546,6 +563,18 @@ export function buildHealthCenters(
 
   return {
     data,
-    report: { unmatched, multiplePrimary, fieldIssues, added, removed, changed, dataDateRange, coverage, profile, excludedKinds },
+    report: {
+      unmatched,
+      multiplePrimary,
+      fieldIssues,
+      added,
+      removed,
+      changed,
+      dataDateRange,
+      coverage,
+      profile,
+      excludedKinds,
+      corrections: { applied: corrected.applied, stale: corrected.stale },
+    },
   };
 }
