@@ -1,5 +1,6 @@
 import { addMonthsClamp, compare, formatDate, type CivilDate } from "../date/civil-date.js";
 import { resolveBasis } from "../data-store/load.js";
+import type { BasisDoc, Provenance } from "../data-store/schema.js";
 import { HEALTH_CENTER_UNRESOLVED_LINKS, LOCAL_SUPPORT_POINTER, healthCenterNotice } from "../core/notice.js";
 import { healthCenterLine, type HealthCenterLookup } from "../region/health-centers.js";
 import type { RevisionStatus } from "../provenance/revision-text.js";
@@ -10,6 +11,7 @@ import {
   NOTICE_SOURCE,
   NOTICE_VACCINATION_SCOPE,
   basisFooter,
+  basisTitles,
   composeFooter,
   verifiedText,
 } from "../tools/shared/format.js";
@@ -34,8 +36,12 @@ export function periodText(item: TimelineItem): string {
   return s;
 }
 
+export function provenanceDocs(p: Provenance): BasisDoc[] {
+  return resolveBasis([...new Set(p.basis_ids)]);
+}
+
 export function renderItemLine(item: TimelineItem): string {
-  const head = `- [${item.status}] ${periodText(item)} | ${item.title} | ${item.nature} | 출처 ${item.provenance.basis_ids.join(", ")} | 기준일 ${item.provenance.as_of} | ${verifiedText(item.provenance.verified)}`;
+  const head = `- [${item.status}] ${periodText(item)} | ${item.title} | ${item.nature} | 출처 ${basisTitles(provenanceDocs(item.provenance))} | 기준일 ${item.provenance.as_of} | ${verifiedText(item.provenance.verified)}`;
   const notes = item.estimated === true ? [...item.notes, ESTIMATED_NOTE] : item.notes;
   return [head, ...notes.map((note) => `\n  · ${note}`)].join("");
 }
@@ -69,7 +75,7 @@ export function renderLocalSection(s: LocalGuidanceSection): string {
   if (s.missingNote !== undefined) out.push(s.missingNote);
   for (const l of s.lines) {
     out.push(
-      `- ${l.title}: ${l.text} 확인처: ${l.contact}${l.url !== undefined ? ` (${l.url})` : ""} | 출처 ${l.provenance.basis_ids.join(", ")} | 기준일 ${l.provenance.as_of} | ${verifiedText(l.provenance.verified)}`,
+      `- ${l.title}: ${l.text} 확인처: ${l.contact}${l.url !== undefined ? ` (${l.url})` : ""} | 출처 ${basisTitles(provenanceDocs(l.provenance))} | 기준일 ${l.provenance.as_of} | ${verifiedText(l.provenance.verified)}`,
     );
   }
   if (s.healthCenter !== undefined) out.push(...healthCenterBlock(s.healthCenter));
