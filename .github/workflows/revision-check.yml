@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4.2.2
-      - uses: actions/setup-node@v4.1.0
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version: "22"
           cache: npm
@@ -23,7 +23,7 @@ jobs:
       - run: npm run build:scripts
       # 첨부 diff 기준 텍스트(저장소·패키지 밖, 7일 미접근 시 만료 → 비교 기준 없음)
       - name: restore annex baseline
-        uses: actions/cache/restore@v4.2.0
+        uses: actions/cache/restore@v6.1.0
         with:
           path: ${{ runner.temp }}/annex-baseline
           key: annex-baseline-v1-${{ github.run_id }}-${{ github.run_attempt }}
@@ -45,7 +45,7 @@ jobs:
           if [ "$code" -ne 0 ] && [ "$code" -ne 10 ]; then exit "$code"; fi
       - name: save annex baseline
         if: steps.check.outputs.code == '0' || steps.check.outputs.code == '10'
-        uses: actions/cache/save@v4.2.0
+        uses: actions/cache/save@v6.1.0
         with:
           path: ${{ runner.temp }}/annex-baseline
           key: annex-baseline-v1-${{ github.run_id }}-${{ github.run_attempt }}
