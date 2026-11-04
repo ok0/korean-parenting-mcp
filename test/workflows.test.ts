@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
@@ -10,6 +11,8 @@ import {
   block,
   blockIndex,
   mcpbReleaseProblems,
+  npmPublishProblems,
+  runScript,
   secretNames,
   stepIndex,
   steps,
@@ -25,6 +28,7 @@ const WORKFLOWS = [
   ".github/workflows/visuals-refresh.yml",
   ".github/workflows/pages.yml",
   ".github/workflows/mcpb-release.yml",
+  ".github/workflows/npm-publish.yml",
 ] as const;
 
 function read(rel: string): string {
@@ -250,6 +254,117 @@ describe("workflows", () => {
       expect(mcpbReleaseProblems(sample).length).toBeGreaterThan(0);
     }
   });
+
+  it("npm-publish.yml (PUB3 R1–R9)", () => {
+    const text = read(".github/workflows/npm-publish.yml");
+    expect(npmPublishProblems(text)).toEqual([]);
+    expect(text).not.toMatch(/아니|아닌|아님|아닙/);
+
+    const swappedSteps = steps(text);
+    const verifyIdx = stepIndex(text, /^run: npm run verify\s*$/m);
+    const publishIdx = stepIndex(text, /^ {8}run: npm stage publish\s*$/m);
+    [swappedSteps[verifyIdx], swappedSteps[publishIdx]] = [
+      swappedSteps[publishIdx] ?? "",
+      swappedSteps[verifyIdx] ?? "",
+    ];
+    const swapped = swappedSteps.join("      - ");
+
+    const samples = [
+      swapped,
+      text.replace("run: npm stage publish", "run: npm stage publish --provenance"),
+      text.replace("  id-token: write\n", ""),
+      text.replace('    tags: ["v*"]', '    tags: ["v*"]\n  workflow_dispatch:'),
+      text.replace("  contents: read", "  contents: write"),
+      text.replace('node-version: "22"', 'node-version: "20"'),
+      text.replace("run: npm run verify", "run: npm run verify || true"),
+      text.replace("run: npm stage publish", "run: npm publish"),
+      text.replace(
+        "      - name: stage publish\n",
+        "      - name: stage publish\n        env:\n          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}\n",
+      ),
+      text.replace("npm install -g npm@11.21.1", "npm install -g npm@11.14.0"),
+      text.replace("cancel-in-progress: false", "cancel-in-progress: true"),
+      text.replace(/^ {4}timeout-minutes: \d+\n/m, ""),
+      text.replace("GITHUB_REF_NAME", "GITHUB_SHA"),
+      text.replaceAll("Staged Packages", "Packages"),
+    ];
+    expect(samples).toHaveLength(14);
+    for (const sample of samples) {
+      expect(sample).not.toBe(text);
+      expect(npmPublishProblems(sample).length).toBeGreaterThan(0);
+    }
+  });
+
+  it.skipIf(process.platform === "win32")(
+    "npm-publish.yml check scripts pass on match and fail on mismatch (PUB3 AC2)",
+    () => {
+      const text = read(".github/workflows/npm-publish.yml");
+      const version = (JSON.parse(read("package.json")) as { version: string }).version;
+      const dir = mkdtempSync(join(tmpdir(), "kpm-npm-stub-"));
+      try {
+        const stub = join(dir, "npm");
+        writeFileSync(
+          stub,
+          [
+            "#!/bin/sh",
+            'if [ "$1" = "--version" ]; then echo "$STUB_NPM_VERSION"; exit 0; fi',
+            'if [ "$1" = "view" ]; then',
+            '  if [ -n "$STUB_NPM_VIEW" ]; then echo "$STUB_NPM_VIEW"; fi',
+            '  exit "${STUB_NPM_EXIT:-0}"',
+            "fi",
+            "exit 99",
+            "",
+          ].join("\n"),
+        );
+        chmodSync(stub, 0o755);
+
+        const run = (script: string, env: Record<string, string>) =>
+          spawnSync("bash", ["--noprofile", "--norc", "-eo", "pipefail", "-c", script], {
+            cwd: root,
+            encoding: "utf8",
+            env: {
+              ...process.env,
+              PATH: `${dir}:${process.env.PATH ?? ""}`,
+              STUB_NPM_VERSION: "",
+              STUB_NPM_VIEW: "",
+              STUB_NPM_EXIT: "0",
+              ...env,
+            },
+          });
+
+        const tag = runScript(text, "check tag matches package version");
+        const view = runScript(text, "check version is new on npm");
+        const gate = runScript(text, "check npm version");
+        expect(tag.trim()).not.toBe("");
+        expect(view.trim()).not.toBe("");
+        expect(gate.trim()).not.toBe("");
+
+        expect(run(tag, { GITHUB_REF_NAME: `v${version}` }).status).toBe(0);
+        const mismatch = run(tag, { GITHUB_REF_NAME: "v0.0.0-mismatch" });
+        expect(mismatch.status).not.toBe(0);
+        const mismatchOut = `${mismatch.stdout}${mismatch.stderr}`;
+        expect(mismatchOut).toContain("0.0.0-mismatch");
+        expect(mismatchOut).toContain(version);
+
+        expect(run(view, { STUB_NPM_VIEW: "", STUB_NPM_EXIT: "1" }).status).toBe(0);
+        expect(run(view, { STUB_NPM_VIEW: "", STUB_NPM_EXIT: "0" }).status).toBe(0);
+        const dup = run(view, { STUB_NPM_VIEW: version, STUB_NPM_EXIT: "0" });
+        expect(dup.status).not.toBe(0);
+        expect(`${dup.stdout}${dup.stderr}`).toContain("already published");
+
+        for (const v of ["11.15.0", "11.21.1", "12.0.0"]) {
+          const res = run(gate, { STUB_NPM_VERSION: v });
+          expect(res.status).toBe(0);
+          expect(`${res.stdout}${res.stderr}`).toContain(v);
+        }
+        for (const v of ["11.14.9", "10.9.2"]) {
+          expect(run(gate, { STUB_NPM_VERSION: v }).status).not.toBe(0);
+        }
+      } finally {
+        rmSync(dir, { recursive: true, force: true });
+      }
+    },
+  );
 
   it("contents: write set is pinned and only mcpb-release writes releases (M38 R3)", () => {
     const writers = WORKFLOWS.filter((f) => topPermissions(read(f)).contents === "write").sort();

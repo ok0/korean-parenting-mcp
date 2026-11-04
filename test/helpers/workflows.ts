@@ -149,3 +149,54 @@ export function mcpbReleaseProblems(text: string): string[] {
 
   return problems;
 }
+
+export function runScript(text: string, name: string): string {
+  const step = steps(text).find((s) => s.startsWith(`name: ${name}\n`)) ?? "";
+  const lines = step.split("\n");
+  const start = lines.indexOf("        run: |");
+  if (start < 0) return "";
+  const body: string[] = [];
+  for (const line of lines.slice(start + 1)) {
+    if (line !== "" && !line.startsWith("          ")) break;
+    body.push(line.slice(10));
+  }
+  return `${body.join("\n").trimEnd()}\n`;
+}
+
+export function npmPublishProblems(text: string): string[] {
+  const problems: string[] = [];
+  if (!/^on:\n {2}push:\n {4}tags: \["v\*"\]\npermissions:\n/m.test(text)) problems.push("트리거는 v* 태그 push 하나여야 합니다.");
+  if (/workflow_dispatch|schedule:|pull_request|branches:/.test(text)) problems.push("태그 push 외 트리거가 있습니다.");
+  if (JSON.stringify(topPermissions(text)) !== JSON.stringify({ contents: "read", "id-token": "write" })) problems.push("권한은 contents: read, id-token: write 두 개여야 합니다.");
+  if (secretNames(text).length > 0 || /NODE_AUTH_TOKEN|NPM_TOKEN|secrets\./.test(text)) problems.push("토큰·시크릿 참조가 있습니다.");
+  if (!/^concurrency:\n {2}group: npm-publish\n {2}cancel-in-progress: false\n/m.test(text)) problems.push("concurrency(cancel-in-progress: false)가 필요합니다.");
+  if (!/^ {4}timeout-minutes: \d+$/m.test(text)) problems.push("timeout-minutes가 필요합니다.");
+  const setup = block(text, "actions/setup-node@");
+  if (!setup.includes('node-version: "22"') || !setup.includes('registry-url: "https://registry.npmjs.org"')) problems.push("setup-node는 Node 22와 npmjs registry-url을 써야 합니다.");
+  const pin = /^ {8}run: npm install -g npm@(\d+)\.(\d+)\.(\d+)$/m.exec(text);
+  const major = Number(pin?.[1] ?? 0);
+  const minor = Number(pin?.[2] ?? 0);
+  if (!pin || major < 11 || (major === 11 && minor < 15)) problems.push("npm은 11.15.0 이상 정확한 버전으로 설치해야 합니다.");
+  const ciIdx = stepIndex(text, /^run: npm ci\s*$/m);
+  const verifyIdx = stepIndex(text, /^run: npm run verify\s*$/m);
+  const gateIdx = stepIndex(text, /npm --version/);
+  const publishIdx = stepIndex(text, /^ {8}run: npm stage publish\s*$/m);
+  const tagIdx = stepIndex(text, /GITHUB_REF_NAME/);
+  const viewIdx = stepIndex(text, /npm view /);
+  const summaryIdx = stepIndex(text, /GITHUB_STEP_SUMMARY/);
+  const all = steps(text);
+  if (publishIdx < 0) problems.push("게시 명령은 npm stage publish여야 합니다.");
+  if (/--provenance/.test(text)) problems.push("--provenance 플래그는 쓰지 않습니다.");
+  if (/\bnpm publish\b/.test(text)) problems.push("npm publish 대신 npm stage publish를 씁니다.");
+  if (!(ciIdx >= 0 && ciIdx < verifyIdx && verifyIdx < gateIdx && gateIdx === publishIdx - 1)) problems.push("단계 순서는 npm ci → npm run verify → npm 버전 확인 → npm stage publish여야 합니다.");
+  const gate = all[gateIdx] ?? "";
+  if (!gate.includes("-lt 15") || !gate.includes("exit 1")) problems.push("npm 버전 확인 단계는 11.15 미만에서 실패해야 합니다.");
+  const tag = all[tagIdx] ?? "";
+  if (tagIdx < 0 || tagIdx > publishIdx || !tag.includes("require('./package.json').version") || !tag.includes("exit 1")) problems.push("게시 전에 태그와 package.json 버전을 비교해야 합니다.");
+  const view = all[viewIdx] ?? "";
+  if (viewIdx < 0 || viewIdx > publishIdx || !view.includes("exit 1")) problems.push("게시 전에 npm view로 기존 버전을 확인해야 합니다.");
+  const summary = all[summaryIdx] ?? "";
+  if (summaryIdx <= publishIdx || !summary.includes("Staged Packages")) problems.push("게시 뒤 승인 안내 요약이 필요합니다.");
+  if (/continue-on-error|always\(\)/.test(text)) problems.push("continue-on-error·always()는 쓰지 않습니다.");
+  return problems;
+}
