@@ -145,7 +145,9 @@
       "phone": "02-3153-9114",
       "homepage": "https://www.mapo.go.kr/site/health/home",
       "address": "서울특별시 마포구 월드컵로 212 (성산동, 마포구청), 마포구보건소 마포구보건소",
-      "verified": "partial"
+      "verified": "false",
+      "verified_by": "agent web check (mapo.go.kr)",
+      "verified_on": "2026-11-04"
     },
     {
       "code": "11470",
@@ -411,7 +413,9 @@
       "phone": "061-531-3713",
       "homepage": "http://www.haenam.go.kr/health/index.9is?contentUid=18e3368f6797832401681169c3cf5d94",
       "address": "전라남도 해남군 해남읍 해남로 46 (해남보건소) 해남군보건소",
-      "verified": "partial"
+      "verified": "false",
+      "verified_by": "agent web check (haenam.go.kr)",
+      "verified_on": "2026-11-04"
     },
     {
       "code": "12800",
@@ -1809,7 +1813,9 @@
       "phone": "055-245-4000",
       "homepage": "https://www.changwon.go.kr/cwportal/depart/11066/14417/13731.web",
       "address": "경상남도 창원시 마산합포구 월영동북로 15 (해운동, 마산보건소) 마산보건소",
-      "verified": "partial"
+      "verified": "full",
+      "verified_by": "agent web check (changwon.go.kr)",
+      "verified_on": "2026-11-04"
     },
     {
       "code": "48120",
@@ -1818,7 +1824,9 @@
       "phone": "055-225-6101",
       "homepage": "https://www.changwon.go.kr/cwportal/depart/11066/14418/13732.web",
       "address": "경상남도 창원시 진해구 진해대로 1101 (풍호동, 진해보건소) 진해보건소",
-      "verified": "partial"
+      "verified": "full",
+      "verified_by": "agent web check (changwon.go.kr)",
+      "verified_on": "2026-11-04"
     },
     {
       "code": "48120",
@@ -1827,7 +1835,9 @@
       "phone": "055-225-4000",
       "homepage": "https://www.changwon.go.kr/cwportal/depart/11066.web",
       "address": "경상남도 창원시 성산구 중앙대로162번안길 8 (신월동, 창원보건소) 창원보건소",
-      "verified": "partial"
+      "verified": "full",
+      "verified_by": "agent web check (changwon.go.kr)",
+      "verified_on": "2026-11-04"
     },
     {
       "code": "48170",
@@ -2055,7 +2065,9 @@
       "phone": "033-250-3550",
       "homepage": "https://www.chuncheon.go.kr/health/",
       "address": "강원도 춘천시 중앙로 135 (중앙로3가, 춘천시보건소) 춘천시보건소",
-      "verified": "partial"
+      "verified": "full",
+      "verified_by": "agent web check (chuncheon.go.kr)",
+      "verified_on": "2026-11-04"
     },
     {
       "code": "51130",
@@ -2217,7 +2229,9 @@
       "phone": "063-281-6200",
       "homepage": "http://health.jeonju.go.kr/index.jeonju",
       "address": "전라북도 전주시 완산구 전라감영로 33 (중앙동4가, 전주시보건소) 전주시보건소",
-      "verified": "partial"
+      "verified": "full",
+      "verified_by": "agent web check (health.jeonju.go.kr)",
+      "verified_on": "2026-11-04"
     },
     {
       "code": "52113",
@@ -2226,7 +2240,9 @@
       "phone": "063-250-3900",
       "homepage": "https://health.jeonju.go.kr/",
       "address": "전라북도 전주시 덕진구 우아1길 20 (우아동3가, 전주시덕진보건소) 덕진보건소",
-      "verified": "partial"
+      "verified": "full",
+      "verified_by": "agent web check (health.jeonju.go.kr)",
+      "verified_on": "2026-11-04"
     },
     {
       "code": "52130",

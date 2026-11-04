@@ -26,6 +26,16 @@ import { scanNegativeWording } from "./helpers/affiliation-wording.js";
 
 const PRIMARY_KINDS: readonly string[] = ["보건소", "보건의료원"];
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const M64_SAMPLE: readonly string[] = [
+  "11440|마포구보건소",
+  "12790|해남군보건소",
+  "48120|창원시 마산보건소",
+  "48120|창원시 진해보건소",
+  "48120|창원시 창원보건소",
+  "51110|춘천시보건소",
+  "52110|전주시 보건소",
+  "52113|덕진보건소",
+];
 
 const hc = loadData("health-centers");
 const regions = loadData("regions");
@@ -101,18 +111,33 @@ describe("health-centers", () => {
   afterAll(() => vi.unstubAllGlobals());
 
   describe("bundled list provenance", () => {
-    it("file and every entry carry source, date, as_of and partial status", () => {
+    it("file and every entry carry source, date, as_of and a recorded status", () => {
       expect(hc.source.url).toBe(SOURCE_PROFILES[hc.source.dataset_id].source.url);
       expect(hc.source.license).toMatch(/공공데이터포털 3072692 페이지 확인 \d{4}-\d{2}-\d{2}\)$/);
       expect(hc.verified).toBe("partial");
       expect(hc.basis_ids).toEqual([HEALTH_CENTER_BASIS_ID]);
       expect(hc.centers.length).toBeGreaterThan(0);
       for (const c of hc.centers) {
-        expect(c.verified).toBe("partial");
-        expect(c.verified_by).toBeUndefined();
-        expect(c.verified_on).toBeUndefined();
+        const key = `${c.code}|${c.name}`;
+        if (c.verified === "partial") {
+          expect(c.verified_by, key).toBeUndefined();
+          expect(c.verified_on, key).toBeUndefined();
+        } else {
+          expect(M64_SAMPLE, key).toContain(key);
+          expect(c.verified_by, key).toMatch(/^agent web check \(.+\)$/);
+          expect(c.verified_on, key).toMatch(DATE_RE);
+        }
         expect(c.source_date ?? hc.source.source_modified).toMatch(DATE_RE);
       }
+    });
+
+    it("M64 sample entries are recorded", () => {
+      for (const k of M64_SAMPLE) {
+        expect(hc.centers.some((c) => `${c.code}|${c.name}` === k && c.verified !== "partial"), k).toBe(true);
+      }
+      expect(hc.centers.find((c) => c.code === "41117")?.verified).toBe("partial");
+      expect(hc.centers.filter((c) => c.verified === "full").length).toBe(6);
+      expect(hc.centers.filter((c) => c.verified === "false").length).toBe(2);
     });
 
     it("note states the covered count while coverage is short", () => {
