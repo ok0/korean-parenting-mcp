@@ -37,6 +37,14 @@ export function stepIndex(text: string, re: RegExp): number {
   return steps(text).findIndex((s) => re.test(s));
 }
 
+export function setupNodeCacheProblems(text: string): string[] {
+  const setup = block(text, "actions/setup-node@");
+  const problems: string[] = [];
+  if (!/^ {10}package-manager-cache: false$/m.test(setup)) problems.push("setup-node는 package-manager-cache: false로 자동 캐시를 꺼야 합니다.");
+  if (/^ {10}cache:/m.test(setup)) problems.push("게시 워크플로의 setup-node는 cache: 입력 없이 씁니다.");
+  return problems;
+}
+
 export function mcpbReleaseProblems(text: string): string[] {
   const problems: string[] = [];
   const lines = text.split("\n");
@@ -173,6 +181,7 @@ export function npmPublishProblems(text: string): string[] {
   if (!/^ {4}timeout-minutes: \d+$/m.test(text)) problems.push("timeout-minutes가 필요합니다.");
   const setup = block(text, "actions/setup-node@");
   if (!setup.includes('node-version: "22"') || !setup.includes('registry-url: "https://registry.npmjs.org"')) problems.push("setup-node는 Node 22와 npmjs registry-url을 써야 합니다.");
+  problems.push(...setupNodeCacheProblems(text));
   const pin = /^ {8}run: npm install -g npm@(\d+)\.(\d+)\.(\d+)$/m.exec(text);
   const major = Number(pin?.[1] ?? 0);
   const minor = Number(pin?.[2] ?? 0);
@@ -211,6 +220,7 @@ export function mcpRegistryProblems(text: string): string[] {
   if (secretNames(text).length > 0 || /secrets\.|github\.token|_TOKEN\b/.test(text)) problems.push("토큰·시크릿 참조가 있습니다.");
   if (!/^concurrency:\n {2}group: mcp-registry\n {2}cancel-in-progress: false\n/m.test(text)) problems.push("concurrency(mcp-registry, cancel-in-progress: false)가 필요합니다.");
   if (!/^ {4}timeout-minutes: \d+$/m.test(text)) problems.push("timeout-minutes가 필요합니다.");
+  problems.push(...setupNodeCacheProblems(text));
   const jobsPart = text.split("\njobs:\n")[1] ?? "";
   if ((jobsPart.match(/^ {2}[\w-]+:\s*$/gm)?.length ?? 0) !== 1 || !/^ {4}if: github\.ref == 'refs\/heads\/main'$/m.test(text)) problems.push("main에서만 실행되는 job 하나여야 합니다.");
   if (/^ {8}if:/m.test(text) || /continue-on-error|always\(\)/.test(text)) problems.push("단계 if·continue-on-error·always()는 쓰지 않습니다.");
