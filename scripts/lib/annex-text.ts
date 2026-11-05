@@ -82,7 +82,6 @@ export async function extractPdfText(
       standardFontDataUrl: fontUrl,
       useSystemFonts: false,
       disableFontFace: true,
-      isEvalSupported: false,
       verbosity: 0,
     });
     doc = await task.promise;
