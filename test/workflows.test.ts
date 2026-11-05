@@ -303,12 +303,16 @@ describe("workflows", () => {
       text.replace(/^ {4}timeout-minutes: \d+\n/m, ""),
       text.replace("GITHUB_REF_NAME", "GITHUB_SHA"),
       text.replaceAll("Staged Packages", "Packages"),
+      text.replace("          package-manager-cache: false\n", ""),
     ];
-    expect(samples).toHaveLength(14);
+    expect(samples).toHaveLength(15);
     for (const sample of samples) {
       expect(sample).not.toBe(text);
       expect(npmPublishProblems(sample).length).toBeGreaterThan(0);
     }
+    const withCache = text.replace("          package-manager-cache: false\n", "          package-manager-cache: false\n          cache: npm\n");
+    expect(withCache).not.toBe(text);
+    expect(npmPublishProblems(withCache).length).toBeGreaterThan(0);
   });
 
   it.skipIf(process.platform === "win32")(
@@ -416,12 +420,16 @@ describe("workflows", () => {
       text.replace("cancel-in-progress: false", "cancel-in-progress: true"),
       text.replace("      - name: publish to MCP Registry\n", "      - name: publish to MCP Registry\n        if: always()\n"),
       dropStep(text, npmIdx),
+      text.replace("          package-manager-cache: false\n", ""),
     ];
-    expect(samples).toHaveLength(17);
+    expect(samples).toHaveLength(18);
     for (const sample of samples) {
       expect(sample).not.toBe(text);
       expect(mcpRegistryProblems(sample).length).toBeGreaterThan(0);
     }
+    const withCache = text.replace("          package-manager-cache: false\n", "          package-manager-cache: false\n          cache: npm\n");
+    expect(withCache).not.toBe(text);
+    expect(mcpRegistryProblems(withCache).length).toBeGreaterThan(0);
   });
 
   it.skipIf(process.platform === "win32")(
