@@ -17,7 +17,6 @@ interface PdfPage {
 interface PdfDoc {
   numPages: number;
   getPage(n: number): Promise<PdfPage>;
-  destroy(): Promise<void>;
 }
 
 interface PdfTask {
@@ -120,7 +119,6 @@ export async function extractPdfText(
   } catch {
     return { ok: false, reason: "extract_failed" };
   } finally {
-    await doc?.destroy().catch(() => undefined);
     await task?.destroy().catch(() => undefined);
   }
 }
