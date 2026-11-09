@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
-import { docsDirViolations, rootDocViolations, type RootEntry } from "./helpers/root-docs.js";
+import { ALLOWED_ROOT_DOCS, docsDirViolations, rootDocViolations, type RootEntry } from "./helpers/root-docs.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
@@ -47,7 +47,7 @@ describe("document placement (P12)", () => {
     for (const dir of tempRoots.splice(0)) rmSync(dir, { recursive: true, force: true });
   });
 
-  it("root documents are only README.md and LICENSE", () => {
+  it("root documents are only README.md, LICENSE, SECURITY.md and CONTRIBUTING.md", () => {
     const entries: RootEntry[] = readdirSync(root, { withFileTypes: true }).map((e) => ({
       name: e.name,
       isDir: e.isDirectory(),
@@ -55,17 +55,20 @@ describe("document placement (P12)", () => {
     expect(rootDocViolations(entries)).toEqual([]);
     expect(existsSync(join(root, "README.md"))).toBe(true);
     expect(existsSync(join(root, "LICENSE"))).toBe(true);
+    expect(existsSync(join(root, "SECURITY.md"))).toBe(true);
+    expect(existsSync(join(root, "CONTRIBUTING.md"))).toBe(true);
+    expect([...ALLOWED_ROOT_DOCS].sort()).toEqual(["CONTRIBUTING.md", "LICENSE", "README.md", "SECURITY.md"]);
   });
 
   it("flags extra documents in a mocked root", () => {
     const entries: RootEntry[] = [
-      ...["README.md", "LICENSE", ...CONFIG_FILES, "NOTES.md", "CHANGELOG", "todo.txt"].map((name) => ({
+      ...["README.md", "LICENSE", "SECURITY.md", "CONTRIBUTING.md", ...CONFIG_FILES, "NOTES.md", "CHANGELOG", "CODE_OF_CONDUCT.md", "todo.txt"].map((name) => ({
         name,
         isDir: false,
       })),
       ...["docs", "doc", "src", ".docs"].map((name) => ({ name, isDir: true })),
     ];
-    expect(rootDocViolations(entries)).toEqual(["CHANGELOG", "NOTES.md", "doc/", "todo.txt"]);
+    expect(rootDocViolations(entries)).toEqual(["CHANGELOG", "CODE_OF_CONDUCT.md", "NOTES.md", "doc/", "todo.txt"]);
   });
 
   it("docs/ in the repository holds only .md files", () => {
@@ -109,7 +112,7 @@ describe("document placement (P12)", () => {
     for (const p of [".docs/", ".ensemble/", ".docs/release-checklist.md", ".ensemble/blueprint.md"]) {
       expect(checkIgnored(p), p).toBe(0);
     }
-    for (const p of ["README.md", "LICENSE"]) {
+    for (const p of ["README.md", "LICENSE", "SECURITY.md", "CONTRIBUTING.md"]) {
       expect(checkIgnored(p), p).toBe(1);
     }
   });

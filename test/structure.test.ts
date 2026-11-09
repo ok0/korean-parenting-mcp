@@ -167,7 +167,7 @@ describe("project structure", () => {
         /\.(md|markdown|txt|rst)$/i.test(n) ||
         /^(LICEN[CS]E|COPYING|NOTICE|CHANGELOG|AUTHORS|CONTRIBUTING)(\.|$)/i.test(n),
     );
-    expect(docs.sort()).toEqual(["LICENSE", "README.md"]);
+    expect(docs.sort()).toEqual(["CONTRIBUTING.md", "LICENSE", "README.md", "SECURITY.md"]);
     expect(docsDirViolations(root)).toEqual([]);
   });
 

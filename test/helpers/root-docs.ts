@@ -6,7 +6,7 @@ export interface RootEntry {
   isDir: boolean;
 }
 
-export const ALLOWED_ROOT_DOCS: readonly string[] = ["LICENSE", "README.md"];
+export const ALLOWED_ROOT_DOCS: readonly string[] = ["CONTRIBUTING.md", "LICENSE", "README.md", "SECURITY.md"];
 
 const DOC_EXT = /\.(md|markdown|mdx|txt|rst|adoc|org)$/i;
 const DOC_NAME = /^(LICEN[CS]E|COPYING|NOTICE|CHANGELOG|CHANGES|HISTORY|AUTHORS|CONTRIBUTING|CODE_OF_CONDUCT|SECURITY|TODO)(\.|$)/i;
