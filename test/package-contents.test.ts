@@ -66,6 +66,7 @@ describe("npm package contents", () => {
       expect(paths).toContain("README.md");
       expect(paths).toContain("LICENSE");
       expect(paths).toContain("package.json");
+      for (const doc of ["SECURITY.md", "CONTRIBUTING.md"]) expect(paths, doc).not.toContain(doc);
       expect(paths).toContain("data/health-centers.json");
       expect(paths.filter((p) => /\.(csv|xlsx?)$/i.test(p) || /(^|\/)page-\d{4}\.json$/.test(p) || /data-src|api-notes/.test(p))).toEqual([]);
       expect(paths.filter((p) => p.startsWith("data/") && !/^data\/[a-z0-9-]+\.json$/.test(p))).toEqual([]);

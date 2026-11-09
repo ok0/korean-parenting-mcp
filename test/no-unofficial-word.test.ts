@@ -422,7 +422,7 @@ describe("affiliation wording helper", () => {
 
 describe("file layer", () => {
   it("collects the required entries", () => {
-    expect(repoFiles).toEqual(expect.arrayContaining(["README.md", "package.json", "manifest.json", "site/index.html"]));
+    expect(repoFiles).toEqual(expect.arrayContaining(["README.md", "package.json", "manifest.json", "site/index.html", "SECURITY.md", "CONTRIBUTING.md"]));
     const docs = listDocMarkdown(ROOT);
     expect(docs.length).toBeGreaterThan(0);
     for (const d of docs) expect(repoFiles).toContain(d);

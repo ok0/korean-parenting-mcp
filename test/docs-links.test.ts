@@ -33,8 +33,8 @@ describe("docs link checks (M34)", () => {
     expect(listDocMarkdown(root)).toEqual(docsBefore);
   });
 
-  it("README and docs/**/*.md links pass (R5, R7)", () => {
-    const files = ["README.md", ...listDocMarkdown(root)];
+  it("README, SECURITY.md, CONTRIBUTING.md and docs/**/*.md links pass (R5, R7, M79)", () => {
+    const files = ["README.md", "SECURITY.md", "CONTRIBUTING.md", ...listDocMarkdown(root)];
     expect(checkDocLinks(files, realView).map(formatProblem)).toEqual([]);
   });
 
@@ -79,6 +79,30 @@ describe("docs link checks (M34)", () => {
   it("missing same-file anchor is reported", () => {
     const problems = checkDocLinks(["docs/a.md"], memView({ "docs/a.md": "# 있음\n[x](#없음)" }));
     expect(problems).toEqual([{ file: "docs/a.md", line: 2, url: "#없음", reason: "없는 앵커" }]);
+  });
+
+  it("root community doc links pass in a synthetic view (M79)", () => {
+    const view = memView(
+      {
+        "SECURITY.md": "## 신고\n[k](docs/advanced.md#키-다루기)\n[f](https://github.com/ok0/korean-parenting-mcp/security/advisories/new)\n",
+        "CONTRIBUTING.md": "[s](SECURITY.md)\n[l](LICENSE)\n[i](https://github.com/ok0/korean-parenting-mcp/issues)\n",
+        "docs/advanced.md": "## 키 다루기\n",
+      },
+      ["LICENSE"],
+    );
+    expect(checkDocLinks(["SECURITY.md", "CONTRIBUTING.md"], view).map(formatProblem)).toEqual([]);
+  });
+
+  it("broken root community doc link and anchor are reported (M79)", () => {
+    const view = memView({
+      "SECURITY.md": "[k](docs/advanced.md#없음)",
+      "CONTRIBUTING.md": "[s](SECURITY.md)\n[x](GUIDE.md)",
+      "docs/advanced.md": "## 키 다루기",
+    });
+    expect(checkDocLinks(["SECURITY.md", "CONTRIBUTING.md"], view)).toEqual([
+      { file: "SECURITY.md", line: 1, url: "docs/advanced.md#없음", reason: "없는 앵커" },
+      { file: "CONTRIBUTING.md", line: 2, url: "GUIDE.md", reason: "대상 파일 없음" },
+    ]);
   });
 
   it(".docs/ link in docs is reported", () => {
