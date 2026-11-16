@@ -34,6 +34,12 @@ jobs:
         env:
           LAW_OC: ${{ secrets.LAW_OC }}
         run: |
+          if [ -z "$LAW_OC" ]; then
+            echo "::warning title=revision-check::LAW_OC 시크릿 미설정 — 개정 확인을 건너뜀"
+            echo "### 근거 문서 개정 확인: 건너뜀 (LAW_OC 미설정)" >> "$GITHUB_STEP_SUMMARY"
+            echo "code=skipped" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           mkdir -p "$RUNNER_TEMP/annex-baseline"
           set +e
           node build-scripts/scripts/check-revisions.js --out "$RUNNER_TEMP/issue.md" --baseline-dir "$RUNNER_TEMP/annex-baseline" 2> "$RUNNER_TEMP/check.log"
